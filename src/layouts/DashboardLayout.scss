@@ -1,0 +1,33 @@
+.dashboard_layout {
+  display: grid;
+  grid-template-areas:
+    "sider topnav"
+    "sider main";
+
+  grid-template-rows: 50px 1fr;
+  grid-template-columns: 0 1fr;
+  transition: all ease-in-out 0.25s;
+
+  &.show {
+    grid-template-columns: 80px 1fr;
+  }
+
+  height: 100vh;
+
+  &-sidebar {
+    grid-area: sider;
+    z-index: -1;
+  }
+
+  &-topnav {
+    grid-area: topnav;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  &-main {
+    grid-area: main;
+    overflow-y: scroll;
+  }
+}
