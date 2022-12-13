@@ -6,6 +6,7 @@ import storage from "redux-persist/lib/storage";
 import { persistReducer, persistStore } from "redux-persist";
 
 import { PersistGate } from "redux-persist/integration/react";
+import themeReducer from "./themeSlice";
 
 const persistConfig = {
   key: "root",
@@ -14,6 +15,7 @@ const persistConfig = {
 
 const reducers = combineReducers({
   auth: authReducer,
+  theme: themeReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, reducers);

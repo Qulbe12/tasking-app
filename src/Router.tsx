@@ -2,7 +2,8 @@ import { createBrowserRouter } from "react-router-dom";
 import RouteGuard from "./guards/RouteGuard";
 import AuthLayout from "./layouts/AuthLayout";
 import DashboardLayout from "./layouts/DashboardLayout";
-import Dashboard from "./views/auth/Dashboard";
+import HomeLayout from "./layouts/HomeLayout";
+import Dashboard from "./views/dashboard/Dashboard";
 import Forgot from "./views/auth/Forgot";
 import Login from "./views/auth/Login";
 import Pay from "./views/auth/Pay";
@@ -15,7 +16,7 @@ const router = createBrowserRouter([
     children: [
       {
         path: "/",
-        element: <DashboardLayout />,
+        element: <HomeLayout />,
         children: [
           {
             path: "/",

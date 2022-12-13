@@ -1,8 +1,8 @@
-import { ActionIcon, Burger, Container, Flex, Paper } from "@mantine/core";
-import React, { ReactElement, useState } from "react";
+import { ActionIcon, Burger, Paper } from "@mantine/core";
+import { useState } from "react";
 import { Outlet } from "react-router-dom";
-import Sidenav from "../components/Sidenav";
-import { IconMenu2 } from "@tabler/icons";
+
+import { IconAdjustments, IconMenu2 } from "@tabler/icons";
 
 import "./DashboardLayout.scss";
 
@@ -11,18 +11,23 @@ const DashboardLayout = () => {
   return (
     <div className={`dashboard_layout ${showSider && "show"}`}>
       <div className={`dashboard_layout-sidebar`}>
-        <h2>HEXA</h2>
-        <div>
+        <h2 className="title">HEXA</h2>
+
+        <div className="menu">
           <ActionIcon>
+            <IconAdjustments size={24} />
+          </ActionIcon>
+          <ActionIcon onClick={() => {}}>
             <IconMenu2 size={24} />
           </ActionIcon>
-          <ActionIcon>
+          <ActionIcon onClick={() => {}}>
             <IconMenu2 size={24} />
           </ActionIcon>
-          <ActionIcon>
+          <ActionIcon onClick={() => {}}>
             <IconMenu2 size={24} />
           </ActionIcon>
         </div>
+        <div />
       </div>
       <Paper className="dashboard_layout-topnav">
         <Burger opened={showSider} onClick={() => setShowSider((s) => !s)} />
