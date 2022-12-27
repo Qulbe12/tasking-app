@@ -1,4 +1,3 @@
-import React from "react";
 import { createEmotionCache, MantineProvider } from "@mantine/core";
 
 import { RouterProvider } from "react-router-dom";

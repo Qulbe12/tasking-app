@@ -1,12 +1,18 @@
-import { Button, Group, Modal, Stack, TextInput } from "@mantine/core";
+import { Button, Group, Modal, Stack, Textarea, TextInput } from "@mantine/core";
 import { useForm } from "@mantine/form";
-import React from "react";
+import React, { useEffect } from "react";
+import { addBoard } from "../redux/boardsSlice";
+import { useAppDispatch, useAppSelector } from "../redux/store";
 import CommonModalProps from "./CommonModalProps";
 
 const BoardModal = ({ opened, onClose, title }: CommonModalProps) => {
+  const dispatch = useAppDispatch();
+
+  const { loading } = useAppSelector((state) => state.boards);
+
   const form = useForm({
     initialValues: {
-      name: "",
+      title: "",
       description: "",
       members: [],
     },
@@ -15,21 +21,26 @@ const BoardModal = ({ opened, onClose, title }: CommonModalProps) => {
   return (
     <Modal opened={opened} onClose={onClose} title={title}>
       <form
-        onSubmit={form.onSubmit((values) => {
+        onSubmit={form.onSubmit(async (values) => {
+          await dispatch(addBoard(values));
           form.reset();
           onClose();
         })}
       >
         <Stack>
-          <TextInput withAsterisk label="Project Name" {...form.getInputProps("name")} />
-          <TextInput
+          <TextInput withAsterisk label="Project Name" {...form.getInputProps("title")} />
+          <Textarea
             withAsterisk
+            autosize
+            minRows={3}
             label="Project Description"
             {...form.getInputProps("description")}
           />
 
           <Group position="right" mt="md">
-            <Button type="submit">Create Project</Button>
+            <Button loading={!!loading} type="submit">
+              Create Project
+            </Button>
           </Group>
         </Stack>
       </form>

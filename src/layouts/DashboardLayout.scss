@@ -44,5 +44,6 @@
   &-main {
     grid-area: main;
     overflow-y: scroll;
+    overflow-x: hidden;
   }
 }

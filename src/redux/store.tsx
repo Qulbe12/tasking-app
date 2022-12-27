@@ -7,8 +7,10 @@ import { persistReducer, persistStore } from "redux-persist";
 
 import { PersistGate } from "redux-persist/integration/react";
 import themeReducer from "./themeSlice";
+import boardsReducer from "./boardsSlice";
 
 const persistConfig = {
+  blacklist: ["boards"],
   key: "root",
   storage,
 };
@@ -16,6 +18,7 @@ const persistConfig = {
 const reducers = combineReducers({
   auth: authReducer,
   theme: themeReducer,
+  boards: boardsReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, reducers);

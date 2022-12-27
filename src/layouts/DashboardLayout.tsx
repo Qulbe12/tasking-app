@@ -5,6 +5,7 @@ import { Outlet } from "react-router-dom";
 import { IconAdjustments, IconMenu2 } from "@tabler/icons";
 
 import "./DashboardLayout.scss";
+import Header from "../components/Header";
 
 const DashboardLayout = () => {
   const [showSider, setShowSider] = useState(true);
@@ -29,8 +30,11 @@ const DashboardLayout = () => {
         </div>
         <div />
       </div>
-      <Paper className="dashboard_layout-topnav">
-        <Burger opened={showSider} onClick={() => setShowSider((s) => !s)} />
+      <Paper className="dashboard_layout-topnav ">
+        <div className=" flex flex-row items-center p-2 justify-between">
+          <Burger opened={showSider} onClick={() => setShowSider((s) => !s)} />
+          <Header />
+        </div>
       </Paper>
       <Paper className="dashboard_layout-main">
         <Outlet />

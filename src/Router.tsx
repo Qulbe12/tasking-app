@@ -8,6 +8,7 @@ import Forgot from "./views/auth/Forgot";
 import Login from "./views/auth/Login";
 import Pay from "./views/auth/Pay";
 import Register from "./views/auth/Register";
+import BoardDetails from "./views/board/BoardDetails";
 
 const router = createBrowserRouter([
   {
@@ -21,6 +22,16 @@ const router = createBrowserRouter([
           {
             path: "/",
             element: <Dashboard />,
+          },
+        ],
+      },
+      {
+        path: "/board",
+        element: <DashboardLayout />,
+        children: [
+          {
+            path: "/board",
+            element: <BoardDetails />,
           },
         ],
       },

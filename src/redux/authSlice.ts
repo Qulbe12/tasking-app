@@ -10,13 +10,10 @@ interface User {
 }
 
 export const loginUser = createAsyncThunk("user/login", async (user: User, { rejectWithValue }) => {
+  localStorage.removeItem("token");
   try {
-    console.log(user);
-
     const res = await axiosPrivate.post<UserResponse>(LOGIN_ROUTE, user);
-
-    axiosPrivate.defaults.headers.common["Authorization"] = `Bearer ${res.data.token}`;
-
+    localStorage.setItem("token", res.data.token);
     return res.data;
   } catch (err: any) {
     const errMsg = err.response.data.Message;
@@ -26,10 +23,9 @@ export const loginUser = createAsyncThunk("user/login", async (user: User, { rej
 });
 
 export const registerUser = createAsyncThunk("user/register", async (userInfo: UserCreate) => {
+  localStorage.removeItem("token");
   const res = await axiosPrivate.post<UserResponse>(REGISTER_ROUTE, userInfo);
-
-  axiosPrivate.defaults.headers.common["Authorization"] = `Bearer ${res.data.token}`;
-
+  localStorage.setItem("token", res.data.token);
   return res.data;
 });
 
@@ -54,6 +50,7 @@ export const authSlice = createSlice({
       state.token = action.payload.token;
     },
     logout: (state: AuthState) => {
+      localStorage.removeItem("token");
       state.token = "";
     },
   },
