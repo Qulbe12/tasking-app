@@ -27,7 +27,7 @@ const UserButton = () => {
   return (
     <Menu shadow="md" width={200}>
       <Menu.Target>
-        <Avatar className="cursor-pointer" src={image} radius="xl" size="md" />
+        <Avatar className="cursor-pointer" src={image} radius="md" size="md" />
       </Menu.Target>
 
       <Menu.Dropdown>

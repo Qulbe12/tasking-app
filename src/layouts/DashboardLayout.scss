@@ -4,7 +4,7 @@
     "sider topnav"
     "sider main";
 
-  grid-template-rows: 50px 1fr;
+  grid-template-rows: 70px 1fr;
   grid-template-columns: 0 1fr;
   transition: all ease-in-out 0.25s;
 
@@ -34,6 +34,7 @@
 
     .title {
       margin-bottom: 16px;
+      @apply rounded-lg p-2;
     }
   }
 

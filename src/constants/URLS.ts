@@ -1,6 +1,8 @@
-export const BASE_URL = "http://localhost:9092/api";
+export const BASE_URL = "http://localhost:3000/api";
 
-export const LOGIN_ROUTE = "/auth/signin";
-export const REGISTER_ROUTE = "/auth/signup";
+export const LOGIN_ROUTE = "/users/login";
+export const REGISTER_ROUTE = "/users/register";
 
-export const BOARD_ROUTE = "/board";
+export const BOARD_ROUTE = "/boards";
+
+export const TEMPLATE_ROUTE = "/templates";

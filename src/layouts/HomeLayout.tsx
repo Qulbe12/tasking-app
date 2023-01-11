@@ -6,7 +6,7 @@ import "./DashboardLayout.scss";
 
 const HomeLayout = () => {
   return (
-    <div className={`dashboard_layout p-4`}>
+    <div className={"dashboard_layout p-4"}>
       <div className="dashboard_layout-topnav">
         <Header />
       </div>

@@ -2,18 +2,23 @@ import { axiosPrivate } from "./../config/axios";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { BOARD_ROUTE } from "../constants/URLS";
 import { showNotification } from "@mantine/notifications";
-import { BoardCreate, BoardResponse } from "../interfaces/board.interface";
+import { BoardCreate, BoardResponse, BoardResponseDetailed } from "../interfaces/board.interface";
 
 export const addBoard = createAsyncThunk("boards/add", async (board: BoardCreate) => {
-  const res = await axiosPrivate.post<{ savedBoard: BoardResponse }>(BOARD_ROUTE, board);
+  const res = await axiosPrivate.post<BoardResponse>(BOARD_ROUTE, board);
   return res.data;
 });
 
 export const getBoards = createAsyncThunk("boards/get", async () => {
-  const res = await axiosPrivate.get(BOARD_ROUTE);
-  console.log(res.data.myBoards);
+  const res = await axiosPrivate.get<BoardResponse[]>(BOARD_ROUTE);
 
-  return res.data.myBoards;
+  return res.data;
+});
+
+export const getBoardById = createAsyncThunk("boards/getById", async (id: string) => {
+  const res = await axiosPrivate.get<BoardResponseDetailed>(`${BOARD_ROUTE}/${id}`);
+
+  return res.data;
 });
 
 export interface BoardsState {
@@ -42,7 +47,7 @@ export const boardsSlice = createSlice({
         state.loading += 1;
       })
       .addCase(addBoard.fulfilled, (state, action) => {
-        state.data?.unshift(action.payload.savedBoard);
+        state.data?.unshift(action.payload);
         state.loading -= 1;
       })
       .addCase(addBoard.rejected, (state, action) => {

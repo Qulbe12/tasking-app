@@ -1,8 +1,7 @@
-import { axiosPrivate } from "./../config/axios";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { UserCreate, UserResponse } from "../interfaces/user.interface";
-import { LOGIN_ROUTE, REGISTER_ROUTE } from "../constants/URLS";
 import { showNotification } from "@mantine/notifications";
+import api from "../config/api";
 
 interface User {
   email: string;
@@ -12,8 +11,8 @@ interface User {
 export const loginUser = createAsyncThunk("user/login", async (user: User, { rejectWithValue }) => {
   localStorage.removeItem("token");
   try {
-    const res = await axiosPrivate.post<UserResponse>(LOGIN_ROUTE, user);
-    localStorage.setItem("token", res.data.token);
+    const res = await api.userApi.login(user);
+    localStorage.setItem("token", res.data.accessToken);
     return res.data;
   } catch (err: any) {
     const errMsg = err.response.data.Message;
@@ -24,13 +23,13 @@ export const loginUser = createAsyncThunk("user/login", async (user: User, { rej
 
 export const registerUser = createAsyncThunk("user/register", async (userInfo: UserCreate) => {
   localStorage.removeItem("token");
-  const res = await axiosPrivate.post<UserResponse>(REGISTER_ROUTE, userInfo);
-  localStorage.setItem("token", res.data.token);
+  const res = await api.userApi.register(userInfo);
+  localStorage.setItem("token", res.data.accessToken);
   return res.data;
 });
 
 export interface AuthState {
-  user?: UserResponse["user"];
+  user?: UserResponse;
   token: string;
   loading: number;
   error?: string;
@@ -60,10 +59,9 @@ export const authSlice = createSlice({
         state.loading += 1;
       })
       .addCase(loginUser.fulfilled, (state, action) => {
-        const { user, token } = action.payload;
         state.loading -= 1;
-        state.user = user;
-        state.token = token;
+        state.user = action.payload;
+        state.token = action.payload.accessToken;
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.loading -= 1;
@@ -78,10 +76,9 @@ export const authSlice = createSlice({
         state.loading += 1;
       })
       .addCase(registerUser.fulfilled, (state, action) => {
-        const { user, token } = action.payload;
         state.loading -= 1;
-        state.user = user;
-        state.token = token;
+        state.user = action.payload;
+        state.token = action.payload.accessToken;
       })
       .addCase(registerUser.rejected, (state, action) => {
         state.loading -= 1;

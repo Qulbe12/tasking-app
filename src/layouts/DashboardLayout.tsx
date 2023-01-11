@@ -1,38 +1,75 @@
-import { ActionIcon, Burger, Paper } from "@mantine/core";
+import { ActionIcon, Burger, Paper, Title } from "@mantine/core";
 import { useState } from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 
-import { IconAdjustments, IconMenu2 } from "@tabler/icons";
+import {
+  IconChartBar,
+  IconHome,
+  IconLayout,
+  IconMail,
+  IconSettings,
+  IconUserPlus,
+} from "@tabler/icons";
 
 import "./DashboardLayout.scss";
 import Header from "../components/Header";
+import { useAppSelector } from "../redux/store";
 
 const DashboardLayout = () => {
   const [showSider, setShowSider] = useState(true);
+  const activeBoard = useAppSelector((state) => state.boards.activeBoard);
+  const navigate = useNavigate();
+
   return (
     <div className={`dashboard_layout ${showSider && "show"}`}>
-      <div className={`dashboard_layout-sidebar`}>
-        <h2 className="title">HEXA</h2>
+      <div className={"dashboard_layout-sidebar"}>
+        <h3 className="title cursor-pointer" onClick={() => navigate("/")}>
+          HEXA
+        </h3>
 
         <div className="menu">
-          <ActionIcon>
-            <IconAdjustments size={24} />
+          <ActionIcon onClick={() => navigate("/board")}>
+            <IconLayout size={72} />
           </ActionIcon>
-          <ActionIcon onClick={() => {}}>
-            <IconMenu2 size={24} />
+          <ActionIcon
+            onClick={() => {
+              //
+            }}
+          >
+            <IconChartBar size={72} />
           </ActionIcon>
-          <ActionIcon onClick={() => {}}>
-            <IconMenu2 size={24} />
+          <ActionIcon
+            onClick={() => {
+              //
+            }}
+          >
+            <IconMail size={72} />
           </ActionIcon>
-          <ActionIcon onClick={() => {}}>
-            <IconMenu2 size={24} />
+          <ActionIcon
+            onClick={() => {
+              //
+            }}
+          >
+            <IconUserPlus size={72} />
+          </ActionIcon>
+          <ActionIcon
+            onClick={() => {
+              //
+            }}
+          >
+            <IconSettings size={72} />
           </ActionIcon>
         </div>
         <div />
       </div>
-      <Paper className="dashboard_layout-topnav ">
-        <div className=" flex flex-row items-center p-2 justify-between">
-          <Burger opened={showSider} onClick={() => setShowSider((s) => !s)} />
+      <Paper className="dashboard_layout-topnav">
+        <div className=" flex flex-row items-center p-4 justify-between ">
+          <div className="flex flex-row items-center ">
+            <Burger size={24} opened={showSider} onClick={() => setShowSider((s) => !s)} />
+            <Title className="pl-4" order={2}>
+              {activeBoard?.title}
+            </Title>
+          </div>
           <Header />
         </div>
       </Paper>

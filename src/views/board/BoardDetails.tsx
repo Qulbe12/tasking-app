@@ -50,10 +50,6 @@ const opts = [
 const BoardDetails = () => {
   return (
     <div>
-      <Title order={3}>Test 123</Title>
-      <Filter options={opts} />
-      <Filter options={opts} />
-      <Filter options={opts} />
       <Filter options={opts} />
     </div>
   );

@@ -33,9 +33,9 @@ const Dashboard = () => {
       </div>
 
       <Grid>
-        {boards?.map((board) => {
+        {boards?.map((board, i) => {
           return (
-            <Grid.Col md={3} lg={2} xs={12} sm={6} key={board._id}>
+            <Grid.Col md={3} lg={2} xs={12} sm={6} key={i}>
               <BoardCard board={board} />
             </Grid.Col>
           );

@@ -9,6 +9,8 @@ import Login from "./views/auth/Login";
 import Pay from "./views/auth/Pay";
 import Register from "./views/auth/Register";
 import BoardDetails from "./views/board/BoardDetails";
+import TemplateList from "./views/templates/TemplateList";
+import DocumentsList from "./views/documents/DocumentsList";
 
 const router = createBrowserRouter([
   {
@@ -31,7 +33,17 @@ const router = createBrowserRouter([
         children: [
           {
             path: "/board",
-            element: <BoardDetails />,
+            element: <DocumentsList />,
+          },
+        ],
+      },
+      {
+        path: "/",
+        element: <DashboardLayout />,
+        children: [
+          {
+            path: "/templates",
+            element: <TemplateList />,
           },
         ],
       },

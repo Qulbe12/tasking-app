@@ -1,20 +1,9 @@
 export interface UserResponse {
-  token: string;
-  user: {
-    userType: string;
-    companyName: string;
-    companyWebsite: string;
-    contactNumber: string;
-    paid: boolean;
-    imageUrl: string;
-    _id: string;
-    name: string;
-    password: string;
-    email: string;
-    createdAt: string;
-    updatedAt: string;
-    __v: number;
-  };
+  id: string;
+  name: string;
+  email: string;
+  roles: string[];
+  accessToken: string;
 }
 
 export interface UserCreate {
