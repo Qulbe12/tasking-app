@@ -18,7 +18,7 @@ import {
 import GoogleButton from "../../components/GoogleButton";
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../redux/store";
-import { registerUser } from "../../redux/authSlice";
+import { registerUser } from "../../redux/slices/authSlice";
 import { showNotification } from "@mantine/notifications";
 import * as Yup from "yup";
 

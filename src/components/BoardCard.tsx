@@ -1,16 +1,17 @@
 import { ActionIcon, Card, Group, Menu, Text, Title } from "@mantine/core";
 import { IconDots, IconEdit, IconTrash } from "@tabler/icons";
+import { IBoard } from "hexa-sdk";
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { BoardResponse } from "../interfaces/board.interface";
-import { setActiveBoard } from "../redux/boardsSlice";
+import { setActiveBoard } from "../redux/slices/boardsSlice";
 import { useAppDispatch } from "../redux/store";
 
 type BoardCardProps = {
-  board: BoardResponse;
+  board: IBoard;
+  onEditClick: () => void;
 };
 
-const BoardCard = ({ board }: BoardCardProps) => {
+const BoardCard = ({ board, onEditClick }: BoardCardProps) => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
@@ -29,13 +30,25 @@ const BoardCard = ({ board }: BoardCardProps) => {
           <Title order={5}>{board.title}</Title>
           <Menu withinPortal position="bottom-end" shadow="sm">
             <Menu.Target>
-              <ActionIcon>
+              <ActionIcon
+                onClick={(e) => {
+                  e.stopPropagation();
+                }}
+              >
                 <IconDots size={16} />
               </ActionIcon>
             </Menu.Target>
 
             <Menu.Dropdown>
-              <Menu.Item icon={<IconEdit size={14} />}>Edit</Menu.Item>
+              <Menu.Item
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onEditClick();
+                }}
+                icon={<IconEdit size={14} />}
+              >
+                Edit
+              </Menu.Item>
               <Menu.Item icon={<IconTrash size={14} />} color="red">
                 Delete
               </Menu.Item>

@@ -18,7 +18,7 @@ import {
 import GoogleButton from "../../components/GoogleButton";
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../redux/store";
-import { loginUser } from "../../redux/authSlice";
+import { loginUser } from "../../redux/slices/authSlice";
 
 const Login = () => {
   const navigate = useNavigate();

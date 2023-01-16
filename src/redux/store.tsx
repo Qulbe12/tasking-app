@@ -1,13 +1,14 @@
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import React from "react";
 import { TypedUseSelectorHook, useDispatch, useSelector, Provider } from "react-redux";
-import authReducer from "./authSlice";
+import authReducer from "./slices/authSlice";
 import storage from "redux-persist/lib/storage";
 import { persistReducer, persistStore } from "redux-persist";
 
 import { PersistGate } from "redux-persist/integration/react";
-import themeReducer from "./themeSlice";
-import boardsReducer from "./boardsSlice";
+import themeReducer from "./slices/themeSlice";
+import boardsReducer from "./slices/boardsSlice";
+import templatesReducer from "./slices/templateSlice";
 
 const persistConfig = {
   blacklist: ["boards"],
@@ -19,6 +20,7 @@ const reducers = combineReducers({
   auth: authReducer,
   theme: themeReducer,
   boards: boardsReducer,
+  templates: templatesReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, reducers);

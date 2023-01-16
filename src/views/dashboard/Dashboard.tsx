@@ -1,9 +1,10 @@
 import { Button, Grid, LoadingOverlay, Title } from "@mantine/core";
 import { IconClock, IconPlus } from "@tabler/icons";
+import { IBoard } from "hexa-sdk";
 import React, { useEffect, useState } from "react";
 import BoardCard from "../../components/BoardCard";
 import BoardModal from "../../modals/BoardModal";
-import { getBoards } from "../../redux/boardsSlice";
+import { getBoards } from "../../redux/api/boardsApi";
 import { useAppDispatch, useAppSelector } from "../../redux/store";
 
 const Dashboard = () => {
@@ -16,6 +17,8 @@ const Dashboard = () => {
   useEffect(() => {
     dispatch(getBoards());
   }, []);
+
+  const [selectedBoard, setSelectedBoard] = useState<IBoard | undefined>();
 
   return (
     <div>
@@ -35,14 +38,30 @@ const Dashboard = () => {
       <Grid>
         {boards?.map((board, i) => {
           return (
-            <Grid.Col md={3} lg={2} xs={12} sm={6} key={i}>
-              <BoardCard board={board} />
+            <Grid.Col span="content" key={i}>
+              <BoardCard
+                board={board}
+                onEditClick={() => {
+                  setSelectedBoard(board);
+                  setModalOpen(true);
+                }}
+              />
             </Grid.Col>
           );
         })}
       </Grid>
 
-      <BoardModal title="Start a Project" opened={modalOpen} onClose={() => setModalOpen(false)} />
+      {modalOpen && (
+        <BoardModal
+          title={selectedBoard ? "Start a Project" : "Update Project"}
+          opened={modalOpen}
+          onClose={() => {
+            setModalOpen(false);
+            setSelectedBoard(undefined);
+          }}
+          board={selectedBoard}
+        />
+      )}
     </div>
   );
 };

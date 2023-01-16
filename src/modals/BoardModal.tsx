@@ -1,14 +1,20 @@
 import { Button, Group, Modal, Stack, Textarea, TextInput } from "@mantine/core";
 import { useForm } from "@mantine/form";
+import { IBoard } from "hexa-sdk";
 import React, { useEffect } from "react";
-import { addBoard } from "../redux/boardsSlice";
+import { addBoard, updateBoard } from "../redux/api/boardsApi";
+
 import { useAppDispatch, useAppSelector } from "../redux/store";
 import CommonModalProps from "./CommonModalProps";
 
-const BoardModal = ({ opened, onClose, title }: CommonModalProps) => {
+type BoardModalProps = {
+  board?: IBoard;
+};
+
+const BoardModal = ({ opened, onClose, title, board }: CommonModalProps & BoardModalProps) => {
   const dispatch = useAppDispatch();
 
-  const { loading } = useAppSelector((state) => state.boards);
+  const { loaders } = useAppSelector((state) => state.boards);
 
   const form = useForm({
     initialValues: {
@@ -18,11 +24,28 @@ const BoardModal = ({ opened, onClose, title }: CommonModalProps) => {
     },
   });
 
+  useEffect(() => {
+    if (!board) return;
+    form.setValues({
+      title: board?.title,
+      description: board?.description,
+    });
+  }, [board]);
+
   return (
     <Modal opened={opened} onClose={onClose} title={title}>
       <form
         onSubmit={form.onSubmit(async (values) => {
-          await dispatch(addBoard(values));
+          if (!board) {
+            await dispatch(addBoard(values));
+          } else {
+            await dispatch(
+              updateBoard({
+                id: board.id,
+                board: { title: form.values.title, description: form.values.description },
+              }),
+            );
+          }
           form.reset();
           onClose();
         })}
@@ -38,8 +61,8 @@ const BoardModal = ({ opened, onClose, title }: CommonModalProps) => {
           />
 
           <Group position="right" mt="md">
-            <Button loading={!!loading} type="submit">
-              Create Project
+            <Button loading={!!loaders.adding || loaders.updating === board?.id} type="submit">
+              {board ? "Update" : "Create Project"}
             </Button>
           </Group>
         </Stack>

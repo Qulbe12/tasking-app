@@ -2,7 +2,7 @@ import { ActionIcon } from "@mantine/core";
 import { IconBrightnessDown, IconMoonStars } from "@tabler/icons";
 import React from "react";
 import { useAppDispatch, useAppSelector } from "../redux/store";
-import { toggleTheme } from "../redux/themeSlice";
+import { toggleTheme } from "../redux/slices/themeSlice";
 
 const iconSize = 100;
 

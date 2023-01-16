@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { UserCreate, UserResponse } from "../interfaces/user.interface";
 import { showNotification } from "@mantine/notifications";
-import api from "../config/api";
+import api from "../../config/api";
+import { IAuthUser, IRegisterUser } from "hexa-sdk";
 
 interface User {
   email: string;
@@ -21,7 +21,7 @@ export const loginUser = createAsyncThunk("user/login", async (user: User, { rej
   }
 });
 
-export const registerUser = createAsyncThunk("user/register", async (userInfo: UserCreate) => {
+export const registerUser = createAsyncThunk("user/register", async (userInfo: IRegisterUser) => {
   localStorage.removeItem("token");
   const res = await api.userApi.register(userInfo);
   localStorage.setItem("token", res.data.accessToken);
@@ -29,7 +29,7 @@ export const registerUser = createAsyncThunk("user/register", async (userInfo: U
 });
 
 export interface AuthState {
-  user?: UserResponse;
+  user?: IAuthUser;
   token: string;
   loading: number;
   error?: string;
