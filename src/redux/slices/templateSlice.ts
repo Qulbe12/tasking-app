@@ -1,15 +1,14 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit";
 import { ITemplate } from "hexa-sdk";
 import {
   addTemplate,
   addTemplateField,
   deleteTemplate,
   getAllTemplates,
-  getTemplateById,
   removeTemplateField,
   updateTemplate,
 } from "../api/templateApi";
-import { PayloadError, showError } from "../commonSliceFunctions";
+import { showError } from "../commonSliceFunctions";
 
 export interface TemplatesState {
   data: ITemplate[];
@@ -26,87 +25,84 @@ export const templateSlice = createSlice({
   name: "templates",
   initialState,
   reducers: {},
-  extraReducers: {
-    // Add Template
-    [addTemplate.pending.type]: (state) => {
-      state.loading += 1;
-    },
-    [addTemplate.fulfilled.type]: (state, action: PayloadAction<ITemplate>) => {
-      state.data?.push(action.payload);
-      state.loading -= 1;
-    },
-    [addTemplate.rejected.type]: (state, action: PayloadError) => {
-      state.loading -= 1;
-      showError(action.error.message);
-    },
-    // Get all templates
-    [getAllTemplates.pending.type]: (state) => {
-      state.loading += 1;
-    },
-    [getAllTemplates.fulfilled.type]: (state, action: PayloadAction<ITemplate[]>) => {
-      state.loading -= 1;
-      state.data = action.payload;
-    },
-    [getAllTemplates.rejected.type]: (state, action: PayloadError) => {
-      state.loading -= 1;
-      showError(action.error.message);
-    },
-    // Get Template By Id
-    [getTemplateById.pending.type]: (state) => {
-      state.loading += 1;
-    },
-    [getTemplateById.fulfilled.type]: (state) => {
-      state.loading -= 1;
-    },
-    [getTemplateById.rejected.type]: (state) => {
-      state.loading -= 1;
-    },
-    // Update Template
-    [updateTemplate.pending.type]: (state) => {
-      state.loading += 1;
-    },
-    [updateTemplate.fulfilled.type]: (state, action: PayloadAction<ITemplate>) => {
-      const index = state.data?.findIndex((t) => t.id === action.payload.id);
-      state.data[index] = action.payload;
-      state.loading -= 1;
-    },
-    [updateTemplate.rejected.type]: (state) => {
-      state.loading -= 1;
-    },
-    // Delete Template
-    [deleteTemplate.pending.type]: (state) => {
-      state.loading += 1;
-    },
-    [deleteTemplate.fulfilled.type]: (state) => {
-      state.loading -= 1;
-    },
-    [deleteTemplate.rejected.type]: (state) => {
-      state.loading -= 1;
-    },
-    // Add Template Field
-    [addTemplateField.pending.type]: (state) => {
-      state.loading += 1;
-    },
-    [addTemplateField.fulfilled.type]: (state, action: PayloadAction<ITemplate>) => {
-      console.log(action.payload);
-
-      const index = state.data?.findIndex((t) => t.id === action.payload.id);
-      state.data[index] = action.payload;
-      state.loading -= 1;
-    },
-    [addTemplateField.rejected.type]: (state) => {
-      state.loading -= 1;
-    },
-    // Remove Template Field
-    [removeTemplateField.pending.type]: (state) => {
-      state.loading += 1;
-    },
-    [removeTemplateField.fulfilled.type]: (state) => {
-      state.loading -= 1;
-    },
-    [removeTemplateField.rejected.type]: (state) => {
-      state.loading -= 1;
-    },
+  extraReducers: (builder) => {
+    builder
+      // Add Template
+      .addCase(addTemplate.pending, (state) => {
+        state.loading++;
+      })
+      .addCase(addTemplate.fulfilled, (state, action) => {
+        state.data?.push(action.payload);
+        state.loading--;
+      })
+      .addCase(addTemplate.rejected, (state, action) => {
+        state.loading--;
+        showError(action.error.message);
+      })
+      // Get All Templates
+      .addCase(getAllTemplates.pending, (state) => {
+        state.loading++;
+      })
+      .addCase(getAllTemplates.fulfilled, (state, action) => {
+        state.loading--;
+        state.data = action.payload;
+      })
+      .addCase(getAllTemplates.rejected, (state, action) => {
+        state.loading--;
+        showError(action.error.message);
+      })
+      // Update Template
+      .addCase(updateTemplate.pending, (state) => {
+        state.loading++;
+      })
+      .addCase(updateTemplate.fulfilled, (state, action) => {
+        const index = state.data?.findIndex((t) => t.id === action.payload.id);
+        state.data[index] = action.payload;
+        state.loading--;
+      })
+      .addCase(updateTemplate.rejected, (state, action) => {
+        state.loading--;
+        showError(action.error.message);
+      })
+      // Delete Template
+      .addCase(deleteTemplate.pending, (state) => {
+        state.loading++;
+      })
+      .addCase(deleteTemplate.fulfilled, (state, action) => {
+        const index = state.data.findIndex((t) => t.id === action.payload.id);
+        state.data.splice(index, 1);
+        state.loading--;
+      })
+      .addCase(deleteTemplate.rejected, (state, action) => {
+        state.loading--;
+        showError(action.error.message);
+      })
+      // Add Template Field
+      .addCase(addTemplateField.pending, (state) => {
+        state.loading++;
+      })
+      .addCase(addTemplateField.fulfilled, (state, action) => {
+        const index = state.data?.findIndex((t) => t.id === action.payload.id);
+        state.data[index] = action.payload;
+        state.loading--;
+      })
+      .addCase(addTemplateField.rejected, (state, action) => {
+        state.loading--;
+        showError(action.error.message);
+      })
+      // Remove Template Field
+      .addCase(removeTemplateField.pending, (state) => {
+        state.loading++;
+      })
+      .addCase(removeTemplateField.fulfilled, (state, action) => {
+        const index = state.data?.findIndex((t) => t.id === action.payload.id);
+        state.data[index] = action.payload;
+        state.loading--;
+      })
+      .addCase(removeTemplateField.rejected, (state, action) => {
+        state.loading--;
+        showError(action.error.message);
+      });
   },
 });
 

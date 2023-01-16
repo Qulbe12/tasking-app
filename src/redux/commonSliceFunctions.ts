@@ -4,7 +4,7 @@ export interface PayloadError {
   error: Error;
 }
 
-export const showError = (err: string) => {
+export const showError = (err?: string) => {
   showNotification({
     title: "Error",
     message: err,

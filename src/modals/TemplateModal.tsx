@@ -18,7 +18,12 @@ import { IconPlus } from "@tabler/icons";
 import { FieldType, ICreateField, ITemplate } from "hexa-sdk";
 import React, { useEffect, useState } from "react";
 import DynamicField from "../components/DynamicField";
-import { addTemplate, addTemplateField, updateTemplate } from "../redux/api/templateApi";
+import {
+  addTemplate,
+  addTemplateField,
+  deleteTemplate,
+  updateTemplate,
+} from "../redux/api/templateApi";
 import { useAppDispatch, useAppSelector } from "../redux/store";
 
 type TemplateModalProps = {
@@ -52,7 +57,7 @@ const TemplateModal = ({ onClose, opened, template }: ModalProps & TemplateModal
   return (
     <Modal
       centered
-      title={`Edit ${template?.name}` || "Add New Form"}
+      title={template ? `Edit ${template?.name}` : "Add New Form"}
       opened={opened}
       onClose={onClose}
     >
@@ -72,26 +77,47 @@ const TemplateModal = ({ onClose, opened, template }: ModalProps & TemplateModal
         <Stack>
           <TextInput
             withAsterisk
-            label="Type"
+            label="Document Type"
             placeholder="Invoice"
             {...form.getInputProps("name")}
           />
 
-          <Flex gap="md" justify="space-between">
-            <Text>Fields</Text>
-            <ActionIcon variant="filled" color="blue" onClick={() => setNewFieldModal(true)}>
-              <IconPlus size={16} />
-            </ActionIcon>
-          </Flex>
+          {template && (
+            <Flex gap="md">
+              <Text>Fields</Text>
+              <ActionIcon variant="filled" color="blue" onClick={() => setNewFieldModal(true)}>
+                <IconPlus size={16} />
+              </ActionIcon>
+            </Flex>
+          )}
 
           {template?.fields.map((f) => {
             return <DynamicField field={f} key={f.id} />;
           })}
 
-          <Group position="right" mt="md">
-            <Button loading={!!loading} type="submit">
-              {template ? "Update" : "Create Form"}
-            </Button>
+          <Group position="apart" mt="md">
+            {template && (
+              <Button
+                variant="light"
+                color="red"
+                loading={!!loading}
+                onClick={async () => {
+                  if (!template) return;
+                  await dispatch(deleteTemplate(template.id));
+                  onClose();
+                }}
+              >
+                Delete
+              </Button>
+            )}
+            <Group position="right">
+              <Button variant="outline" onClick={onClose}>
+                Cancel
+              </Button>
+              <Button loading={!!loading} type="submit">
+                {template ? "Update" : "Create Form"}
+              </Button>
+            </Group>
           </Group>
         </Stack>
       </form>

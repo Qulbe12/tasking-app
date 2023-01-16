@@ -48,7 +48,10 @@ const TemplateList = () => {
 
       <TemplateModal
         opened={open}
-        onClose={toggleOpen}
+        onClose={() => {
+          setSelectedTemplate(undefined);
+          toggleOpen();
+        }}
         template={templates.data[templates.data.findIndex((t) => t.id === selectedTemplate)]}
       />
     </div>
