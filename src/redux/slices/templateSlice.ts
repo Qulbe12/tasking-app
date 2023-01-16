@@ -66,7 +66,6 @@ export const templateSlice = createSlice({
       state.loading += 1;
     },
     [updateTemplate.fulfilled.type]: (state, action: PayloadAction<ITemplate>) => {
-      console.log(action.payload.id);
       const index = state.data?.findIndex((t) => t.id === action.payload.id);
       state.data[index] = action.payload;
       state.loading -= 1;
@@ -88,7 +87,11 @@ export const templateSlice = createSlice({
     [addTemplateField.pending.type]: (state) => {
       state.loading += 1;
     },
-    [addTemplateField.fulfilled.type]: (state) => {
+    [addTemplateField.fulfilled.type]: (state, action: PayloadAction<ITemplate>) => {
+      console.log(action.payload);
+
+      const index = state.data?.findIndex((t) => t.id === action.payload.id);
+      state.data[index] = action.payload;
       state.loading -= 1;
     },
     [addTemplateField.rejected.type]: (state) => {

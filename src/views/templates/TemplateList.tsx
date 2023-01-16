@@ -4,7 +4,6 @@ import TemplateCard from "../../components/TemplateCard";
 import { getAllTemplates } from "../../redux/api/templateApi";
 import { useAppDispatch, useAppSelector } from "../../redux/store";
 import TemplateModal from "../../modals/TemplateModal";
-import { ITemplate } from "hexa-sdk";
 
 const TemplateList = () => {
   const [open, setOpen] = useState(false);
@@ -21,7 +20,7 @@ const TemplateList = () => {
     dispatch(getAllTemplates());
   }, []);
 
-  const [selectedTemplate, setSelectedTemplate] = useState<ITemplate | undefined>();
+  const [selectedTemplate, setSelectedTemplate] = useState<string | undefined>();
 
   return (
     <div className="p-4">
@@ -35,7 +34,7 @@ const TemplateList = () => {
           return (
             <Grid.Col
               onClick={() => {
-                setSelectedTemplate(t);
+                setSelectedTemplate(t.id);
                 toggleOpen();
               }}
               span={2}
@@ -47,7 +46,11 @@ const TemplateList = () => {
         })}
       </Grid>
 
-      <TemplateModal opened={open} onClose={toggleOpen} template={selectedTemplate} />
+      <TemplateModal
+        opened={open}
+        onClose={toggleOpen}
+        template={templates.data[templates.data.findIndex((t) => t.id === selectedTemplate)]}
+      />
     </div>
   );
 };

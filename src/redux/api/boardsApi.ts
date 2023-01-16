@@ -3,7 +3,7 @@ import { ICreateBoard, IUpdateBoard } from "hexa-sdk";
 import api from "../../config/api";
 
 const { boardApi } = api;
-const { create, get, getOne, update, remove } = boardApi;
+const { create, get, getById, update, remove } = boardApi;
 
 export const addBoard = createAsyncThunk(
   "boards/add",
@@ -14,7 +14,7 @@ export const getBoards = createAsyncThunk("boards/get", async () => (await get()
 
 export const getBoardById = createAsyncThunk(
   "boards/getById",
-  async (id: string) => (await getOne(id)).data,
+  async (id: string) => (await getById(id)).data,
 );
 
 export const updateBoard = createAsyncThunk(
