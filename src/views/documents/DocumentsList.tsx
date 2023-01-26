@@ -1,4 +1,5 @@
-import { Button, Flex, Grid, Title } from "@mantine/core";
+import { Button, Divider, Flex, Grid, Modal, Text, Title } from "@mantine/core";
+import { IDocument } from "hexa-sdk";
 import React, { useEffect, useState } from "react";
 import DocumentCard from "../../components/DocumentCard";
 import DocumentModal from "../../modals/DocumentModal";
@@ -21,6 +22,8 @@ const DocumentsList = () => {
     dispatch(getDocuments({ boardId: activeBoard?.id, query: {} }));
   }, []);
 
+  const [selectedDocument, setSelectedDocument] = useState<IDocument | null>(null);
+
   return (
     <div className="p-4">
       <Flex justify="space-between" align="center" mb="md">
@@ -31,7 +34,13 @@ const DocumentsList = () => {
       <Grid>
         {data.map((d) => {
           return (
-            <Grid.Col key={d.id} span="content">
+            <Grid.Col
+              key={d.id}
+              span="content"
+              onClick={() => {
+                setSelectedDocument(d);
+              }}
+            >
               <DocumentCard document={d} />
             </Grid.Col>
           );
@@ -42,6 +51,30 @@ const DocumentsList = () => {
       </Grid>
 
       <DocumentModal onClose={toggleOpen} opened={open} title="Create Document" />
+
+      <Modal
+        opened={!!selectedDocument}
+        onClose={() => {
+          setSelectedDocument(null);
+        }}
+      >
+        {selectedDocument &&
+          Object.entries(selectedDocument).map(([k, v], i) => {
+            console.log(v);
+
+            if (k === "template") return;
+
+            return (
+              <div key={i + "document"}>
+                <Flex>
+                  <Text>{k}:</Text>
+                  <Text>{v}</Text>
+                </Flex>
+                <Divider my="md" />
+              </div>
+            );
+          })}
+      </Modal>
     </div>
   );
 };
