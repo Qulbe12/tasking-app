@@ -2,6 +2,7 @@ import {
   Button,
   Grid,
   Group,
+  LoadingOverlay,
   Modal,
   Paper,
   Select,
@@ -26,7 +27,7 @@ const DocumentModal = ({ onClose, opened, title }: CommonModalProps) => {
   const dispatch = useAppDispatch();
 
   const { data, loading } = useAppSelector((state) => state.templates);
-  const { activeBoard } = useAppSelector((state) => state.boards);
+  const { activeBoard, loaders } = useAppSelector((state) => state.boards);
 
   useEffect(() => {
     dispatch(getAllTemplates());
@@ -51,8 +52,9 @@ const DocumentModal = ({ onClose, opened, title }: CommonModalProps) => {
 
   return (
     <Modal opened={opened} onClose={onClose} title={title}>
+      <LoadingOverlay visible={!!loaders.adding} />
       <form
-        onSubmit={form.onSubmit((values) => {
+        onSubmit={form.onSubmit(async (values) => {
           console.log(values);
           console.log(activeBoard?.id);
 
@@ -60,7 +62,7 @@ const DocumentModal = ({ onClose, opened, title }: CommonModalProps) => {
 
           const { title, description, startDate, dueDate, priority, status } = form.values;
 
-          dispatch(
+          await dispatch(
             createDocument({
               boardId: activeBoard.id,
               document: {
@@ -77,6 +79,8 @@ const DocumentModal = ({ onClose, opened, title }: CommonModalProps) => {
               },
             }),
           );
+
+          onClose();
         })}
       >
         <Stack>
@@ -167,7 +171,7 @@ const DocumentModal = ({ onClose, opened, title }: CommonModalProps) => {
           )}
 
           <Group position="right" mt="md">
-            <Button disabled={!selectedTemplate} loading={false} type="submit">
+            <Button disabled={!selectedTemplate} loading={!!loaders.adding} type="submit">
               Create Document
             </Button>
           </Group>
