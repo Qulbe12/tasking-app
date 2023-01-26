@@ -12,7 +12,7 @@
     "lint:scss": "npx stylelint '**/*.scss'",
     "lint:fix": "eslint --fix 'src/**/*.{ts,tsx}'",
     "format": "prettier --write 'src/**/*.{ts,tsx,css,md}' --config ./.prettierrc",
-    "deploy": "npm ci && npm run build"
+    "deploy": "npm ci --legacy-peer-deps && npm run build"
   },
   "dependencies": {
     "@emotion/react": "^11.10.5",
