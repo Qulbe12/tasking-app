@@ -1,7 +1,7 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { showNotification } from "@mantine/notifications";
+import { createSlice } from "@reduxjs/toolkit";
 import { IBoard } from "hexa-sdk";
-import { addBoard, getBoards, updateBoard } from "../api/boardsApi";
+import { addBoard, deleteBoard, getBoards, updateBoard } from "../api/boardsApi";
+import { showError } from "../commonSliceFunctions";
 
 export interface BoardsState {
   data: IBoard[];
@@ -33,56 +33,62 @@ export const boardsSlice = createSlice({
       state.activeBoard = action.payload;
     },
   },
-  extraReducers: {
+  extraReducers: (builder) => {
     // Add Board
-    [addBoard.pending.type]: (state) => {
-      state.loaders.adding = "adding";
-    },
-    [addBoard.fulfilled.type]: (state, action) => {
-      state.data?.unshift(action.payload);
-      state.loaders.adding = null;
-    },
-    [addBoard.rejected.type]: (state, action) => {
-      state.loaders.adding = null;
-      state.error = action.error.message;
-      showNotification({
-        title: "Error",
-        message: action.error.message,
+    builder
+      .addCase(addBoard.pending, (state) => {
+        state.loaders.adding = "adding";
+      })
+      .addCase(addBoard.fulfilled, (state, action) => {
+        state.data?.unshift(action.payload);
+        state.loaders.adding = null;
+      })
+      .addCase(addBoard.rejected, (state, action) => {
+        state.loaders.adding = null;
+        state.error = action.error.message;
+        showError(action.error.message);
+      })
+      // Get All Boards
+      .addCase(getBoards.pending, (state) => {
+        state.loading += 1;
+      })
+      .addCase(getBoards.fulfilled, (state, action) => {
+        state.data = action.payload;
+        state.loading -= 1;
+      })
+      .addCase(getBoards.rejected, (state, action) => {
+        state.loaders.adding = null;
+        state.error = action.error.message;
+        showError(action.error.message);
+      })
+      // Update Board
+      .addCase(updateBoard.pending, (state, action) => {
+        state.loaders.updating = action.meta.arg.id;
+      })
+      .addCase(updateBoard.fulfilled, (state, action) => {
+        state.loaders.updating = null;
+        const index = state.data?.findIndex((b) => b.id === action.payload.id);
+        state.data[index] = action.payload;
+      })
+      .addCase(updateBoard.rejected, (state, action) => {
+        state.loaders.adding = null;
+        state.error = action.error.message;
+        showError(action.error.message);
+      })
+      // Delete Board
+      .addCase(deleteBoard.pending, (state, action) => {
+        state.loaders.deleting = action.meta.arg;
+      })
+      .addCase(deleteBoard.fulfilled, (state, action) => {
+        state.loaders.deleting = null;
+        const index = state.data?.findIndex((b) => b.id === action.payload.id);
+        state.data.splice(index, 1);
+      })
+      .addCase(deleteBoard.rejected, (state, action) => {
+        state.loaders.deleting = null;
+        state.error = action.error.message;
+        showError(action.error.message);
       });
-    },
-    // Get All Boards
-    [getBoards.pending.type]: (state) => {
-      state.loading += 1;
-    },
-    [getBoards.fulfilled.type]: (state, action) => {
-      state.data = action.payload;
-      state.loading -= 1;
-    },
-    [getBoards.rejected.type]: (state, action) => {
-      state.loading -= 1;
-      state.error = action.error.message;
-      showNotification({
-        title: "Error",
-        message: action.error.message,
-      });
-    },
-    // Update Board
-    [updateBoard.pending.type]: (state, action) => {
-      console.log(action);
-      state.loaders.updating = action.meta.arg.id;
-    },
-    [updateBoard.fulfilled.type]: (state, action: PayloadAction<IBoard>) => {
-      state.loaders.updating = null;
-      const index = state.data?.findIndex((b) => b.id === action.payload.id);
-      state.data[index] = action.payload;
-    },
-    [updateBoard.rejected.type]: (state, action) => {
-      state.loaders.updating = null;
-      showNotification({
-        title: "Error",
-        message: action.error.message,
-      });
-    },
   },
 });
 

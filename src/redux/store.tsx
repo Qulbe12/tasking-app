@@ -9,6 +9,7 @@ import { PersistGate } from "redux-persist/integration/react";
 import themeReducer from "./slices/themeSlice";
 import boardsReducer from "./slices/boardsSlice";
 import templatesReducer from "./slices/templateSlice";
+import documentsReducer from "./slices/documentSlice";
 
 const persistConfig = {
   blacklist: ["boards"],
@@ -21,6 +22,7 @@ const reducers = combineReducers({
   theme: themeReducer,
   boards: boardsReducer,
   templates: templatesReducer,
+  documents: documentsReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, reducers);
