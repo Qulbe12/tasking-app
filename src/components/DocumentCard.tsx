@@ -1,4 +1,4 @@
-import { Card, Flex, Stack, Text } from "@mantine/core";
+import { Card, Flex, Text } from "@mantine/core";
 import { IDocument } from "hexa-sdk";
 import React from "react";
 

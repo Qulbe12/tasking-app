@@ -1,11 +1,7 @@
 import React from "react";
 import { Group, Text, useMantineTheme } from "@mantine/core";
-import { IconUpload, IconPhoto, IconX, IconFile } from "@tabler/icons";
-import { Dropzone, DropzoneProps, IMAGE_MIME_TYPE, PDF_MIME_TYPE } from "@mantine/dropzone";
-
-type CustomDropzoneProps = {
-  onFilesChange: (files: File[]) => void;
-};
+import { IconUpload, IconX, IconFile } from "@tabler/icons";
+import { Dropzone, DropzoneProps, PDF_MIME_TYPE } from "@mantine/dropzone";
 
 const CustomDropzone = (props: Partial<DropzoneProps>) => {
   const theme = useMantineTheme();
