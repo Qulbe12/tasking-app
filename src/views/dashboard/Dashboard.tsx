@@ -4,7 +4,7 @@ import { IBoard } from "hexa-sdk";
 import React, { useEffect, useState } from "react";
 import BoardCard from "../../components/BoardCard";
 import BoardModal from "../../modals/BoardModal";
-import { getBoards } from "../../redux/api/boardsApi";
+import { deleteBoard, getBoards } from "../../redux/api/boardsApi";
 import { useAppDispatch, useAppSelector } from "../../redux/store";
 
 const Dashboard = () => {
@@ -44,6 +44,9 @@ const Dashboard = () => {
                 onEditClick={() => {
                   setSelectedBoard(board);
                   setModalOpen(true);
+                }}
+                onDeleteClick={() => {
+                  dispatch(deleteBoard(board.id));
                 }}
               />
             </Grid.Col>
