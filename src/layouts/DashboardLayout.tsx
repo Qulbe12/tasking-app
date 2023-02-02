@@ -1,6 +1,6 @@
 import { ActionIcon, Burger, Paper, Title } from "@mantine/core";
 import { useState } from "react";
-import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet, useNavigate, useNavigation, useLocation, useRoutes } from "react-router-dom";
 
 import {
   IconChartBar,
@@ -14,11 +14,13 @@ import {
 import "./DashboardLayout.scss";
 import Header from "../components/Header";
 import { useAppSelector } from "../redux/store";
+import router from "../Router";
 
 const DashboardLayout = () => {
   const [showSider, setShowSider] = useState(true);
   const activeBoard = useAppSelector((state) => state.boards.activeBoard);
   const navigate = useNavigate();
+  const location = useLocation();
 
   return (
     <div className={`dashboard_layout ${showSider && "show"}`}>
@@ -28,10 +30,14 @@ const DashboardLayout = () => {
         </h3>
 
         <div className="menu">
-          <ActionIcon onClick={() => navigate("/board")}>
+          <ActionIcon
+            opacity={location.pathname === "/board" ? 1 : 0.5}
+            onClick={() => navigate("/board")}
+          >
             <IconLayout size={72} />
           </ActionIcon>
           <ActionIcon
+            opacity={location.pathname === "" ? 1 : 0.1}
             onClick={() => {
               //
             }}
@@ -39,6 +45,7 @@ const DashboardLayout = () => {
             <IconChartBar size={72} />
           </ActionIcon>
           <ActionIcon
+            opacity={location.pathname === "" ? 1 : 0.1}
             onClick={() => {
               //
             }}
@@ -46,13 +53,15 @@ const DashboardLayout = () => {
             <IconMail size={72} />
           </ActionIcon>
           <ActionIcon
+            opacity={location.pathname === "/board/teams" ? 1 : 0.5}
             onClick={() => {
-              //
+              navigate("/board/teams");
             }}
           >
             <IconUserPlus size={72} />
           </ActionIcon>
           <ActionIcon
+            opacity={location.pathname === "" ? 1 : 0.1}
             onClick={() => {
               //
             }}

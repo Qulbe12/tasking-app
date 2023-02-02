@@ -55,9 +55,6 @@ const DocumentModal = ({ onClose, opened, title }: CommonModalProps) => {
       <LoadingOverlay visible={!!loaders.adding} />
       <form
         onSubmit={form.onSubmit(async (values) => {
-          console.log(values);
-          console.log(activeBoard?.id);
-
           if (!activeBoard?.id) return;
 
           const { title, description, startDate, dueDate, priority, status } = form.values;
@@ -66,6 +63,7 @@ const DocumentModal = ({ onClose, opened, title }: CommonModalProps) => {
             createDocument({
               boardId: activeBoard.id,
               document: {
+                ...values,
                 title,
                 description,
                 startDate: startDate.toISOString() as any,

@@ -10,6 +10,7 @@ import themeReducer from "./slices/themeSlice";
 import boardsReducer from "./slices/boardsSlice";
 import templatesReducer from "./slices/templateSlice";
 import documentsReducer from "./slices/documentSlice";
+import groupsReducer from "./slices/groupsSlice";
 
 const persistConfig = {
   blacklist: ["boards"],
@@ -23,6 +24,7 @@ const reducers = combineReducers({
   boards: boardsReducer,
   templates: templatesReducer,
   documents: documentsReducer,
+  groups: groupsReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, reducers);

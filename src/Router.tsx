@@ -11,6 +11,7 @@ import Register from "./views/auth/Register";
 import BoardDetails from "./views/board/BoardDetails";
 import TemplateList from "./views/templates/TemplateList";
 import DocumentsList from "./views/documents/DocumentsList";
+import Teams from "./views/teams/Teams";
 
 const router = createBrowserRouter([
   {
@@ -34,6 +35,14 @@ const router = createBrowserRouter([
           {
             path: "/board",
             element: <DocumentsList />,
+          },
+          {
+            path: "/board/details",
+            element: <BoardDetails />,
+          },
+          {
+            path: "/board/teams",
+            element: <Teams />,
           },
         ],
       },
