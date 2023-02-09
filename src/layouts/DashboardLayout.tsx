@@ -1,20 +1,12 @@
 import { ActionIcon, Burger, Paper, Title } from "@mantine/core";
 import { useState } from "react";
-import { Outlet, useNavigate, useNavigation, useLocation, useRoutes } from "react-router-dom";
+import { Outlet, useNavigate, useLocation } from "react-router-dom";
 
-import {
-  IconChartBar,
-  IconHome,
-  IconLayout,
-  IconMail,
-  IconSettings,
-  IconUserPlus,
-} from "@tabler/icons";
+import { IconChartBar, IconLayout, IconMail, IconSettings, IconUserPlus } from "@tabler/icons";
 
 import "./DashboardLayout.scss";
 import Header from "../components/Header";
 import { useAppSelector } from "../redux/store";
-import router from "../Router";
 
 const DashboardLayout = () => {
   const [showSider, setShowSider] = useState(true);

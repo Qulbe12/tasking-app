@@ -31,7 +31,7 @@
     "react/jsx-filename-extension": "off",
     "react/function-component-definition": "off",
     "import/no-extraneous-dependencies": "off",
-    "no-unused-vars": "warn",
+    "no-unused-vars": ["error", { "args": "none" }],
     "react/require-default-props": "off",
     "react/no-unescaped-entities": "off",
     "@typescript-eslint/no-explicit-any": "off"

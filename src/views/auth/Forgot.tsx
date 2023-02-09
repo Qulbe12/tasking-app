@@ -1,21 +1,5 @@
-import React from "react";
-import { useToggle, upperFirst } from "@mantine/hooks";
 import { useForm } from "@mantine/form";
-import {
-  TextInput,
-  PasswordInput,
-  Text,
-  Paper,
-  Group,
-  Button,
-  Divider,
-  Stack,
-  Title,
-  Checkbox,
-  Anchor,
-  Flex,
-} from "@mantine/core";
-import GoogleButton from "../../components/GoogleButton";
+import { TextInput, Text, Paper, Button, Stack, Title, Anchor, Flex } from "@mantine/core";
 import { useNavigate } from "react-router-dom";
 
 const Forgot = () => {
@@ -41,7 +25,11 @@ const Forgot = () => {
           <Title>Forgot Password?</Title>
           <Text mb="md">Enter the email address associated with your account</Text>
 
-          <form onSubmit={form.onSubmit(() => {})}>
+          <form
+            onSubmit={form.onSubmit(() => {
+              // TODO: handle forget action
+            })}
+          >
             <Stack>
               <TextInput
                 required

@@ -1,4 +1,4 @@
-import { IconArrowLeft, IconArrowRight, IconChevronLeft, IconChevronRight } from "@tabler/icons";
+import { IconChevronLeft, IconChevronRight } from "@tabler/icons";
 import React from "react";
 
 import { VisibilityContext } from "react-horizontal-scrolling-menu";

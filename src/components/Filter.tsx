@@ -2,7 +2,6 @@ import { Badge } from "@mantine/core";
 import React from "react";
 import useDrag from "../hooks/useDrag";
 import { ScrollMenu, VisibilityContext } from "react-horizontal-scrolling-menu";
-import { IconArrowLeft, IconArrowRight, IconMenu } from "@tabler/icons";
 import { LeftArrow, RightArrow } from "./FilterArrows";
 
 type FilterProps = {

@@ -1,7 +1,7 @@
 import { Checkbox, MultiSelect, NumberInput, Radio, Select, TextInput } from "@mantine/core";
 import { FieldType, IField } from "hexa-sdk";
 import { DatePicker } from "@mantine/dates";
-import React, { ChangeEvent } from "react";
+import React from "react";
 import { UseFormReturnType } from "@mantine/form";
 
 type DynamicFieldProps = {
