@@ -9,10 +9,8 @@ const { addFiles, addUsers, create, get, getById, remove, removeUser, update } =
 export const createDocument = createAsyncThunk(
   "documents/createDocument",
   async ({ boardId, document }: { boardId: string; document: ICreateDocument & any }) => {
-    console.log("Create Document Action");
-
     const res = await create(boardId, document);
-    console.log(res.data);
+
     return res.data;
   },
 );

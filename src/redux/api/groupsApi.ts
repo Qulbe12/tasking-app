@@ -1,16 +1,20 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { ICreateGroup, IUpdateGroup } from "hexa-sdk/dist/group/group.dto";
+import { ICreateGroup, IUpdateGroup } from "hexa-sdk";
 import api from "../../config/api";
 
 const { groupApi } = api;
-const { addCcUsers, create, get, getById, remove, removeCcUser, update } = groupApi;
+const { create, get, getById, remove, update, addCcUsers, removeCcUsers } = groupApi;
 
 export const createGroup = createAsyncThunk(
   "groups/createGroup",
-  async (group: ICreateGroup) => (await create(group)).data,
+  async ({ boardId, group }: { boardId: string; group: ICreateGroup }) =>
+    (await create(boardId, group)).data,
 );
 
-export const getAllGroups = createAsyncThunk("groups/getAllGroups", async () => (await get()).data);
+export const getAllGroups = createAsyncThunk(
+  "groups/getAllGroups",
+  async (boardId: string) => (await get(boardId)).data,
+);
 
 export const getGroupById = createAsyncThunk(
   "groups/getGroupById",
@@ -34,5 +38,6 @@ export const addUsersToGroup = createAsyncThunk(
 
 export const removeUsersFromGroup = createAsyncThunk(
   "groups/removeUsersFromGroup",
-  async ({ id, email }: { id: string; email: string }) => (await removeCcUser(id, email)).data,
+  async ({ id, emails }: { id: string; emails: string[] }) =>
+    (await removeCcUsers(id, emails)).data,
 );

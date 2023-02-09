@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { IGroup } from "hexa-sdk/dist/group/group.dto";
+import { IGroup } from "hexa-sdk";
 import { createGroup } from "../api/groupsApi";
 import { showError } from "../commonSliceFunctions";
 
@@ -8,6 +8,7 @@ export interface GroupsState {
   data: IGroup[];
   loading: number;
   error?: string;
+  ccUsers?: any;
   loaders: {
     adding: boolean;
   };

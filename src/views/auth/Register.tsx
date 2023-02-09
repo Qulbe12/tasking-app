@@ -1,5 +1,4 @@
 import React from "react";
-import { useToggle, upperFirst } from "@mantine/hooks";
 import { useForm, yupResolver } from "@mantine/form";
 import {
   TextInput,
@@ -49,14 +48,12 @@ const Register = () => {
   });
 
   const handleSubmit = (values: typeof form.values) => {
-    console.log("heres");
-
     if (!form.values.terms) {
       return showNotification({
         message: "You have to accept terms and conditions to continue",
       });
     }
-    dispatch(registerUser(form.values));
+    dispatch(registerUser(values));
   };
 
   return (

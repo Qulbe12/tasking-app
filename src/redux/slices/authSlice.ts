@@ -49,7 +49,7 @@ export const authSlice = createSlice({
       state.token = action.payload.token;
     },
     logout: (state: AuthState) => {
-      localStorage.removeItem("token");
+      localStorage.clear();
       state.token = "";
     },
   },

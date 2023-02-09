@@ -34,6 +34,7 @@ const TemplateModal = ({ onClose, opened, template }: ModalProps & TemplateModal
   const dispatch = useAppDispatch();
 
   const { loading } = useAppSelector((state) => state.templates);
+  const { activeWorkspace } = useAppSelector((state) => state.workspaces);
 
   const [fieldVals, setFieldVals] = useState<ICreateField>({
     label: "",
@@ -67,7 +68,8 @@ const TemplateModal = ({ onClose, opened, template }: ModalProps & TemplateModal
           if (template) {
             await dispatch(updateTemplate({ templateId: template.id, template: { name } }));
           } else {
-            await dispatch(addTemplate({ name }));
+            if (!activeWorkspace?.id) return;
+            await dispatch(addTemplate({ template: { name }, workspaceId: activeWorkspace?.id }));
           }
 
           form.reset();

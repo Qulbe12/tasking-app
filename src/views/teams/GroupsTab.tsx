@@ -1,13 +1,9 @@
 import { Button, Group, Table } from "@mantine/core";
+import { IGroup } from "hexa-sdk/dist/group/group.dto";
 import React, { useState } from "react";
 import { useAppSelector } from "../../redux/store";
-import CreateGroupModal from "./CreateGroupModal";
-import GroupModal from "./GroupModal";
-
-const elements = [
-  { groupName: "Accountants", documentType: "Invoice", usersCount: 3 },
-  { groupName: "Architects", documentType: "Sheet", usersCount: 21 },
-];
+import CreateGroupModal from "./modals/CreateGroupModal";
+import GroupModal from "./modals/GroupModal";
 
 const GroupsTab = () => {
   const [open, setOpen] = useState(false);
@@ -15,10 +11,18 @@ const GroupsTab = () => {
 
   const { data } = useAppSelector((state) => state.groups);
 
+  const [selectedGroup, setSelectedGroup] = useState<IGroup>();
+
   const rows = data.map((g) => (
-    <tr onClick={() => setOpen((o) => !o)} className="hover:cursor-pointer" key={g.id}>
+    <tr
+      onClick={() => {
+        setSelectedGroup(g);
+        setOpen((o) => !o);
+      }}
+      className="hover:cursor-pointer"
+      key={g.id}
+    >
       <td>{g.name}</td>
-      <td>{g.id}</td>
       <td>{g.ccUsers.length}</td>
     </tr>
   ));
@@ -31,7 +35,6 @@ const GroupsTab = () => {
         <thead>
           <tr>
             <th>Group</th>
-            <th>Document Type</th>
             <th>Users</th>
           </tr>
         </thead>
@@ -39,6 +42,7 @@ const GroupsTab = () => {
       </Table>
 
       <GroupModal
+        group={selectedGroup}
         onClose={() => {
           setOpen((o) => !o);
         }}

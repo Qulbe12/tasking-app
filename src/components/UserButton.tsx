@@ -1,16 +1,5 @@
-import { Avatar, Button, Menu, Text } from "@mantine/core";
-import {
-  IconSettings,
-  IconMessageCircle,
-  IconPhoto,
-  IconSearch,
-  IconArrowsLeftRight,
-  IconTrash,
-  IconUser,
-  IconLogout,
-  IconMoon,
-  IconSun,
-} from "@tabler/icons";
+import { Avatar, Menu } from "@mantine/core";
+import { IconLogout, IconMoon, IconSun } from "@tabler/icons";
 import React from "react";
 import { logout } from "../redux/slices/authSlice";
 import { useAppDispatch, useAppSelector } from "../redux/store";

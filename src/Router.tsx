@@ -3,7 +3,6 @@ import RouteGuard from "./guards/RouteGuard";
 import AuthLayout from "./layouts/AuthLayout";
 import DashboardLayout from "./layouts/DashboardLayout";
 import HomeLayout from "./layouts/HomeLayout";
-import Dashboard from "./views/dashboard/Dashboard";
 import Forgot from "./views/auth/Forgot";
 import Login from "./views/auth/Login";
 import Pay from "./views/auth/Pay";
@@ -12,6 +11,8 @@ import BoardDetails from "./views/board/BoardDetails";
 import TemplateList from "./views/templates/TemplateList";
 import DocumentsList from "./views/documents/DocumentsList";
 import Teams from "./views/teams/Teams";
+import WorkspacesList from "./views/workspaces/WorkspacesList";
+import BoardsList from "./views/board/BoardsList";
 
 const router = createBrowserRouter([
   {
@@ -24,7 +25,17 @@ const router = createBrowserRouter([
         children: [
           {
             path: "/",
-            element: <Dashboard />,
+            element: <WorkspacesList />,
+          },
+        ],
+      },
+      {
+        path: "/workspaces/boards",
+        element: <DashboardLayout />,
+        children: [
+          {
+            path: "/workspaces/boards",
+            element: <BoardsList />,
           },
         ],
       },

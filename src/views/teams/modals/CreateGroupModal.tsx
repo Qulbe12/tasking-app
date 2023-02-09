@@ -11,10 +11,10 @@ import {
 import { useForm } from "@mantine/form";
 import { ICreateGroup } from "hexa-sdk/dist/group/group.dto";
 import React, { useEffect, useState } from "react";
-import CommonModalProps from "../../modals/CommonModalProps";
-import { createGroup } from "../../redux/api/groupsApi";
-import { getAllTemplates } from "../../redux/api/templateApi";
-import { useAppDispatch, useAppSelector } from "../../redux/store";
+import CommonModalProps from "../../../modals/CommonModalProps";
+import { createGroup } from "../../../redux/api/groupsApi";
+import { getAllTemplates } from "../../../redux/api/templateApi";
+import { useAppDispatch, useAppSelector } from "../../../redux/store";
 
 const CreateGroupModal = ({ onClose, opened, title }: CommonModalProps) => {
   const form = useForm<ICreateGroup>({
@@ -58,12 +58,12 @@ const CreateGroupModal = ({ onClose, opened, title }: CommonModalProps) => {
           />
 
           <MultiSelect
-            label="Creatable MultiSelect"
+            label="User Emails"
             data={ccUsers}
             placeholder="Select items"
             searchable
             creatable
-            getCreateLabel={(query) => `+ Create ${query}`}
+            getCreateLabel={(query) => `+ Add ${query}`}
             onCreate={(query) => {
               setCcUsers((current) => [...current, query]);
               return query;

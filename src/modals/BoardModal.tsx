@@ -15,6 +15,7 @@ const BoardModal = ({ opened, onClose, title, board }: CommonModalProps & BoardM
   const dispatch = useAppDispatch();
 
   const { loaders } = useAppSelector((state) => state.boards);
+  const { activeWorkspace } = useAppSelector((state) => state.workspaces);
 
   const form = useForm({
     initialValues: {
@@ -37,7 +38,13 @@ const BoardModal = ({ opened, onClose, title, board }: CommonModalProps & BoardM
       <form
         onSubmit={form.onSubmit(async (values) => {
           if (!board) {
-            await dispatch(addBoard(values));
+            if (!activeWorkspace?.id) return;
+            await dispatch(
+              addBoard({
+                workspaceId: activeWorkspace?.id,
+                board: { description: values.description, title: values.title },
+              }),
+            );
           } else {
             await dispatch(
               updateBoard({

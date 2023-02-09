@@ -11,9 +11,10 @@ import boardsReducer from "./slices/boardsSlice";
 import templatesReducer from "./slices/templateSlice";
 import documentsReducer from "./slices/documentSlice";
 import groupsReducer from "./slices/groupsSlice";
+import workspacesReducer from "./slices/workspacesSlice";
 
 const persistConfig = {
-  blacklist: ["boards"],
+  blacklist: [], // eg: ["Boards"]
   key: "root",
   storage,
 };
@@ -25,6 +26,7 @@ const reducers = combineReducers({
   templates: templatesReducer,
   documents: documentsReducer,
   groups: groupsReducer,
+  workspaces: workspacesReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, reducers);

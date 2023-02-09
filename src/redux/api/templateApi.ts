@@ -3,21 +3,17 @@ import { ICreateField, ICreateTemplate, IUpdateTemplate } from "hexa-sdk";
 import api from "../../config/api";
 
 const { templateApi } = api;
-const { addField, create, get, getById, remove, removeField, update } = templateApi;
+const { addField, create, get, remove, removeField, update } = templateApi;
 
 export const addTemplate = createAsyncThunk(
   "templates/addTemplate",
-  async (template: ICreateTemplate) => (await create(template)).data,
+  async ({ workspaceId, template }: { template: ICreateTemplate; workspaceId: string }) =>
+    (await create(workspaceId, template)).data,
 );
 
 export const getAllTemplates = createAsyncThunk(
   "templates/getAllTemplates",
-  async () => (await get()).data,
-);
-
-export const getTemplateById = createAsyncThunk(
-  "templates/getTemplateById",
-  async (id: string) => (await getById(id)).data,
+  async (workspaceId: string) => (await get(workspaceId)).data,
 );
 
 export const updateTemplate = createAsyncThunk(

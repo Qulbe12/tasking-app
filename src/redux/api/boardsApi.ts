@@ -7,10 +7,14 @@ const { create, get, getById, update, remove } = boardApi;
 
 export const addBoard = createAsyncThunk(
   "boards/add",
-  async (board: ICreateBoard) => (await create(board)).data,
+  async ({ workspaceId, board }: { board: ICreateBoard; workspaceId: string }) =>
+    (await create(workspaceId, board)).data,
 );
 
-export const getBoards = createAsyncThunk("boards/get", async () => (await get()).data);
+export const getBoards = createAsyncThunk(
+  "boards/get",
+  async (workspaceId: string) => await (await get(workspaceId)).data,
+);
 
 export const getBoardById = createAsyncThunk(
   "boards/getById",

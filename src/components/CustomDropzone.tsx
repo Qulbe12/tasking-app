@@ -12,10 +12,12 @@ const CustomDropzone = (props: Partial<DropzoneProps>) => {
         props.onDrop
           ? props.onDrop
           : () => {
-              console.log("HERE");
+              // TODO: Something must go here
             }
       }
-      onReject={(files) => console.log("rejected files", files)}
+      onReject={(files) => {
+        console.log("Rejected Files", files);
+      }}
       maxSize={3 * 1024 ** 2}
       accept={PDF_MIME_TYPE}
       {...props}

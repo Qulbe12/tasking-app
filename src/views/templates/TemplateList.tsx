@@ -11,13 +11,15 @@ const TemplateList = () => {
   const dispatch = useAppDispatch();
 
   const templates = useAppSelector((state) => state.templates);
+  const { activeWorkspace } = useAppSelector((state) => state.workspaces);
 
   function toggleOpen() {
     setOpen((o) => !o);
   }
 
   useEffect(() => {
-    dispatch(getAllTemplates());
+    if (!activeWorkspace?.id) return;
+    dispatch(getAllTemplates(activeWorkspace.id));
   }, []);
 
   const [selectedTemplate, setSelectedTemplate] = useState<string | undefined>();

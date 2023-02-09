@@ -32,19 +32,13 @@ export const documentsSlice = createSlice({
     builder
       // Create Document
       .addCase(createDocument.pending, (state) => {
-        console.log("Pending");
-
         state.loaders.adding = "adding";
       })
       .addCase(createDocument.fulfilled, (state, action) => {
-        console.log("Fulfilled");
-
         state.data?.unshift(action.payload);
         state.loaders.adding = null;
       })
       .addCase(createDocument.rejected, (state, action) => {
-        console.log(action.error);
-
         state.loaders.adding = null;
         state.error = action.error.message;
         showError(action.error.message);

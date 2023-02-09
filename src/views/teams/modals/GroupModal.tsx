@@ -1,17 +1,23 @@
 import { Button, Group, Modal, TransferList, TransferListData } from "@mantine/core";
-import React, { useState } from "react";
-import CommonModalProps from "../../modals/CommonModalProps";
+import { IGroup } from "hexa-sdk/dist/group/group.dto";
+import React, { useEffect, useState } from "react";
+import CommonModalProps from "../../../modals/CommonModalProps";
 
 const initialValues: TransferListData = [
   [{ value: "farhan@gmail.com", label: "farhan@gmail.com" }],
   [],
 ];
 
-const GroupModal = ({ onClose, opened, title }: CommonModalProps) => {
+const GroupModal = ({ onClose, opened, group }: CommonModalProps & { group?: IGroup }) => {
   const [data, setData] = useState<TransferListData>(initialValues);
 
+  useEffect(() => {
+    if (!group) return;
+    setData([[], group.ccUsers.map((u) => ({ value: u, label: u }))]);
+  }, [group]);
+
   return (
-    <Modal size="auto" title={title} onClose={onClose} opened={opened}>
+    <Modal size="auto" title={`Manage ${group?.name} users`} onClose={onClose} opened={opened}>
       <TransferList
         value={data}
         onChange={setData}
@@ -22,9 +28,7 @@ const GroupModal = ({ onClose, opened, title }: CommonModalProps) => {
       />
 
       <Group position="right" mt="md">
-        <Button type="submit" onClick={onClose}>
-          Update
-        </Button>
+        <Button onClick={onClose}>Update</Button>
       </Group>
     </Modal>
   );

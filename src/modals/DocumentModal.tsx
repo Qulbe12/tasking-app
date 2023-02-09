@@ -1,5 +1,6 @@
 import {
   Button,
+  Flex,
   Grid,
   Group,
   LoadingOverlay,
@@ -7,6 +8,7 @@ import {
   Paper,
   Select,
   Stack,
+  Text,
   Textarea,
   TextInput,
 } from "@mantine/core";
@@ -22,19 +24,23 @@ import { Dropzone, FileWithPath } from "@mantine/dropzone";
 import { IconFile, IconX } from "@tabler/icons";
 import { createDocument } from "../redux/api/documentApi";
 import { DatePicker } from "@mantine/dates";
+import TemplateModal from "./TemplateModal";
 
 const DocumentModal = ({ onClose, opened, title }: CommonModalProps) => {
   const dispatch = useAppDispatch();
 
   const { data, loading } = useAppSelector((state) => state.templates);
   const { activeBoard, loaders } = useAppSelector((state) => state.boards);
+  const { activeWorkspace } = useAppSelector((state) => state.workspaces);
 
   useEffect(() => {
-    dispatch(getAllTemplates());
+    if (!activeWorkspace?.id) return;
+    dispatch(getAllTemplates(activeWorkspace.id));
   }, []);
 
   const [fields, setFields] = useState<IField[]>();
   const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
+  const [templateModalOpen, setTemplateModalOpen] = useState(false);
 
   const form = useForm({
     initialValues: {
@@ -87,7 +93,7 @@ const DocumentModal = ({ onClose, opened, title }: CommonModalProps) => {
             searchable
             label="Document Type"
             placeholder="Pick one"
-            disabled={!!loading}
+            disabled={!!loading || data.length <= 0}
             onChange={(e) => {
               setSelectedTemplate(e);
               const foundFrields = data.find((d) => d.name === e)?.fields;
@@ -97,6 +103,23 @@ const DocumentModal = ({ onClose, opened, title }: CommonModalProps) => {
               return { value: d.name, label: d.name };
             })}
           />
+          {data.length <= 0 && (
+            <Flex gap={4}>
+              <Text size="sm" color="orange">
+                No templates created, please
+              </Text>
+
+              <Text
+                onClick={() => setTemplateModalOpen((o) => !o)}
+                className="cursor-pointer"
+                size="sm"
+                color="orange"
+                variant="link"
+              >
+                create a template
+              </Text>
+            </Flex>
+          )}
 
           {selectedTemplate && (
             <Stack>
@@ -228,6 +251,8 @@ const DocumentModal = ({ onClose, opened, title }: CommonModalProps) => {
           </Group>
         </Stack>
       )}
+
+      <TemplateModal opened={templateModalOpen} onClose={() => setTemplateModalOpen((o) => !o)} />
     </Modal>
   );
 };
