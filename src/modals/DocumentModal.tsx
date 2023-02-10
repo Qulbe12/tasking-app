@@ -13,7 +13,7 @@ import {
   TextInput,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
-import { DocumentPriority, DocumentStatus, IField } from "hexa-sdk";
+import { DocumentPriority, DocumentStatus, ICreateDocument, IField } from "hexa-sdk";
 import React, { useEffect, useState } from "react";
 import { getAllTemplates } from "../redux/api/templateApi";
 import { useAppDispatch, useAppSelector } from "../redux/store";
@@ -25,6 +25,7 @@ import { IconFile, IconX } from "@tabler/icons";
 import { createDocument } from "../redux/api/documentApi";
 import { DatePicker } from "@mantine/dates";
 import TemplateModal from "./TemplateModal";
+import { axiosPrivate } from "../config/axios";
 
 const DocumentModal = ({ onClose, opened, title }: CommonModalProps) => {
   const dispatch = useAppDispatch();
@@ -53,8 +54,14 @@ const DocumentModal = ({ onClose, opened, title }: CommonModalProps) => {
     },
   });
 
-  const [files, setFiles] = useState<FileWithPath[]>([]);
+  const [files, setFiles] = useState<File[]>([]);
   const [commentFiles, setCommentFiles] = useState<FileWithPath[]>([]);
+
+  function getFormData(object: any) {
+    const formData = new FormData();
+    Object.keys(object).forEach((key) => formData.append(key, object[key]));
+    return formData;
+  }
 
   return (
     <Modal opened={opened} onClose={onClose} title={title}>
@@ -65,26 +72,45 @@ const DocumentModal = ({ onClose, opened, title }: CommonModalProps) => {
 
           const { title, description, startDate, dueDate, priority, status } = form.values;
 
-          await dispatch(
-            createDocument({
-              boardId: activeBoard.id,
-              document: {
-                ...values,
-                title,
-                description,
-                startDate: startDate.toISOString() as any,
-                dueDate: dueDate.toISOString() as any,
-                priority,
-                status,
-                attachments: files,
-                assignedUsers: [],
-                ccUsers: [],
-                templateId: data.find((t) => t.name === selectedTemplate)?.id || "",
-              },
-            }),
-          );
+          const d: ICreateDocument = {
+            assignedUsers: [],
+            attachments: [files[0]],
+            ccUsers: [],
+            description,
+            priority,
+            status,
+            startDate: startDate.toISOString() as any,
+            dueDate: dueDate.toISOString() as any,
+            templateId: data.find((t) => t.name === selectedTemplate)?.id || "",
+            title,
+          };
 
-          onClose();
+          const newD = getFormData(d);
+
+          const res = await axiosPrivate.post(`/boards/${activeBoard.id}/documents`, newD);
+
+          console.log(res.data);
+
+          // await dispatch(
+          //   createDocument({
+          //     boardId: activeBoard.id,
+          //     document: {
+          //       ...values,
+          //       title,
+          //       description,
+          //       startDate: startDate.toISOString() as any,
+          //       dueDate: dueDate.toISOString() as any,
+          //       priority,
+          //       status,
+          //       attachments: files,
+          //       assignedUsers: [],
+          //       ccUsers: [],
+          //       templateId: data.find((t) => t.name === selectedTemplate)?.id || "",
+          //     },
+          //   }),
+          // );
+
+          // onClose();
         })}
       >
         <Stack>
@@ -183,9 +209,19 @@ const DocumentModal = ({ onClose, opened, title }: CommonModalProps) => {
                   );
                 })}
               </Grid>
+              <input
+                type="file"
+                onChange={(e) => {
+                  if (!e.target.files) return;
+
+                  setFiles([...e.target.files]);
+                }}
+              />
               <CustomDropzone
                 onDrop={(files) => {
-                  setFiles(files);
+                  console.log(files[0]);
+
+                  // setFiles(files);
                 }}
               />
             </Paper>

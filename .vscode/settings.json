@@ -11,5 +11,5 @@
   },
   "editor.formatOnSave": true,
   "editor.defaultFormatter": "esbenp.prettier-vscode",
-  "cSpell.words": ["Mantine", "Progresss", "tabler", "vals"]
+  "cSpell.words": ["Mantine", "Progresss", "PSPDF", "tabler", "vals"]
 }
