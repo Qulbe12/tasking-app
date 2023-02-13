@@ -12,7 +12,8 @@
     "lint:scss": "npx stylelint '**/*.scss'",
     "lint:fix": "eslint --fix 'src/**/*.{ts,tsx}'",
     "format": "prettier --write 'src/**/*.{ts,tsx,css,md}' --config ./.prettierrc",
-    "deploy": "npm ci --legacy-peer-deps && npm run build"
+    "deploy": "npm ci --legacy-peer-deps && npm run build",
+    "sdk": "npm i hexa-sdk@latest --legacy-peer-deps"
   },
   "dependencies": {
     "@emotion/react": "^11.10.5",
@@ -35,7 +36,7 @@
     "axios": "^1.2.1",
     "dayjs": "^1.11.7",
     "embla-carousel-react": "^7.0.5",
-    "hexa-sdk": "^0.0.52",
+    "hexa-sdk": "^0.0.74",
     "pspdfkit": "^2023.1.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",

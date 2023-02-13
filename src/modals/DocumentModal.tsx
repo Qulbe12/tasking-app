@@ -54,14 +54,14 @@ const DocumentModal = ({ onClose, opened, title }: CommonModalProps) => {
     },
   });
 
-  const [files, setFiles] = useState<File[]>([]);
+  const [files, setFiles] = useState<FileList>();
   const [commentFiles, setCommentFiles] = useState<FileWithPath[]>([]);
 
-  function getFormData(object: any) {
-    const formData = new FormData();
-    Object.keys(object).forEach((key) => formData.append(key, object[key]));
-    return formData;
-  }
+  // function getFormData(object: any) {
+  //   const formData = new FormData();
+  //   Object.keys(object).forEach((key) => formData.append(key, object[key]));
+  //   return formData;
+  // }
 
   return (
     <Modal opened={opened} onClose={onClose} title={title}>
@@ -72,45 +72,39 @@ const DocumentModal = ({ onClose, opened, title }: CommonModalProps) => {
 
           const { title, description, startDate, dueDate, priority, status } = form.values;
 
-          const d: ICreateDocument = {
-            assignedUsers: [],
-            attachments: [files[0]],
-            ccUsers: [],
+          const doc: ICreateDocument = {
+            ...values,
+            title,
             description,
-            priority,
-            status,
             startDate: startDate.toISOString() as any,
             dueDate: dueDate.toISOString() as any,
+            priority,
+            status,
+            files: files,
+            assignedUsers: [],
+            ccUsers: [],
             templateId: data.find((t) => t.name === selectedTemplate)?.id || "",
-            title,
           };
 
-          const newD = getFormData(d);
+          // const formdata = new FormData();
+          // Object.getOwnPropertyNames(doc).forEach((prop: any) => {
+          //   const anydoc: any = doc;
+          //   if (prop === "files") {
+          //     const files: FileList = anydoc[prop];
+          //     [...files].forEach(function (file, i) {
+          //       formdata.append("files[]", file, file.name);
+          //     });
+          //   } else {
+          //     formdata.append(prop, anydoc[prop]);
+          //   }
+          // });
+          // console.log(formdata);
 
-          const res = await axiosPrivate.post(`/boards/${activeBoard.id}/documents`, newD);
+          // axiosPrivate.post(`/boards/${activeBoard.id}/documents`, formdata);
+          // return;
+          await dispatch(createDocument({ boardId: activeBoard.id, document: doc }));
 
-          console.log(res.data);
-
-          // await dispatch(
-          //   createDocument({
-          //     boardId: activeBoard.id,
-          //     document: {
-          //       ...values,
-          //       title,
-          //       description,
-          //       startDate: startDate.toISOString() as any,
-          //       dueDate: dueDate.toISOString() as any,
-          //       priority,
-          //       status,
-          //       attachments: files,
-          //       assignedUsers: [],
-          //       ccUsers: [],
-          //       templateId: data.find((t) => t.name === selectedTemplate)?.id || "",
-          //     },
-          //   }),
-          // );
-
-          // onClose();
+          onClose();
         })}
       >
         <Stack>
@@ -185,7 +179,7 @@ const DocumentModal = ({ onClose, opened, title }: CommonModalProps) => {
           {selectedTemplate && (
             <Paper>
               <Grid grow my="xl">
-                {files.map((file, index) => {
+                {/* {files.map((file, index) => {
                   return (
                     <Grid.Col span="content" key={file.name + index}>
                       <Group position="apart">
@@ -207,14 +201,14 @@ const DocumentModal = ({ onClose, opened, title }: CommonModalProps) => {
                       </Group>
                     </Grid.Col>
                   );
-                })}
+                })} */}
               </Grid>
               <input
                 type="file"
+                multiple
                 onChange={(e) => {
                   if (!e.target.files) return;
-
-                  setFiles([...e.target.files]);
+                  setFiles(e.target.files);
                 }}
               />
               <CustomDropzone
@@ -251,10 +245,10 @@ const DocumentModal = ({ onClose, opened, title }: CommonModalProps) => {
                       stroke={1}
                       size={16}
                       onClick={() => {
-                        const newFiles = files.filter((f) => {
-                          return f.name === file.name;
-                        });
-                        setCommentFiles(newFiles);
+                        // const newFiles = files.filter((f) => {
+                        //   return f.name === file.name;
+                        // });
+                        // setCommentFiles(newFiles);
                       }}
                     />
                   </Group>

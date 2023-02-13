@@ -166,6 +166,22 @@ const DocumentsList = () => {
                     </div>
                   );
                 })}
+              <p>docs</p>
+              {selectedDocument?.attachments.map((a) => {
+                return (
+                  <div key={a.id}>
+                    <p>{a.name}</p>
+                  </div>
+                );
+              })}
+              <p>docs end</p>
+              <Button
+                onClick={() => {
+                  console.log(selectedDocument);
+                }}
+              >
+                asd
+              </Button>
               <Button type="submit">Submit</Button>
             </Stack>
           </form>
