@@ -25,7 +25,6 @@ import { IconFile, IconX } from "@tabler/icons";
 import { createDocument } from "../redux/api/documentApi";
 import { DatePicker } from "@mantine/dates";
 import TemplateModal from "./TemplateModal";
-import { axiosPrivate } from "../config/axios";
 
 const DocumentModal = ({ onClose, opened, title }: CommonModalProps) => {
   const dispatch = useAppDispatch();

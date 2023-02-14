@@ -12,16 +12,20 @@ import {
 } from "@mantine/core";
 import { DatePicker } from "@mantine/dates";
 import { useForm } from "@mantine/form";
-import { DocumentPriority, DocumentStatus, IDocument } from "hexa-sdk";
+import { IconFileText } from "@tabler/icons";
+import { DocumentPriority, DocumentStatus, IAttachment, IDocument } from "hexa-sdk";
 import React, { useEffect, useState } from "react";
 import DocumentCard from "../../components/DocumentCard";
 import DynamicField from "../../components/DynamicField";
+import PdfViewerComponent from "../../components/PdfViewerComponent";
 import DocumentModal from "../../modals/DocumentModal";
 import { getDocuments } from "../../redux/api/documentApi";
 import { useAppDispatch, useAppSelector } from "../../redux/store";
 
 const DocumentsList = () => {
   const [open, setOpen] = useState(false);
+  const [pdfOpen, setPdfOpen] = useState(false);
+  const [selectedAttachment, setSelectedAttachment] = useState<IAttachment | null>(null);
 
   function toggleOpen() {
     setOpen((o) => !o);
@@ -166,26 +170,40 @@ const DocumentsList = () => {
                     </div>
                   );
                 })}
-              <p>docs</p>
+              <p>Attachments</p>
               {selectedDocument?.attachments.map((a) => {
                 return (
-                  <div key={a.id}>
+                  <Flex
+                    onClick={() => {
+                      setSelectedAttachment(a);
+                      setPdfOpen(true);
+                    }}
+                    gap="md"
+                    style={{ cursor: "pointer" }}
+                    align="center"
+                    key={a.id}
+                  >
+                    <IconFileText size={32} />
                     <p>{a.name}</p>
-                  </div>
+                  </Flex>
                 );
               })}
-              <p>docs end</p>
-              <Button
-                onClick={() => {
-                  console.log(selectedDocument);
-                }}
-              >
-                asd
-              </Button>
-              <Button type="submit">Submit</Button>
+
+              <Button type="submit">Close</Button>
             </Stack>
           </form>
         )}
+
+        <Modal
+          title={selectedAttachment?.name}
+          opened={pdfOpen}
+          onClose={() => {
+            setPdfOpen((o) => !o);
+            setSelectedAttachment(null);
+          }}
+        >
+          {selectedAttachment && <PdfViewerComponent documentUrl={selectedAttachment.url} />}
+        </Modal>
       </Modal>
     </div>
   );
