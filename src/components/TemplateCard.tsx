@@ -8,7 +8,7 @@ type TemplateCardProps = {
 
 const TemplateCard = ({ template }: TemplateCardProps) => {
   return (
-    <Card className="cursor-pointer hover:-translate-y-1">
+    <Card shadow="md" className="cursor-pointer hover:-translate-y-1">
       <Card.Section>
         <div className="flex items-center justify-center p-4">{template.name}</div>
       </Card.Section>
