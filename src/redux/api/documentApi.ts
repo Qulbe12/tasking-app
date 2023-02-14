@@ -29,7 +29,7 @@ export const updateDocument = createAsyncThunk(
 
 export const addDocumentFiles = createAsyncThunk(
   "documents/addDocumentFiles",
-  async ({ documentId, attachment }: { documentId: string; attachment: File }) =>
+  async ({ documentId, attachment }: { documentId: string; attachment: FileList }) =>
     (await addFiles(documentId, attachment)).data,
 );
 

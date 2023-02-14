@@ -9,7 +9,7 @@ import {
   TextInput,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
-import { ICreateGroup } from "hexa-sdk/dist/group/group.dto";
+import { ICreateGroup } from "hexa-sdk";
 import React, { useEffect, useState } from "react";
 import CommonModalProps from "../../../modals/CommonModalProps";
 import { createGroup } from "../../../redux/api/groupsApi";
@@ -27,11 +27,14 @@ const CreateGroupModal = ({ onClose, opened, title }: CommonModalProps) => {
 
   const { loading, data } = useAppSelector((state) => state.templates);
   const { loaders } = useAppSelector((state) => state.groups);
+  const { activeWorkspace } = useAppSelector((state) => state.workspaces);
+  const { activeBoard } = useAppSelector((state) => state.boards);
 
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    dispatch(getAllTemplates());
+    if (!activeWorkspace?.id) return;
+    dispatch(getAllTemplates(activeWorkspace?.id));
   }, []);
 
   const [ccUsers, setCcUsers] = useState<string[]>([]);
@@ -41,7 +44,8 @@ const CreateGroupModal = ({ onClose, opened, title }: CommonModalProps) => {
       <LoadingOverlay visible={!!loading} />
       <form
         onSubmit={form.onSubmit(async (values) => {
-          await dispatch(createGroup(values));
+          if (!activeBoard?.id) return;
+          await dispatch(createGroup({ group: values, boardId: activeBoard?.id }));
           form.reset();
           onClose();
         })}
