@@ -36,9 +36,10 @@
     "axios": "^1.2.1",
     "dayjs": "^1.11.7",
     "embla-carousel-react": "^7.0.5",
-    "hexa-sdk": "^0.0.76",
+    "hexa-sdk": "^0.0.95",
     "pspdfkit": "^2023.1.0",
     "react": "^18.2.0",
+    "react-calendar": "^4.0.0",
     "react-dom": "^18.2.0",
     "react-horizontal-scrolling-menu": "^3.2.3",
     "react-icons": "^4.7.1",
@@ -47,7 +48,8 @@
     "redux-logger": "^3.0.6",
     "redux-persist": "^6.0.0",
     "redux-thunk": "^2.4.2",
-    "sass": "^1.56.2",
+    "sass": "^1.58.3",
+    "socket.io-client": "^4.6.1",
     "yup": "^0.32.11"
   },
   "devDependencies": {

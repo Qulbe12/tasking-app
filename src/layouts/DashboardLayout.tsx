@@ -37,9 +37,9 @@ const DashboardLayout = () => {
             <IconChartBar size={72} />
           </ActionIcon>
           <ActionIcon
-            opacity={location.pathname === "" ? 1 : 0.1}
+            opacity={location.pathname === "/board/emails" ? 1 : 0.5}
             onClick={() => {
-              //
+              navigate("/board/emails");
             }}
           >
             <IconMail size={72} />

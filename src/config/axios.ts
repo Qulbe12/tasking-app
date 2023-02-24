@@ -1,13 +1,24 @@
 import axios from "axios";
 import { BASE_URL } from "../constants/URLS";
 
-const token = localStorage.getItem("token");
-
 export const axiosPrivate = axios.create({
   baseURL: BASE_URL,
   headers: {
     Accept: "application/json",
-    // "Content-Type": "multipart/form-data",
-    Authorization: token ? `Bearer ${localStorage.getItem("token")}` : undefined,
   },
 });
+
+axiosPrivate.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem("token");
+
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    // console.log("request error", error);
+    return Promise.reject(error);
+  },
+);

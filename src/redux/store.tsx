@@ -12,6 +12,7 @@ import templatesReducer from "./slices/templateSlice";
 import documentsReducer from "./slices/documentSlice";
 import groupsReducer from "./slices/groupsSlice";
 import workspacesReducer from "./slices/workspacesSlice";
+import nylasReducer from "./slices/nylasSlice";
 
 const persistConfig = {
   blacklist: [], // eg: ["Boards"]
@@ -27,6 +28,7 @@ const reducers = combineReducers({
   documents: documentsReducer,
   groups: groupsReducer,
   workspaces: workspacesReducer,
+  nylas: nylasReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, reducers);

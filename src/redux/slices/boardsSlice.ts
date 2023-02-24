@@ -1,4 +1,4 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { IBoard } from "hexa-sdk";
 import { addBoard, deleteBoard, getBoards, updateBoard } from "../api/boardsApi";
 import { showError } from "../commonSliceFunctions";
@@ -31,6 +31,10 @@ export const boardsSlice = createSlice({
   reducers: {
     setActiveBoard: (state, action) => {
       state.activeBoard = action.payload;
+    },
+    updateSocketBoard: (state, action: PayloadAction<IBoard>) => {
+      const index = state.data.findIndex((b) => b.id === action.payload.id);
+      state.data[index] = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -93,7 +97,7 @@ export const boardsSlice = createSlice({
   },
 });
 
-export const { setActiveBoard } = boardsSlice.actions;
+export const { setActiveBoard, updateSocketBoard } = boardsSlice.actions;
 
 const boardsReducer = boardsSlice.reducer;
 

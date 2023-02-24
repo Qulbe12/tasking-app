@@ -1,0 +1,52 @@
+.calendar-container {
+  .header {
+    display: grid;
+    grid-template-columns: 1fr repeat(7, 2fr);
+
+    .header-item {
+      @apply p-2 border border-gray-300;
+      display: flex;
+      flex-direction: column;
+
+      &:first-child {
+        @apply rounded-tl-md;
+      }
+      &:last-child {
+        @apply rounded-tr-md;
+      }
+    }
+  }
+
+  .body {
+    @apply max-h-screen;
+    overflow-y: auto;
+    .body-row {
+      display: grid;
+      grid-template-columns: 1fr repeat(7, 2fr);
+
+      &:last-child {
+        @apply rounded-b-md;
+      }
+
+      .body-cell {
+        @apply border border-gray-300 h-24;
+        background: rgba(97, 97, 97, 0.13);
+
+        &:first-child {
+          @apply p-2;
+          background: rgba(28, 28, 28, 0.13);
+        }
+
+        .sub-cell {
+          @apply p-2 border border-gray-200 h-24;
+          height: 50%;
+
+          &:hover {
+            @apply hover:bg-gray-400;
+            cursor: pointer;
+          }
+        }
+      }
+    }
+  }
+}

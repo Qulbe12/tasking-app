@@ -2,6 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
+@import "../components/Calendar.scss";
+
 .react-horizontal-scrolling-menu--scroll-container::-webkit-scrollbar {
   display: none;
 }

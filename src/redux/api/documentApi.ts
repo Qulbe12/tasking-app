@@ -4,7 +4,7 @@ import api from "../../config/api";
 
 const { documentApi } = api;
 
-const { addFiles, addUsers, create, get, getById, remove, removeUser, update } = documentApi;
+const { addFiles, addUsers, create, get, getById, removeUser, update } = documentApi;
 
 export const createDocument = createAsyncThunk(
   "documents/createDocument",
@@ -50,11 +50,6 @@ export const addDocumentUsers = createAsyncThunk(
 export const getDocumentById = createAsyncThunk(
   "documents/getDocumentById",
   async ({ documentId }: { documentId: string }) => (await getById(documentId)).data,
-);
-
-export const removeDocument = createAsyncThunk(
-  "documents/removeDocument",
-  async ({ documentId }: { documentId: string }) => (await remove(documentId)).data,
 );
 
 export const removeDocumentUser = createAsyncThunk(

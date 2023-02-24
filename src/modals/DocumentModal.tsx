@@ -79,7 +79,7 @@ const DocumentModal = ({ onClose, opened, title }: CommonModalProps) => {
             dueDate: dueDate.toISOString() as any,
             priority,
             status,
-            files: files,
+            files: files || ([] as any),
             assignedUsers: [],
             ccUsers: [],
             templateId: data.find((t) => t.name === selectedTemplate)?.id || "",

@@ -3,7 +3,7 @@ import { ICreateBoard, IUpdateBoard } from "hexa-sdk";
 import api from "../../config/api";
 
 const { boardApi } = api;
-const { create, get, getById, update, remove } = boardApi;
+const { create, get, getById, update, remove, addMembers, removeMember } = boardApi;
 
 export const addBoard = createAsyncThunk(
   "boards/add",
@@ -29,4 +29,16 @@ export const updateBoard = createAsyncThunk(
 export const deleteBoard = createAsyncThunk(
   "boards/deleteBoard",
   async (id: string) => (await remove(id)).data,
+);
+
+export const addBoardMembers = createAsyncThunk(
+  "boards/addBoardMembers",
+  async ({ boardId, emails }: { boardId: string; emails: string[] }) =>
+    (await addMembers(boardId, emails)).data,
+);
+
+export const removeBoardMember = createAsyncThunk(
+  "boards/removeBoardMember",
+  async ({ boardId, email }: { boardId: string; email: string }) =>
+    (await removeMember(boardId, email)).data,
 );
