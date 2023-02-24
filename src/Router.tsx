@@ -13,7 +13,7 @@ import DocumentsList from "./views/documents/DocumentsList";
 import Teams from "./views/teams/Teams";
 import WorkspacesList from "./views/workspaces/WorkspacesList";
 import BoardsList from "./views/board/BoardsList";
-import EmailList from "./views/email/EmailList";
+import EmailPage from "./views/email/EmailPage";
 
 const router = createBrowserRouter([
   {
@@ -58,7 +58,7 @@ const router = createBrowserRouter([
           },
           {
             path: "/board/emails",
-            element: <EmailList />,
+            element: <EmailPage />,
           },
         ],
       },
