@@ -67,6 +67,8 @@ const DocumentModal = ({ onClose, opened, title }: CommonModalProps) => {
       <LoadingOverlay visible={!!loaders.adding} />
       <form
         onSubmit={form.onSubmit(async (values) => {
+          console.log(activeBoard?.id);
+
           if (!activeBoard?.id) return;
 
           const { title, description, startDate, dueDate, priority, status } = form.values;
@@ -85,23 +87,10 @@ const DocumentModal = ({ onClose, opened, title }: CommonModalProps) => {
             templateId: data.find((t) => t.name === selectedTemplate)?.id || "",
           };
 
-          // const formdata = new FormData();
-          // Object.getOwnPropertyNames(doc).forEach((prop: any) => {
-          //   const anydoc: any = doc;
-          //   if (prop === "files") {
-          //     const files: FileList = anydoc[prop];
-          //     [...files].forEach(function (file, i) {
-          //       formdata.append("files[]", file, file.name);
-          //     });
-          //   } else {
-          //     formdata.append(prop, anydoc[prop]);
-          //   }
-          // });
-          // console.log(formdata);
+          console.log("Creating document");
 
-          // axiosPrivate.post(`/boards/${activeBoard.id}/documents`, formdata);
-          // return;
           await dispatch(createDocument({ boardId: activeBoard.id, document: doc }));
+          form.reset();
 
           onClose();
         })}
