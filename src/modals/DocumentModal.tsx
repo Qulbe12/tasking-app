@@ -1,7 +1,6 @@
 import {
   Button,
   Flex,
-  Grid,
   Group,
   LoadingOverlay,
   Modal,
@@ -20,11 +19,10 @@ import { useAppDispatch, useAppSelector } from "../redux/store";
 import CommonModalProps from "./CommonModalProps";
 import DynamicField from "../components/DynamicField";
 import CustomDropzone from "../components/CustomDropzone";
-import { Dropzone, FileWithPath } from "@mantine/dropzone";
-import { IconFile, IconX } from "@tabler/icons";
 import { createDocument } from "../redux/api/documentApi";
 import { DatePicker } from "@mantine/dates";
 import TemplateModal from "./TemplateModal";
+import { FileWithPath } from "@mantine/dropzone";
 
 const DocumentModal = ({ onClose, opened, title }: CommonModalProps) => {
   const dispatch = useAppDispatch();
@@ -32,6 +30,7 @@ const DocumentModal = ({ onClose, opened, title }: CommonModalProps) => {
   const { data, loading } = useAppSelector((state) => state.templates);
   const { activeBoard, loaders } = useAppSelector((state) => state.boards);
   const { activeWorkspace } = useAppSelector((state) => state.workspaces);
+  const { loaders: docLoaders } = useAppSelector((state) => state.documents);
 
   useEffect(() => {
     if (!activeWorkspace?.id) return;
@@ -53,16 +52,15 @@ const DocumentModal = ({ onClose, opened, title }: CommonModalProps) => {
     },
   });
 
-  const [files, setFiles] = useState<FileList>();
-  const [commentFiles, setCommentFiles] = useState<FileWithPath[]>([]);
+  const [files, setFiles] = useState<FileWithPath[]>([]);
+
+  // const [commentFiles, setCommentFiles] = useState<FileWithPath[]>([]);
 
   return (
     <Modal opened={opened} onClose={onClose} title={title}>
       <LoadingOverlay visible={!!loaders.adding} />
       <form
         onSubmit={form.onSubmit(async (values) => {
-          console.log(activeBoard?.id);
-
           if (!activeBoard?.id) return;
 
           const { title, description, startDate, dueDate, priority, status } = form.values;
@@ -75,16 +73,14 @@ const DocumentModal = ({ onClose, opened, title }: CommonModalProps) => {
             dueDate: dueDate.toISOString() as any,
             priority,
             status,
-            files: files || ([] as any),
+            files: (files as unknown as FileList) || ([] as any),
             assignedUsers: [],
             ccUsers: [],
             templateId: data.find((t) => t.name === selectedTemplate)?.id || "",
           };
           await dispatch(createDocument({ boardId: activeBoard.id, document: doc }));
           form.reset();
-
           form.reset();
-
           onClose();
         })}
       >
@@ -157,27 +153,22 @@ const DocumentModal = ({ onClose, opened, title }: CommonModalProps) => {
             return <DynamicField key={f.id} field={f} form={form} />;
           })}
 
+          {Array.from(files).map((f) => {
+            return <div key={f.name}>{f.name}</div>;
+          })}
+
           {selectedTemplate && (
             <Paper>
-              <input
-                type="file"
-                multiple
-                onChange={(e) => {
-                  if (!e.target.files) return;
-                  setFiles(e.target.files);
-                }}
-              />
               <CustomDropzone
                 onDrop={(files) => {
-                  console.log(files[0]);
-                  // setFiles(files);
+                  setFiles(files);
                 }}
               />
             </Paper>
           )}
 
           <Group position="right" mt="md">
-            <Button disabled={!selectedTemplate} loading={!!loaders.adding} type="submit">
+            <Button disabled={!selectedTemplate} loading={!!docLoaders.adding} type="submit">
               Create Document
             </Button>
           </Group>
@@ -186,7 +177,7 @@ const DocumentModal = ({ onClose, opened, title }: CommonModalProps) => {
 
       {selectedTemplate && (
         <Stack>
-          <Grid grow my="xl">
+          {/* <Grid grow my="xl">
             {commentFiles.map((file, index) => {
               return (
                 <Grid.Col span="content" key={file.name + index}>
@@ -210,30 +201,32 @@ const DocumentModal = ({ onClose, opened, title }: CommonModalProps) => {
                 </Grid.Col>
               );
             })}
-          </Grid>
-          <Dropzone
-            onDrop={(files) => {
-              setCommentFiles(files);
-            }}
-            activateOnClick={false}
-            styles={{
-              inner: { pointerEvents: "all" },
-              root: {
-                padding: 0,
-                border: "none",
-                backgroundColor: "transparent",
-                ":hover": { backgroundColor: "transparent" },
-              },
-            }}
-          >
-            <Textarea label="Comment" description="Drag files here..." />
-          </Dropzone>
+          </Grid> */}
+          {/* <>
+            <Dropzone
+              onDrop={(files) => {
+                setCommentFiles(files);
+              }}
+              activateOnClick={false}
+              styles={{
+                inner: { pointerEvents: "all" },
+                root: {
+                  padding: 0,
+                  border: "none",
+                  backgroundColor: "transparent",
+                  ":hover": { backgroundColor: "transparent" },
+                },
+              }}
+            >
+              <Textarea label="Comment" description="Drag files here..." />
+            </Dropzone>
 
-          <Group position="right" mt="md">
-            <Button disabled size="xs" loading={false}>
-              Comment
-            </Button>
-          </Group>
+            <Group position="right" mt="md">
+              <Button disabled size="xs" loading={false}>
+                Comment
+              </Button>
+            </Group>
+          </> */}
         </Stack>
       )}
 

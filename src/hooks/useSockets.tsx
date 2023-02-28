@@ -112,13 +112,13 @@ const useSockets = () => {
   }, []);
 
   useEffect(() => {
-    if (!activeWorkspace?.id || !user?.id) return;
-    joinWorkspace({ accessToken: user?.id, room: activeWorkspace?.id });
+    if (!activeWorkspace?.id || !user?.user.id) return;
+    joinWorkspace({ accessToken: user?.user.id, room: activeWorkspace?.id });
   }, [activeWorkspace]);
 
   useEffect(() => {
-    if (!activeBoard?.id || !user?.id) return;
-    joinBoard({ accessToken: user?.id, room: activeBoard?.id });
+    if (!activeBoard?.id || !user?.user.id) return;
+    joinBoard({ accessToken: user?.user.id, room: activeBoard?.id });
   }, [activeBoard]);
 
   const joinBoard = (payload: IJoinRoomPayload) => {

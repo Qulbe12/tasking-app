@@ -30,7 +30,6 @@ const TemplateList = () => {
         <Title order={2}>Form Templates</Title>
         <Button onClick={toggleOpen}>Add Form</Button>
       </Flex>
-
       <Grid>
         {templates.data?.map((t) => {
           return (
@@ -47,7 +46,6 @@ const TemplateList = () => {
           );
         })}
       </Grid>
-
       <TemplateModal
         opened={open}
         onClose={() => {
