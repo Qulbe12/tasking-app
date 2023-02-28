@@ -2,7 +2,7 @@ import { Button, Flex, Title } from "@mantine/core";
 import React, { useState } from "react";
 import Calander from "../../components/Calendar";
 import Filter from "../../components/Filter";
-import { connectNylas } from "../../redux/api/nylasApi";
+import { connectNylas, fetchEmails } from "../../redux/api/nylasApi";
 import { useAppDispatch, useAppSelector } from "../../redux/store";
 import EmailList from "./EmailList";
 
@@ -10,14 +10,13 @@ const EmailPage = () => {
   const dispatch = useAppDispatch();
 
   const { data: templates } = useAppSelector((state) => state.templates);
-  const { status } = useAppSelector((state) => state.nylas);
+  const { user } = useAppSelector((state) => state.auth);
 
   const [selectedMode, setSelectedMode] = useState(true);
   const [filter, setFilter] = useState<string[]>([]);
   const [emailFilter, setEmailFilter] = useState<string[]>([]);
-  const [con, setCon] = useState(false);
 
-  if (!status && !con) {
+  if (!user?.nylasToken) {
     return (
       <div>
         Not Connected
@@ -27,13 +26,6 @@ const EmailPage = () => {
           }}
         >
           Connect
-        </Button>
-        <Button
-          onClick={() => {
-            setCon(true);
-          }}
-        >
-          Dummy Connect
         </Button>
       </div>
     );
@@ -57,6 +49,13 @@ const EmailPage = () => {
           {selectedMode ? "Calendar" : "List"}
         </Button>
       </Flex>
+      <Button
+        onClick={() => {
+          dispatch(fetchEmails());
+        }}
+      >
+        Get Emails
+      </Button>
       {selectedMode && <EmailList />}
       {!selectedMode && <Calander />}
     </div>

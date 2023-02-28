@@ -1,7 +1,7 @@
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { showNotification } from "@mantine/notifications";
 import api from "../../config/api";
-import { IAuthUser, IRegisterUser } from "hexa-sdk/dist/app.api";
+import { IAuthUser, IRegisterUser, NylasConnectedPayload } from "hexa-sdk/dist/app.api";
 
 interface User {
   email: string;
@@ -52,6 +52,12 @@ export const authSlice = createSlice({
       localStorage.clear();
       state.token = "";
     },
+    updateUserNylasToken: (state, action: PayloadAction<NylasConnectedPayload>) => {
+      if (state.user) {
+        localStorage.setItem("nylasToken", action.payload.access_token);
+        state.user.nylasToken = action.payload;
+      }
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -61,6 +67,9 @@ export const authSlice = createSlice({
       .addCase(loginUser.fulfilled, (state, action) => {
         state.loading -= 1;
         state.user = action.payload;
+        console.log("ACTION LOG", action.payload.nylasToken);
+
+        localStorage.setItem("nylasToken", action.payload.nylasToken.accessToken);
         state.token = action.payload.accessToken;
       })
       .addCase(loginUser.rejected, (state, action) => {
@@ -94,7 +103,7 @@ export const authSlice = createSlice({
   },
 });
 
-export const { setAuthUser, logout } = authSlice.actions;
+export const { setAuthUser, logout, updateUserNylasToken } = authSlice.actions;
 
 const authReducer = authSlice.reducer;
 
