@@ -79,12 +79,13 @@ const TemplateModal = ({ onClose, opened, template }: ModalProps & TemplateModal
         <Stack>
           <TextInput
             withAsterisk
+            disabled={template?.default}
             label="Document Type"
             placeholder="Invoice"
             {...form.getInputProps("name")}
           />
 
-          {template && (
+          {!template?.default && template && (
             <Flex gap="md">
               <Text>Fields</Text>
               <ActionIcon variant="filled" color="blue" onClick={() => setNewFieldModal(true)}>
@@ -98,7 +99,7 @@ const TemplateModal = ({ onClose, opened, template }: ModalProps & TemplateModal
           })}
 
           <Group position="apart" mt="md">
-            {template && (
+            {template && !template.default && (
               <Button
                 variant="light"
                 color="red"
@@ -116,9 +117,11 @@ const TemplateModal = ({ onClose, opened, template }: ModalProps & TemplateModal
               <Button variant="outline" onClick={onClose}>
                 Cancel
               </Button>
-              <Button loading={!!loading} type="submit">
-                {template ? "Update" : "Create Form"}
-              </Button>
+              {!template?.default && (
+                <Button loading={!!loading} type="submit">
+                  {template ? "Update" : "Create Form"}
+                </Button>
+              )}
             </Group>
           </Group>
         </Stack>

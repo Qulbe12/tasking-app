@@ -63,6 +63,8 @@ const DynamicField = ({ field, form, value, onChange }: DynamicFieldProps) => {
           withAsterisk={field.required}
           label={field.label}
           {...form?.getInputProps(field.key)}
+          value={parseInt(value || "")}
+          onChange={(e) => onChange && onChange(`${e}`)}
         />
       );
     case FieldType.Radio:

@@ -13,7 +13,7 @@ const AnalyticsPage = () => {
     "2,city": true,
   });
 
-  const [selectedTemplate, setSelectedTemplate] = useState<string | null>(templates[0].id);
+  const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
 
   const columns = useMemo(() => {
     const foundTemplate = templates.find((t) => t.id === selectedTemplate);
@@ -36,10 +36,13 @@ const AnalyticsPage = () => {
         defaultFlex: 1,
         render: ({ value }: { value: string }) => new Date(value).toDateString(),
       },
-      foundTemplate?.fields.map((f) => {
-        return { name: f.key, header: f.label, defaultFlex: 1 };
-      }),
     ];
+  }, [selectedTemplate, documents]);
+
+  const filteredDocuments = useMemo(() => {
+    return documents.filter((d) => {
+      return d.template.id === selectedTemplate;
+    });
   }, [selectedTemplate]);
 
   return (
@@ -49,7 +52,6 @@ const AnalyticsPage = () => {
       <Flex my="md">
         <Select
           label="Document Type"
-          defaultValue={templates[0].id}
           value={selectedTemplate}
           onChange={(val) => setSelectedTemplate(val)}
           data={[
@@ -68,7 +70,7 @@ const AnalyticsPage = () => {
           setCellSelection(val);
         }}
         columns={columns}
-        dataSource={documents}
+        dataSource={filteredDocuments}
         // style={gridStyle}
       />
     </div>

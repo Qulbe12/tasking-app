@@ -39,7 +39,7 @@ function MainLink({ icon, color, label, to }: MainLinkProps) {
 }
 
 const data: MainLinkProps[] = [
-  { icon: <IconLayout size={16} />, color: "blue", label: "Boards", to: "/board" },
+  { icon: <IconLayout size={16} />, color: "blue", label: "Documents", to: "/board" },
   { icon: <IconChartBar size={16} />, color: "teal", label: "Analytics", to: "/board/analytics" },
   { icon: <IconMail size={16} />, color: "violet", label: "Email", to: "/board/emails" },
   { icon: <IconUserPlus size={16} />, color: "grape", label: "Members", to: "/board/teams" },

@@ -35,8 +35,10 @@ export const groupsSlice = createSlice({
         state.data.unshift(action.payload);
         state.loaders.adding = false;
       })
-      .addCase(createGroup.rejected, (state) => {
+      .addCase(createGroup.rejected, (state, action) => {
         state.loaders.adding = false;
+        console.log(action.error.message);
+
         showError("Something went wrong");
       }),
 });
