@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { IDocument } from "hexa-sdk";
+import { IDocument } from "hexa-sdk/dist/app.api";
 import { createDocument, getDocuments } from "../api/documentApi";
 import { showError } from "../commonSliceFunctions";
 

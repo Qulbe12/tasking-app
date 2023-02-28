@@ -14,6 +14,8 @@ import Teams from "./views/teams/Teams";
 import WorkspacesList from "./views/workspaces/WorkspacesList";
 import BoardsList from "./views/board/BoardsList";
 import EmailPage from "./views/email/EmailPage";
+import PaymentPage from "./views/payment/PaymentPage";
+import SettingsLayout from "./layouts/SettingsLayout";
 
 const router = createBrowserRouter([
   {
@@ -27,6 +29,16 @@ const router = createBrowserRouter([
           {
             path: "/",
             element: <WorkspacesList />,
+          },
+          {
+            path: "/account/settings",
+            element: <SettingsLayout />,
+            children: [
+              {
+                path: "payment",
+                element: <PaymentPage />,
+              },
+            ],
           },
         ],
       },

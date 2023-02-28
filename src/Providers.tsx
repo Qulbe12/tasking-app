@@ -1,4 +1,9 @@
-import { createEmotionCache, MantineProvider } from "@mantine/core";
+import {
+  ColorScheme,
+  ColorSchemeProvider,
+  createEmotionCache,
+  MantineProvider,
+} from "@mantine/core";
 
 import { RouterProvider } from "react-router-dom";
 import router from "./Router";
@@ -19,10 +24,17 @@ const Providers = () => {
       withNormalizeCSS
       theme={{ colorScheme: mode }}
     >
-      <NotificationsProvider>
-        {isConnected}
-        <RouterProvider router={router} />
-      </NotificationsProvider>
+      <ColorSchemeProvider
+        colorScheme={"dark"}
+        toggleColorScheme={function (colorScheme?: ColorScheme | undefined): void {
+          throw new Error("Function not implemented.");
+        }}
+      >
+        <NotificationsProvider>
+          {isConnected}
+          <RouterProvider router={router} />
+        </NotificationsProvider>
+      </ColorSchemeProvider>
     </MantineProvider>
   );
 };

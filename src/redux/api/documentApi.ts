@@ -1,5 +1,5 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { ICreateDocument, IDocumentQuery, IUpdateDocument } from "hexa-sdk";
+import { ICreateDocument, IDocumentQuery, IUpdateDocument } from "hexa-sdk/dist/app.api";
 import api from "../../config/api";
 
 const { documentApi } = api;

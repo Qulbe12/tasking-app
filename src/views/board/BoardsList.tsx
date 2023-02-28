@@ -1,6 +1,6 @@
 import { Button, Grid, LoadingOverlay, Title } from "@mantine/core";
 import { IconClock, IconPlus } from "@tabler/icons";
-import { IBoard } from "hexa-sdk";
+import { IBoard } from "hexa-sdk/dist/app.api";
 import React, { useEffect, useState } from "react";
 import BoardCard from "../../components/BoardCard";
 import BoardModal from "../../modals/BoardModal";
@@ -25,10 +25,10 @@ const BoardsList = () => {
   return (
     <div>
       <LoadingOverlay visible={!!loading} overlayBlur={2} />
-      <div className="flex justify-between items-center m-4">
+      <div className="flex justify-between items-center mb-4">
         <Title className="flex items-center gap-4">
           <IconClock size={32} />
-          Personal Board
+          Boards
         </Title>
 
         <Button onClick={() => setModalOpen(true)} size="xs">

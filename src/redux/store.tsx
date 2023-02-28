@@ -13,9 +13,11 @@ import documentsReducer from "./slices/documentSlice";
 import groupsReducer from "./slices/groupsSlice";
 import workspacesReducer from "./slices/workspacesSlice";
 import nylasReducer from "./slices/nylasSlice";
+import stripeReducer from "./slices/stripeSlice";
+import filterReducer from "./slices/filterSlice";
 
 const persistConfig = {
-  blacklist: [], // eg: ["Boards"]
+  blacklist: ["filters"], // eg: ["Boards"]
   key: "root",
   storage,
 };
@@ -29,6 +31,8 @@ const reducers = combineReducers({
   groups: groupsReducer,
   workspaces: workspacesReducer,
   nylas: nylasReducer,
+  stripe: stripeReducer,
+  filters: filterReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, reducers);

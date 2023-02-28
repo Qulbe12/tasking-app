@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { IGroup } from "hexa-sdk";
+import { IGroup } from "hexa-sdk/dist/app.api";
 import { createGroup } from "../api/groupsApi";
 import { showError } from "../commonSliceFunctions";
 

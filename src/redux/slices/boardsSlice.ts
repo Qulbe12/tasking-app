@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { IBoard } from "hexa-sdk";
+import { IBoard } from "hexa-sdk/dist/app.api";
 import { addBoard, deleteBoard, getBoards, updateBoard } from "../api/boardsApi";
 import { showError } from "../commonSliceFunctions";
 

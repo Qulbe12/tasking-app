@@ -1,6 +1,6 @@
 import { Button, Grid, LoadingOverlay, Title } from "@mantine/core";
 import { IconDeviceLaptop, IconPlus } from "@tabler/icons";
-import { IWorkspace } from "hexa-sdk";
+import { IWorkspace } from "hexa-sdk/dist/app.api";
 import { useEffect, useState } from "react";
 import WorkspaceCard from "../../components/WorkspaceCard";
 import WorkspaceModal from "../../modals/WorkspaceModal";

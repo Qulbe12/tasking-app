@@ -1,82 +1,66 @@
-import { ActionIcon, Burger, Paper, Title } from "@mantine/core";
-import { useState } from "react";
-import { Outlet, useNavigate, useLocation } from "react-router-dom";
-
-import { IconChartBar, IconLayout, IconMail, IconSettings, IconUserPlus } from "@tabler/icons";
+import React from "react";
+import { AppShell, Navbar, Header, Group, TextInput, Flex, ActionIcon } from "@mantine/core";
 
 import "./DashboardLayout.scss";
-import Header from "../components/Header";
-import { useAppSelector } from "../redux/store";
+import { Outlet, useNavigate } from "react-router-dom";
+import { MainLinks } from "./MainLinks";
+import UserButton from "../components/UserButton";
+import { IconFilter } from "@tabler/icons";
+import { useAppDispatch, useAppSelector } from "../redux/store";
+import { setSearch, toggleFilterOpen } from "../redux/slices/filterSlice";
 
 const DashboardLayout = () => {
-  const [showSider, setShowSider] = useState(true);
-  const activeBoard = useAppSelector((state) => state.boards.activeBoard);
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const location = useLocation();
+  const { search } = useAppSelector((state) => state.filters);
 
   return (
-    <div className={`dashboard_layout ${showSider && "show"}`}>
-      <div className={"dashboard_layout-sidebar"}>
-        <h3 className="title cursor-pointer" onClick={() => navigate("/")}>
-          HEXA
-        </h3>
-
-        <div className="menu">
-          <ActionIcon
-            opacity={location.pathname === "/board" ? 1 : 0.5}
-            onClick={() => navigate("/board")}
-          >
-            <IconLayout size={72} />
-          </ActionIcon>
-          <ActionIcon
-            opacity={location.pathname === "" ? 1 : 0.1}
-            onClick={() => {
-              //
-            }}
-          >
-            <IconChartBar size={72} />
-          </ActionIcon>
-          <ActionIcon
-            opacity={location.pathname === "/board/emails" ? 1 : 0.5}
-            onClick={() => {
-              navigate("/board/emails");
-            }}
-          >
-            <IconMail size={72} />
-          </ActionIcon>
-          <ActionIcon
-            opacity={location.pathname === "/board/teams" ? 1 : 0.5}
-            onClick={() => {
-              navigate("/board/teams");
-            }}
-          >
-            <IconUserPlus size={72} />
-          </ActionIcon>
-          <ActionIcon
-            opacity={location.pathname === "" ? 1 : 0.1}
-            onClick={() => {
-              //
-            }}
-          >
-            <IconSettings size={72} />
-          </ActionIcon>
-        </div>
-        <div />
-      </div>
-      <Paper className="dashboard_layout-topnav">
-        <div className=" flex flex-row items-center p-4 justify-between ">
-          <div className="flex flex-row items-center ">
-            <Burger size={24} opened={showSider} onClick={() => setShowSider((s) => !s)} />
-            <Title className="pl-4" order={2}>
-              {activeBoard?.title}
-            </Title>
-          </div>
-          <Header />
-        </div>
-      </Paper>
-      <Paper className="dashboard_layout-main">
+    <div
+      style={{
+        height: "100vh",
+      }}
+    >
+      <AppShell
+        padding="md"
+        fixed={false}
+        navbar={
+          <Navbar width={{ base: 250 }} h="screen" p="xs">
+            <Navbar.Section grow mt="xs">
+              <MainLinks />
+            </Navbar.Section>
+          </Navbar>
+        }
+        header={
+          <Header height={60}>
+            <Group sx={{ height: "100%" }} px={20} position="apart">
+              <div className="cursor-pointer" onClick={() => navigate("/")}>
+                HEXADESK
+              </div>
+              <Flex gap="md" align="center">
+                <ActionIcon onClick={() => dispatch(toggleFilterOpen())}>
+                  <IconFilter size={24} />
+                </ActionIcon>
+                <TextInput
+                  placeholder="Search"
+                  value={search}
+                  onChange={(e) => {
+                    dispatch(setSearch(e.target.value));
+                  }}
+                />
+                <UserButton />
+              </Flex>
+            </Group>
+          </Header>
+        }
+        styles={() => ({
+          main: {
+            overflow: "scroll",
+            height: "100%",
+          },
+        })}
+      >
         <Outlet />
-      </Paper>
+      </AppShell>
     </div>
   );
 };

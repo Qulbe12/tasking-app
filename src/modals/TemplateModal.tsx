@@ -15,7 +15,7 @@ import {
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { IconPlus } from "@tabler/icons";
-import { FieldType, ICreateField, ITemplate } from "hexa-sdk";
+import { FieldType, ICreateField, ITemplate } from "hexa-sdk/dist/app.api";
 import React, { useEffect, useState } from "react";
 import DynamicField from "../components/DynamicField";
 import {

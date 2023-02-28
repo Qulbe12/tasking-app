@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { ITemplate } from "hexa-sdk";
+import { ITemplate } from "hexa-sdk/dist/app.api";
 import {
   addTemplate,
   addTemplateField,

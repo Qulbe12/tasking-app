@@ -1,5 +1,5 @@
 import { Button, Group, Modal, TransferList, TransferListData } from "@mantine/core";
-import { IGroup } from "hexa-sdk";
+import { IGroup } from "hexa-sdk/dist/app.api";
 
 import React, { useEffect, useState } from "react";
 import CommonModalProps from "../../../modals/CommonModalProps";

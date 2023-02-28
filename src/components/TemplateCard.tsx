@@ -1,5 +1,5 @@
 import { Card } from "@mantine/core";
-import { ITemplate } from "hexa-sdk";
+import { ITemplate } from "hexa-sdk/dist/app.api";
 import React from "react";
 
 type TemplateCardProps = {
