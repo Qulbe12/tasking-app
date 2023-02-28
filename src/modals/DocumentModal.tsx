@@ -13,7 +13,7 @@ import {
   TextInput,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
-import { DocumentPriority, DocumentStatus, ICreateDocument, IField } from "hexa-sdk";
+import { DocumentPriority, DocumentStatus, ICreateDocument, IField } from "hexa-sdk/dist/app.api";
 import React, { useEffect, useState } from "react";
 import { getAllTemplates } from "../redux/api/templateApi";
 import { useAppDispatch, useAppSelector } from "../redux/store";
@@ -56,12 +56,6 @@ const DocumentModal = ({ onClose, opened, title }: CommonModalProps) => {
   const [files, setFiles] = useState<FileList>();
   const [commentFiles, setCommentFiles] = useState<FileWithPath[]>([]);
 
-  // function getFormData(object: any) {
-  //   const formData = new FormData();
-  //   Object.keys(object).forEach((key) => formData.append(key, object[key]));
-  //   return formData;
-  // }
-
   return (
     <Modal opened={opened} onClose={onClose} title={title}>
       <LoadingOverlay visible={!!loaders.adding} />
@@ -85,23 +79,9 @@ const DocumentModal = ({ onClose, opened, title }: CommonModalProps) => {
             templateId: data.find((t) => t.name === selectedTemplate)?.id || "",
           };
 
-          // const formdata = new FormData();
-          // Object.getOwnPropertyNames(doc).forEach((prop: any) => {
-          //   const anydoc: any = doc;
-          //   if (prop === "files") {
-          //     const files: FileList = anydoc[prop];
-          //     [...files].forEach(function (file, i) {
-          //       formdata.append("files[]", file, file.name);
-          //     });
-          //   } else {
-          //     formdata.append(prop, anydoc[prop]);
-          //   }
-          // });
-          // console.log(formdata);
-
-          // axiosPrivate.post(`/boards/${activeBoard.id}/documents`, formdata);
-          // return;
           await dispatch(createDocument({ boardId: activeBoard.id, document: doc }));
+
+          form.reset();
 
           onClose();
         })}
@@ -177,31 +157,6 @@ const DocumentModal = ({ onClose, opened, title }: CommonModalProps) => {
 
           {selectedTemplate && (
             <Paper>
-              <Grid grow my="xl">
-                {/* {files.map((file, index) => {
-                  return (
-                    <Grid.Col span="content" key={file.name + index}>
-                      <Group position="apart">
-                        <Group>
-                          <IconFile stroke={1} size={36} />
-                          {file.name}
-                        </Group>
-                        <IconX
-                          cursor="pointer"
-                          stroke={1}
-                          size={16}
-                          onClick={() => {
-                            const newFiles = files.filter((f) => {
-                              return f.name === file.name;
-                            });
-                            setFiles(newFiles);
-                          }}
-                        />
-                      </Group>
-                    </Grid.Col>
-                  );
-                })} */}
-              </Grid>
               <input
                 type="file"
                 multiple
@@ -213,7 +168,6 @@ const DocumentModal = ({ onClose, opened, title }: CommonModalProps) => {
               <CustomDropzone
                 onDrop={(files) => {
                   console.log(files[0]);
-
                   // setFiles(files);
                 }}
               />

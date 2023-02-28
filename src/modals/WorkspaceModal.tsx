@@ -1,6 +1,6 @@
 import { Button, Group, Modal, Stack, TextInput } from "@mantine/core";
 import { useForm } from "@mantine/form";
-import { ICreateWorkspace, IWorkspace } from "hexa-sdk";
+import { ICreateWorkspace, IWorkspace } from "hexa-sdk/dist/app.api";
 import React, { useEffect } from "react";
 import { createWorkspace, updateWorkspace } from "../redux/api/workspacesApi";
 

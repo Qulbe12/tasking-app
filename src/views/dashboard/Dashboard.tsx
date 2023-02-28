@@ -1,6 +1,6 @@
 import { Button, Grid, LoadingOverlay, Title } from "@mantine/core";
 import { IconClock, IconPlus } from "@tabler/icons";
-import { IBoard } from "hexa-sdk";
+import { IBoard } from "hexa-sdk/dist/app.api";
 import React, { useState } from "react";
 import BoardCard from "../../components/BoardCard";
 import BoardModal from "../../modals/BoardModal";

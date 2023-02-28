@@ -2,7 +2,7 @@ import { GeneralEvents, IJoinRoomPayload, ITemplate, JoinRoom } from "hexa-sdk/d
 import io, { Socket } from "socket.io-client";
 import { useEffect, useState } from "react";
 
-import { TemplateEvents } from "hexa-sdk";
+import { TemplateEvents } from "hexa-sdk/dist/app.api";
 
 const App = () => {
   const [board, setBoard] = useState<string>();

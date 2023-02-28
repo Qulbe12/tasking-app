@@ -1,5 +1,5 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { ICreateBoard, IUpdateBoard } from "hexa-sdk";
+import { ICreateBoard, IUpdateBoard } from "hexa-sdk/dist/app.api";
 import api from "../../config/api";
 
 const { boardApi } = api;

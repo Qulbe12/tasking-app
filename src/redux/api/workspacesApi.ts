@@ -1,5 +1,5 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { ICreateWorkspace, IUpdateWorkspace } from "hexa-sdk";
+import { ICreateWorkspace, IUpdateWorkspace } from "hexa-sdk/dist/app.api";
 import api from "../../config/api";
 
 const { workspaceAPi } = api;

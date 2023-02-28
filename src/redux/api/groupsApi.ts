@@ -1,5 +1,5 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { ICreateGroup, IUpdateGroup } from "hexa-sdk";
+import { ICreateGroup, IUpdateGroup } from "hexa-sdk/dist/app.api";
 import api from "../../config/api";
 
 const { groupApi } = api;
