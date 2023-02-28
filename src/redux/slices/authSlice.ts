@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { showNotification } from "@mantine/notifications";
 import api from "../../config/api";
@@ -69,6 +70,7 @@ export const authSlice = createSlice({
         state.user = action.payload;
         console.log("ACTION LOG", action.payload.nylasToken);
 
+        // @ts-ignore
         localStorage.setItem("nylasToken", action.payload.nylasToken.accessToken);
         state.token = action.payload.accessToken;
       })

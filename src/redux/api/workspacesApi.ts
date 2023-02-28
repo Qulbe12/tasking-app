@@ -3,7 +3,7 @@ import { ICreateWorkspace, IUpdateWorkspace } from "hexa-sdk/dist/app.api";
 import api from "../../config/api";
 
 const { workspaceAPi } = api;
-const { create, get, getOne, remove, update } = workspaceAPi;
+const { create, get, remove, update } = workspaceAPi;
 
 export const createWorkspace = createAsyncThunk(
   "workspaces/createWorkspace",
@@ -13,11 +13,6 @@ export const createWorkspace = createAsyncThunk(
 export const getAllWorkSpaces = createAsyncThunk(
   "workspaces/getAllWorkSpaces",
   async () => (await get()).data,
-);
-
-export const getOneWorkspace = createAsyncThunk(
-  "workspaces/getOneWorkspace",
-  async (workSpaceId: string) => (await getOne(workSpaceId)).data,
 );
 
 export const removeWorkspace = createAsyncThunk(
