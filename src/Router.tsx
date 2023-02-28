@@ -14,8 +14,10 @@ import Teams from "./views/teams/Teams";
 import WorkspacesList from "./views/workspaces/WorkspacesList";
 import BoardsList from "./views/board/BoardsList";
 import EmailPage from "./views/email/EmailPage";
+import AnalyticsPage from "./views/analytics/AnalyticsPage";
 import PaymentPage from "./views/payment/PaymentPage";
 import SettingsLayout from "./layouts/SettingsLayout";
+
 
 const router = createBrowserRouter([
   {
@@ -63,6 +65,10 @@ const router = createBrowserRouter([
           {
             path: "/board/details",
             element: <BoardDetails />,
+          },
+          {
+            path: "/board/analytics",
+            element: <AnalyticsPage />,
           },
           {
             path: "/board/teams",

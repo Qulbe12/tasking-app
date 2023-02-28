@@ -61,6 +61,8 @@ const DocumentModal = ({ onClose, opened, title }: CommonModalProps) => {
       <LoadingOverlay visible={!!loaders.adding} />
       <form
         onSubmit={form.onSubmit(async (values) => {
+          console.log(activeBoard?.id);
+
           if (!activeBoard?.id) return;
 
           const { title, description, startDate, dueDate, priority, status } = form.values;
@@ -78,8 +80,8 @@ const DocumentModal = ({ onClose, opened, title }: CommonModalProps) => {
             ccUsers: [],
             templateId: data.find((t) => t.name === selectedTemplate)?.id || "",
           };
-
           await dispatch(createDocument({ boardId: activeBoard.id, document: doc }));
+          form.reset();
 
           form.reset();
 
