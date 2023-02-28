@@ -1,12 +1,5 @@
 import React from "react";
-import {
-  IconLayout,
-  IconChartBar,
-  IconMail,
-  IconUserPlus,
-  IconSettings,
-  IconNews,
-} from "@tabler/icons";
+import { IconLayout, IconChartBar, IconMail, IconUserPlus, IconNews } from "@tabler/icons";
 import { ThemeIcon, UnstyledButton, Group, Text } from "@mantine/core";
 import { useNavigate } from "react-router-dom";
 
@@ -51,7 +44,6 @@ const data: MainLinkProps[] = [
   { icon: <IconMail size={16} />, color: "violet", label: "Email", to: "/board/emails" },
   { icon: <IconUserPlus size={16} />, color: "grape", label: "Members", to: "/board/teams" },
   { icon: <IconNews size={16} />, color: "pink", label: "Templates", to: "/templates" },
-  { icon: <IconSettings size={16} />, color: "gray", label: "Settings", to: "/settings" },
 ];
 
 export function MainLinks() {

@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { IDocument } from "hexa-sdk/dist/app.api";
-import { createDocument, getDocuments } from "../api/documentApi";
+import { createDocument, getDocuments, updateDocument } from "../api/documentApi";
 import { showError } from "../commonSliceFunctions";
 
 export interface DocumentState {
@@ -53,6 +53,19 @@ export const documentsSlice = createSlice({
       })
       .addCase(getDocuments.rejected, (state, action) => {
         state.loading -= 1;
+        state.error = action.error.message;
+        showError(action.error.message);
+      }) // Update Documents
+      .addCase(updateDocument.pending, (state, action) => {
+        state.loaders.updating = action.meta.requestId;
+      })
+      .addCase(updateDocument.fulfilled, (state, action) => {
+        const foundIndex = state.data.findIndex((d) => d.id === action.payload.id);
+        state.data[foundIndex] = action.payload;
+        state.loaders.updating = null;
+      })
+      .addCase(updateDocument.rejected, (state, action) => {
+        state.loaders.updating = null;
         state.error = action.error.message;
         showError(action.error.message);
       });

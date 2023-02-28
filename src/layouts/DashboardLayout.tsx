@@ -1,5 +1,5 @@
 import React from "react";
-import { AppShell, Navbar, Header, Group, TextInput, Flex, ActionIcon } from "@mantine/core";
+import { AppShell, Navbar, Header, Group, TextInput, Flex, ActionIcon, Text } from "@mantine/core";
 
 import "./DashboardLayout.scss";
 import { Outlet, useNavigate } from "react-router-dom";
@@ -28,6 +28,11 @@ const DashboardLayout = () => {
             <Navbar.Section grow mt="xs">
               <MainLinks />
             </Navbar.Section>
+            <Navbar.Section>
+              <Flex>
+                <Text>v0.6</Text>
+              </Flex>
+            </Navbar.Section>
           </Navbar>
         }
         header={
@@ -54,7 +59,7 @@ const DashboardLayout = () => {
         }
         styles={() => ({
           main: {
-            overflow: "scroll",
+            overflowY: "auto",
             height: "100%",
           },
         })}

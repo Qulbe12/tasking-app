@@ -14,7 +14,13 @@ import {
 import { DatePicker } from "@mantine/dates";
 import { useForm } from "@mantine/form";
 import { IconFileText } from "@tabler/icons";
-import { DocumentPriority, DocumentStatus, IAttachment, IDocument } from "hexa-sdk/dist/app.api";
+import {
+  DocumentPriority,
+  DocumentStatus,
+  IAttachment,
+  IDocument,
+  IUpdateDocument,
+} from "hexa-sdk/dist/app.api";
 import React, { useEffect, useMemo, useState } from "react";
 import Collapsable from "../../components/Collapsable";
 import DocumentCard from "../../components/DocumentCard";
@@ -22,7 +28,7 @@ import DynamicField from "../../components/DynamicField";
 import Filter from "../../components/Filter";
 import PdfViewerComponent from "../../components/PdfViewerComponent";
 import DocumentModal from "../../modals/DocumentModal";
-import { getDocuments } from "../../redux/api/documentApi";
+import { getDocuments, updateDocument } from "../../redux/api/documentApi";
 import { getAllTemplates } from "../../redux/api/templateApi";
 import { useAppDispatch, useAppSelector } from "../../redux/store";
 
@@ -37,7 +43,7 @@ const DocumentsList = () => {
 
   const dispatch = useAppDispatch();
   const { activeBoard } = useAppSelector((state) => state.boards);
-  const { data, loading } = useAppSelector((state) => state.documents);
+  const { data, loading, loaders } = useAppSelector((state) => state.documents);
   const { activeWorkspace } = useAppSelector((state) => state.workspaces);
   const { data: templates } = useAppSelector((state) => state.templates);
   const { search } = useAppSelector((state) => state.filters);
@@ -58,7 +64,7 @@ const DocumentsList = () => {
     setNewForm({ ...newForm, ...selectedDocument });
   }, [selectedDocument]);
 
-  const form = useForm();
+  const form = useForm<IUpdateDocument>();
 
   const [filter, setFilter] = useState<string[]>([]);
 
@@ -114,14 +120,24 @@ const DocumentsList = () => {
 
       <Modal
         opened={!!selectedDocument}
+        title={selectedDocument?.title}
         onClose={() => {
           setSelectedDocument(null);
         }}
       >
         {newForm && (
           <form
-            onSubmit={form.onSubmit((vals) => {
-              console.log(vals);
+            onSubmit={form.onSubmit(async () => {
+              if (!selectedDocument) return;
+              // form.setValues();
+              console.log(newForm);
+
+              await dispatch(
+                updateDocument({ documentId: selectedDocument?.id, document: newForm }),
+              );
+              setSelectedDocument(null);
+
+              // console.log(vals);
             })}
           >
             <Stack>
@@ -221,7 +237,16 @@ const DocumentsList = () => {
                 );
               })}
 
-              <Button type="submit">Close</Button>
+              <Button
+                type="submit"
+                loading={!!loaders.updating}
+                // onClick={() => {
+                //   setPdfOpen((o) => !o);
+                //   setSelectedAttachment(null);
+                // }}
+              >
+                Update
+              </Button>
             </Stack>
           </form>
         )}
