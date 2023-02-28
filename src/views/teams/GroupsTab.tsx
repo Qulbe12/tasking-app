@@ -1,5 +1,5 @@
 import { Button, Group, Table } from "@mantine/core";
-import { IGroup } from "hexa-sdk";
+import { IGroup } from "hexa-sdk/dist/app.api";
 import React, { useState } from "react";
 import { useAppSelector } from "../../redux/store";
 import CreateGroupModal from "./modals/CreateGroupModal";

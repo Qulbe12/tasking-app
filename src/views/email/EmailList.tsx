@@ -55,14 +55,7 @@ const EmailList = () => {
 
   return (
     <Grid>
-      <Grid.Col span={1}>
-        <NavLink label="Inbox" active />
-        <NavLink label="Starred" />
-        <NavLink label="Snozed" />
-        <NavLink label="Sent" />
-        <NavLink label="Draft" />
-      </Grid.Col>
-      <Grid.Col span={11}>
+      <Grid.Col span={12}>
         <div>
           <Input
             py="md"

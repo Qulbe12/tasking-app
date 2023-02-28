@@ -9,7 +9,7 @@ import {
   TextInput,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
-import { ICreateGroup } from "hexa-sdk";
+import { ICreateGroup } from "hexa-sdk/dist/app.api";
 import React, { useEffect, useState } from "react";
 import CommonModalProps from "../../../modals/CommonModalProps";
 import { createGroup } from "../../../redux/api/groupsApi";

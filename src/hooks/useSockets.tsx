@@ -11,7 +11,7 @@ import {
   IBoard,
   IDocument,
   ITemplate,
-} from "hexa-sdk";
+} from "hexa-sdk/dist/app.api";
 import { SOCKET_URL } from "../constants/URLS";
 import { useAppDispatch, useAppSelector } from "../redux/store";
 import { updateSocketBoard } from "../redux/slices/boardsSlice";

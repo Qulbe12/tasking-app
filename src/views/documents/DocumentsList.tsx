@@ -14,8 +14,9 @@ import {
 import { DatePicker } from "@mantine/dates";
 import { useForm } from "@mantine/form";
 import { IconFileText } from "@tabler/icons";
-import { DocumentPriority, DocumentStatus, IAttachment, IDocument } from "hexa-sdk";
+import { DocumentPriority, DocumentStatus, IAttachment, IDocument } from "hexa-sdk/dist/app.api";
 import React, { useEffect, useMemo, useState } from "react";
+import Collapsable from "../../components/Collapsable";
 import DocumentCard from "../../components/DocumentCard";
 import DynamicField from "../../components/DynamicField";
 import Filter from "../../components/Filter";
@@ -39,6 +40,7 @@ const DocumentsList = () => {
   const { data, loading } = useAppSelector((state) => state.documents);
   const { activeWorkspace } = useAppSelector((state) => state.workspaces);
   const { data: templates } = useAppSelector((state) => state.templates);
+  const { search } = useAppSelector((state) => state.filters);
 
   useEffect(() => {
     if (!activeBoard?.id) return;
@@ -61,20 +63,25 @@ const DocumentsList = () => {
   const [filter, setFilter] = useState<string[]>([]);
 
   const filteredData: IDocument[] = useMemo<IDocument[]>(() => {
-    if (!filter.length) return data;
-
+    // if (!filter.length) return data;
     return data.filter((d) => {
-      return filter.includes(d.template.name);
+      return (
+        filter.includes(d.template.name) ||
+        JSON.stringify(d).toLowerCase().includes(search.toLocaleLowerCase())
+      );
     });
-  }, [filter, data]);
+  }, [filter, data, search]);
 
   return (
-    <div className="p-4">
-      <Filter
-        // options={templates.map((t) => t.name)}
-        options={templates.map((t) => t.name)}
-        onChange={setFilter}
-      />
+    <div className="">
+      <Collapsable>
+        <Filter
+          // options={templates.map((t) => t.name)}
+          options={templates.map((t) => t.name)}
+          onChange={setFilter}
+        />
+      </Collapsable>
+
       <Flex justify="space-between" align="center" mb="md">
         <Title order={2}>Documents</Title>
         <Button onClick={toggleOpen}>Add Document</Button>

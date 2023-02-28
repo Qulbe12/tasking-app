@@ -1,6 +1,6 @@
 import { ActionIcon, Card, Group, LoadingOverlay, Menu, Text, Title } from "@mantine/core";
 import { IconDots, IconEdit, IconTrash } from "@tabler/icons";
-import { IBoard } from "hexa-sdk";
+import { IBoard } from "hexa-sdk/dist/app.api";
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { setActiveBoard } from "../redux/slices/boardsSlice";

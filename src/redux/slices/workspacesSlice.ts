@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { IWorkspace } from "hexa-sdk";
+import { IWorkspace } from "hexa-sdk/dist/app.api";
 import {
   createWorkspace,
   getAllWorkSpaces,

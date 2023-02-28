@@ -1,5 +1,5 @@
 import { Card, Flex, Text } from "@mantine/core";
-import { IDocument } from "hexa-sdk";
+import { IDocument } from "hexa-sdk/dist/app.api";
 import React from "react";
 
 type DocumentCardProps = {

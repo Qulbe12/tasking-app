@@ -1,5 +1,5 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { ICreateField, ICreateTemplate, IUpdateTemplate } from "hexa-sdk";
+import { ICreateField, ICreateTemplate, IUpdateTemplate } from "hexa-sdk/dist/app.api";
 import api from "../../config/api";
 
 const { templateApi } = api;

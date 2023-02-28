@@ -1,6 +1,6 @@
 import { Button, Group, Modal, Stack, Textarea, TextInput } from "@mantine/core";
 import { useForm } from "@mantine/form";
-import { IBoard } from "hexa-sdk";
+import { IBoard } from "hexa-sdk/dist/app.api";
 import React, { useEffect } from "react";
 import { addBoard, updateBoard } from "../redux/api/boardsApi";
 
@@ -69,7 +69,7 @@ const BoardModal = ({ opened, onClose, title, board }: CommonModalProps & BoardM
 
           <Group position="right" mt="md">
             <Button loading={!!loaders.adding || loaders.updating === board?.id} type="submit">
-              {board ? "Update" : "Create Project"}
+              {board ? "Update" : "Create Board"}
             </Button>
           </Group>
         </Stack>

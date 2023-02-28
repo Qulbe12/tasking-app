@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { showNotification } from "@mantine/notifications";
 import api from "../../config/api";
-import { IAuthUser, IRegisterUser } from "hexa-sdk";
+import { IAuthUser, IRegisterUser } from "hexa-sdk/dist/app.api";
 
 interface User {
   email: string;
@@ -65,6 +65,8 @@ export const authSlice = createSlice({
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.loading -= 1;
+        console.log(action.payload);
+
         state.error = action.error.message;
 
         showNotification({

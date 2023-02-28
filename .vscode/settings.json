@@ -11,5 +11,14 @@
   },
   "editor.formatOnSave": true,
   "editor.defaultFormatter": "esbenp.prettier-vscode",
-  "cSpell.words": ["Mantine", "nylas", "Progresss", "PSPDF", "tabler", "vals"]
+  "cSpell.words": [
+    "Collapsable",
+    "HEXADESK",
+    "Mantine",
+    "nylas",
+    "Progresss",
+    "PSPDF",
+    "tabler",
+    "vals"
+  ]
 }
