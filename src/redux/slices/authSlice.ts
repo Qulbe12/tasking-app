@@ -71,7 +71,10 @@ export const authSlice = createSlice({
         console.log("ACTION LOG", action.payload.nylasToken);
 
         // @ts-ignore
-        localStorage.setItem("nylasToken", action.payload.nylasToken.accessToken);
+        if (action.payload.nylasToken.accessToken) {
+          // @ts-ignore
+          localStorage.setItem("nylasToken", action.payload.nylasToken.accessToken);
+        }
         state.token = action.payload.accessToken;
       })
       .addCase(loginUser.rejected, (state, action) => {
