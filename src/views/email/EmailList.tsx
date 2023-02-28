@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Box, Card, Flex, Text, Divider, Button, Affix, Input, Grid, NavLink } from "@mantine/core";
+import { Box, Card, Flex, Text, Divider, Button, Affix, Input, Grid } from "@mantine/core";
 
 import EmailModal from "../../modals/EmailModal";
 import { IconSearch, IconStar } from "@tabler/icons";
