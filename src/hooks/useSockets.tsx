@@ -11,10 +11,12 @@ import {
   IBoard,
   IDocument,
   ITemplate,
+  NylasConnectedPayload,
 } from "hexa-sdk/dist/app.api";
 import { SOCKET_URL } from "../constants/URLS";
 import { useAppDispatch, useAppSelector } from "../redux/store";
 import { updateSocketBoard } from "../redux/slices/boardsSlice";
+import { updateUserNylasToken } from "../redux/slices/authSlice";
 
 const useSockets = () => {
   const dispatch = useAppDispatch();
@@ -81,8 +83,8 @@ const useSockets = () => {
     });
 
     // Nylas Events
-    socket.on(NylasEvents.Connected, (payload) => {
-      console.log(payload);
+    socket.on(NylasEvents.Connected, (payload: NylasConnectedPayload) => {
+      dispatch(updateUserNylasToken(payload));
     });
     socket.on(NylasEvents.Failed, (payload) => {
       console.log(payload);

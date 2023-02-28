@@ -4,54 +4,14 @@ import { Box, Card, Flex, Text, Divider, Button, Affix, Input, Grid } from "@man
 import EmailModal from "../../modals/EmailModal";
 import { IconSearch, IconStar } from "@tabler/icons";
 import EmailDetailsModal from "../../modals/EmailDetailsModal";
+import { useAppSelector } from "../../redux/store";
 
 const EmailList = () => {
   const [opened, setOpened] = useState(false);
 
-  const email = [
-    {
-      sender: "Indeed",
-      motive: "Someone wants to add u in a new project",
-      message: "Hey! this is our new project",
-    },
-    {
-      sender: "Indeed",
-      motive: "Someone wants to add u in a new project",
-      message: "Hey! this is our new project",
-    },
-    {
-      sender: "Indeed",
-      motive: "Someone wants to add u in a new project",
-      message: "Hey! this is our new project",
-    },
-    {
-      sender: "Indeed",
-      motive: "Someone wants to add u in a new project",
-      message: "Hey! this is our new project",
-    },
-    {
-      sender: "Indeed",
-      motive: "Someone wants to add u in a new project",
-      message: "Hey! this is our new project",
-    },
-    {
-      sender: "Indeed",
-      motive: "Someone wants to add u in a new project",
-      message: "Hey! this is our new project",
-    },
-    {
-      sender: "Indeed",
-      motive: "Someone wants to add u in a new project",
-      message: "Hey! this is our new project",
-    },
-    {
-      sender: "Indeed",
-      motive: "Someone wants to add u in a new project",
-      message: "Hey! this is our new project",
-    },
-  ];
+  const { emails } = useAppSelector((state) => state.nylas);
 
-  const [detailsModal, setDetailsModal] = useState(false);
+  const [selectedEmail, setSelectedEmail] = useState<any>(null);
 
   return (
     <Grid>
@@ -72,27 +32,20 @@ const EmailList = () => {
                   </Text>
                 </Box>
                 <Divider />
-                {email.map((email, i) => {
+                {emails.map((email, i) => {
                   return (
-                    <Box key={i}>
+                    <Box key={i} onClick={() => setSelectedEmail(email)}>
                       <Flex w={"full"} align={"center"} gap={"xl"} p={10}>
                         <Flex align={"center"} gap={"xs"}>
                           <IconStar size={15} strokeWidth={1.5} cursor={"pointer"} />
-                          <Text
-                            className={"cursor"}
-                            fw={500}
-                            onClick={() => setDetailsModal((o) => !o)}
-                          >
-                            {email.sender}
+                          <Text className={"cursor"} fw={500}>
+                            {email.from[0].name}
                           </Text>
                         </Flex>
-                        <Flex align={"center"} onClick={() => setDetailsModal((o) => !o)}>
+                        <Flex align={"center"}>
                           <Text className={"cursor"} fw={500}>
-                            {email.motive}
-                          </Text>
-                          {"-"}
-                          <Text className={"cursor"} fw={"normal"}>
-                            {email.message}
+                            {email.subject}
+                            <Text lineClamp={1}>{email.snippet}</Text>
                           </Text>
                         </Flex>
                       </Flex>
@@ -110,7 +63,11 @@ const EmailList = () => {
           </Flex>
 
           <EmailModal opened={opened} onClose={() => setOpened((o) => !o)} />
-          <EmailDetailsModal opened={detailsModal} onClose={() => setDetailsModal((o) => !o)} />
+          <EmailDetailsModal
+            email={selectedEmail}
+            opened={selectedEmail}
+            onClose={() => setSelectedEmail(null)}
+          />
         </div>
       </Grid.Col>
     </Grid>
