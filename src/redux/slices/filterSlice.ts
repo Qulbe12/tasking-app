@@ -14,11 +14,15 @@ const filterSlice = createSlice({
     toggleFilterOpen: (state) => {
       state.filtersOpen = !state.filtersOpen;
     },
+    resetFilters: (state) => {
+      state.search = "";
+      state.filtersOpen = false;
+    },
   },
 });
 
 const filterReducer = filterSlice.reducer;
 
-export const { toggleFilterOpen, setSearch } = filterSlice.actions;
+export const { toggleFilterOpen, setSearch, resetFilters } = filterSlice.actions;
 
 export default filterReducer;

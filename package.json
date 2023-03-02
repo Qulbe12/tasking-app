@@ -37,7 +37,7 @@
     "axios": "^1.2.1",
     "dayjs": "^1.11.7",
     "embla-carousel-react": "^7.0.5",
-    "hexa-sdk": "^0.0.113",
+    "hexa-sdk": "^0.0.115",
     "interweave": "^13.0.0",
     "pspdfkit": "^2023.1.0",
     "react": "^18.2.0",

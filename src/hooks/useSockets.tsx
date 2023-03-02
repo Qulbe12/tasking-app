@@ -84,6 +84,8 @@ const useSockets = () => {
 
     // Nylas Events
     socket.on(NylasEvents.Connected, (payload: NylasConnectedPayload) => {
+      console.log(payload);
+
       dispatch(updateUserNylasToken(payload));
     });
     socket.on(NylasEvents.Failed, (payload) => {
@@ -111,7 +113,7 @@ const useSockets = () => {
       socket.off(NylasEvents.Connected);
       socket.off(NylasEvents.Failed);
     };
-  }, []);
+  }, [user?.user]);
 
   useEffect(() => {
     if (!activeWorkspace?.id || !user?.user.id) return;

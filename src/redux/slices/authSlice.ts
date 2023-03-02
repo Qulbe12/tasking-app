@@ -68,12 +68,9 @@ export const authSlice = createSlice({
       .addCase(loginUser.fulfilled, (state, action) => {
         state.loading -= 1;
         state.user = action.payload;
-        console.log("ACTION LOG", action.payload.nylasToken);
 
-        // @ts-ignore
-        if (action.payload.nylasToken.accessToken) {
-          // @ts-ignore
-          localStorage.setItem("nylasToken", action.payload.nylasToken.accessToken);
+        if (action.payload.nylasToken) {
+          localStorage.setItem("nylasToken", action.payload.nylasToken.access_token);
         }
         state.token = action.payload.accessToken;
       })

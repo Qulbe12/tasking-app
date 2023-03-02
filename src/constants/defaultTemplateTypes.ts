@@ -1,0 +1,16 @@
+export const defaultTemplateTypes = {
+  submittals: "Submittals",
+  sheets: "Sheets",
+  quote: "Quote/Bid",
+  changeEvents: "Change Events",
+  rfis: "RFIs",
+  specifications: "Specifications",
+  contract: "Contract",
+  meeting: "Meeting",
+  punchList: "Punch List",
+  documents: "Documents",
+  invoices: "Invoices",
+  task: "Task",
+  changeOrders: "Change Orders",
+  budget: "Budget",
+};

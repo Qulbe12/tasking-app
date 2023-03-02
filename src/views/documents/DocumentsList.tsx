@@ -1,5 +1,6 @@
 import {
   Button,
+  Drawer,
   Flex,
   Grid,
   LoadingOverlay,
@@ -69,13 +70,26 @@ const DocumentsList = () => {
   const [filter, setFilter] = useState<string[]>([]);
 
   const filteredData: IDocument[] = useMemo<IDocument[]>(() => {
-    // if (!filter.length) return data;
-    return data.filter((d) => {
-      return (
-        filter.includes(d.template.name) ||
-        JSON.stringify(d).toLowerCase().includes(search.toLocaleLowerCase())
-      );
-    });
+    if (search && filter.length) {
+      return data.filter((d) => {
+        return (
+          JSON.stringify(d).toLowerCase().includes(search.toLocaleLowerCase()) &&
+          filter.includes(d.template.name)
+        );
+      });
+    }
+    if (search) {
+      return data.filter((d) => {
+        return JSON.stringify(d).toLowerCase().includes(search.toLocaleLowerCase());
+      });
+    }
+    if (filter.length) {
+      return data.filter((d) => {
+        return filter.includes(d.template.name);
+      });
+    }
+
+    return data;
   }, [filter, data, search]);
 
   return (
@@ -251,7 +265,9 @@ const DocumentsList = () => {
           </form>
         )}
 
-        <Modal
+        <Drawer
+          position="right"
+          size="50%"
           title={selectedAttachment?.name}
           opened={pdfOpen}
           onClose={() => {
@@ -260,7 +276,7 @@ const DocumentsList = () => {
           }}
         >
           {selectedAttachment && <PdfViewerComponent documentUrl={selectedAttachment.url} />}
-        </Modal>
+        </Drawer>
       </Modal>
     </div>
   );

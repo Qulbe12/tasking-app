@@ -1,7 +1,7 @@
 import { Button, Grid, LoadingOverlay, Title } from "@mantine/core";
 import { IconClock, IconPlus } from "@tabler/icons";
 import { IBoard } from "hexa-sdk/dist/app.api";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import BoardCard from "../../components/BoardCard";
 import BoardModal from "../../modals/BoardModal";
 import { deleteBoard, getBoards } from "../../redux/api/boardsApi";
@@ -14,11 +14,18 @@ const BoardsList = () => {
 
   const { data: boards, loading } = useAppSelector((state) => state.boards);
   const { activeWorkspace } = useAppSelector((state) => state.workspaces);
+  const { search } = useAppSelector((state) => state.filters);
 
   useEffect(() => {
     if (!activeWorkspace?.id) return;
     dispatch(getBoards(activeWorkspace?.id));
   }, [activeWorkspace]);
+
+  const filteredBoards = useMemo(() => {
+    return boards.filter((board) => {
+      return JSON.stringify(board).toLowerCase().includes(search.toLowerCase().trim());
+    });
+  }, [search]);
 
   const [selectedBoard, setSelectedBoard] = useState<IBoard | undefined>();
 
@@ -38,7 +45,7 @@ const BoardsList = () => {
       </div>
 
       <Grid>
-        {boards?.map((board, i) => {
+        {filteredBoards?.map((board, i) => {
           return (
             <Grid.Col span="content" key={i}>
               <BoardCard

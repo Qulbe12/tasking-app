@@ -10,7 +10,6 @@ const GroupsTab = () => {
   const [createOpen, setCreateOpen] = useState(false);
 
   const { data } = useAppSelector((state) => state.groups);
-
   const [selectedGroup, setSelectedGroup] = useState<IGroup>();
 
   const rows = data.map((g) => (

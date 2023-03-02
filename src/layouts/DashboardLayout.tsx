@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { AppShell, Navbar, Header, Group, TextInput, Flex, ActionIcon, Text } from "@mantine/core";
 
 import "./DashboardLayout.scss";
@@ -7,12 +7,18 @@ import { MainLinks } from "./MainLinks";
 import UserButton from "../components/UserButton";
 import { IconFilter } from "@tabler/icons";
 import { useAppDispatch, useAppSelector } from "../redux/store";
-import { setSearch, toggleFilterOpen } from "../redux/slices/filterSlice";
+import { resetFilters, setSearch, toggleFilterOpen } from "../redux/slices/filterSlice";
 
 const DashboardLayout = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+
   const { search } = useAppSelector((state) => state.filters);
+
+  useEffect(() => {
+    dispatch(setSearch(""));
+    dispatch(resetFilters());
+  }, [window.location.href]);
 
   return (
     <div

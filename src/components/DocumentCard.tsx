@@ -1,6 +1,7 @@
-import { Card, Flex, Text } from "@mantine/core";
+import { Badge, Card, Flex, Text } from "@mantine/core";
 import { IDocument } from "hexa-sdk/dist/app.api";
 import React from "react";
+import { generateDocumentColor } from "../utils/generateDocumentColor";
 
 type DocumentCardProps = {
   addCard?: boolean;
@@ -15,8 +16,18 @@ const DocumentCard = ({ addCard, document }: DocumentCardProps) => {
       </Card>
     );
   }
+
   return (
-    <Card shadow="sm" className="cursor-pointer">
+    <Card
+      shadow="sm"
+      className="cursor-pointer relative"
+      style={{
+        minWidth: "300px",
+      }}
+    >
+      <Badge color={generateDocumentColor(document?.template.name)} mb="sm">
+        {document?.template.name}
+      </Badge>
       <Flex direction="column">
         <Text>{document?.title}</Text>
         <Text size="sm">{document?.description}</Text>

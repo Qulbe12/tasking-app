@@ -1,12 +1,16 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import ReactDataGrid from "@inovua/reactdatagrid-community";
-import "@inovua/reactdatagrid-community/index.css";
 import { useAppSelector } from "../../redux/store";
 import { Flex, Select } from "@mantine/core";
+import "@inovua/reactdatagrid-community/index.css";
+import "@inovua/reactdatagrid-community/theme/default-dark.css";
+import "@inovua/reactdatagrid-community/theme/default-light.css";
+// import "./AnalyticsPage.scss";
 
 const AnalyticsPage = () => {
   const { data: templates } = useAppSelector((state) => state.templates);
   const { data: documents } = useAppSelector((state) => state.documents);
+  const { mode } = useAppSelector((state) => state.theme);
 
   const [cellSelection, setCellSelection] = useState<{ [key: string]: boolean }>({
     "2,name": true,
@@ -14,11 +18,8 @@ const AnalyticsPage = () => {
   });
 
   const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
-
   const columns = useMemo(() => {
-    const foundTemplate = templates.find((t) => t.id === selectedTemplate);
-
-    return [
+    const baseCols = [
       //   { name: "type", header: "Type", defaultFlex: 1 },
       { name: "title", header: "Document Title", defaultFlex: 1 },
       { name: "description", header: "Description", defaultFlex: 1 },
@@ -37,7 +38,15 @@ const AnalyticsPage = () => {
         render: ({ value }: { value: string }) => new Date(value).toDateString(),
       },
     ];
-  }, [selectedTemplate, documents]);
+
+    const foundTemplate = templates.find((t) => t.id === selectedTemplate);
+
+    foundTemplate?.fields.forEach((f) => {
+      baseCols.push({ name: f.key, header: f.label, defaultFlex: 1 });
+    });
+
+    return baseCols;
+  }, [selectedTemplate]);
 
   const filteredDocuments = useMemo(() => {
     return documents.filter((d) => {
@@ -62,11 +71,10 @@ const AnalyticsPage = () => {
         />
       </Flex>
       <ReactDataGrid
+        theme={mode === "dark" ? "default-dark" : "default-light"}
         idProperty="id"
         cellSelection={cellSelection}
         onCellSelectionChange={(val) => {
-          console.log(val);
-
           setCellSelection(val);
         }}
         columns={columns}

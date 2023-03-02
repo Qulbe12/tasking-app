@@ -3,6 +3,7 @@ import React, { useEffect } from "react";
 import useDrag from "../hooks/useDrag";
 import { ScrollMenu, VisibilityContext } from "react-horizontal-scrolling-menu";
 import { LeftArrow, RightArrow } from "./FilterArrows";
+import { generateDocumentColor } from "../utils/generateDocumentColor";
 
 type FilterProps = {
   options: string[];
@@ -64,7 +65,12 @@ const Filter = ({ options, onChange }: FilterProps) => {
               key={option}
               onClick={handleItemClick(option)}
             >
-              <Badge variant={selected.includes(option) ? "filled" : "outline"}>{option}</Badge>
+              <Badge
+                variant={selected.includes(option) ? "filled" : "outline"}
+                color={generateDocumentColor(option)}
+              >
+                {option}
+              </Badge>
             </div>
           ))}
         </ScrollMenu>
