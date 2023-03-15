@@ -25,9 +25,9 @@ import {
 import React, { useEffect, useMemo, useState } from "react";
 import Collapsable from "../../components/Collapsable";
 import DocumentCard from "../../components/DocumentCard";
-import DynamicField from "../../components/DynamicField";
 import Filter from "../../components/Filter";
 import PdfViewerComponent from "../../components/PdfViewerComponent";
+import UpdateDynamicField from "../../components/UpdateDynamicField";
 import DocumentModal from "../../modals/DocumentModal";
 import { getDocuments, updateDocument } from "../../redux/api/documentApi";
 import { getAllTemplates } from "../../redux/api/templateApi";
@@ -219,10 +219,14 @@ const DocumentsList = () => {
                   return (
                     <div key={i + "document"}>
                       {inputIndex >= 0 ? (
-                        <DynamicField
+                        <UpdateDynamicField
                           value={v}
                           field={selectedDocument.template.fields[inputIndex]}
                           onChange={(e) => {
+                            setNewForm({
+                              ...newForm,
+                              [selectedDocument.template.fields[inputIndex].key]: e,
+                            });
                             console.log(e);
                           }}
                         />

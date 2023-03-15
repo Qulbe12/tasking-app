@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import ReactDataGrid from "@inovua/reactdatagrid-community";
 import { useAppSelector } from "../../redux/store";
 import { Flex, Select } from "@mantine/core";
@@ -6,6 +6,7 @@ import "@inovua/reactdatagrid-community/index.css";
 import "@inovua/reactdatagrid-community/theme/default-dark.css";
 import "@inovua/reactdatagrid-community/theme/default-light.css";
 // import "./AnalyticsPage.scss";
+import _ from "lodash";
 
 const AnalyticsPage = () => {
   const { data: templates } = useAppSelector((state) => state.templates);
@@ -54,6 +55,32 @@ const AnalyticsPage = () => {
     });
   }, [selectedTemplate]);
 
+  const total = useMemo(() => {
+    let newTotal = 0;
+
+    // const documentIds = Object.keys(cellSelection)[0].split(",")[0];
+    const documentIds = Object.keys(cellSelection).map((k) => {
+      return k.split(",")[0];
+    });
+
+    const foundDocuments = documents.filter((d) => documentIds.includes(d.id));
+    const key = Object.keys(cellSelection)[0].split(",")[1];
+
+    foundDocuments.map((d) => {
+      if (!key) return 0;
+      newTotal += +d[key];
+    });
+
+    console.log(newTotal);
+
+    // console.log(id, key);
+
+    return {
+      cell: key,
+      total: newTotal,
+    };
+  }, [cellSelection]);
+
   return (
     <div>
       <h1>Analytics</h1>
@@ -70,6 +97,7 @@ const AnalyticsPage = () => {
           ]}
         />
       </Flex>
+
       <ReactDataGrid
         theme={mode === "dark" ? "default-dark" : "default-light"}
         idProperty="id"
@@ -81,6 +109,10 @@ const AnalyticsPage = () => {
         dataSource={filteredDocuments}
         // style={gridStyle}
       />
+      <h2>
+        {_.startCase(total.cell)}:{" "}
+        {!isNaN(total.total) ? total.total : "Please select valid numbers"}
+      </h2>
     </div>
   );
 };

@@ -13,7 +13,7 @@ const DashboardLayout = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
-  const { search } = useAppSelector((state) => state.filters);
+  const { search, filtersOpen } = useAppSelector((state) => state.filters);
 
   useEffect(() => {
     dispatch(setSearch(""));
@@ -48,7 +48,10 @@ const DashboardLayout = () => {
                 HEXADESK
               </div>
               <Flex gap="md" align="center">
-                <ActionIcon onClick={() => dispatch(toggleFilterOpen())}>
+                <ActionIcon
+                  color={filtersOpen ? "orange" : undefined}
+                  onClick={() => dispatch(toggleFilterOpen())}
+                >
                   <IconFilter size={24} />
                 </ActionIcon>
                 <TextInput

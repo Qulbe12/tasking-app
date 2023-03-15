@@ -78,9 +78,12 @@ const DocumentModal = ({ onClose, opened, title }: CommonModalProps) => {
             ccUsers: [],
             templateId: data.find((t) => t.name === selectedTemplate)?.id || "",
           };
+
+          // console.log(form.values);
+
           await dispatch(createDocument({ boardId: activeBoard.id, document: doc }));
           form.reset();
-          form.reset();
+          // form.reset();
           onClose();
         })}
       >

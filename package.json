@@ -39,6 +39,7 @@
     "embla-carousel-react": "^7.0.5",
     "hexa-sdk": "^0.0.115",
     "interweave": "^13.0.0",
+    "lodash": "^4.17.21",
     "pspdfkit": "^2023.1.0",
     "react": "^18.2.0",
     "react-calendar": "^4.0.0",

@@ -5,6 +5,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import BoardCard from "../../components/BoardCard";
 import BoardModal from "../../modals/BoardModal";
 import { deleteBoard, getBoards } from "../../redux/api/boardsApi";
+import { setActiveBoard } from "../../redux/slices/boardsSlice";
 import { useAppDispatch, useAppSelector } from "../../redux/store";
 
 const BoardsList = () => {
@@ -25,9 +26,13 @@ const BoardsList = () => {
     return boards.filter((board) => {
       return JSON.stringify(board).toLowerCase().includes(search.toLowerCase().trim());
     });
-  }, [search]);
+  }, [search, boards]);
 
   const [selectedBoard, setSelectedBoard] = useState<IBoard | undefined>();
+
+  useEffect(() => {
+    dispatch(setActiveBoard(null));
+  }, []);
 
   return (
     <div>
