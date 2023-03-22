@@ -31,10 +31,7 @@ const EmailPage = () => {
 
   const filteredEmails = useMemo<IEmailThreadResponse[]>(() => {
     return emails.filter((e) => {
-      return (
-        JSON.stringify(e).toLowerCase().includes(search.toLowerCase()) &&
-        !JSON.stringify(e.folders).includes("trash")
-      );
+      return JSON.stringify(e).toLowerCase().includes(search.toLowerCase());
     });
   }, [emails, search]);
 
