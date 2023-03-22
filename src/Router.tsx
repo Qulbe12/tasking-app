@@ -17,13 +17,17 @@ import EmailPage from "./views/email/EmailPage";
 import AnalyticsPage from "./views/analytics/AnalyticsPage";
 import PaymentPage from "./views/payment/PaymentPage";
 import SettingsLayout from "./layouts/SettingsLayout";
-
+import DocumentPublicView from "./views/documents/DocumentPublicView";
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <RouteGuard />,
     children: [
+      {
+        path: "/documents/:documentId",
+        element: <DocumentPublicView />,
+      },
       {
         path: "/",
         element: <HomeLayout />,

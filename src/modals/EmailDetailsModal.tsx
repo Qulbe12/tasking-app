@@ -1,60 +1,61 @@
-import React, { useState } from "react";
-import { Avatar, Box, Button, Card, Flex, Modal, Text } from "@mantine/core";
-
-import { useNavigate } from "react-router-dom";
-import { IconStar } from "@tabler/icons";
-import CommonModalProps from "./CommonModalProps";
-import EmailModal from "./EmailModal";
+import { createStyles, TypographyStylesProvider, Paper, Modal, Flex, Text } from "@mantine/core";
 import { IEmailResponse } from "../interfaces/IEmailResponse";
-import { Interweave } from "interweave";
+import CommonModalProps from "./CommonModalProps";
 
-type EmailDetailsModalProps = {
-  email?: IEmailResponse;
-};
-const EmailDetailsModal = ({
-  opened,
+const useStyles = createStyles((theme) => ({
+  comment: {
+    padding: `${theme.spacing.lg} ${theme.spacing.xl}`,
+  },
+
+  body: {
+    paddingTop: theme.spacing.sm,
+    fontSize: theme.fontSizes.sm,
+  },
+
+  content: {
+    "& > p:last-child": {
+      marginBottom: 0,
+    },
+  },
+}));
+
+interface EmailDetailsModalProps {
+  emails: IEmailResponse[] | null;
+}
+
+function EmailDetailsModal({
+  emails,
   onClose,
-  email,
-}: CommonModalProps & EmailDetailsModalProps) => {
-  const [replyModal, setReplyModal] = useState(false);
-  const navigation = useNavigate();
+  opened,
+  title,
+}: EmailDetailsModalProps & CommonModalProps) {
+  const { classes } = useStyles();
+
   return (
-    <Modal size="70%" opened={opened} onClose={onClose}>
-      <Card radius={"md"} w={"full"} shadow={"md"} p={0}>
-        <Flex direction={"column"} gap={"lg"} p={20}>
-          {/* <Text fw={500} size={"xl"}>
-            Some Text Here
-          </Text> */}
-          <Flex w={"full"} align={"center"} justify={"space-between"} gap={"xl"} p={10}>
-            <Flex align={"center"} gap={"xs"}>
-              <Avatar
-                radius="xl"
-                size="lg"
-                src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=250&q=80"
-              />
-              <Text fw={500} size={"lg"}>
-                {email?.from[0].name}
-              </Text>
-              <Text fw={200}>{email?.date && new Date(email.date + 100000).toDateString()}</Text>
-            </Flex>
-            <Box>
-              <IconStar size={15} strokeWidth={1.5} cursor={"pointer"} />
-            </Box>
-          </Flex>
-          <Box w={"70%"}>
-            <Interweave content={email?.body} />
-          </Box>
-          <Flex gap={"md"}>
-            <Button variant={"outline"} onClick={() => navigation("/dashboard/Inbox")}>
-              Back
-            </Button>
-            <Button onClick={() => setReplyModal(true)}>Reply</Button>
-          </Flex>
-        </Flex>
-      </Card>
-      <EmailModal opened={replyModal} onClose={() => setReplyModal((o) => !o)} />
+    <Modal padding="md" size="90%" title={title} opened={opened} onClose={onClose}>
+      <Flex align={"start"} direction="column" mb="md">
+        {emails && (
+          <Text size={"lg"}>{`${emails[0].from[0].name} <${emails[0].from[0].email}>`}</Text>
+        )}
+        {emails && (
+          <Text fw={200}>{emails[0]?.date && new Date(emails[0].date * 1000).toDateString()}</Text>
+        )}
+      </Flex>
+      <Paper withBorder radius="md" className={classes.comment} bg="white" p="md">
+        <TypographyStylesProvider className={classes.body}>
+          {emails && (
+            <div
+              style={{
+                all: "unset",
+              }}
+              className={classes.content}
+              dangerouslySetInnerHTML={{ __html: emails[0].body }}
+            />
+          )}
+        </TypographyStylesProvider>
+      </Paper>
     </Modal>
   );
-};
+}
 
 export default EmailDetailsModal;

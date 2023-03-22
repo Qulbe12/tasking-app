@@ -9,18 +9,20 @@ interface User {
   password: string;
 }
 
-export const loginUser = createAsyncThunk("user/login", async (user: User, { rejectWithValue }) => {
-  localStorage.removeItem("token");
-  try {
-    const res = await api.userApi.login(user);
-    localStorage.setItem("token", res.data.accessToken);
-    return res.data;
-  } catch (err: any) {
-    const errMsg = err.response.data.Message;
-
-    return rejectWithValue(errMsg);
-  }
-});
+export const loginUser = createAsyncThunk(
+  "user/login",
+  async (user: User, { rejectWithValue, dispatch }) => {
+    localStorage.removeItem("token");
+    try {
+      const res = await api.userApi.login(user);
+      localStorage.setItem("token", res.data.accessToken);
+      return res.data;
+    } catch (err: any) {
+      const errMsg = err.response.data.Message;
+      return rejectWithValue(errMsg);
+    }
+  },
+);
 
 export const registerUser = createAsyncThunk("user/register", async (userInfo: IRegisterUser) => {
   localStorage.removeItem("token");
@@ -57,6 +59,14 @@ export const authSlice = createSlice({
       if (state.user) {
         localStorage.setItem("nylasToken", action.payload.access_token);
         state.user.nylasToken = action.payload;
+      }
+    },
+    removeNylasToken: (state) => {
+      localStorage.removeItem("nylasToken");
+
+      if (state.user) {
+        // @ts-ignore
+        state.user.nylasToken = undefined;
       }
     },
   },
@@ -105,7 +115,7 @@ export const authSlice = createSlice({
   },
 });
 
-export const { setAuthUser, logout, updateUserNylasToken } = authSlice.actions;
+export const { setAuthUser, logout, updateUserNylasToken, removeNylasToken } = authSlice.actions;
 
 const authReducer = authSlice.reducer;
 

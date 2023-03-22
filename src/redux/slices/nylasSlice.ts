@@ -1,12 +1,12 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { IEmailResponse } from "../../interfaces/IEmailResponse";
+import { IEmailThreadResponse } from "../../interfaces/IEmailResponse";
 import { connectNylas, fetchEmails } from "../api/nylasApi";
 import { showError } from "../commonSliceFunctions";
 
 export interface GroupsState {
   data: any;
   loading: number;
-  emails: IEmailResponse[];
+  emails: IEmailThreadResponse[];
   status: "conencted" | null;
   loaders: {
     connecting: boolean;
@@ -48,11 +48,14 @@ export const nylasSlice = createSlice({
       })
       .addCase(fetchEmails.fulfilled, (state, action) => {
         state.loaders.fetchingEmails = false;
-        state.emails = action.payload;
+        const filteredTrashEmails = action.payload.filter(
+          (e) => e.folders[0].name !== "permanent_trash",
+        );
+        state.emails = filteredTrashEmails;
       })
       .addCase(fetchEmails.rejected, (state, action) => {
         state.loaders.fetchingEmails = false;
-        showError(action.error.message);
+        showError(action.payload as string);
       }),
 });
 

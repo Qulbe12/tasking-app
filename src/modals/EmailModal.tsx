@@ -1,45 +1,168 @@
 import {
-  Modal,
   Stack,
-  Group,
-  Avatar,
   Input,
-  Divider,
-  Box,
   Textarea,
   Flex,
   Button,
+  Drawer,
+  Divider,
+  TransferList,
+  TransferListData,
+  TransferListItemComponent,
+  TransferListItemComponentProps,
+  Group,
   Text,
+  Checkbox,
+  Badge,
 } from "@mantine/core";
+import { useEffect, useState } from "react";
+import { nylasAxios } from "../config/nylasAxios";
+import { ICreateEmail } from "../interfaces/ICreateEmail";
+import { showError } from "../redux/commonSliceFunctions";
+import { useAppSelector } from "../redux/store";
+import { generateDocumentColor } from "../utils/generateDocumentColor";
 import CommonModalProps from "./CommonModalProps";
 
 const EmailModal = ({ opened, onClose }: CommonModalProps) => {
+  const { data } = useAppSelector((state) => state.documents);
+
+  const [form, setForm] = useState<ICreateEmail>({
+    body: "",
+    subject: "",
+    to: [
+      {
+        email: "",
+        name: "",
+      },
+    ],
+  });
+
+  const [loading, setLoading] = useState(false);
+
+  const [documents, setDocuments] = useState<TransferListData>([[], []]);
+
+  useEffect(() => {
+    setDocuments([
+      [
+        ...data.map((d) => {
+          return {
+            value: d.id,
+            label: d.title,
+            ...d,
+          };
+        }),
+      ],
+      [],
+    ]);
+  }, [data]);
+
+  const ItemComponent: TransferListItemComponent = ({
+    data,
+    selected,
+  }: TransferListItemComponentProps) => (
+    <Group noWrap>
+      <Checkbox checked={selected} tabIndex={-1} sx={{ pointerEvents: "none" }} />
+      <div style={{ flex: 1 }}>
+        <Text size="sm" weight={500}>
+          {data.label}
+        </Text>
+        <Text size="xs" color="dimmed" weight={400}>
+          {data.description}
+        </Text>
+      </div>
+      <Badge color={generateDocumentColor(data.template.name)} mb="sm">
+        {data.template.name}
+      </Badge>
+    </Group>
+  );
+
   return (
-    <Modal padding={"md"} transition="fade" size={"60%"} centered opened={opened} onClose={onClose}>
-      <Stack spacing={"lg"}>
-        <Group>
-          <Text fw={400}>To:</Text>
-          <Avatar
-            radius="md"
-            size="md"
-            src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=250&q=80"
+    <Drawer
+      title="Compose Email"
+      padding={"md"}
+      size="70%"
+      position="right"
+      opened={opened}
+      onClose={onClose}
+    >
+      <form
+        onSubmit={async (e) => {
+          e.preventDefault();
+          setLoading(true);
+
+          try {
+            let newBody: string = JSON.parse(JSON.stringify(form.body));
+
+            newBody += "<br />";
+            newBody += "<p>Linked Documents:</p>";
+
+            documents[1].forEach((d) => {
+              newBody += `<a href=${"https://hexadesk.ca/documents/" + d.value}>${
+                d.label
+              }</a><br />`;
+            });
+
+            await nylasAxios.post("/send", { ...form, body: newBody });
+            showError("Message Sent Successfully");
+            setForm({ body: "", subject: "", to: [{ email: "", name: "" }] });
+            onClose();
+            setLoading(false);
+          } catch (err: any) {
+            setLoading(false);
+            showError(err.message);
+          }
+        }}
+      >
+        <Stack spacing={"md"}>
+          <Input
+            width="100%"
+            value={form.to[0].email}
+            placeholder="To"
+            onChange={(e) => {
+              setForm((f) => {
+                return {
+                  ...f,
+                  to: [{ name: e.target.value, email: e.target.value }],
+                };
+              });
+            }}
           />
-          <Input w={"80%"} placeholder="someone@example.com" variant="unstyled" />
-        </Group>
-        <Divider />
-        <Group>
-          <Text fw={400}>Subject:</Text>
-          <Input w={"80%"} placeholder="Hiring for job" variant="unstyled" />
-        </Group>
-        <Divider />
-        <Box>
-          <Textarea placeholder={"Compose your message."} autosize size={"lg"} variant="unstyled" />
-        </Box>
-        <Flex justify={"end"} gap={"md"}>
-          <Button>Send</Button>
-        </Flex>
-      </Stack>
-    </Modal>
+
+          <Input
+            placeholder="Subject"
+            value={form.subject}
+            onChange={(e) => setForm({ ...form, subject: e.target.value })}
+          />
+
+          <Textarea
+            value={form.body}
+            onChange={(e) => setForm({ ...form, body: e.target.value })}
+            placeholder={"Compose your message."}
+            autosize
+          />
+
+          <Divider label="Attach Documents" />
+
+          <TransferList
+            value={documents}
+            onChange={setDocuments}
+            itemComponent={ItemComponent}
+            searchPlaceholder="Search..."
+            nothingFound="Nothing here"
+            titles={["Available", "In-Email"]}
+            showTransferAll={false}
+            breakpoint="sm"
+            filter={(query, item) => JSON.stringify(item).includes(query.toLowerCase().trim())}
+          />
+
+          <Flex justify={"end"} gap={"md"}>
+            <Button type="submit" loading={loading}>
+              Send
+            </Button>
+          </Flex>
+        </Stack>
+      </form>
+    </Drawer>
   );
 };
 
