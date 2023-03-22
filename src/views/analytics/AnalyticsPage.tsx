@@ -73,8 +73,6 @@ const AnalyticsPage = () => {
       newTotal += +d[key];
     });
 
-    console.log(newTotal);
-
     // console.log(id, key);
 
     return {
@@ -110,6 +108,7 @@ const AnalyticsPage = () => {
         columns={columns}
         dataSource={filteredDocuments}
         // style={gridStyle}
+        className="h-screen"
       />
       <h2>
         {_.startCase(total.cell)}:{" "}

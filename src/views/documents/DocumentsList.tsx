@@ -32,6 +32,8 @@ import DocumentModal from "../../modals/DocumentModal";
 import { getDocuments, updateDocument } from "../../redux/api/documentApi";
 import { getAllTemplates } from "../../redux/api/templateApi";
 import { useAppDispatch, useAppSelector } from "../../redux/store";
+import _ from "lodash";
+import dayjs from "dayjs";
 
 const DocumentsList = () => {
   const [open, setOpen] = useState(false);
@@ -270,8 +272,9 @@ const DocumentsList = () => {
         )}
 
         <Drawer
+          padding="md"
           position="right"
-          size={selectedDocument?.template.name === "Sheet" ? "100%" : "50%"}
+          size={"100%"}
           title={selectedAttachment?.name}
           opened={pdfOpen}
           onClose={() => {
@@ -279,7 +282,97 @@ const DocumentsList = () => {
             setSelectedAttachment(null);
           }}
         >
-          {selectedAttachment && <PdfViewerComponent documentUrl={selectedAttachment.url} />}
+          <Grid
+            style={{
+              overflow: "scroll",
+            }}
+          >
+            <Grid.Col span={3}>
+              {newForm && (
+                <form
+                  onSubmit={form.onSubmit(async () => {
+                    if (!selectedDocument) return;
+                    // form.setValues();
+                    console.log(newForm);
+
+                    await dispatch(
+                      updateDocument({ documentId: selectedDocument?.id, document: newForm }),
+                    );
+                    setSelectedDocument(null);
+
+                    // console.log(vals);
+                  })}
+                >
+                  <Stack>
+                    <Flex direction="column">
+                      <Text weight="bolder" size="sm">
+                        Title:
+                      </Text>
+                      <Text size="sm">{newForm.title}</Text>
+                    </Flex>
+                    <Flex direction="column">
+                      <Text weight="bolder" size="sm">
+                        Description:
+                      </Text>
+                      <Text size="sm">{newForm.description}</Text>
+                    </Flex>
+                    <Flex direction="column">
+                      <Text weight="bolder" size="sm">
+                        Start Date:
+                      </Text>
+                      <Text size="sm">{dayjs(newForm.startDate).format("MMMM DD, YYYY")}</Text>
+                    </Flex>
+                    <Flex direction="column">
+                      <Text weight="bolder" size="sm">
+                        Due Date:
+                      </Text>
+                      <Text size="sm">{dayjs(newForm.dueDate).format("MMMM DD, YYYY")}</Text>
+                    </Flex>
+                    <Flex direction="column">
+                      <Text weight="bolder" size="sm">
+                        Priority:
+                      </Text>
+                      <Text size="sm">{newForm.priority}</Text>
+                    </Flex>
+                    <Flex direction="column">
+                      <Text weight="bolder" size="sm">
+                        Status:
+                      </Text>
+                      <Text size="sm">{newForm.status}</Text>
+                    </Flex>
+
+                    {selectedDocument &&
+                      Object.entries(selectedDocument).map(([k, v], i) => {
+                        const inputIndex = selectedDocument.template.fields.findIndex(
+                          (f) => f.key === k,
+                        );
+
+                        if (k === "template") return;
+                        if (inputIndex < 0) return;
+
+                        return (
+                          <div key={i + "document"}>
+                            {inputIndex >= 0 ? (
+                              <Flex direction="column">
+                                <Text weight="bolder" size="sm">
+                                  {_.startCase(k)}:
+                                </Text>
+                                <Text size="sm">{v}</Text>
+                              </Flex>
+                            ) : (
+                              <Text>{k}:</Text>
+                            )}
+                          </div>
+                        );
+                      })}
+                  </Stack>
+                </form>
+              )}
+            </Grid.Col>
+            <Grid.Col span={9}>
+              {selectedAttachment && <PdfViewerComponent documentUrl={selectedAttachment.url} />}
+            </Grid.Col>
+          </Grid>
         </Drawer>
       </Modal>
     </div>
