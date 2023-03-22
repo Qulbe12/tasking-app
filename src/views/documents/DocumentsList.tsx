@@ -5,6 +5,7 @@ import {
   Grid,
   LoadingOverlay,
   Modal,
+  MultiSelect,
   Select,
   Stack,
   Text,
@@ -21,6 +22,7 @@ import {
   IAttachment,
   IDocument,
   IUpdateDocument,
+  SubscriptionStatus,
 } from "hexa-sdk/dist/app.api";
 import React, { useEffect, useMemo, useState } from "react";
 import Collapsable from "../../components/Collapsable";
@@ -34,11 +36,13 @@ import { getAllTemplates } from "../../redux/api/templateApi";
 import { useAppDispatch, useAppSelector } from "../../redux/store";
 import _ from "lodash";
 import dayjs from "dayjs";
+import { useId } from "@mantine/hooks";
 
 const DocumentsList = () => {
   const [open, setOpen] = useState(false);
   const [pdfOpen, setPdfOpen] = useState(false);
   const [selectedAttachment, setSelectedAttachment] = useState<IAttachment | null>(null);
+  const id = useId();
 
   function toggleOpen() {
     setOpen((o) => !o);
@@ -209,6 +213,51 @@ const DocumentsList = () => {
                 ]}
                 value={newForm?.status}
                 onChange={(e: DocumentStatus) => setNewForm({ ...newForm, status: e })}
+              />
+              <MultiSelect
+                disabled
+                label="Assign Users"
+                data={newForm.assignedUsers.map((u) => u.email)}
+                placeholder="Select users"
+                searchable
+                creatable
+                getCreateLabel={(query) => `+ Add ${query}`}
+                onCreate={(query) => {
+                  const item = { value: query, label: query };
+                  setNewForm({
+                    ...newForm,
+                    assignedUsers: [
+                      ...newForm.assignedUsers,
+                      {
+                        avatar: "",
+                        email: item.value,
+                        id: id,
+                        name: item.value,
+                        role: "user",
+                        subscription: SubscriptionStatus.Active,
+                      },
+                    ],
+                  });
+                  return item;
+                }}
+              />
+
+              <MultiSelect
+                label="CC'd Users"
+                data={newForm.ccUsers}
+                value={newForm.ccUsers}
+                placeholder="Add emails"
+                searchable
+                creatable
+                getCreateLabel={(query) => `+ Add ${query}`}
+                onCreate={(query) => {
+                  const item = { value: query, label: query };
+                  setNewForm({
+                    ...newForm,
+                    ccUsers: [...newForm.ccUsers, item.value],
+                  });
+                  return item;
+                }}
               />
 
               {selectedDocument &&
