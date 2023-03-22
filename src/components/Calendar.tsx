@@ -1,47 +1,35 @@
 import React from "react";
-import getDates from "../utils/getDates";
-import getTimes from "../utils/getTimes";
+import { Calendar as CalendarComponent, dayjsLocalizer } from "react-big-calendar";
+import dayjs from "dayjs";
 
-const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+import "react-big-calendar/lib/css/react-big-calendar.css";
+import { IEmailResponse } from "../interfaces/IEmailResponse";
 
-const Calendar = () => {
-  const dates = getDates(new Date("2023-02-20"), new Date("2023-02-26"));
+const localizer = dayjsLocalizer(dayjs);
 
+type CalanderProps = {
+  emails: IEmailResponse[] | null;
+};
+
+const Calendar = ({ emails }: CalanderProps) => {
   return (
-    <div className="calendar-container">
-      <div className="header">
-        <div className="header-item" />
-
-        {dates.map((d, i) => {
-          console.log(d);
-
-          return (
-            <div key={i} className="header-item">
-              <p> {d.getDate()}</p>
-              <p>{days[d.getDay()]}</p>
-            </div>
-          );
-        })}
-      </div>
-
-      <div className="body">
-        {getTimes().map((t) => {
-          return (
-            <div key={t} className="body-row">
-              <div className="body-cell">{t}</div>
-              {dates.map((d, i) => {
-                return (
-                  <div key={i + "cell"} className="body-cell">
-                    <div className="sub-cell"></div>
-                    <div className="sub-cell"></div>
-                  </div>
-                );
-              })}
-            </div>
-          );
-        })}
-      </div>
-    </div>
+    <CalendarComponent
+      localizer={localizer}
+      events={emails?.map((email) => {
+        return {
+          start: new Date(),
+          end: new Date(),
+          title: email.subject,
+          ...email,
+        };
+      })}
+      startAccessor="start"
+      endAccessor="end"
+      onDoubleClickEvent={(e) => {
+        console.log(e);
+      }}
+      style={{ height: 500 }}
+    />
   );
 };
 

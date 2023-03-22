@@ -88,7 +88,7 @@ const EmailPage = () => {
       </Flex>
 
       {selectedMode && <EmailList emails={filteredEmails} />}
-      {!selectedMode && <Calander />}
+      {!selectedMode && <Calander emails={filteredEmails} />}
 
       <Pagination
         total={10}

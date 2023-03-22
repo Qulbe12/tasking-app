@@ -36,7 +36,7 @@ const DashboardLayout = () => {
             </Navbar.Section>
             <Navbar.Section>
               <Flex>
-                <Text>v0.6</Text>
+                <Text className="fixed bottom-2 left-2">v0.6</Text>
               </Flex>
             </Navbar.Section>
           </Navbar>
