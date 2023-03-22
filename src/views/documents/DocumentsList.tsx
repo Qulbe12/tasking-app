@@ -271,7 +271,7 @@ const DocumentsList = () => {
 
         <Drawer
           position="right"
-          size="50%"
+          size={selectedDocument?.template.name === "Sheet" ? "100%" : "50%"}
           title={selectedAttachment?.name}
           opened={pdfOpen}
           onClose={() => {

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import React, { useMemo, useState } from "react";
 import ReactDataGrid from "@inovua/reactdatagrid-community";
 import { useAppSelector } from "../../redux/store";
@@ -68,6 +69,7 @@ const AnalyticsPage = () => {
 
     foundDocuments.map((d) => {
       if (!key) return 0;
+      // @ts-ignore
       newTotal += +d[key];
     });
 
