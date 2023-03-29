@@ -1,4 +1,5 @@
 import {
+  ActionIcon,
   Button,
   Flex,
   Group,
@@ -23,6 +24,8 @@ import { createDocument } from "../redux/api/documentApi";
 import { DatePicker } from "@mantine/dates";
 import TemplateModal from "./TemplateModal";
 import { FileWithPath } from "@mantine/dropzone";
+import { showError } from "../redux/commonSliceFunctions";
+import { IconX } from "@tabler/icons";
 
 const DocumentModal = ({ onClose, opened, title }: CommonModalProps) => {
   const dispatch = useAppDispatch();
@@ -52,7 +55,7 @@ const DocumentModal = ({ onClose, opened, title }: CommonModalProps) => {
     },
   });
 
-  const [files, setFiles] = useState<FileWithPath[]>([]);
+  const [attachments, setAttachments] = useState<FileWithPath[]>([]);
 
   // const [commentFiles, setCommentFiles] = useState<FileWithPath[]>([]);
 
@@ -73,7 +76,7 @@ const DocumentModal = ({ onClose, opened, title }: CommonModalProps) => {
             dueDate: dueDate.toISOString() as any,
             priority,
             status,
-            files: (files as unknown as FileList) || ([] as any),
+            files: (attachments as unknown as FileList) || ([] as any),
             assignedUsers: [],
             ccUsers: [],
             templateId: data.find((t) => t.name === selectedTemplate)?.id || "",
@@ -82,7 +85,9 @@ const DocumentModal = ({ onClose, opened, title }: CommonModalProps) => {
           // console.log(form.values);
 
           await dispatch(createDocument({ boardId: activeBoard.id, document: doc }));
+
           form.reset();
+          setAttachments([]);
           // form.reset();
           onClose();
         })}
@@ -156,15 +161,38 @@ const DocumentModal = ({ onClose, opened, title }: CommonModalProps) => {
             return <DynamicField key={f.id} field={f} form={form} />;
           })}
 
-          {Array.from(files).map((f) => {
-            return <div key={f.name}>{f.name}</div>;
+          {selectedTemplate && (
+            <Text>
+              Attachments <small>({attachments.length}/10)</small>:
+            </Text>
+          )}
+
+          {Array.from(attachments).map((f, i) => {
+            return (
+              <Flex key={f.name} justify="space-between" align="center">
+                <Text lineClamp={1}>{f.name}</Text>
+                <ActionIcon
+                  color={"red"}
+                  size="sm"
+                  onClick={() => {
+                    setAttachments((a) => a.filter((_, index) => index !== i));
+                  }}
+                >
+                  <IconX />
+                </ActionIcon>
+              </Flex>
+            );
           })}
 
           {selectedTemplate && (
             <Paper>
               <CustomDropzone
                 onDrop={(files) => {
-                  setFiles(files);
+                  if (attachments.length < 10) {
+                    setAttachments((a) => [...a, ...files]);
+                  } else {
+                    showError("You can only attach 10 files");
+                  }
                 }}
               />
             </Paper>

@@ -260,6 +260,36 @@ const DocumentsList = () => {
                 }}
               />
 
+              <MultiSelect
+                label="Link Documents"
+                data={data.map((d) => {
+                  return {
+                    value: d.id,
+                    label: d.title,
+                  };
+                })}
+                value={newForm.linkedDocs}
+                placeholder="Add emails"
+                searchable
+                onChange={(e) => {
+                  setNewForm({
+                    ...newForm,
+                    linkedDocs: e,
+                  });
+                }}
+                getCreateLabel={(query) => `+ Add ${query}`}
+                onCreate={(query) => {
+                  const item = { value: query, label: query };
+                  console.log(item);
+
+                  // setNewForm({
+                  //   ...newForm,
+                  //   linkedDocs: [...newForm.linkedDocs, item.value],
+                  // });
+                  return item;
+                }}
+              />
+
               {selectedDocument &&
                 Object.entries(selectedDocument).map(([k, v], i) => {
                   const inputIndex = selectedDocument.template.fields.findIndex((f) => f.key === k);

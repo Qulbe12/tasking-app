@@ -36,6 +36,7 @@ const BoardsList = () => {
 
   return (
     <div>
+      <button>Toggle</button>
       <LoadingOverlay visible={!!loading} overlayBlur={2} />
       <div className="flex justify-between items-center mb-4">
         <Title className="flex items-center gap-4">

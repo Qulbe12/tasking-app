@@ -1,5 +1,15 @@
 import React, { useEffect } from "react";
-import { AppShell, Navbar, Header, Group, TextInput, Flex, ActionIcon, Text } from "@mantine/core";
+import {
+  AppShell,
+  Navbar,
+  Header,
+  Group,
+  TextInput,
+  Flex,
+  ActionIcon,
+  Text,
+  Burger,
+} from "@mantine/core";
 
 import "./DashboardLayout.scss";
 import { Outlet, useNavigate } from "react-router-dom";
@@ -8,6 +18,7 @@ import UserButton from "../components/UserButton";
 import { IconFilter } from "@tabler/icons";
 import { useAppDispatch, useAppSelector } from "../redux/store";
 import { resetFilters, setSearch, toggleFilterOpen } from "../redux/slices/filterSlice";
+import { useDisclosure } from "@mantine/hooks";
 
 const DashboardLayout = () => {
   const dispatch = useAppDispatch();
@@ -20,6 +31,7 @@ const DashboardLayout = () => {
     dispatch(resetFilters());
   }, [window.location.href]);
 
+  const [opened, { toggle }] = useDisclosure(true);
   return (
     <div
       style={{
@@ -30,7 +42,7 @@ const DashboardLayout = () => {
         padding="md"
         fixed={false}
         navbar={
-          <Navbar width={{ base: 250 }} h="screen" p="xs">
+          <Navbar display={opened ? "block" : "none"} width={{ base: 250 }} h="screen" p="xs">
             <Navbar.Section grow mt="xs">
               <MainLinks />
             </Navbar.Section>
@@ -44,10 +56,13 @@ const DashboardLayout = () => {
         header={
           <Header height={60}>
             <Group sx={{ height: "100%" }} px={20} position="apart">
-              <div className="cursor-pointer" onClick={() => navigate("/")}>
-                HEXADESK
-              </div>
-              <Flex gap="md" align="center">
+              <Flex align={"center"} gap="lg">
+                <div className="cursor-pointer" onClick={() => navigate("/")}>
+                  HEXADESK
+                </div>
+                <Burger opened={opened} onClick={toggle} aria-label={"Toggle Sidenav"} />
+              </Flex>
+              <Flex gap="md" align="center" justify="space-between">
                 <ActionIcon
                   color={filtersOpen ? "orange" : undefined}
                   onClick={() => dispatch(toggleFilterOpen())}
@@ -73,6 +88,7 @@ const DashboardLayout = () => {
           },
         })}
       >
+        <button onClick={toggle}>asd</button>
         <Outlet />
       </AppShell>
     </div>
