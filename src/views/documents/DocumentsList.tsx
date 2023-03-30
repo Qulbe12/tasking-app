@@ -11,7 +11,6 @@ import {
   Text,
   Textarea,
   TextInput,
-  Title,
 } from "@mantine/core";
 import { DatePicker } from "@mantine/dates";
 import { useForm } from "@mantine/form";
@@ -31,8 +30,7 @@ import Filter from "../../components/Filter";
 import PdfViewerComponent from "../../components/PdfViewerComponent";
 import UpdateDynamicField from "../../components/UpdateDynamicField";
 import DocumentModal from "../../modals/DocumentModal";
-import { getDocuments, updateDocument } from "../../redux/api/documentApi";
-import { getAllTemplates } from "../../redux/api/templateApi";
+import { updateDocument } from "../../redux/api/documentApi";
 import { useAppDispatch, useAppSelector } from "../../redux/store";
 import _ from "lodash";
 import dayjs from "dayjs";
@@ -49,18 +47,9 @@ const DocumentsList = () => {
   }
 
   const dispatch = useAppDispatch();
-  const { activeBoard } = useAppSelector((state) => state.boards);
   const { data, loading, loaders } = useAppSelector((state) => state.documents);
-  const { activeWorkspace } = useAppSelector((state) => state.workspaces);
   const { data: templates } = useAppSelector((state) => state.templates);
   const { search } = useAppSelector((state) => state.filters);
-
-  useEffect(() => {
-    if (!activeBoard?.id) return;
-    dispatch(getDocuments({ boardId: activeBoard?.id, query: {} }));
-    if (!activeWorkspace?.id) return;
-    dispatch(getAllTemplates(activeWorkspace?.id));
-  }, []);
 
   const [selectedDocument, setSelectedDocument] = useState<IDocument | null>(null);
 
@@ -108,10 +97,10 @@ const DocumentsList = () => {
         />
       </Collapsable>
 
-      <Flex justify="space-between" align="center" mb="md">
+      {/* <Flex justify="space-between" align="center" mb="md">
         <Title order={2}>Documents</Title>
         <Button onClick={toggleOpen}>Add Document</Button>
-      </Flex>
+      </Flex> */}
 
       <LoadingOverlay visible={!!loading} />
 

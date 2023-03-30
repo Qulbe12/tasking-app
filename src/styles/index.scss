@@ -4,6 +4,10 @@
 
 @import "../components/Calendar.scss";
 
+body {
+  height: 100%;
+}
+
 .react-horizontal-scrolling-menu--scroll-container::-webkit-scrollbar {
   display: none;
 }

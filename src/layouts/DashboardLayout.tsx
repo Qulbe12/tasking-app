@@ -9,9 +9,9 @@ import {
   ActionIcon,
   Text,
   Burger,
+  Title,
 } from "@mantine/core";
 
-import "./DashboardLayout.scss";
 import { Outlet, useNavigate } from "react-router-dom";
 import { MainLinks } from "./MainLinks";
 import UserButton from "../components/UserButton";
@@ -25,6 +25,7 @@ const DashboardLayout = () => {
   const navigate = useNavigate();
 
   const { search, filtersOpen } = useAppSelector((state) => state.filters);
+  const { activeBoard } = useAppSelector((state) => state.boards);
 
   useEffect(() => {
     dispatch(setSearch(""));
@@ -32,16 +33,13 @@ const DashboardLayout = () => {
   }, [window.location.href]);
 
   const [opened, { toggle }] = useDisclosure(true);
+
   return (
-    <div
-      style={{
-        height: "100vh",
-      }}
-    >
-      <AppShell
-        padding="md"
-        fixed={false}
-        navbar={
+    <AppShell
+      padding="md"
+      fixed={true}
+      navbar={
+        opened ? (
           <Navbar display={opened ? "block" : "none"} width={{ base: 250 }} h="screen" p="xs">
             <Navbar.Section grow mt="xs">
               <MainLinks />
@@ -52,46 +50,40 @@ const DashboardLayout = () => {
               </Flex>
             </Navbar.Section>
           </Navbar>
-        }
-        header={
-          <Header height={60}>
-            <Group sx={{ height: "100%" }} px={20} position="apart">
-              <Flex align={"center"} gap="lg">
-                <div className="cursor-pointer" onClick={() => navigate("/")}>
-                  HEXADESK
-                </div>
-                <Burger opened={opened} onClick={toggle} aria-label={"Toggle Sidenav"} />
-              </Flex>
-              <Flex gap="md" align="center" justify="space-between">
-                <ActionIcon
-                  color={filtersOpen ? "orange" : undefined}
-                  onClick={() => dispatch(toggleFilterOpen())}
-                >
-                  <IconFilter size={24} />
-                </ActionIcon>
-                <TextInput
-                  placeholder="Search"
-                  value={search}
-                  onChange={(e) => {
-                    dispatch(setSearch(e.target.value));
-                  }}
-                />
-                <UserButton />
-              </Flex>
-            </Group>
-          </Header>
-        }
-        styles={() => ({
-          main: {
-            overflowY: "auto",
-            height: "100%",
-          },
-        })}
-      >
-        <button onClick={toggle}>asd</button>
-        <Outlet />
-      </AppShell>
-    </div>
+        ) : undefined
+      }
+      header={
+        <Header height={60}>
+          <Group sx={{ height: "100%" }} px={20} position="apart">
+            <Flex align={"center"} gap="lg">
+              <div className="cursor-pointer" onClick={() => navigate("/")}>
+                HEXADESK
+              </div>
+              <Burger ml="130px" opened={opened} onClick={toggle} aria-label={"Toggle Sidenav"} />
+              <Title order={3}>{activeBoard?.title}</Title>
+            </Flex>
+            <Flex gap="md" align="center" justify="space-between">
+              <ActionIcon
+                color={filtersOpen ? "orange" : undefined}
+                onClick={() => dispatch(toggleFilterOpen())}
+              >
+                <IconFilter size={24} />
+              </ActionIcon>
+              <TextInput
+                placeholder="Search"
+                value={search}
+                onChange={(e) => {
+                  dispatch(setSearch(e.target.value));
+                }}
+              />
+              <UserButton />
+            </Flex>
+          </Group>
+        </Header>
+      }
+    >
+      <Outlet />
+    </AppShell>
   );
 };
 

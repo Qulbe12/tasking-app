@@ -83,8 +83,6 @@ const AnalyticsPage = () => {
 
   return (
     <div>
-      <h1>Analytics</h1>
-
       <Flex my="md">
         <Select
           label="Document Type"

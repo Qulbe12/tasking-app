@@ -18,6 +18,7 @@ import AnalyticsPage from "./views/analytics/AnalyticsPage";
 import PaymentPage from "./views/payment/PaymentPage";
 import SettingsLayout from "./layouts/SettingsLayout";
 import DocumentPublicView from "./views/documents/DocumentPublicView";
+import DocumentsPage from "./views/documents/DocumentsPage";
 
 const router = createBrowserRouter([
   {
@@ -64,7 +65,7 @@ const router = createBrowserRouter([
         children: [
           {
             path: "/board",
-            element: <DocumentsList />,
+            element: <BoardDetails />,
           },
           {
             path: "/board/details",

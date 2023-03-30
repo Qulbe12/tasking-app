@@ -9,7 +9,7 @@ type CollapsableProps = {
 const Collapsable = ({ children }: CollapsableProps) => {
   const { filtersOpen } = useAppSelector((state) => state.filters);
   return (
-    <div className="my-4">
+    <div className="mb-4">
       <Collapse in={filtersOpen}>{children}</Collapse>
     </div>
   );

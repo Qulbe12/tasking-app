@@ -1,20 +1,11 @@
-import { Flex, Stack, Tabs, Text, Title } from "@mantine/core";
+import { Tabs } from "@mantine/core";
 import { IconUsers } from "@tabler/icons";
 import React from "react";
-import { useAppSelector } from "../../redux/store";
 import GroupsTab from "./GroupsTab";
 
 const Teams = () => {
-  const { activeBoard } = useAppSelector((state) => state.boards);
   return (
     <div className="p-4">
-      <Flex justify="space-between" align="center" mb="md">
-        <Stack>
-          <Title order={2}>Team Management</Title>
-          <Text>({activeBoard?.title})</Text>
-        </Stack>
-      </Flex>
-
       <Tabs defaultValue="groups">
         <Tabs.List>
           <Tabs.Tab disabled value="members" icon={<IconUsers size={14} />}>

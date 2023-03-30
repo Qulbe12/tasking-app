@@ -1,5 +1,5 @@
 import React from "react";
-import { IconLayout, IconChartBar, IconMail, IconUserPlus, IconNews } from "@tabler/icons";
+import { IconLayout, IconMail, IconNews } from "@tabler/icons";
 import { ThemeIcon, UnstyledButton, Group, Text, Divider } from "@mantine/core";
 import { useNavigate } from "react-router-dom";
 import { useAppSelector } from "../redux/store";
@@ -45,28 +45,15 @@ const mainLinks: MainLinkProps[] = [
   { icon: <IconNews size={16} />, color: "pink", label: "Templates", to: "/templates" },
 ];
 
-const subLinks: MainLinkProps[] = [
-  { icon: <IconLayout size={16} />, color: "blue", label: "Documents", to: "/board" },
-  { icon: <IconUserPlus size={16} />, color: "grape", label: "Members", to: "/board/teams" },
-  { icon: <IconChartBar size={16} />, color: "teal", label: "Analytics", to: "/board/analytics" },
-];
-
 export function MainLinks() {
-  const { activeBoard } = useAppSelector((state) => state.boards);
   const { activeWorkspace } = useAppSelector((state) => state.workspaces);
 
   const links = mainLinks.map((link) => <MainLink {...link} key={link.label} />);
-  const sLinks = subLinks.map((link) => <MainLink {...link} key={link.label} />);
+
   return (
     <div>
       <Divider label={activeWorkspace?.name} />
       {links}
-      {activeBoard && (
-        <>
-          <Divider label={activeBoard.title} mt="md" />
-          {sLinks}
-        </>
-      )}
     </div>
   );
 }
