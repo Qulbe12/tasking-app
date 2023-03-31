@@ -13,9 +13,9 @@ import {
   Title,
 } from "@mantine/core";
 import { IAttachment, IDocument } from "hexa-sdk";
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import DocumentCard from "../../components/DocumentCard";
-import { useAppSelector } from "../../redux/store";
+import { useAppDispatch, useAppSelector } from "../../redux/store";
 import _ from "lodash";
 import dayjs from "dayjs";
 import { IconFileText, IconPlus } from "@tabler/icons";
@@ -23,8 +23,19 @@ import Collapsable from "../../components/Collapsable";
 import Filter from "../../components/Filter";
 import PdfViewerComponent from "../../components/PdfViewerComponent";
 
+import { useDisclosure } from "@mantine/hooks";
+import DocumentsListModal from "../../modals/DocumentsListModal";
+import { addLinkedDocsAction, removeLinkedDocsAction } from "../../redux/api/documentApi";
+import ConfirmationModal from "../../modals/ConfirmationModal";
+
 const DocumentsBoardView = () => {
-  const { data: documents, loading: documentsLoading } = useAppSelector((state) => state.documents);
+  const dispatch = useAppDispatch();
+
+  const {
+    data: documents,
+    loading: documentsLoading,
+    loaders: documentLoaders,
+  } = useAppSelector((state) => state.documents);
   const { data: templates } = useAppSelector((state) => state.templates);
   const { search } = useAppSelector((state) => state.filters);
 
@@ -56,6 +67,21 @@ const DocumentsBoardView = () => {
 
   const [selectedDocument, setSelectedDocument] = React.useState<IDocument | null>(null);
   const [selectedAttachment, setSelectedAttachment] = useState<IAttachment | null>(null);
+  const [selectedDocumentToLink, setSelectedDocumentToLink] = useState<string[]>([]);
+
+  const [showDocumentsModal, { toggle: toggleShowDocumentsModal }] = useDisclosure(false);
+  const [showConfirmationModal, { toggle: toggleShowConfirmationModal }] = useDisclosure(false);
+
+  const [selectedLinkedDocument, setSelectedLinkedDocument] = useState<string | undefined>();
+
+  useEffect(() => {
+    if (selectedDocument) {
+      const foundDocument = documents.find((d) => d.id === selectedDocument.id);
+      if (foundDocument) {
+        setSelectedDocument(foundDocument);
+      }
+    }
+  }, [documents]);
 
   return (
     <Paper p="md" className="flex flex-col" style={{ height: "80vh" }}>
@@ -78,6 +104,7 @@ const DocumentsBoardView = () => {
                 return (
                   <div key={i} className="mb-4">
                     <DocumentCard
+                      selected={selectedDocument ? selectedDocument.id : undefined}
                       document={document}
                       onClick={() => setSelectedDocument(document)}
                     />
@@ -200,13 +227,35 @@ const DocumentsBoardView = () => {
                 <Title order={4} mb="md">
                   Linked Documents
                 </Title>
-                <ActionIcon variant="filled" radius="xl" size="sm">
+                <ActionIcon
+                  variant="filled"
+                  radius="xl"
+                  size="sm"
+                  onClick={toggleShowDocumentsModal}
+                >
                   <IconPlus size={24} />
                 </ActionIcon>
               </Flex>
-              {selectedDocument?.linkedDocs.map((d) => {
-                return <DocumentCard key={d} document={documents.find((doc) => doc.id === d)} />;
-              })}
+              <ScrollArea>
+                {selectedDocument?.linkedDocs.map((d) => {
+                  const foundDocument = documents.find((doc) => doc.id === d);
+                  return (
+                    <div key={d} className="mb-4">
+                      <DocumentCard
+                        linkedView
+                        document={foundDocument}
+                        onClick={() => {
+                          if (foundDocument) setSelectedDocument(foundDocument);
+                        }}
+                        onUnlinkIconClick={() => {
+                          setSelectedLinkedDocument(d);
+                          toggleShowConfirmationModal();
+                        }}
+                      />
+                    </div>
+                  );
+                })}
+              </ScrollArea>
             </Card>
           </Grid.Col>
         )}
@@ -220,6 +269,55 @@ const DocumentsBoardView = () => {
       >
         {selectedAttachment && <PdfViewerComponent documentUrl={selectedAttachment.url} />}
       </Drawer>
+
+      <DocumentsListModal
+        okText="Link"
+        onOk={async () => {
+          if (selectedDocument && selectedDocumentToLink) {
+            dispatch(
+              await addLinkedDocsAction({
+                documentId: selectedDocument.id,
+                documentsToLink: selectedDocumentToLink,
+              }),
+            );
+            toggleShowDocumentsModal();
+          }
+        }}
+        loading={!!documentLoaders.linkingDocument}
+        title={"Select a Document To Link to - " + selectedDocument?.title}
+        selectedDocuments={selectedDocumentToLink}
+        opened={showDocumentsModal}
+        onClose={toggleShowDocumentsModal}
+        onDocumentClick={(doc) => {
+          if (selectedDocumentToLink.includes(doc.id)) {
+            setSelectedDocumentToLink(selectedDocumentToLink.filter((d) => d !== doc.id));
+          } else {
+            setSelectedDocumentToLink([...selectedDocumentToLink, doc.id]);
+          }
+        }}
+      />
+
+      <ConfirmationModal
+        type="delete"
+        body={`Are you sure you want to unlink ${
+          documents.find((d) => d.id === selectedLinkedDocument)?.title
+        } from ${selectedDocument?.title}?`}
+        opened={showConfirmationModal}
+        title="Are you sure?"
+        onClose={toggleShowConfirmationModal}
+        loading={!!documentLoaders.linkingDocument}
+        onOk={async () => {
+          if (selectedLinkedDocument && selectedDocument) {
+            await dispatch(
+              removeLinkedDocsAction({
+                documentId: selectedDocument?.id,
+                documentsToUnlink: [selectedLinkedDocument],
+              }),
+            );
+            toggleShowConfirmationModal();
+          }
+        }}
+      />
     </Paper>
   );
 };

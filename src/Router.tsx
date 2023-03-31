@@ -9,7 +9,6 @@ import Pay from "./views/auth/Pay";
 import Register from "./views/auth/Register";
 import BoardDetails from "./views/board/BoardDetails";
 import TemplateList from "./views/templates/TemplateList";
-import DocumentsList from "./views/documents/DocumentsList";
 import Teams from "./views/teams/Teams";
 import WorkspacesList from "./views/workspaces/WorkspacesList";
 import BoardsList from "./views/board/BoardsList";
@@ -18,7 +17,6 @@ import AnalyticsPage from "./views/analytics/AnalyticsPage";
 import PaymentPage from "./views/payment/PaymentPage";
 import SettingsLayout from "./layouts/SettingsLayout";
 import DocumentPublicView from "./views/documents/DocumentPublicView";
-import DocumentsPage from "./views/documents/DocumentsPage";
 
 const router = createBrowserRouter([
   {

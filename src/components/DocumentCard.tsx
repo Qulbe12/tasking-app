@@ -1,5 +1,5 @@
-import { Avatar, Badge, Card, Divider, Flex, Text } from "@mantine/core";
-import { IconClock, IconPaperclip } from "@tabler/icons";
+import { ActionIcon, Avatar, Badge, Card, Divider, Flex, Text } from "@mantine/core";
+import { IconClock, IconPaperclip, IconUnlink } from "@tabler/icons";
 import dayjs from "dayjs";
 import { IDocument } from "hexa-sdk/dist/app.api";
 import React from "react";
@@ -9,9 +9,19 @@ type DocumentCardProps = {
   addCard?: boolean;
   document?: IDocument;
   onClick?: () => void;
+  selected?: string;
+  linkedView?: boolean;
+  onUnlinkIconClick?: () => void;
 };
 
-const DocumentCard = ({ addCard, document, onClick }: DocumentCardProps) => {
+const DocumentCard = ({
+  addCard,
+  document,
+  onClick,
+  selected,
+  linkedView,
+  onUnlinkIconClick,
+}: DocumentCardProps) => {
   if (addCard) {
     return (
       <Card shadow="sm" withBorder className="cursor-pointer">
@@ -21,17 +31,31 @@ const DocumentCard = ({ addCard, document, onClick }: DocumentCardProps) => {
   }
 
   return (
-    <Card onClick={onClick} withBorder shadow="sm" className="cursor-pointer relative">
-      {/* <Badge color={generateDocumentColor(document?.template.name)} mb="sm">
-        {document?.template.name}
-      </Badge>
-      <Flex direction="column">
-        <Text>{document?.title}</Text>
-        <Text size="sm">{document?.description}</Text>
-      </Flex> */}
-
+    <Card
+      onClick={onClick}
+      withBorder={selected !== document?.id}
+      shadow="sm"
+      style={{
+        border: selected === document?.id ? "1px solid cyan" : undefined,
+      }}
+      className="cursor-pointer"
+    >
       <Flex align="center" justify="space-between">
-        <Text weight="bold">{document?.title}</Text>
+        <Flex gap="md">
+          {linkedView && (
+            <ActionIcon
+              color="red"
+              size="sm"
+              onClick={(e) => {
+                e.stopPropagation();
+                onUnlinkIconClick && onUnlinkIconClick();
+              }}
+            >
+              <IconUnlink />
+            </ActionIcon>
+          )}
+          <Text weight="bold">{document?.title}</Text>
+        </Flex>
         <Badge size="sm" color={generateDocumentColor(document?.template.name)} mb="sm">
           {document?.template.name}
         </Badge>

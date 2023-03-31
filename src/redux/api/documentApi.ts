@@ -4,7 +4,17 @@ import api from "../../config/api";
 
 const { documentApi } = api;
 
-const { addFiles, addUsers, create, get, getById, removeUser, update } = documentApi;
+const {
+  addFiles,
+  addUsers,
+  create,
+  get,
+  getById,
+  removeUser,
+  update,
+  addLinkedDocs,
+  removeLinkedDocs,
+} = documentApi;
 
 export const createDocument = createAsyncThunk(
   "documents/createDocument",
@@ -63,4 +73,16 @@ export const removeDocumentUser = createAsyncThunk(
     type: "ccUsers" | "assignedUsers";
     email: string;
   }) => (await removeUser(documentId, type, email)).data,
+);
+
+export const addLinkedDocsAction = createAsyncThunk(
+  "documents/addLinkedDoc",
+  async ({ documentId, documentsToLink }: { documentId: string; documentsToLink: string[] }) =>
+    (await addLinkedDocs(documentId, documentsToLink)).data,
+);
+
+export const removeLinkedDocsAction = createAsyncThunk(
+  "documents/removeLinkedDoc",
+  async ({ documentId, documentsToUnlink }: { documentId: string; documentsToUnlink: string[] }) =>
+    (await removeLinkedDocs(documentId, documentsToUnlink)).data,
 );

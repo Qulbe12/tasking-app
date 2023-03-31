@@ -1,6 +1,12 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { IDocument } from "hexa-sdk/dist/app.api";
-import { createDocument, getDocuments, updateDocument } from "../api/documentApi";
+import {
+  addLinkedDocsAction,
+  createDocument,
+  getDocuments,
+  removeLinkedDocsAction,
+  updateDocument,
+} from "../api/documentApi";
 import { showError } from "../commonSliceFunctions";
 
 export interface DocumentState {
@@ -11,6 +17,7 @@ export interface DocumentState {
     adding: string | null;
     updating: string | null;
     deleting: string | null;
+    linkingDocument: boolean | null;
   };
 }
 
@@ -21,6 +28,7 @@ const initialState: DocumentState = {
     adding: null,
     updating: null,
     deleting: null,
+    linkingDocument: null,
   },
 };
 
@@ -66,6 +74,34 @@ export const documentsSlice = createSlice({
       })
       .addCase(updateDocument.rejected, (state, action) => {
         state.loaders.updating = null;
+        state.error = action.error.message;
+        showError(action.error.message);
+      })
+      // Link Document
+      .addCase(addLinkedDocsAction.pending, (state, action) => {
+        state.loaders.linkingDocument = true;
+      })
+      .addCase(addLinkedDocsAction.fulfilled, (state, action) => {
+        const foundIndex = state.data.findIndex((d) => d.id === action.payload.id);
+        state.data[foundIndex] = action.payload;
+        state.loaders.linkingDocument = null;
+      })
+      .addCase(addLinkedDocsAction.rejected, (state, action) => {
+        state.loaders.linkingDocument = null;
+        state.error = action.error.message;
+        showError(action.error.message);
+      })
+      // Unlink Document
+      .addCase(removeLinkedDocsAction.pending, (state) => {
+        state.loaders.linkingDocument = true;
+      })
+      .addCase(removeLinkedDocsAction.fulfilled, (state, action) => {
+        const foundIndex = state.data.findIndex((d) => d.id === action.payload.id);
+        state.data[foundIndex] = action.payload;
+        state.loaders.linkingDocument = null;
+      })
+      .addCase(removeLinkedDocsAction.rejected, (state, action) => {
+        state.loaders.linkingDocument = null;
         state.error = action.error.message;
         showError(action.error.message);
       });

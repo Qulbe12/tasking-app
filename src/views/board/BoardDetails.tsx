@@ -2,12 +2,14 @@ import { Button, Flex, Grid, Tabs, useMantineTheme } from "@mantine/core";
 import { IconChartBar, IconPhoto, IconPlus, IconUser } from "@tabler/icons";
 import React, { CSSProperties, useEffect } from "react";
 import _ from "lodash";
-import DocumentsList from "../documents/DocumentsList";
 import { useAppDispatch, useAppSelector } from "../../redux/store";
 import { getDocuments } from "../../redux/api/documentApi";
 import { getAllTemplates } from "../../redux/api/templateApi";
 import Teams from "../teams/Teams";
 import AnalyticsPage from "../analytics/AnalyticsPage";
+import DocumentsBoardView from "../documents/DocumentsBoardView";
+import DocumentModal from "../../modals/DocumentModal";
+import { useDisclosure } from "@mantine/hooks";
 
 const BoardDetails = () => {
   const theme = useMantineTheme();
@@ -23,21 +25,23 @@ const BoardDetails = () => {
     dispatch(getAllTemplates(activeWorkspace?.id));
   }, []);
 
+  const [opened, { toggle }] = useDisclosure(false);
+
   const tabs = [
     {
-      element: <DocumentsList />,
       value: "workItems",
       icon: <IconPhoto size="0.8rem" />,
+      element: <DocumentsBoardView />,
     },
     {
-      element: <AnalyticsPage />,
       value: "analytics",
       icon: <IconChartBar size="0.8rem" />,
+      element: <AnalyticsPage />,
     },
     {
-      element: <Teams />,
       value: "teams",
       icon: <IconUser size="0.8rem" />,
+      element: <Teams />,
     },
   ];
 
@@ -45,6 +49,10 @@ const BoardDetails = () => {
     borderBottom: `1px solid ${
       theme.colorScheme === "dark" ? theme.colors.dark[5] : theme.colors.gray[2]
     }`,
+  };
+
+  const handleAddButtonClick = () => {
+    toggle();
   };
 
   return (
@@ -64,7 +72,12 @@ const BoardDetails = () => {
           </Grid.Col>
           <Grid.Col span={4}>
             <Flex gap="md" justify="flex-end">
-              <Button leftIcon={<IconPlus size={"0.8em"} />} size="xs" variant="subtle">
+              <Button
+                leftIcon={<IconPlus size={"0.8em"} />}
+                size="xs"
+                variant="subtle"
+                onClick={handleAddButtonClick}
+              >
                 Add Another Item
               </Button>
             </Flex>
@@ -79,6 +92,8 @@ const BoardDetails = () => {
           );
         })}
       </Tabs>
+
+      <DocumentModal onClose={toggle} opened={opened} title="Create Document" />
     </div>
   );
 };
