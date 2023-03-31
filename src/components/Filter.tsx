@@ -59,7 +59,7 @@ const Filter = ({ options, onChange }: FilterProps) => {
         >
           {options.map((option) => (
             <div
-              className=" m-2 cursor-pointer"
+              className="cursor-pointer m-1"
               title={option}
               //   itemId={option} // NOTE: itemId is required for track items
               key={option}

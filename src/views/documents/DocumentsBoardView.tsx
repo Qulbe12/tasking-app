@@ -13,6 +13,7 @@ import {
   Title,
 } from "@mantine/core";
 import { IAttachment, IDocument } from "hexa-sdk";
+
 import React, { useEffect, useMemo, useState } from "react";
 import DocumentCard from "../../components/DocumentCard";
 import { useAppDispatch, useAppSelector } from "../../redux/store";
@@ -27,6 +28,8 @@ import { useDisclosure } from "@mantine/hooks";
 import DocumentsListModal from "../../modals/DocumentsListModal";
 import { addLinkedDocsAction, removeLinkedDocsAction } from "../../redux/api/documentApi";
 import ConfirmationModal from "../../modals/ConfirmationModal";
+import DocumentUpdateModal from "../../modals/DocumentUpdateModal";
+import DocumentModal from "../../modals/DocumentModal";
 
 const DocumentsBoardView = () => {
   const dispatch = useAppDispatch();
@@ -40,7 +43,7 @@ const DocumentsBoardView = () => {
   const { search } = useAppSelector((state) => state.filters);
 
   const [filter, setFilter] = useState<string[]>([]);
-  //   const [statusFilter, setStatusFilter] = useState<string[]>([]);
+  const [statusFilter, setStatusFilter] = useState<string[]>([]);
 
   const filteredData: IDocument[] = useMemo<IDocument[]>(() => {
     if (search && filter.length) {
@@ -56,14 +59,14 @@ const DocumentsBoardView = () => {
         return JSON.stringify(d).toLowerCase().includes(search.toLocaleLowerCase());
       });
     }
-    if (filter.length) {
+    if (filter.length || statusFilter.length) {
       return documents.filter((d) => {
-        return filter.includes(d.template.name);
+        return filter.includes(d.template.name) || statusFilter.includes(d.status);
       });
     }
 
     return documents;
-  }, [filter, documents, search]);
+  }, [filter, documents, search, statusFilter]);
 
   const [selectedDocument, setSelectedDocument] = React.useState<IDocument | null>(null);
   const [selectedAttachment, setSelectedAttachment] = useState<IAttachment | null>(null);
@@ -71,6 +74,7 @@ const DocumentsBoardView = () => {
 
   const [showDocumentsModal, { toggle: toggleShowDocumentsModal }] = useDisclosure(false);
   const [showConfirmationModal, { toggle: toggleShowConfirmationModal }] = useDisclosure(false);
+  const [showEditModal, { toggle: toggleShowEditModal }] = useDisclosure(false);
 
   const [selectedLinkedDocument, setSelectedLinkedDocument] = useState<string | undefined>();
 
@@ -83,22 +87,43 @@ const DocumentsBoardView = () => {
     }
   }, [documents]);
 
+  const [newForm, setNewForm] = useState<IDocument>();
+
+  useEffect(() => {
+    if (!selectedDocument) return;
+    setNewForm({ ...newForm, ...selectedDocument });
+  }, [selectedDocument]);
+
+  const [opened, { toggle }] = useDisclosure(false);
+
+  const handleAddButtonClick = () => {
+    toggle();
+  };
+
   return (
-    <Paper p="md" className="flex flex-col" style={{ height: "80vh" }}>
-      <Collapsable>
+    <Paper h="80vh">
+      <div className="mb-2">
         <Filter options={templates.map((t) => t.name)} onChange={setFilter} />
-        {/* <Filter
-          options={[DocumentStatus.Complete, DocumentStatus.InProgresss, DocumentStatus.Todo]}
-          onChange={setStatusFilter}
-        /> */}
-      </Collapsable>
+        <Filter options={["Complete", "In Progress", "Todo"]} onChange={setStatusFilter} />
+      </div>
+
       <LoadingOverlay visible={!!documentsLoading} overlayBlur={2} />
       <Grid className="h-full">
         <Grid.Col className="h-full" span={3}>
           <Card shadow="lg" className="h-full">
-            <Title order={4} mb="md">
-              Tasks
-            </Title>
+            <Flex justify="space-between">
+              <Title order={4} mb="md">
+                Tasks
+              </Title>
+              <Button
+                leftIcon={<IconPlus size={"0.8em"} />}
+                size="xs"
+                variant="subtle"
+                onClick={handleAddButtonClick}
+              >
+                New Task
+              </Button>
+            </Flex>
             <ScrollArea className="h-full">
               {filteredData.map((document, i) => {
                 return (
@@ -120,7 +145,9 @@ const DocumentsBoardView = () => {
               <ScrollArea className="h-full">
                 <Flex justify="space-between" mb="xl">
                   <Text size="lg">{selectedDocument?.title}</Text>
-                  <Button size="xs">Edit</Button>
+                  <Button size="xs" onClick={() => toggleShowEditModal()}>
+                    Edit
+                  </Button>
                 </Flex>
                 <Stack>
                   <Flex direction="column">
@@ -318,6 +345,14 @@ const DocumentsBoardView = () => {
           }
         }}
       />
+
+      <DocumentUpdateModal
+        opened={showEditModal}
+        document={selectedDocument}
+        onClose={() => toggleShowEditModal()}
+      />
+
+      <DocumentModal onClose={toggle} opened={opened} title="Create Document" />
     </Paper>
   );
 };
