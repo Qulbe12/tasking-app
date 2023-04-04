@@ -20,7 +20,6 @@ import { useAppDispatch, useAppSelector } from "../../redux/store";
 import _ from "lodash";
 import dayjs from "dayjs";
 import { IconFileText, IconPlus } from "@tabler/icons";
-import Collapsable from "../../components/Collapsable";
 import Filter from "../../components/Filter";
 import PdfViewerComponent from "../../components/PdfViewerComponent";
 
@@ -40,6 +39,7 @@ const DocumentsBoardView = () => {
     loaders: documentLoaders,
   } = useAppSelector((state) => state.documents);
   const { data: templates } = useAppSelector((state) => state.templates);
+  const { user } = useAppSelector((state) => state.auth);
   const { search } = useAppSelector((state) => state.filters);
 
   const [filter, setFilter] = useState<string[]>([]);
@@ -150,6 +150,15 @@ const DocumentsBoardView = () => {
                   </Button>
                 </Flex>
                 <Stack>
+                  <Flex direction="column">
+                    <Text weight="bolder" size="sm">
+                      Created By:
+                    </Text>
+                    <Text size="sm">
+                      {selectedDocument.createdBy.name}
+                      {user?.user.id === selectedDocument.createdBy.id && " (me)"}
+                    </Text>
+                  </Flex>
                   <Flex direction="column">
                     <Text weight="bolder" size="sm">
                       Title:
