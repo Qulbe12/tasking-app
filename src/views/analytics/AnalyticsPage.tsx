@@ -1,12 +1,11 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import React, { useMemo, useState } from "react";
-import ReactDataGrid from "@inovua/reactdatagrid-community";
+import ReactDataGrid from "@inovua/reactdatagrid-enterprise";
 import { useAppSelector } from "../../redux/store";
 import { Flex, Select } from "@mantine/core";
-import "@inovua/reactdatagrid-community/index.css";
-import "@inovua/reactdatagrid-community/theme/default-dark.css";
-import "@inovua/reactdatagrid-community/theme/default-light.css";
-// import "./AnalyticsPage.scss";
+import "@inovua/reactdatagrid-enterprise/index.css";
+import "@inovua/reactdatagrid-enterprise/theme/default-dark.css";
+import "@inovua/reactdatagrid-enterprise/theme/default-light.css";
 import _ from "lodash";
 
 const AnalyticsPage = () => {
@@ -19,7 +18,7 @@ const AnalyticsPage = () => {
     "2,city": true,
   });
 
-  const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
+  const [selectedTemplate, setSelectedTemplate] = useState<string | null>(templates[0].id || null);
   const columns = useMemo(() => {
     const baseCols = [
       //   { name: "type", header: "Type", defaultFlex: 1 },
@@ -31,12 +30,14 @@ const AnalyticsPage = () => {
         name: "startDate",
         header: "Start Date",
         defaultFlex: 1,
+        groupBy: false,
         render: ({ value }: { value: string }) => new Date(value).toDateString(),
       },
       {
         name: "dueDate",
         header: "Due Date",
         defaultFlex: 1,
+        groupBy: false,
         render: ({ value }: { value: string }) => new Date(value).toDateString(),
       },
     ];
@@ -104,8 +105,8 @@ const AnalyticsPage = () => {
           setCellSelection(val);
         }}
         columns={columns}
+        defaultGroupBy={[]}
         dataSource={filteredDocuments}
-        // style={gridStyle}
         className="h-screen"
       />
       <h2>
