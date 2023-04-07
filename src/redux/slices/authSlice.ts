@@ -1,35 +1,38 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { showNotification } from "@mantine/notifications";
 import api from "../../config/api";
 import { IAuthUser, IRegisterUser, NylasConnectedPayload } from "hexa-sdk/dist/app.api";
+import { centralizedErrorHandler } from "../commonSliceFunctions";
 
 interface User {
   email: string;
   password: string;
 }
 
-export const loginUser = createAsyncThunk(
-  "user/login",
-  async (user: User, { rejectWithValue, dispatch }) => {
-    localStorage.removeItem("token");
+export const loginUser = createAsyncThunk("user/login", async (user: User, { rejectWithValue }) => {
+  localStorage.removeItem("token");
+  try {
+    const res = await api.userApi.login(user);
+    localStorage.setItem("token", res.data.accessToken);
+    return res.data;
+  } catch (err: any) {
+    return centralizedErrorHandler(err, rejectWithValue);
+  }
+});
+
+export const registerUser = createAsyncThunk(
+  "user/register",
+  async (userInfo: IRegisterUser, { rejectWithValue }) => {
     try {
-      const res = await api.userApi.login(user);
+      localStorage.removeItem("token");
+      const res = await api.userApi.register(userInfo);
       localStorage.setItem("token", res.data.accessToken);
       return res.data;
     } catch (err: any) {
-      const errMsg = err.response.data.Message;
-      return rejectWithValue(errMsg);
+      centralizedErrorHandler(err, rejectWithValue);
     }
   },
 );
-
-export const registerUser = createAsyncThunk("user/register", async (userInfo: IRegisterUser) => {
-  localStorage.removeItem("token");
-  const res = await api.userApi.register(userInfo);
-  localStorage.setItem("token", res.data.accessToken);
-  return res.data;
-});
 
 export interface AuthState {
   user?: IAuthUser;
@@ -79,21 +82,15 @@ export const authSlice = createSlice({
         state.loading -= 1;
         state.user = action.payload;
 
-        if (action.payload.nylasToken) {
+        if (action.payload?.nylasToken) {
           localStorage.setItem("nylasToken", action.payload.nylasToken.access_token);
         }
-        state.token = action.payload.accessToken;
+        if (action.payload?.accessToken) {
+          state.token = action.payload.accessToken;
+        }
       })
-      .addCase(loginUser.rejected, (state, action) => {
+      .addCase(loginUser.rejected, (state) => {
         state.loading -= 1;
-        console.log(action.payload);
-
-        state.error = action.error.message;
-
-        showNotification({
-          title: "Error",
-          message: action.error.message,
-        });
       })
       .addCase(registerUser.pending, (state) => {
         state.loading += 1;
@@ -101,16 +98,12 @@ export const authSlice = createSlice({
       .addCase(registerUser.fulfilled, (state, action) => {
         state.loading -= 1;
         state.user = action.payload;
-        state.token = action.payload.accessToken;
+        if (action.payload?.accessToken) {
+          state.token = action.payload.accessToken;
+        }
       })
-      .addCase(registerUser.rejected, (state, action) => {
+      .addCase(registerUser.rejected, (state) => {
         state.loading -= 1;
-        state.error = action.error.message;
-
-        showNotification({
-          title: "Error",
-          message: action.error.message,
-        });
       });
   },
 });

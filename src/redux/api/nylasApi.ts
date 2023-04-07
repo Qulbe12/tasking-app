@@ -2,6 +2,7 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import api from "../../config/api";
 import { nylasAxios } from "../../config/nylasAxios";
 import { IEmailThreadResponse } from "../../interfaces/IEmailResponse";
+import { centralizedErrorHandler } from "../commonSliceFunctions";
 
 const { nylasApi } = api;
 const { connect } = nylasApi;
@@ -17,9 +18,8 @@ export const fetchEmails = createAsyncThunk(
     try {
       const res = await nylasAxios.get<IEmailThreadResponse[]>("/threads");
       return res.data;
-    } catch (err: any) {
-      const errMsg = err.response.data.message;
-      return rejectWithValue(errMsg);
+    } catch (err) {
+      return centralizedErrorHandler(err, rejectWithValue);
     }
   },
 );
