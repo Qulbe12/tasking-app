@@ -49,7 +49,7 @@ export const nylasSlice = createSlice({
       .addCase(fetchEmails.fulfilled, (state, action) => {
         state.loaders.fetchingEmails = false;
         const filteredTrashEmails = action.payload.filter(
-          (e) => e.folders[0].name !== "permanent_trash",
+          (e: any) => e.folders[0].name !== "permanent_trash",
         );
         state.emails = filteredTrashEmails;
       })
