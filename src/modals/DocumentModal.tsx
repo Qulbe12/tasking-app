@@ -62,7 +62,7 @@ const DocumentModal = ({ onClose, opened, title }: CommonModalProps) => {
       }
     });
     return yup.object().shape(schema);
-  }, []);
+  }, [fields]);
 
   const form = useForm({
     initialValues: {
