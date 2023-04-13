@@ -17,7 +17,7 @@ import dayjs from "dayjs";
 import { IAttachment, IDocument, IUpdateDocument } from "hexa-sdk";
 import { DocumentPriority, DocumentStatus, SubscriptionStatus } from "hexa-sdk/dist/app.api";
 import _ from "lodash";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 
 import PdfViewerComponent from "../components/PdfViewerComponent";
 import UpdateDynamicField from "../components/UpdateDynamicField";
@@ -25,7 +25,8 @@ import { updateDocument } from "../redux/api/documentApi";
 import { useDisclosure, useId } from "@mantine/hooks";
 import CommonModalProps from "./CommonModalProps";
 import { useAppDispatch, useAppSelector } from "../redux/store";
-import { useForm } from "@mantine/form";
+import { useForm, yupResolver } from "@mantine/form";
+import * as yup from "yup";
 
 type DocumentUpdateModalProps = {
   document?: IDocument | null;
@@ -50,7 +51,23 @@ const DocumentUpdateModal = ({ onClose, opened, document }: DocumentUpdateModalP
     setNewForm({ ...newForm, ...document });
   }, [document]);
 
-  const form = useForm<IUpdateDocument>();
+  const formSchema = useMemo(() => {
+    const schema: any = {
+      title: yup.string().required("Document title is required"),
+      description: yup.string().required("Description is required"),
+      startDate: yup.date().required("Start date is required"),
+      dueDate: yup.date().required("Due date is required"),
+      priority: yup.string().required("Priority is required"),
+      status: yup.string().required("Status is required"),
+    };
+
+    selectedDocument?.template.fields?.forEach((f) => {
+      schema[f.label] = yup.string().required(`${f.label} is required`);
+    });
+    return yup.object().shape(schema);
+  }, []);
+
+  const form = useForm<IUpdateDocument>({ validate: yupResolver(formSchema) });
 
   return (
     <Modal opened={opened} title={"Update: " + selectedDocument?.title} onClose={onClose}>
