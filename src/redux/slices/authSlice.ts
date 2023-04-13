@@ -9,27 +9,30 @@ interface User {
   password: string;
 }
 
-export const loginUser = createAsyncThunk("user/login", async (user: User, { rejectWithValue }) => {
-  localStorage.removeItem("token");
-  try {
-    const res = await api.userApi.login(user);
-    localStorage.setItem("token", res.data.accessToken);
-    return res.data;
-  } catch (err: any) {
-    return centralizedErrorHandler(err, rejectWithValue);
-  }
-});
+export const loginUser = createAsyncThunk(
+  "user/login",
+  async (user: User, { rejectWithValue, dispatch }) => {
+    localStorage.removeItem("token");
+    try {
+      const res = await api.userApi.login(user);
+      localStorage.setItem("token", res.data.accessToken);
+      return res.data;
+    } catch (err: any) {
+      return centralizedErrorHandler(err, rejectWithValue, dispatch);
+    }
+  },
+);
 
 export const registerUser = createAsyncThunk(
   "user/register",
-  async (userInfo: IRegisterUser, { rejectWithValue }) => {
+  async (userInfo: IRegisterUser, { rejectWithValue, dispatch }) => {
     try {
       localStorage.removeItem("token");
       const res = await api.userApi.register(userInfo);
       localStorage.setItem("token", res.data.accessToken);
       return res.data;
     } catch (err: any) {
-      centralizedErrorHandler(err, rejectWithValue);
+      centralizedErrorHandler(err, rejectWithValue, dispatch);
     }
   },
 );
