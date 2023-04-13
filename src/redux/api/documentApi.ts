@@ -21,25 +21,28 @@ export const createDocument = createAsyncThunk(
   "documents/createDocument",
   async (
     { boardId, document }: { boardId: string; document: ICreateDocument & any },
-    { rejectWithValue },
+    { rejectWithValue, dispatch },
   ) => {
     try {
       const res = await create(boardId, document);
       return res.data;
     } catch (err) {
-      return centralizedErrorHandler(err, rejectWithValue);
+      return centralizedErrorHandler(err, rejectWithValue, dispatch);
     }
   },
 );
 
 export const getDocuments = createAsyncThunk(
   "documents/getDocuments",
-  async ({ boardId, query }: { boardId: string; query: IDocumentQuery }, { rejectWithValue }) => {
+  async (
+    { boardId, query }: { boardId: string; query: IDocumentQuery },
+    { rejectWithValue, dispatch },
+  ) => {
     try {
       const res = await get(boardId, query);
       return res.data;
     } catch (err) {
-      return centralizedErrorHandler(err, rejectWithValue);
+      return centralizedErrorHandler(err, rejectWithValue, dispatch);
     }
   },
 );
@@ -48,13 +51,13 @@ export const updateDocument = createAsyncThunk(
   "documents/updateDocument",
   async (
     { documentId, document }: { documentId: string; document: IUpdateDocument },
-    { rejectWithValue },
+    { rejectWithValue, dispatch },
   ) => {
     try {
       const res = await update(documentId, document);
       return res.data;
     } catch (err) {
-      return centralizedErrorHandler(err, rejectWithValue);
+      return centralizedErrorHandler(err, rejectWithValue, dispatch);
     }
   },
 );
@@ -63,13 +66,13 @@ export const addDocumentFiles = createAsyncThunk(
   "documents/addDocumentFiles",
   async (
     { documentId, attachment }: { documentId: string; attachment: FileList },
-    { rejectWithValue },
+    { rejectWithValue, dispatch },
   ) => {
     try {
       const res = await addFiles(documentId, attachment);
       return res.data;
     } catch (err) {
-      return centralizedErrorHandler(err, rejectWithValue);
+      return centralizedErrorHandler(err, rejectWithValue, dispatch);
     }
   },
 );
@@ -86,25 +89,25 @@ export const addDocumentUsers = createAsyncThunk(
       type: "ccUsers" | "assignedUsers";
       emails: any;
     },
-    { rejectWithValue },
+    { rejectWithValue, dispatch },
   ) => {
     try {
       const res = await addUsers(documentId, type, emails);
       return res.data;
     } catch (err) {
-      return centralizedErrorHandler(err, rejectWithValue);
+      return centralizedErrorHandler(err, rejectWithValue, dispatch);
     }
   },
 );
 
 export const getDocumentById = createAsyncThunk(
   "documents/getDocumentById",
-  async ({ documentId }: { documentId: string }, { rejectWithValue }) => {
+  async ({ documentId }: { documentId: string }, { rejectWithValue, dispatch }) => {
     try {
       const res = await getById(documentId);
       return res.data;
     } catch (err) {
-      return centralizedErrorHandler(err, rejectWithValue);
+      return centralizedErrorHandler(err, rejectWithValue, dispatch);
     }
   },
 );
@@ -121,13 +124,13 @@ export const removeDocumentUser = createAsyncThunk(
       type: "ccUsers" | "assignedUsers";
       email: string;
     },
-    { rejectWithValue },
+    { rejectWithValue, dispatch },
   ) => {
     try {
       const res = await removeUser(documentId, type, email);
       return res.data;
     } catch (err) {
-      return centralizedErrorHandler(err, rejectWithValue);
+      return centralizedErrorHandler(err, rejectWithValue, dispatch);
     }
   },
 );
@@ -136,13 +139,13 @@ export const addLinkedDocsAction = createAsyncThunk(
   "documents/addLinkedDoc",
   async (
     { documentId, documentsToLink }: { documentId: string; documentsToLink: string[] },
-    { rejectWithValue },
+    { rejectWithValue, dispatch },
   ) => {
     try {
       const res = await addLinkedDocs(documentId, documentsToLink);
       return res.data;
     } catch (err) {
-      return centralizedErrorHandler(err, rejectWithValue);
+      return centralizedErrorHandler(err, rejectWithValue, dispatch);
     }
   },
 );
@@ -157,13 +160,13 @@ export const removeLinkedDocsAction = createAsyncThunk(
       documentId: string;
       documentsToUnlink: string[];
     },
-    { rejectWithValue },
+    { rejectWithValue, dispatch },
   ) => {
     try {
       const res = await removeLinkedDocs(documentId, documentsToUnlink);
       return res.data;
     } catch (err) {
-      return centralizedErrorHandler(err, rejectWithValue);
+      return centralizedErrorHandler(err, rejectWithValue, dispatch);
     }
   },
 );

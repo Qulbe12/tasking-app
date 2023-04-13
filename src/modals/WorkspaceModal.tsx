@@ -1,11 +1,12 @@
 import { Button, Group, Modal, Stack, TextInput } from "@mantine/core";
-import { useForm } from "@mantine/form";
+import { useForm, yupResolver } from "@mantine/form";
 import { ICreateWorkspace, IWorkspace } from "hexa-sdk/dist/app.api";
 import React, { useEffect } from "react";
 import { createWorkspace, updateWorkspace } from "../redux/api/workspacesApi";
 
 import { useAppDispatch, useAppSelector } from "../redux/store";
 import CommonModalProps from "./CommonModalProps";
+import * as yup from "yup";
 
 type WorkspaceModalProps = {
   workspace?: IWorkspace;
@@ -21,10 +22,15 @@ const WorkspaceModal = ({
 
   const { loaders } = useAppSelector((state) => state.workspaces);
 
+  const formSchema = yup.object().shape({
+    name: yup.string().required("Workspace name is required"),
+  });
+
   const form = useForm<ICreateWorkspace>({
     initialValues: {
       name: "",
     },
+    validate: yupResolver(formSchema),
   });
 
   useEffect(() => {
@@ -53,7 +59,7 @@ const WorkspaceModal = ({
         })}
       >
         <Stack>
-          <TextInput withAsterisk label="Workspace Name" {...form.getInputProps("name")} />
+          <TextInput error withAsterisk label="Workspace Name" {...form.getInputProps("name")} />
 
           <Group position="right" mt="md">
             <Button loading={!!loaders.adding || loaders.updating === workspace?.id} type="submit">

@@ -8,84 +8,87 @@ const { create, get, getById, remove, update, addCcUsers, removeCcUsers } = grou
 
 export const createGroup = createAsyncThunk(
   "groups/createGroup",
-  async ({ boardId, group }: { boardId: string; group: ICreateGroup }, { rejectWithValue }) => {
+  async (
+    { boardId, group }: { boardId: string; group: ICreateGroup },
+    { rejectWithValue, dispatch },
+  ) => {
     try {
       const res = await create(boardId, group);
       return res.data;
     } catch (err) {
-      return centralizedErrorHandler(err, rejectWithValue);
+      return centralizedErrorHandler(err, rejectWithValue, dispatch);
     }
   },
 );
 
 export const getAllGroups = createAsyncThunk(
   "groups/getAllGroups",
-  async (boardId: string, { rejectWithValue }) => {
+  async (boardId: string, { rejectWithValue, dispatch }) => {
     try {
       const res = await get(boardId);
       return res.data;
     } catch (err) {
-      return centralizedErrorHandler(err, rejectWithValue);
+      return centralizedErrorHandler(err, rejectWithValue, dispatch);
     }
   },
 );
 
 export const getGroupById = createAsyncThunk(
   "groups/getGroupById",
-  async (id: string, { rejectWithValue }) => {
+  async (id: string, { rejectWithValue, dispatch }) => {
     try {
       const res = await getById(id);
       return res.data;
     } catch (err) {
-      return centralizedErrorHandler(err, rejectWithValue);
+      return centralizedErrorHandler(err, rejectWithValue, dispatch);
     }
   },
 );
 
 export const deleteGroup = createAsyncThunk(
   "groups/deleteGroup",
-  async (id: string, { rejectWithValue }) => {
+  async (id: string, { rejectWithValue, dispatch }) => {
     try {
       const res = await remove(id);
       return res.data;
     } catch (err) {
-      return centralizedErrorHandler(err, rejectWithValue);
+      return centralizedErrorHandler(err, rejectWithValue, dispatch);
     }
   },
 );
 
 export const updateGroup = createAsyncThunk(
   "groups/updateGroup",
-  async ({ id, group }: { id: string; group: IUpdateGroup }, { rejectWithValue }) => {
+  async ({ id, group }: { id: string; group: IUpdateGroup }, { rejectWithValue, dispatch }) => {
     try {
       const res = await update(id, group);
       return res.data;
     } catch (err) {
-      return centralizedErrorHandler(err, rejectWithValue);
+      return centralizedErrorHandler(err, rejectWithValue, dispatch);
     }
   },
 );
 
 export const addUsersToGroup = createAsyncThunk(
   "groups/addUsersToGroup",
-  async ({ id, emails }: { id: string; emails: string[] }, { rejectWithValue }) => {
+  async ({ id, emails }: { id: string; emails: string[] }, { rejectWithValue, dispatch }) => {
     try {
       const res = await addCcUsers(id, emails);
       return res.data;
     } catch (err) {
-      return centralizedErrorHandler(err, rejectWithValue);
+      return centralizedErrorHandler(err, rejectWithValue, dispatch);
     }
   },
 );
 
 export const removeUsersFromGroup = createAsyncThunk(
   "groups/removeUsersFromGroup",
-  async ({ id, emails }: { id: string; emails: string[] }, { rejectWithValue }) => {
+  async ({ id, emails }: { id: string; emails: string[] }, { rejectWithValue, dispatch }) => {
     try {
       const res = await removeCcUsers(id, emails);
       return res.data;
     } catch (err) {
-      return centralizedErrorHandler(err, rejectWithValue);
+      return centralizedErrorHandler(err, rejectWithValue, dispatch);
     }
   },
 );

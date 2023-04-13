@@ -56,7 +56,7 @@ const WorkspacesList = () => {
 
       {modalOpen && (
         <WorkspaceModal
-          title={selectedWorkspace ? "Create a Workspace" : "Update Workspace"}
+          title={!selectedWorkspace ? "Create a Workspace" : "Update Workspace"}
           opened={modalOpen}
           onClose={() => {
             setModalOpen(false);

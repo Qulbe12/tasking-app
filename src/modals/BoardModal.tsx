@@ -1,11 +1,12 @@
 import { Button, Group, Modal, Stack, Textarea, TextInput } from "@mantine/core";
-import { useForm } from "@mantine/form";
+import { useForm, yupResolver } from "@mantine/form";
 import { IBoard } from "hexa-sdk/dist/app.api";
 import React, { useEffect } from "react";
 import { addBoard, updateBoard } from "../redux/api/boardsApi";
 
 import { useAppDispatch, useAppSelector } from "../redux/store";
 import CommonModalProps from "./CommonModalProps";
+import * as yup from "yup";
 
 type BoardModalProps = {
   board?: IBoard;
@@ -17,12 +18,18 @@ const BoardModal = ({ opened, onClose, title, board }: CommonModalProps & BoardM
   const { loaders } = useAppSelector((state) => state.boards);
   const { activeWorkspace } = useAppSelector((state) => state.workspaces);
 
+  const formSchema = yup.object().shape({
+    title: yup.string().required("Board title is required"),
+    description: yup.string(),
+  });
+
   const form = useForm({
     initialValues: {
       title: "",
       description: "",
       members: [],
     },
+    validate: yupResolver(formSchema),
   });
 
   useEffect(() => {
@@ -60,7 +67,6 @@ const BoardModal = ({ opened, onClose, title, board }: CommonModalProps & BoardM
         <Stack>
           <TextInput withAsterisk label="Project Name" {...form.getInputProps("title")} />
           <Textarea
-            withAsterisk
             autosize
             minRows={3}
             label="Project Description"

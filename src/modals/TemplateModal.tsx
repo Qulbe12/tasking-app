@@ -13,7 +13,7 @@ import {
   Text,
   TextInput,
 } from "@mantine/core";
-import { useForm } from "@mantine/form";
+import { useForm, yupResolver } from "@mantine/form";
 import { IconPlus } from "@tabler/icons";
 import { FieldType, ICreateField, ITemplate } from "hexa-sdk/dist/app.api";
 import React, { useEffect, useState } from "react";
@@ -25,6 +25,7 @@ import {
   updateTemplate,
 } from "../redux/api/templateApi";
 import { useAppDispatch, useAppSelector } from "../redux/store";
+import * as yup from "yup";
 
 type TemplateModalProps = {
   template?: ITemplate;
@@ -45,10 +46,15 @@ const TemplateModal = ({ onClose, opened, template }: ModalProps & TemplateModal
 
   const [newFieldModal, setNewFieldModal] = useState(false);
 
+  const formSchema = yup.object().shape({
+    name: yup.string().required("Document type is required"),
+  });
+
   const form = useForm({
     initialValues: {
       name: "",
     },
+    validate: yupResolver(formSchema),
   });
 
   useEffect(() => {
@@ -137,10 +143,12 @@ const TemplateModal = ({ onClose, opened, template }: ModalProps & TemplateModal
       >
         <Stack mb="xl">
           <TextInput
+            required
             label="Field Label"
             onChange={(e) => setFieldVals({ ...fieldVals, label: e.target.value })}
           />
           <Select
+            required
             value={fieldVals.type}
             onChange={(e) => setFieldVals({ ...fieldVals, type: e as FieldType })}
             label="Field Type"

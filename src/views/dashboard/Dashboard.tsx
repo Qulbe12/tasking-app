@@ -52,7 +52,7 @@ const Dashboard = () => {
 
       {modalOpen && (
         <BoardModal
-          title={selectedBoard ? "Start a Project" : "Update Project"}
+          title={!selectedBoard ? "Start a Project" : "Update Project"}
           opened={modalOpen}
           onClose={() => {
             setModalOpen(false);

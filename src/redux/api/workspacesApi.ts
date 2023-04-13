@@ -8,36 +8,36 @@ const { create, get, remove, update } = workspaceAPi;
 
 export const createWorkspace = createAsyncThunk(
   "workspaces/createWorkspace",
-  async (workspace: ICreateWorkspace, { rejectWithValue }) => {
+  async (workspace: ICreateWorkspace, { rejectWithValue, dispatch }) => {
     try {
       const res = await create(workspace);
       return res.data;
     } catch (err) {
-      return centralizedErrorHandler(err, rejectWithValue);
+      return centralizedErrorHandler(err, rejectWithValue, dispatch);
     }
   },
 );
 
 export const getAllWorkSpaces = createAsyncThunk(
   "workspaces/getAllWorkSpaces",
-  async (_, { rejectWithValue }) => {
+  async (_, { rejectWithValue, dispatch }) => {
     try {
       const res = await get();
       return res.data;
     } catch (err) {
-      return centralizedErrorHandler(err, rejectWithValue);
+      return centralizedErrorHandler(err, rejectWithValue, dispatch);
     }
   },
 );
 
 export const removeWorkspace = createAsyncThunk(
   "workspaces/removeWorkspace",
-  async (workSpaceId: string, { rejectWithValue }) => {
+  async (workSpaceId: string, { rejectWithValue, dispatch }) => {
     try {
       const res = await remove(workSpaceId);
       return res.data;
     } catch (err) {
-      return centralizedErrorHandler(err, rejectWithValue);
+      return centralizedErrorHandler(err, rejectWithValue, dispatch);
     }
   },
 );
@@ -46,13 +46,13 @@ export const updateWorkspace = createAsyncThunk(
   "workspaces/updateWorkspace",
   async (
     { workSpaceId, workspace }: { workSpaceId: string; workspace: IUpdateWorkspace },
-    { rejectWithValue },
+    { rejectWithValue, dispatch },
   ) => {
     try {
       const res = await update(workSpaceId, workspace);
       return res.data;
     } catch (err) {
-      return centralizedErrorHandler(err, rejectWithValue);
+      return centralizedErrorHandler(err, rejectWithValue, dispatch);
     }
   },
 );

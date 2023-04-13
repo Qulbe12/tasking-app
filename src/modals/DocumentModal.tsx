@@ -12,9 +12,9 @@ import {
   Textarea,
   TextInput,
 } from "@mantine/core";
-import { useForm } from "@mantine/form";
+import { useForm, yupResolver } from "@mantine/form";
 import { DocumentPriority, DocumentStatus, ICreateDocument, IField } from "hexa-sdk/dist/app.api";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { getAllTemplates } from "../redux/api/templateApi";
 import { useAppDispatch, useAppSelector } from "../redux/store";
 import CommonModalProps from "./CommonModalProps";
@@ -26,6 +26,7 @@ import TemplateModal from "./TemplateModal";
 import { FileWithPath } from "@mantine/dropzone";
 import { showError } from "../redux/commonSliceFunctions";
 import { IconX } from "@tabler/icons";
+import * as yup from "yup";
 
 const DocumentModal = ({ onClose, opened, title }: CommonModalProps) => {
   const dispatch = useAppDispatch();
@@ -44,6 +45,25 @@ const DocumentModal = ({ onClose, opened, title }: CommonModalProps) => {
   const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
   const [templateModalOpen, setTemplateModalOpen] = useState(false);
 
+  const formSchema = useMemo(() => {
+    const schema: any = {
+      title: yup.string().required("Document title is required"),
+      description: yup.string().required("Description is required"),
+      startDate: yup.date().required("Start date is required"),
+      dueDate: yup.date().required("Due date is required"),
+      priority: yup.string().required("Priority is required"),
+      status: yup.string().required("Status is required"),
+    };
+    fields?.forEach((f) => {
+      if (f.required) {
+        schema[f.key] = yup.string().required(`${f.label} is required`);
+      } else {
+        schema[f.key] = yup.string();
+      }
+    });
+    return yup.object().shape(schema);
+  }, []);
+
   const form = useForm({
     initialValues: {
       title: "",
@@ -53,6 +73,7 @@ const DocumentModal = ({ onClose, opened, title }: CommonModalProps) => {
       priority: DocumentPriority.Low,
       status: DocumentStatus.Todo,
     },
+    validate: yupResolver(formSchema),
   });
 
   const [attachments, setAttachments] = useState<FileWithPath[]>([]);
@@ -130,7 +151,12 @@ const DocumentModal = ({ onClose, opened, title }: CommonModalProps) => {
             <Stack>
               <TextInput label="Title" withAsterisk {...form.getInputProps("title")} />
               <Textarea label="Description" withAsterisk {...form.getInputProps("description")} />
-              <DatePicker label="Start Date" {...form.getInputProps("startDate")} />
+              <DatePicker
+                aria-errormessage="asdsad"
+                label="Start Date"
+                withAsterisk
+                {...form.getInputProps("startDate")}
+              />
               <DatePicker label="Due Date" withAsterisk {...form.getInputProps("dueDate")} />
               <Select
                 {...form.getInputProps("priority")}

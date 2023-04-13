@@ -1,5 +1,6 @@
 import { showNotification } from "@mantine/notifications";
 import { IErrorResponse } from "../interfaces/IErrorResponse";
+import { logout } from "./slices/authSlice";
 
 export interface PayloadError {
   error: Error;
@@ -12,8 +13,16 @@ export const showError = (err?: string) => {
   });
 };
 
-export const centralizedErrorHandler = (error: unknown, rejectWithValue: any) => {
+export const centralizedErrorHandler = (error: unknown, rejectWithValue: any, dispatch: any) => {
   const err = error as IErrorResponse;
+  const errMessage = err.response?.data.message;
+
+  if (err.response?.status === 401) {
+    showError("You are not authorized to perform this action. Please login again.");
+    dispatch(logout());
+    return rejectWithValue(errMessage);
+  }
+
   if (err.response) {
     const errorMessage = err.response.data.message;
     showError(errorMessage);
@@ -22,5 +31,5 @@ export const centralizedErrorHandler = (error: unknown, rejectWithValue: any) =>
   } else {
     showError(err.message);
   }
-  return rejectWithValue(err.response?.data.message);
+  return rejectWithValue(errMessage);
 };

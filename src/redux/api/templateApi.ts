@@ -10,73 +10,76 @@ export const addTemplate = createAsyncThunk(
   "templates/addTemplate",
   async (
     { workspaceId, template }: { template: ICreateTemplate; workspaceId: string },
-    { rejectWithValue },
+    { rejectWithValue, dispatch },
   ) => {
     try {
       const res = await create(workspaceId, template);
       return res.data;
     } catch (err: any) {
-      return centralizedErrorHandler(err, rejectWithValue);
+      return centralizedErrorHandler(err, rejectWithValue, dispatch);
     }
   },
 );
 
 export const getAllTemplates = createAsyncThunk(
   "templates/getAllTemplates",
-  async (workspaceId: string, { rejectWithValue }) => {
+  async (workspaceId: string, { rejectWithValue, dispatch }) => {
     try {
       const res = await get(workspaceId);
       return res.data;
     } catch (err) {
-      return centralizedErrorHandler(err, rejectWithValue);
+      return centralizedErrorHandler(err, rejectWithValue, dispatch);
     }
   },
 );
 
 export const updateTemplate = createAsyncThunk(
   "templates/updateTemplate",
-  async (data: { templateId: string; template: IUpdateTemplate }, { rejectWithValue }) => {
+  async (
+    data: { templateId: string; template: IUpdateTemplate },
+    { rejectWithValue, dispatch },
+  ) => {
     try {
       const res = await update(data.templateId, data.template);
       return res.data;
     } catch (err) {
-      return centralizedErrorHandler(err, rejectWithValue);
+      return centralizedErrorHandler(err, rejectWithValue, dispatch);
     }
   },
 );
 
 export const deleteTemplate = createAsyncThunk(
   "templates/deleteTemplate",
-  async (id: string, { rejectWithValue }) => {
+  async (id: string, { rejectWithValue, dispatch }) => {
     try {
       const res = await remove(id);
       return res.data;
     } catch (err) {
-      return centralizedErrorHandler(err, rejectWithValue);
+      return centralizedErrorHandler(err, rejectWithValue, dispatch);
     }
   },
 );
 
 export const addTemplateField = createAsyncThunk(
   "templates/addTemplateField",
-  async (data: { templateId: string; field: ICreateField }, { rejectWithValue }) => {
+  async (data: { templateId: string; field: ICreateField }, { rejectWithValue, dispatch }) => {
     try {
       const res = await addField(data.templateId, data.field);
       return res.data;
     } catch (err) {
-      return centralizedErrorHandler(err, rejectWithValue);
+      return centralizedErrorHandler(err, rejectWithValue, dispatch);
     }
   },
 );
 
 export const removeTemplateField = createAsyncThunk(
   "templates/removeTemplateField",
-  async (data: { templateId: string; fieldId: string }, { rejectWithValue }) => {
+  async (data: { templateId: string; fieldId: string }, { rejectWithValue, dispatch }) => {
     try {
       const res = await removeField(data.templateId, data.fieldId);
       return res.data;
     } catch (err) {
-      return centralizedErrorHandler(err, rejectWithValue);
+      return centralizedErrorHandler(err, rejectWithValue, dispatch);
     }
   },
 );
