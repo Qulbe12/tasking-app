@@ -10,6 +10,8 @@ import {
   Drawer,
   Grid,
   Text,
+  Title,
+  Checkbox,
 } from "@mantine/core";
 import { DatePicker } from "@mantine/dates";
 import { IconFileText } from "@tabler/icons";
@@ -40,6 +42,11 @@ const DocumentUpdateModal = ({ onClose, opened, document }: DocumentUpdateModalP
   const { loaders } = useAppSelector((state) => state.documents);
 
   const [selectedDocument, setSelectedDocument] = useState<IDocument | null>();
+
+  const [notifySettings, setNotifySettings] = useState({
+    notifyAssignedUsers: false,
+    notifyCcUsers: false,
+  });
 
   const [newForm, setNewForm] = useState<IDocument>();
   const [pdfOpen, { toggle: togglePdfOpen }] = useDisclosure(false);
@@ -320,19 +327,48 @@ const DocumentUpdateModal = ({ onClose, opened, document }: DocumentUpdateModalP
         </Grid>
       </Drawer>
 
-      <Modal opened={showConfirmationModa} onClose={toggle}>
-        Are you sure?
-        <Button
-          loading={!!loaders.updating}
-          onClick={async () => {
-            if (!selectedDocument || !newForm) return;
-            await dispatch(updateDocument({ documentId: selectedDocument?.id, document: newForm }));
-            toggle();
-            onClose();
-          }}
-        >
-          Yes
-        </Button>
+      <Modal
+        opened={showConfirmationModa}
+        onClose={toggle}
+        title={`Update confirmation: ${newForm?.title}`}
+      >
+        <div>
+          <Title mb="md" order={5}>
+            Notify:{" "}
+          </Title>
+          <Checkbox
+            label="Assigned Users"
+            checked={notifySettings.notifyAssignedUsers}
+            onChange={(e) =>
+              setNotifySettings({ ...notifySettings, notifyAssignedUsers: e.currentTarget.checked })
+            }
+          />
+          <Checkbox
+            label="CC Users"
+            checked={notifySettings.notifyCcUsers}
+            onChange={(e) =>
+              setNotifySettings({ ...notifySettings, notifyCcUsers: e.currentTarget.checked })
+            }
+          />
+        </div>
+        <Flex justify="flex-end">
+          <Button
+            loading={!!loaders.updating}
+            onClick={async () => {
+              if (!selectedDocument || !newForm) return;
+              await dispatch(
+                updateDocument({
+                  documentId: selectedDocument?.id,
+                  document: { ...newForm, ...notifySettings },
+                }),
+              );
+              toggle();
+              onClose();
+            }}
+          >
+            Update
+          </Button>
+        </Flex>
       </Modal>
     </Modal>
   );
