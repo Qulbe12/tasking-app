@@ -73,6 +73,7 @@ const DashboardLayout = () => {
               <Tabs value={boardTab} onTabChange={(t) => dispatch(setBoardTab(t))}>
                 <Tabs.List>
                   <Tabs.Tab value="Work Items">Work Items</Tabs.Tab>
+                  <Tabs.Tab value="Sheets">Sheets</Tabs.Tab>
                   <Tabs.Tab value="Analytics">Analytics</Tabs.Tab>
                   <Tabs.Tab value="Teams">Teams</Tabs.Tab>
                 </Tabs.List>

@@ -8,6 +8,7 @@ import {
   LoadingOverlay,
   Paper,
   ScrollArea,
+  SimpleGrid,
   Stack,
   Text,
   Title,
@@ -108,185 +109,32 @@ const DocumentsBoardView = () => {
       </div>
 
       <LoadingOverlay visible={!!documentsLoading} overlayBlur={2} />
-      <Grid className="h-full">
-        <Grid.Col className="h-full" span={3}>
-          <Card shadow="lg" className="h-full">
-            <Flex justify="space-between">
-              <Title order={4} mb="md">
-                Tasks
-              </Title>
-              <Button
-                leftIcon={<IconPlus size={"0.8em"} />}
-                size="xs"
-                variant="subtle"
-                onClick={handleAddButtonClick}
-              >
-                New Task
-              </Button>
-            </Flex>
-            <ScrollArea className="h-full">
-              {filteredData.map((document, i) => {
-                return (
-                  <div key={i} className="mb-4">
-                    <DocumentCard
-                      selected={selectedDocument ? selectedDocument.id : undefined}
-                      document={document}
-                      onClick={() => setSelectedDocument(document)}
-                    />
-                  </div>
-                );
-              })}
-            </ScrollArea>
-          </Card>
-        </Grid.Col>
-        {selectedDocument && (
-          <Grid.Col className="h-full" span={4}>
+
+      {selectedDocument ? (
+        <Grid className="h-full">
+          <Grid.Col className="h-full" span={3}>
             <Card shadow="lg" className="h-full">
-              <ScrollArea className="h-full">
-                <Flex justify="space-between" mb="xl">
-                  <Text size="lg">{selectedDocument?.title}</Text>
-                  <Button size="xs" onClick={() => toggleShowEditModal()}>
-                    Edit
-                  </Button>
-                </Flex>
-                <Stack>
-                  <Flex direction="column">
-                    <Text weight="bolder" size="sm">
-                      Created By:
-                    </Text>
-                    <Text size="sm">
-                      {selectedDocument.createdBy.name}
-                      {user?.user.id === selectedDocument.createdBy.id && " (me)"}
-                    </Text>
-                  </Flex>
-                  <Flex direction="column">
-                    <Text weight="bolder" size="sm">
-                      Title:
-                    </Text>
-                    <Text size="sm">{selectedDocument.title}</Text>
-                  </Flex>
-                  <Flex direction="column">
-                    <Text weight="bolder" size="sm">
-                      Description:
-                    </Text>
-                    <Text size="sm">{selectedDocument.description}</Text>
-                  </Flex>
-                  <Flex direction="column">
-                    <Text weight="bolder" size="sm">
-                      Start Date:
-                    </Text>
-                    <Text size="sm">
-                      {dayjs(selectedDocument.startDate).format("MMMM DD, YYYY")}
-                    </Text>
-                  </Flex>
-                  <Flex direction="column">
-                    <Text weight="bolder" size="sm">
-                      Due Date:
-                    </Text>
-                    <Text size="sm">{dayjs(selectedDocument.dueDate).format("MMMM DD, YYYY")}</Text>
-                  </Flex>
-                  <Flex direction="column">
-                    <Text weight="bolder" size="sm">
-                      Priority:
-                    </Text>
-                    <Text size="sm">{selectedDocument.priority}</Text>
-                  </Flex>
-                  <Flex direction="column">
-                    <Text weight="bolder" size="sm">
-                      Status:
-                    </Text>
-                    <Text size="sm">{selectedDocument.status}</Text>
-                  </Flex>
-
-                  {Object.entries(selectedDocument).map(([k, v], i) => {
-                    const inputIndex = selectedDocument.template.fields.findIndex(
-                      (f) => f.key === k,
-                    );
-
-                    if (k === "template") return;
-                    if (inputIndex < 0) return;
-
-                    return (
-                      <div key={i + "document"}>
-                        {inputIndex >= 0 ? (
-                          <Flex direction="column">
-                            <Text weight="bolder" size="sm">
-                              {_.startCase(k)}:
-                            </Text>
-                            <Text size="sm">{v}</Text>
-                          </Flex>
-                        ) : (
-                          <Text>{k}:</Text>
-                        )}
-                      </div>
-                    );
-                  })}
-
-                  <Text>Attachments:</Text>
-                  {selectedDocument.attachments.map((a) => {
-                    return (
-                      <Flex
-                        onClick={() => {
-                          setSelectedAttachment(a);
-                        }}
-                        gap="md"
-                        style={{ cursor: "pointer" }}
-                        align="center"
-                        key={a.id}
-                      >
-                        <IconFileText size={32} />
-                        <p>{a.name}</p>
-                      </Flex>
-                    );
-                  })}
-                </Stack>
-              </ScrollArea>
-            </Card>
-          </Grid.Col>
-        )}
-        {selectedDocument && (
-          <Grid.Col span={2}>
-            <Card shadow="md" className="h-full">
-              <Title order={4} mb="md">
-                Related Email
-              </Title>
-
-              <Text c="dimmed">This document does not have any related emails yet...</Text>
-            </Card>
-          </Grid.Col>
-        )}
-
-        {selectedDocument && (
-          <Grid.Col span={3}>
-            <Card shadow="md" className="h-full">
               <Flex justify="space-between">
                 <Title order={4} mb="md">
-                  Linked Documents
+                  Tasks
                 </Title>
-                <ActionIcon
-                  variant="filled"
-                  radius="xl"
-                  size="sm"
-                  onClick={toggleShowDocumentsModal}
+                <Button
+                  leftIcon={<IconPlus size={"0.8em"} />}
+                  size="xs"
+                  variant="subtle"
+                  onClick={handleAddButtonClick}
                 >
-                  <IconPlus size={24} />
-                </ActionIcon>
+                  New Task
+                </Button>
               </Flex>
-              <ScrollArea>
-                {selectedDocument?.linkedDocs.map((d) => {
-                  const foundDocument = documents.find((doc) => doc.id === d);
+              <ScrollArea className="h-full">
+                {filteredData.map((document, i) => {
                   return (
-                    <div key={d} className="mb-4">
+                    <div key={i} className="mb-4">
                       <DocumentCard
-                        linkedView
-                        document={foundDocument}
-                        onClick={() => {
-                          if (foundDocument) setSelectedDocument(foundDocument);
-                        }}
-                        onUnlinkIconClick={() => {
-                          setSelectedLinkedDocument(d);
-                          toggleShowConfirmationModal();
-                        }}
+                        selected={selectedDocument ? selectedDocument.id : undefined}
+                        document={document}
+                        onClick={() => setSelectedDocument(document)}
                       />
                     </div>
                   );
@@ -294,8 +142,178 @@ const DocumentsBoardView = () => {
               </ScrollArea>
             </Card>
           </Grid.Col>
-        )}
-      </Grid>
+          {selectedDocument && (
+            <Grid.Col className="h-full" span={4}>
+              <Card shadow="lg" className="h-full">
+                <ScrollArea className="h-full">
+                  <Flex justify="space-between" mb="xl">
+                    <Text size="lg">{selectedDocument?.title}</Text>
+                    <Button size="xs" onClick={() => toggleShowEditModal()}>
+                      Edit
+                    </Button>
+                  </Flex>
+                  <Stack>
+                    <Flex direction="column">
+                      <Text weight="bolder" size="sm">
+                        Created By:
+                      </Text>
+                      <Text size="sm">
+                        {selectedDocument.createdBy.name}
+                        {user?.user.id === selectedDocument.createdBy.id && " (me)"}
+                      </Text>
+                    </Flex>
+                    <Flex direction="column">
+                      <Text weight="bolder" size="sm">
+                        Title:
+                      </Text>
+                      <Text size="sm">{selectedDocument.title}</Text>
+                    </Flex>
+                    <Flex direction="column">
+                      <Text weight="bolder" size="sm">
+                        Description:
+                      </Text>
+                      <Text size="sm">{selectedDocument.description}</Text>
+                    </Flex>
+                    <Flex direction="column">
+                      <Text weight="bolder" size="sm">
+                        Start Date:
+                      </Text>
+                      <Text size="sm">
+                        {dayjs(selectedDocument.startDate).format("MMMM DD, YYYY")}
+                      </Text>
+                    </Flex>
+                    <Flex direction="column">
+                      <Text weight="bolder" size="sm">
+                        Due Date:
+                      </Text>
+                      <Text size="sm">
+                        {dayjs(selectedDocument.dueDate).format("MMMM DD, YYYY")}
+                      </Text>
+                    </Flex>
+                    <Flex direction="column">
+                      <Text weight="bolder" size="sm">
+                        Priority:
+                      </Text>
+                      <Text size="sm">{selectedDocument.priority}</Text>
+                    </Flex>
+                    <Flex direction="column">
+                      <Text weight="bolder" size="sm">
+                        Status:
+                      </Text>
+                      <Text size="sm">{selectedDocument.status}</Text>
+                    </Flex>
+
+                    {Object.entries(selectedDocument).map(([k, v], i) => {
+                      const inputIndex = selectedDocument.template.fields.findIndex(
+                        (f) => f.key === k,
+                      );
+
+                      if (k === "template") return;
+                      if (inputIndex < 0) return;
+
+                      return (
+                        <div key={i + "document"}>
+                          {inputIndex >= 0 ? (
+                            <Flex direction="column">
+                              <Text weight="bolder" size="sm">
+                                {_.startCase(k)}:
+                              </Text>
+                              <Text size="sm">{v}</Text>
+                            </Flex>
+                          ) : (
+                            <Text>{k}:</Text>
+                          )}
+                        </div>
+                      );
+                    })}
+
+                    <Text>Attachments:</Text>
+                    {selectedDocument.attachments.map((a) => {
+                      return (
+                        <Flex
+                          onClick={() => {
+                            setSelectedAttachment(a);
+                          }}
+                          gap="md"
+                          style={{ cursor: "pointer" }}
+                          align="center"
+                          key={a.id}
+                        >
+                          <IconFileText size={32} />
+                          <p>{a.name}</p>
+                        </Flex>
+                      );
+                    })}
+                  </Stack>
+                </ScrollArea>
+              </Card>
+            </Grid.Col>
+          )}
+          {selectedDocument && (
+            <Grid.Col span={2}>
+              <Card shadow="md" className="h-full">
+                <Title order={4} mb="md">
+                  Related Email
+                </Title>
+
+                <Text c="dimmed">This document does not have any related emails yet...</Text>
+              </Card>
+            </Grid.Col>
+          )}
+
+          {selectedDocument && (
+            <Grid.Col span={3}>
+              <Card shadow="md" className="h-full">
+                <Flex justify="space-between">
+                  <Title order={4} mb="md">
+                    Linked Documents
+                  </Title>
+                  <ActionIcon
+                    variant="filled"
+                    radius="xl"
+                    size="sm"
+                    onClick={toggleShowDocumentsModal}
+                  >
+                    <IconPlus size={24} />
+                  </ActionIcon>
+                </Flex>
+                <ScrollArea>
+                  {selectedDocument?.linkedDocs.map((d) => {
+                    const foundDocument = documents.find((doc) => doc.id === d);
+                    return (
+                      <div key={d} className="mb-4">
+                        <DocumentCard
+                          linkedView
+                          document={foundDocument}
+                          onClick={() => {
+                            if (foundDocument) setSelectedDocument(foundDocument);
+                          }}
+                          onUnlinkIconClick={() => {
+                            setSelectedLinkedDocument(d);
+                            toggleShowConfirmationModal();
+                          }}
+                        />
+                      </div>
+                    );
+                  })}
+                </ScrollArea>
+              </Card>
+            </Grid.Col>
+          )}
+        </Grid>
+      ) : (
+        <SimpleGrid cols={4}>
+          {filteredData.map((document) => {
+            return (
+              <DocumentCard
+                key={document.id}
+                document={document}
+                onClick={() => setSelectedDocument(document)}
+              />
+            );
+          })}
+        </SimpleGrid>
+      )}
       <Drawer
         padding="md"
         size={selectedAttachment?.type === "Sheets" ? "100%" : "50%"}

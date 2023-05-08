@@ -7,6 +7,7 @@ import { getAllTemplates } from "../../redux/api/templateApi";
 import Teams from "../teams/Teams";
 import AnalyticsPage from "../analytics/AnalyticsPage";
 import DocumentsBoardView from "../documents/DocumentsBoardView";
+import SheetsPage from "../sheets/SheetsPage";
 
 const BoardDetails = () => {
   const dispatch = useAppDispatch();
@@ -27,6 +28,11 @@ const BoardDetails = () => {
       value: "Work Items",
       icon: <IconPhoto size="0.8rem" />,
       element: <DocumentsBoardView />,
+    },
+    {
+      value: "Sheets",
+      icon: <IconPhoto size="0.8rem" />,
+      element: <SheetsPage />,
     },
     {
       value: "Analytics",
