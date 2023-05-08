@@ -1,7 +1,7 @@
 import { ActionIcon, Avatar, Badge, Card, Divider, Flex, Text } from "@mantine/core";
 import { IconClock, IconPaperclip, IconUnlink } from "@tabler/icons";
 import dayjs from "dayjs";
-import { IDocument } from "hexa-sdk/dist/app.api";
+import { DocumentStatus, IDocument } from "hexa-sdk/dist/app.api";
 import React from "react";
 import { generateDocumentColor } from "../utils/generateDocumentColor";
 
@@ -70,6 +70,18 @@ const DocumentCard = ({
           <IconClock size="1.2em" />
           <Text>{dayjs(document?.dueDate).format("MMM DD")}</Text>
         </Flex>
+        <Badge
+          size="xs"
+          color={
+            document?.status === DocumentStatus.Todo
+              ? "yellow"
+              : document?.status === DocumentStatus.InProgresss
+              ? "grape"
+              : "green"
+          }
+        >
+          {document?.status}
+        </Badge>
         <Avatar radius="xl" />
       </Flex>
     </Card>

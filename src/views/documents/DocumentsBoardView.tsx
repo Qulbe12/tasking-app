@@ -140,7 +140,7 @@ const DocumentsBoardView = () => {
           </Card>
         </Grid.Col>
         {selectedDocument && (
-          <Grid.Col className="h-full" span={3}>
+          <Grid.Col className="h-full" span={4}>
             <Card shadow="lg" className="h-full">
               <ScrollArea className="h-full">
                 <Flex justify="space-between" mb="xl">
@@ -245,7 +245,7 @@ const DocumentsBoardView = () => {
           </Grid.Col>
         )}
         {selectedDocument && (
-          <Grid.Col span={3}>
+          <Grid.Col span={2}>
             <Card shadow="md" className="h-full">
               <Title order={4} mb="md">
                 Related Email
