@@ -17,7 +17,7 @@ import dayjs from "dayjs";
 import { IAttachment, IDocument, IUpdateDocument } from "hexa-sdk";
 import { DocumentPriority, DocumentStatus, SubscriptionStatus } from "hexa-sdk/dist/app.api";
 import _ from "lodash";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import PdfViewerComponent from "../components/PdfViewerComponent";
 import UpdateDynamicField from "../components/UpdateDynamicField";
@@ -25,8 +25,7 @@ import { updateDocument } from "../redux/api/documentApi";
 import { useDisclosure, useId } from "@mantine/hooks";
 import CommonModalProps from "./CommonModalProps";
 import { useAppDispatch, useAppSelector } from "../redux/store";
-import { useForm, yupResolver } from "@mantine/form";
-import * as yup from "yup";
+import { useForm } from "@mantine/form";
 
 type DocumentUpdateModalProps = {
   document?: IDocument | null;
@@ -51,37 +50,16 @@ const DocumentUpdateModal = ({ onClose, opened, document }: DocumentUpdateModalP
     setNewForm({ ...newForm, ...document });
   }, [document]);
 
-  const formSchema = useMemo(() => {
-    const schema: any = {
-      title: yup.string().required("Document title is required"),
-      description: yup.string().required("Description is required"),
-      startDate: yup.date().required("Start date is required"),
-      dueDate: yup.date().required("Due date is required"),
-      priority: yup.string().required("Priority is required"),
-      status: yup.string().required("Status is required"),
-    };
+  const form = useForm<IUpdateDocument>();
 
-    selectedDocument?.template.fields?.forEach((f) => {
-      schema[f.label] = yup.string().required(`${f.label} is required`);
-    });
-    return yup.object().shape(schema);
-  }, []);
-
-  const form = useForm<IUpdateDocument>({ validate: yupResolver(formSchema) });
+  const [showConfirmationModa, { toggle }] = useDisclosure(false);
 
   return (
     <Modal opened={opened} title={"Update: " + selectedDocument?.title} onClose={onClose}>
       {newForm && (
         <form
-          onSubmit={form.onSubmit(async () => {
-            console.log(selectedDocument?.title);
-
-            if (!selectedDocument) return;
-            // form.setValues();
-            console.log(newForm);
-
-            await dispatch(updateDocument({ documentId: selectedDocument?.id, document: newForm }));
-            onClose();
+          onSubmit={form.onSubmit(() => {
+            toggle();
           })}
         >
           <Stack>
@@ -231,13 +209,7 @@ const DocumentUpdateModal = ({ onClose, opened, document }: DocumentUpdateModalP
               );
             })}
 
-            <Button
-              type="submit"
-              loading={!!loaders.updating}
-              onClick={() => {
-                setSelectedAttachment(null);
-              }}
-            >
+            <Button type="submit" loading={!!loaders.updating}>
               Update
             </Button>
           </Stack>
@@ -347,6 +319,21 @@ const DocumentUpdateModal = ({ onClose, opened, document }: DocumentUpdateModalP
           </Grid.Col>
         </Grid>
       </Drawer>
+
+      <Modal opened={showConfirmationModa} onClose={toggle}>
+        Are you sure?
+        <Button
+          loading={!!loaders.updating}
+          onClick={async () => {
+            if (!selectedDocument || !newForm) return;
+            await dispatch(updateDocument({ documentId: selectedDocument?.id, document: newForm }));
+            toggle();
+            onClose();
+          }}
+        >
+          Yes
+        </Button>
+      </Modal>
     </Modal>
   );
 };

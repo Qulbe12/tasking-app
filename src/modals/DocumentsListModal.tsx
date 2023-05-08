@@ -13,6 +13,7 @@ type DocumentsListModalProps = {
   okText?: string;
   onOk?: () => void;
   loading?: boolean;
+  selectedDocument?: IDocument | null;
 };
 
 const DocumentsListModal = ({
@@ -24,6 +25,7 @@ const DocumentsListModal = ({
   okText,
   loading,
   onOk,
+  selectedDocument,
 }: CommonModalProps & DocumentsListModalProps) => {
   const { data, loading: documentsLoading } = useAppSelector((state) => state.documents);
   const { data: templates } = useAppSelector((state) => state.templates);
@@ -70,6 +72,7 @@ const DocumentsListModal = ({
           {!documentsLoading &&
             filteredData.map((d) => {
               if (!d) return "NO D";
+              if (d.id === selectedDocument?.id) return;
               return (
                 <DocumentCard
                   selected={selectedDocuments?.find((docId) => d.id === docId)}

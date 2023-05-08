@@ -1,5 +1,4 @@
 import React from "react";
-import { useToggle, upperFirst } from "@mantine/hooks";
 import { useForm } from "@mantine/form";
 import {
   TextInput,

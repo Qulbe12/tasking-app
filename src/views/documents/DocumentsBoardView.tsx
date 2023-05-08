@@ -319,6 +319,7 @@ const DocumentsBoardView = () => {
             toggleShowDocumentsModal();
           }
         }}
+        selectedDocument={selectedDocument}
         loading={!!documentLoaders.linkingDocument}
         title={"Select a Document To Link to - " + selectedDocument?.title}
         selectedDocuments={selectedDocumentToLink}

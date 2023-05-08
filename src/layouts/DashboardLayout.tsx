@@ -88,7 +88,9 @@ const DashboardLayout = () => {
                 <IconFilter size={24} />
               </ActionIcon>
               <TextInput
+                w="400px"
                 placeholder="Search"
+                variant="filled"
                 value={search}
                 onChange={(e) => {
                   dispatch(setSearch(e.target.value));

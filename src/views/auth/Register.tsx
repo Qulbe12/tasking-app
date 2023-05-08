@@ -38,16 +38,22 @@ const Register = () => {
 
   const form = useForm({
     initialValues: {
-      email: "",
       name: "",
+      email: "",
       password: "",
       terms: false,
+      confirmPassword: "",
     },
 
     validate: yupResolver(schema),
   });
 
   const handleSubmit = (values: typeof form.values) => {
+    if (values.password !== values.confirmPassword) {
+      return showNotification({
+        message: "Passwords do not match",
+      });
+    }
     if (!form.values.terms) {
       return showNotification({
         message: "You have to accept terms and conditions to continue",
@@ -72,7 +78,6 @@ const Register = () => {
                 onChange={(event) => form.setFieldValue("name", event.currentTarget.value)}
                 error={form.errors.name && form.errors.name}
               />
-
               <TextInput
                 label="Email"
                 placeholder="john@email.com"
@@ -80,13 +85,22 @@ const Register = () => {
                 onChange={(event) => form.setFieldValue("email", event.currentTarget.value)}
                 error={form.errors.email && "Invalid email"}
               />
-
               <PasswordInput
                 label="Password"
-                placeholder="Your password"
+                placeholder="********"
                 value={form.values.password}
                 onChange={(event) => form.setFieldValue("password", event.currentTarget.value)}
-                error={form.errors.password && "Password should include at least 6 characters"}
+                error={form.errors.password && "Password should include at least 8 characters"}
+              />
+
+              <PasswordInput
+                label="Confirm Password"
+                placeholder="********"
+                value={form.values.confirmPassword}
+                onChange={(event) =>
+                  form.setFieldValue("confirmPassword", event.currentTarget.value)
+                }
+                error={form.errors.conformPassword && "Passwords should match"}
               />
 
               <Checkbox
@@ -94,7 +108,6 @@ const Register = () => {
                 checked={form.values.terms}
                 onChange={(event) => form.setFieldValue("terms", event.currentTarget.checked)}
               />
-
               <Button loading={!!loading} type="submit">
                 Sign Up
               </Button>

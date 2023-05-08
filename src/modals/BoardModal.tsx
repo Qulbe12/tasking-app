@@ -7,7 +7,7 @@ import { addBoard, updateBoard } from "../redux/api/boardsApi";
 import { useAppDispatch, useAppSelector } from "../redux/store";
 import CommonModalProps from "./CommonModalProps";
 import * as yup from "yup";
-
+ 
 type BoardModalProps = {
   board?: IBoard;
 };
