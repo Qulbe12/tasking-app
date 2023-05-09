@@ -5,6 +5,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { setActiveBoard } from "../redux/slices/boardsSlice";
 import { useAppDispatch, useAppSelector } from "../redux/store";
+import { t } from "i18next";
 
 type BoardCardProps = {
   board: IBoard;
@@ -51,7 +52,7 @@ const BoardCard = ({ board, onEditClick, onDeleteClick }: BoardCardProps) => {
                 }}
                 icon={<IconEdit size={14} />}
               >
-                Edit
+                {t("edit")}
               </Menu.Item>
               <Menu.Item
                 icon={<IconTrash size={14} />}
@@ -61,7 +62,7 @@ const BoardCard = ({ board, onEditClick, onDeleteClick }: BoardCardProps) => {
                   onDeleteClick();
                 }}
               >
-                Delete
+                {t("delete")}
               </Menu.Item>
             </Menu.Dropdown>
           </Menu>

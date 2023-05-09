@@ -3,6 +3,7 @@ import { IconLayout, IconMail, IconNews } from "@tabler/icons";
 import { ThemeIcon, UnstyledButton, Group, Text, Divider } from "@mantine/core";
 import { useNavigate } from "react-router-dom";
 import { useAppSelector } from "../redux/store";
+import { useTranslation } from "react-i18next";
 
 interface MainLinkProps {
   icon: React.ReactNode;
@@ -39,14 +40,15 @@ function MainLink({ icon, color, label, to }: MainLinkProps) {
   );
 }
 
-const mainLinks: MainLinkProps[] = [
-  { icon: <IconLayout size={16} />, color: "blue", label: "Boards", to: "/workspaces/boards" },
-  { icon: <IconMail size={16} />, color: "violet", label: "Email", to: "/board/emails" },
-  { icon: <IconNews size={16} />, color: "pink", label: "Templates", to: "/templates" },
-];
-
 export function MainLinks() {
+  const { t } = useTranslation();
   const { activeWorkspace } = useAppSelector((state) => state.workspaces);
+
+  const mainLinks: MainLinkProps[] = [
+    { icon: <IconLayout size={16} />, color: "blue", label: t("boards"), to: "/workspaces/boards" },
+    { icon: <IconMail size={16} />, color: "violet", label: "Email", to: "/board/emails" },
+    { icon: <IconNews size={16} />, color: "pink", label: t("templates"), to: "/templates" },
+  ];
 
   const links = mainLinks.map((link) => <MainLink {...link} key={link.label} />);
 

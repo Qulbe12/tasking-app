@@ -1,7 +1,7 @@
 type CommonModalProps = {
   opened: boolean;
   onClose: () => void;
-  title?: string;
+  title?: string | null;
 };
 
 export default CommonModalProps;

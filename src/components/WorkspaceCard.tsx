@@ -5,6 +5,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { setActiveWorkspace } from "../redux/slices/workspacesSlice";
 import { useAppDispatch, useAppSelector } from "../redux/store";
+import { useTranslation } from "react-i18next";
 
 type WorkspaceCardProps = {
   workspace: IWorkspace;
@@ -13,6 +14,7 @@ type WorkspaceCardProps = {
 };
 
 const WorkspaceCard = ({ workspace, onEditClick, onDeleteClick }: WorkspaceCardProps) => {
+  const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
@@ -53,7 +55,7 @@ const WorkspaceCard = ({ workspace, onEditClick, onDeleteClick }: WorkspaceCardP
                 }}
                 icon={<IconEdit size={14} />}
               >
-                Edit
+                {t("edit")}
               </Menu.Item>
               <Menu.Item
                 icon={<IconTrash size={14} />}
@@ -63,7 +65,7 @@ const WorkspaceCard = ({ workspace, onEditClick, onDeleteClick }: WorkspaceCardP
                   onDeleteClick();
                 }}
               >
-                Delete
+                {t("delete")}
               </Menu.Item>
             </Menu.Dropdown>
           </Menu>

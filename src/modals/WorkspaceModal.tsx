@@ -7,6 +7,7 @@ import { createWorkspace, updateWorkspace } from "../redux/api/workspacesApi";
 import { useAppDispatch, useAppSelector } from "../redux/store";
 import CommonModalProps from "./CommonModalProps";
 import * as yup from "yup";
+import { useTranslation } from "react-i18next";
 
 type WorkspaceModalProps = {
   workspace?: IWorkspace;
@@ -18,6 +19,7 @@ const WorkspaceModal = ({
   title,
   workspace,
 }: CommonModalProps & WorkspaceModalProps) => {
+  const { t } = useTranslation();
   const dispatch = useAppDispatch();
 
   const { loaders } = useAppSelector((state) => state.workspaces);
@@ -59,11 +61,16 @@ const WorkspaceModal = ({
         })}
       >
         <Stack>
-          <TextInput error withAsterisk label="Workspace Name" {...form.getInputProps("name")} />
+          <TextInput
+            error
+            withAsterisk
+            label={t("workspaceName")}
+            {...form.getInputProps("name")}
+          />
 
           <Group position="right" mt="md">
             <Button loading={!!loaders.adding || loaders.updating === workspace?.id} type="submit">
-              {workspace ? "Update" : "Create Project"}
+              {workspace ? t("updateWorkspace") : t("createWorkspace")}
             </Button>
           </Group>
         </Stack>

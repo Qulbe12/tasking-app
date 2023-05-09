@@ -18,8 +18,11 @@ import GoogleButton from "../../components/GoogleButton";
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../redux/store";
 import { loginUser } from "../../redux/slices/authSlice";
+import { useTranslation } from "react-i18next";
 
 const Login = () => {
+  const { t } = useTranslation();
+
   const navigate = useNavigate();
 
   const dispatch = useAppDispatch();
@@ -45,8 +48,8 @@ const Login = () => {
     <Paper p="xl" className="h-screen">
       <Flex direction="column" justify="space-between" className="h-full">
         <div>
-          <Title>Sign In</Title>
-          <Text mb="md">Welcome to Mantine, sign in with</Text>
+          <Title>{t("signIn")}</Title>
+          <Text mb="md">{t("welcomeSignIn")}</Text>
 
           <form onSubmit={form.onSubmit(handleSubmit)}>
             <Stack>
@@ -61,22 +64,22 @@ const Login = () => {
 
               <PasswordInput
                 required
-                label="Password"
+                label={t("password")}
                 placeholder="Your password"
                 value={form.values.password}
                 onChange={(event) => form.setFieldValue("password", event.currentTarget.value)}
                 error={form.errors.password && "Password should include at least 6 characters"}
               />
 
-              <Checkbox label="Remember me" />
+              <Checkbox label={t("rememberMe")} />
 
               <Button loading={!!loading} type="submit">
-                Sign In
+                {t("signIn")}
               </Button>
             </Stack>
           </form>
 
-          <Divider label="Or continue with Gmail" labelPosition="center" my="lg" />
+          <Divider label={t("continueWithGoogle")} labelPosition="center" my="lg" />
 
           <Group grow mb="md" mt="md">
             <GoogleButton radius="xl">Google</GoogleButton>
@@ -91,7 +94,7 @@ const Login = () => {
             color="dimmed"
             size="xs"
           >
-            Forgot Password?
+            {t("forgotPassword")}?
           </Anchor>
           <Anchor
             component="button"
@@ -100,7 +103,7 @@ const Login = () => {
             color="dimmed"
             size="xs"
           >
-            Don't have an account? Register
+            {t("Don't have an account? Register")}
           </Anchor>
         </Flex>
       </Flex>

@@ -11,18 +11,21 @@ import {
   Burger,
   Title,
   Tabs,
+  Menu,
 } from "@mantine/core";
 
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { MainLinks } from "./MainLinks";
 import UserButton from "../components/UserButton";
-import { IconFilter } from "@tabler/icons";
+import { IconFilter, IconLanguage } from "@tabler/icons";
 import { useAppDispatch, useAppSelector } from "../redux/store";
 import { resetFilters, setSearch, toggleFilterOpen } from "../redux/slices/filterSlice";
 import { useDisclosure } from "@mantine/hooks";
 import { setBoardTab } from "../redux/slices/menuSlice";
+import { useTranslation } from "react-i18next";
 
 const DashboardLayout = () => {
+  const { t, i18n } = useTranslation();
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
@@ -30,6 +33,10 @@ const DashboardLayout = () => {
   const { search, filtersOpen } = useAppSelector((state) => state.filters);
   const { activeBoard } = useAppSelector((state) => state.boards);
   const { boardTab } = useAppSelector((state) => state.menus);
+
+  const changeLanguage = (lng: string) => {
+    i18n.changeLanguage(lng);
+  };
 
   useEffect(() => {
     dispatch(setSearch(""));
@@ -72,10 +79,10 @@ const DashboardLayout = () => {
             {location.pathname === "/board" && (
               <Tabs value={boardTab} onTabChange={(t) => dispatch(setBoardTab(t))}>
                 <Tabs.List>
-                  <Tabs.Tab value="Work Items">Work Items</Tabs.Tab>
-                  <Tabs.Tab value="Sheets">Sheets</Tabs.Tab>
-                  <Tabs.Tab value="Analytics">Analytics</Tabs.Tab>
-                  <Tabs.Tab value="Teams">Teams</Tabs.Tab>
+                  <Tabs.Tab value="Work Items">{t("workItems")}</Tabs.Tab>
+                  <Tabs.Tab value="Sheets">{t("sheets")}</Tabs.Tab>
+                  <Tabs.Tab value="Analytics">{t("analytics")}</Tabs.Tab>
+                  <Tabs.Tab value="Teams">{t("teams")}</Tabs.Tab>
                 </Tabs.List>
               </Tabs>
             )}
@@ -90,13 +97,24 @@ const DashboardLayout = () => {
               </ActionIcon>
               <TextInput
                 w="400px"
-                placeholder="Search"
+                placeholder={`${t("search")}`}
                 variant="filled"
                 value={search}
                 onChange={(e) => {
                   dispatch(setSearch(e.target.value));
                 }}
               />
+              <Menu shadow="md" width={200}>
+                <Menu.Target>
+                  <ActionIcon>
+                    <IconLanguage size={48} />
+                  </ActionIcon>
+                </Menu.Target>
+                <Menu.Dropdown>
+                  <Menu.Item onClick={() => changeLanguage("en")}>English</Menu.Item>
+                  <Menu.Item onClick={() => changeLanguage("fr")}>Français</Menu.Item>
+                </Menu.Dropdown>
+              </Menu>
               <UserButton />
             </Flex>
           </Group>

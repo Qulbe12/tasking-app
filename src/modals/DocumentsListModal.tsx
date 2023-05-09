@@ -6,11 +6,12 @@ import Filter from "../components/Filter";
 import { useAppSelector } from "../redux/store";
 import CommonModalProps from "./CommonModalProps";
 import { IconSearch } from "@tabler/icons";
+import { useTranslation } from "react-i18next";
 
 type DocumentsListModalProps = {
   onDocumentClick?: (document: IDocument) => void;
   selectedDocuments?: string[];
-  okText?: string;
+  okText?: string | null;
   onOk?: () => void;
   loading?: boolean;
   selectedDocument?: IDocument | null;
@@ -27,6 +28,7 @@ const DocumentsListModal = ({
   onOk,
   selectedDocument,
 }: CommonModalProps & DocumentsListModalProps) => {
+  const { t } = useTranslation();
   const { data, loading: documentsLoading } = useAppSelector((state) => state.documents);
   const { data: templates } = useAppSelector((state) => state.templates);
 
@@ -62,7 +64,7 @@ const DocumentsListModal = ({
       <Stack spacing={"md"}>
         <Input
           icon={<IconSearch />}
-          placeholder="Search..."
+          placeholder={`${t("search")}...`}
           onChange={(e) => setSearch(e.target.value)}
           value={search}
         />
@@ -86,7 +88,7 @@ const DocumentsListModal = ({
 
         <Flex gap="md" justify="flex-end">
           <Button onClick={onClose} variant="outline">
-            Cancel
+            {t("cancel")}
           </Button>
           <Button loading={loading} onClick={onOk} variant="filled">
             {okText}

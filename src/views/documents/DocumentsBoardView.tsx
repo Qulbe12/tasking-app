@@ -30,8 +30,11 @@ import { addLinkedDocsAction, removeLinkedDocsAction } from "../../redux/api/doc
 import ConfirmationModal from "../../modals/ConfirmationModal";
 import DocumentUpdateModal from "../../modals/DocumentUpdateModal";
 import DocumentModal from "../../modals/DocumentModal";
+import { useTranslation } from "react-i18next";
 
 const DocumentsBoardView = () => {
+  const { t } = useTranslation();
+
   const dispatch = useAppDispatch();
 
   const {
@@ -116,7 +119,7 @@ const DocumentsBoardView = () => {
             <Card shadow="lg" className="h-full">
               <Flex justify="space-between">
                 <Title order={4} mb="md">
-                  Tasks
+                  {t("documents")}
                 </Title>
                 <Button
                   leftIcon={<IconPlus size={"0.8em"} />}
@@ -124,7 +127,7 @@ const DocumentsBoardView = () => {
                   variant="subtle"
                   onClick={handleAddButtonClick}
                 >
-                  New Task
+                  {t("newDocument")}
                 </Button>
               </Flex>
               <ScrollArea className="h-full">
@@ -149,7 +152,7 @@ const DocumentsBoardView = () => {
                   <Flex justify="space-between" mb="xl">
                     <Text size="lg">{selectedDocument?.title}</Text>
                     <Button size="xs" onClick={() => toggleShowEditModal()}>
-                      Edit
+                      {t("edit")}
                     </Button>
                   </Flex>
                   <Stack>
@@ -227,7 +230,7 @@ const DocumentsBoardView = () => {
                       );
                     })}
 
-                    <Text>Attachments:</Text>
+                    <Text>{t("attachments")}:</Text>
                     {selectedDocument.attachments.map((a) => {
                       return (
                         <Flex
@@ -253,10 +256,10 @@ const DocumentsBoardView = () => {
             <Grid.Col span={2}>
               <Card shadow="md" className="h-full">
                 <Title order={4} mb="md">
-                  Related Email
+                  {t("relatedEmails")}
                 </Title>
 
-                <Text c="dimmed">This document does not have any related emails yet...</Text>
+                <Text c="dimmed"> {t("relatedEmailsEmpty")}...</Text>
               </Card>
             </Grid.Col>
           )}
@@ -266,7 +269,7 @@ const DocumentsBoardView = () => {
               <Card shadow="md" className="h-full">
                 <Flex justify="space-between">
                   <Title order={4} mb="md">
-                    Linked Documents
+                    {t("linkedDocuments")}
                   </Title>
                   <ActionIcon
                     variant="filled"
@@ -325,7 +328,7 @@ const DocumentsBoardView = () => {
       </Drawer>
 
       <DocumentsListModal
-        okText="Link"
+        okText={t("link")}
         onOk={async () => {
           if (selectedDocument && selectedDocumentToLink) {
             dispatch(
@@ -339,7 +342,7 @@ const DocumentsBoardView = () => {
         }}
         selectedDocument={selectedDocument}
         loading={!!documentLoaders.linkingDocument}
-        title={"Select a Document To Link to - " + selectedDocument?.title}
+        title={t("selectedDocumentToLink") + " - " + selectedDocument?.title}
         selectedDocuments={selectedDocumentToLink}
         opened={showDocumentsModal}
         onClose={toggleShowDocumentsModal}
@@ -354,11 +357,11 @@ const DocumentsBoardView = () => {
 
       <ConfirmationModal
         type="delete"
-        body={`Are you sure you want to unlink ${
+        body={`${t("unlinkConfirmation")} ${
           documents.find((d) => d.id === selectedLinkedDocument)?.title
-        } from ${selectedDocument?.title}?`}
+        } ${t("from")} ${selectedDocument?.title}?`}
         opened={showConfirmationModal}
-        title="Are you sure?"
+        title={`${t("areYouSure")}?`}
         onClose={toggleShowConfirmationModal}
         loading={!!documentLoaders.linkingDocument}
         onOk={async () => {

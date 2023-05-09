@@ -6,8 +6,10 @@ import WorkspaceCard from "../../components/WorkspaceCard";
 import WorkspaceModal from "../../modals/WorkspaceModal";
 import { getAllWorkSpaces, removeWorkspace } from "../../redux/api/workspacesApi";
 import { useAppDispatch, useAppSelector } from "../../redux/store";
+import { useTranslation } from "react-i18next";
 
 const WorkspacesList = () => {
+  const { t } = useTranslation();
   const [modalOpen, setModalOpen] = useState(false);
 
   const dispatch = useAppDispatch();
@@ -18,20 +20,20 @@ const WorkspacesList = () => {
     dispatch(getAllWorkSpaces());
   }, []);
 
-  const [selectedWorkspace, setSlectedWorkspace] = useState<IWorkspace | undefined>();
+  const [selectedWorkspace, setSelectedWorkspace] = useState<IWorkspace | undefined>();
 
   return (
     <div>
       <LoadingOverlay visible={!!loading} overlayBlur={2} />
-      <div className="flex justify-between items-center mb-4">
+      <div className="flex justify-between items-center mb-4 mt-4">
         <Title className="flex items-center gap-4">
           <IconDeviceLaptop size={32} />
-          Workspaces
+          {t("workspaces")}
         </Title>
 
         <Button onClick={() => setModalOpen(true)} size="xs">
           <IconPlus size={16} />
-          Create Workspace
+          {t("createWorkspace")}
         </Button>
       </div>
 
@@ -42,7 +44,7 @@ const WorkspacesList = () => {
               <WorkspaceCard
                 workspace={workspace}
                 onEditClick={() => {
-                  setSlectedWorkspace(workspace);
+                  setSelectedWorkspace(workspace);
                   setModalOpen(true);
                 }}
                 onDeleteClick={() => {
@@ -56,11 +58,11 @@ const WorkspacesList = () => {
 
       {modalOpen && (
         <WorkspaceModal
-          title={!selectedWorkspace ? "Create a Workspace" : "Update Workspace"}
+          title={!selectedWorkspace ? t("createWorkspace") : t("updateWorkspace")}
           opened={modalOpen}
           onClose={() => {
             setModalOpen(false);
-            setSlectedWorkspace(undefined);
+            setSelectedWorkspace(undefined);
           }}
           workspace={selectedWorkspace}
         />

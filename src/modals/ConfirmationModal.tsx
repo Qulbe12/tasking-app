@@ -1,6 +1,7 @@
 import { Button, Flex, Modal, Text } from "@mantine/core";
 import React from "react";
 import CommonModalProps from "./CommonModalProps";
+import { useTranslation } from "react-i18next";
 
 type ConfirmationModalProps = {
   onOk: () => void;
@@ -18,20 +19,21 @@ const ConfirmationModal = ({
   loading,
   onOk,
 }: CommonModalProps & ConfirmationModalProps) => {
+  const { t } = useTranslation();
   return (
     <Modal opened={opened} onClose={onClose} title={title}>
       <Text my="md" size="lg">
         {body}
       </Text>
       <Flex gap="md" justify="flex-end">
-        <Button variant="outline">Cancel</Button>
+        <Button variant="outline">{t("cancel")}</Button>
         <Button
           loading={loading}
           variant="filled"
           color={type === "delete" ? "red" : undefined}
           onClick={onOk}
         >
-          Confirm
+          {t("confirm")}
         </Button>
       </Flex>
     </Modal>

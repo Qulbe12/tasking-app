@@ -7,8 +7,10 @@ import BoardModal from "../../modals/BoardModal";
 import { deleteBoard, getBoards } from "../../redux/api/boardsApi";
 import { setActiveBoard } from "../../redux/slices/boardsSlice";
 import { useAppDispatch, useAppSelector } from "../../redux/store";
+import { useTranslation } from "react-i18next";
 
 const BoardsList = () => {
+  const { t } = useTranslation();
   const [modalOpen, setModalOpen] = useState(false);
 
   const dispatch = useAppDispatch();
@@ -40,12 +42,12 @@ const BoardsList = () => {
       <div className="flex justify-between items-center mb-4">
         <Title className="flex items-center gap-4">
           <IconClock size={32} />
-          Boards
+          {t("boards")}
         </Title>
 
         <Button onClick={() => setModalOpen(true)} size="xs">
           <IconPlus size={16} />
-          Create Board
+          {t("createBoard")}
         </Button>
       </div>
 
@@ -70,7 +72,7 @@ const BoardsList = () => {
 
       {modalOpen && (
         <BoardModal
-          title={!selectedBoard ? "Start a Project" : "Update Project"}
+          title={!selectedBoard ? t("createBoard") : t("updateBoard")}
           opened={modalOpen}
           onClose={() => {
             setModalOpen(false);

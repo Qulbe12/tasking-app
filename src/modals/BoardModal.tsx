@@ -7,12 +7,14 @@ import { addBoard, updateBoard } from "../redux/api/boardsApi";
 import { useAppDispatch, useAppSelector } from "../redux/store";
 import CommonModalProps from "./CommonModalProps";
 import * as yup from "yup";
- 
+import { useTranslation } from "react-i18next";
+
 type BoardModalProps = {
   board?: IBoard;
 };
 
 const BoardModal = ({ opened, onClose, title, board }: CommonModalProps & BoardModalProps) => {
+  const { t } = useTranslation();
   const dispatch = useAppDispatch();
 
   const { loaders } = useAppSelector((state) => state.boards);
@@ -65,17 +67,17 @@ const BoardModal = ({ opened, onClose, title, board }: CommonModalProps & BoardM
         })}
       >
         <Stack>
-          <TextInput withAsterisk label="Project Name" {...form.getInputProps("title")} />
+          <TextInput withAsterisk label={t("boardName")} {...form.getInputProps("title")} />
           <Textarea
             autosize
             minRows={3}
-            label="Project Description"
+            label={t("boardDescription")}
             {...form.getInputProps("description")}
           />
 
           <Group position="right" mt="md">
             <Button loading={!!loaders.adding || loaders.updating === board?.id} type="submit">
-              {board ? "Update" : "Create Board"}
+              {board ? t("updateBoard") : t("createBoard")}
             </Button>
           </Group>
         </Stack>

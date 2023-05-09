@@ -5,11 +5,13 @@ import { logout } from "../redux/slices/authSlice";
 import { useAppDispatch, useAppSelector } from "../redux/store";
 import { toggleTheme } from "../redux/slices/themeSlice";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 const image =
   "https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=255&q=80";
 
 const UserButton = () => {
+  const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
@@ -29,16 +31,16 @@ const UserButton = () => {
           closeMenuOnClick={false}
           icon={mode === "dark" ? <IconSun size={14} /> : <IconMoon size={14} />}
         >
-          {mode === "dark" ? "Light Mode" : "Dark Mode"}
+          {mode === "dark" ? t("lightMode") : t("darkMode")}
         </Menu.Item>
         <Menu.Item onClick={() => navigate("/account/settings")} icon={<IconSettings size={14} />}>
-          Manage Subscription
+          {t("manageSubscription")}
         </Menu.Item>
 
         <Menu.Divider />
 
         <Menu.Item onClick={() => dispatch(logout())} color="red" icon={<IconLogout size={14} />}>
-          Logout
+          {t("logout")}
         </Menu.Item>
       </Menu.Dropdown>
     </Menu>

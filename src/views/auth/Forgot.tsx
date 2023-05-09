@@ -1,8 +1,10 @@
 import { useForm } from "@mantine/form";
 import { TextInput, Text, Paper, Button, Stack, Title, Anchor, Flex } from "@mantine/core";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 const Forgot = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   const form = useForm({
@@ -22,8 +24,8 @@ const Forgot = () => {
     <Paper p="xl" className="h-screen">
       <Flex direction="column" justify="space-between" className="h-full">
         <div>
-          <Title>Forgot Password?</Title>
-          <Text mb="md">Enter the email address associated with your account</Text>
+          <Title>{t("forgotPassword")}?</Title>
+          <Text mb="md">{t("Enter the email address associated with your account")}</Text>
 
           <form
             onSubmit={form.onSubmit(() => {
@@ -40,7 +42,7 @@ const Forgot = () => {
                 error={form.errors.email && "Invalid email"}
               />
 
-              <Button type="submit">Reset Password</Button>
+              <Button type="submit">{t("resetPassword")}</Button>
             </Stack>
           </form>
         </div>
@@ -52,7 +54,7 @@ const Forgot = () => {
           color="dimmed"
           size="xs"
         >
-          Remembered your details? Sign In
+          {t("Remembered your details? Sign In")}
         </Anchor>
       </Flex>
     </Paper>

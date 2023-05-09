@@ -334,7 +334,7 @@ const DocumentUpdateModal = ({ onClose, opened, document }: DocumentUpdateModalP
       >
         <div>
           <Title mb="md" order={5}>
-            Notify:{" "}
+            Notify:
           </Title>
           <Checkbox
             label="Assigned Users"

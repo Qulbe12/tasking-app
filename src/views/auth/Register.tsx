@@ -20,6 +20,7 @@ import { useAppDispatch, useAppSelector } from "../../redux/store";
 import { registerUser } from "../../redux/slices/authSlice";
 import { showNotification } from "@mantine/notifications";
 import * as Yup from "yup";
+import { useTranslation } from "react-i18next";
 
 const schema = Yup.object().shape({
   name: Yup.string().required(),
@@ -30,6 +31,7 @@ const schema = Yup.object().shape({
 });
 
 const Register = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   const dispatch = useAppDispatch();
@@ -66,13 +68,13 @@ const Register = () => {
     <Paper p="xl" className="h-screen">
       <Flex direction="column" justify="space-between" className="h-full">
         <div>
-          <Title>Sign Up</Title>
-          <Text mb="md">Welcome to Mantine, sign in with</Text>
+          <Title>{t("signUp")}</Title>
+          <Text mb="md">{t("welcomeSignUp")}</Text>
 
           <form onSubmit={form.onSubmit(handleSubmit)}>
             <Stack>
               <TextInput
-                label="Name"
+                label={t("name")}
                 placeholder="Your name"
                 value={form.values.name}
                 onChange={(event) => form.setFieldValue("name", event.currentTarget.value)}
@@ -86,7 +88,7 @@ const Register = () => {
                 error={form.errors.email && "Invalid email"}
               />
               <PasswordInput
-                label="Password"
+                label={t("password")}
                 placeholder="********"
                 value={form.values.password}
                 onChange={(event) => form.setFieldValue("password", event.currentTarget.value)}
@@ -94,7 +96,7 @@ const Register = () => {
               />
 
               <PasswordInput
-                label="Confirm Password"
+                label={t("confirmPassword")}
                 placeholder="********"
                 value={form.values.confirmPassword}
                 onChange={(event) =>
@@ -104,17 +106,17 @@ const Register = () => {
               />
 
               <Checkbox
-                label="I accept terms and conditions"
+                label={t("confirmTermsAndConditions")}
                 checked={form.values.terms}
                 onChange={(event) => form.setFieldValue("terms", event.currentTarget.checked)}
               />
               <Button loading={!!loading} type="submit">
-                Sign Up
+                {t("signUp")}
               </Button>
             </Stack>
           </form>
 
-          <Divider label="Or continue with Gmail" labelPosition="center" my="lg" />
+          <Divider label={t("continueWithGoogle")} labelPosition="center" my="lg" />
 
           <Group grow mb="md" mt="md">
             <GoogleButton radius="xl">Google</GoogleButton>
@@ -128,7 +130,7 @@ const Register = () => {
           color="dimmed"
           size="xs"
         >
-          Already have an account? Sign In
+          {t("Already have an account? Sign In")}
         </Anchor>
       </Flex>
     </Paper>
