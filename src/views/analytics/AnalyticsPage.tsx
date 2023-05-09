@@ -1,12 +1,13 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import ReactDataGrid from "@inovua/reactdatagrid-enterprise";
 import { useAppSelector } from "../../redux/store";
-import { Flex, Select } from "@mantine/core";
 import "@inovua/reactdatagrid-enterprise/index.css";
 import "@inovua/reactdatagrid-enterprise/theme/default-dark.css";
 import "@inovua/reactdatagrid-enterprise/theme/default-light.css";
 import _ from "lodash";
+import Filter from "../../components/Filter";
+import { IDocument } from "hexa-sdk";
 
 const AnalyticsPage = () => {
   const { data: templates } = useAppSelector((state) => state.templates);
@@ -19,6 +20,7 @@ const AnalyticsPage = () => {
   });
 
   const [selectedTemplate, setSelectedTemplate] = useState<string | null>(templates[0].id || null);
+
   const columns = useMemo(() => {
     const baseCols = [
       //   { name: "type", header: "Type", defaultFlex: 1 },
@@ -51,12 +53,6 @@ const AnalyticsPage = () => {
     return baseCols;
   }, [selectedTemplate]);
 
-  const filteredDocuments = useMemo(() => {
-    return documents.filter((d) => {
-      return d.template.id === selectedTemplate;
-    });
-  }, [selectedTemplate]);
-
   const total = useMemo(() => {
     let newTotal = 0;
 
@@ -82,20 +78,52 @@ const AnalyticsPage = () => {
     };
   }, [cellSelection]);
 
+  const [filter, setFilter] = useState<string[]>([]);
+  const [statusFilter, setStatusFilter] = useState<string[]>([]);
+
+  useEffect(() => {
+    const foundTemplate = templates.find((t) => t.name === filter[0])?.id;
+
+    setSelectedTemplate(foundTemplate || null);
+  }, [filter]);
+
+  const { search } = useAppSelector((state) => state.filters);
+
+  // const filteredDocuments = useMemo(() => {
+  //   return documents.filter((d) => {
+  //     return d.template.id === selectedTemplate;
+  //   });
+  // }, [selectedTemplate]);
+
+  const filteredData: IDocument[] = useMemo<IDocument[]>(() => {
+    if (search && filter.length) {
+      return documents.filter((d) => {
+        return (
+          JSON.stringify(d).toLowerCase().includes(search.toLocaleLowerCase()) &&
+          filter.includes(d.template.name)
+        );
+      });
+    }
+    if (search) {
+      return documents.filter((d) => {
+        return JSON.stringify(d).toLowerCase().includes(search.toLocaleLowerCase());
+      });
+    }
+    if (filter.length || statusFilter.length) {
+      return documents.filter((d) => {
+        return filter.includes(d.template.name) || statusFilter.includes(d.status);
+      });
+    }
+
+    return documents;
+  }, [filter, documents, search, statusFilter]);
+
   return (
     <div>
-      <Flex my="md">
-        <Select
-          label="Document Type"
-          value={selectedTemplate}
-          onChange={(val) => setSelectedTemplate(val)}
-          data={[
-            ...templates.map((t) => {
-              return { value: t.id, label: t.name };
-            }),
-          ]}
-        />
-      </Flex>
+      <div className="mb-2">
+        <Filter singleSelection options={templates.map((t) => t.name)} onChange={setFilter} />
+        <Filter options={["Complete", "In Progress", "Todo"]} onChange={setStatusFilter} />
+      </div>
 
       <ReactDataGrid
         theme={mode === "dark" ? "default-dark" : "default-light"}
@@ -106,7 +134,7 @@ const AnalyticsPage = () => {
         }}
         columns={columns}
         defaultGroupBy={[]}
-        dataSource={filteredDocuments}
+        dataSource={filteredData}
         className="h-screen"
       />
       <h2>

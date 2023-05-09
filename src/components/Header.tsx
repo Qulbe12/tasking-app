@@ -1,17 +1,14 @@
-import { ActionIcon, Input, Menu } from "@mantine/core";
-import { IconBell, IconLanguage, IconSearch } from "@tabler/icons";
+import { ActionIcon, Input } from "@mantine/core";
+import { IconBell, IconSearch } from "@tabler/icons";
 import UserButton from "./UserButton";
 import { useAppDispatch, useAppSelector } from "../redux/store";
 import { setSearch } from "../redux/slices/filterSlice";
 import { useTranslation } from "react-i18next";
+import LanguageButton from "./LanguageButton";
 
 const Header = () => {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const dispatch = useAppDispatch();
-
-  const changeLanguage = (lng: string) => {
-    i18n.changeLanguage(lng);
-  };
 
   const { search } = useAppSelector((state) => state.filters);
 
@@ -31,17 +28,9 @@ const Header = () => {
       <ActionIcon>
         <IconBell size={48} />
       </ActionIcon>
-      <Menu shadow="md" width={200}>
-        <Menu.Target>
-          <ActionIcon>
-            <IconLanguage size={48} />
-          </ActionIcon>
-        </Menu.Target>
-        <Menu.Dropdown>
-          <Menu.Item onClick={() => changeLanguage("en")}>English</Menu.Item>
-          <Menu.Item onClick={() => changeLanguage("fr")}>Français</Menu.Item>
-        </Menu.Dropdown>
-      </Menu>
+
+      <LanguageButton />
+
       <UserButton />
     </div>
   );

@@ -8,11 +8,12 @@ import { generateDocumentColor } from "../utils/generateDocumentColor";
 type FilterProps = {
   options: string[];
   onChange: (vals: string[]) => void;
+  singleSelection?: boolean;
 };
 
 type scrollVisibilityApiType = React.ContextType<typeof VisibilityContext>;
 
-const Filter = ({ options, onChange }: FilterProps) => {
+const Filter = ({ options, onChange, singleSelection }: FilterProps) => {
   const { dragStart, dragStop, dragMove, dragging } = useDrag();
 
   const handleDrag =
@@ -33,9 +34,9 @@ const Filter = ({ options, onChange }: FilterProps) => {
     const newSelected = JSON.parse(JSON.stringify(selected));
     if (newSelected.includes(itemId)) {
       const index = newSelected.indexOf(itemId);
-      newSelected.splice(index, 1);
+      singleSelection ? (newSelected.length = 0) : newSelected.splice(index, 1);
     } else {
-      newSelected.push(itemId);
+      singleSelection ? (newSelected[0] = itemId) : newSelected.push(itemId);
     }
 
     setSelected(newSelected);
