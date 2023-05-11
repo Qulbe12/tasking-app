@@ -113,6 +113,15 @@ const DocumentsBoardView = () => {
 
       <LoadingOverlay visible={!!documentsLoading} overlayBlur={2} />
 
+      {!selectedDocument && (
+        <div className="flex justify-end items-center mb-4">
+          <Button onClick={handleAddButtonClick} size="xs">
+            <IconPlus size={16} />
+            {t("newDocument")}
+          </Button>
+        </div>
+      )}
+
       {selectedDocument ? (
         <Grid className="h-full">
           <Grid.Col className="h-full" span={3}>
