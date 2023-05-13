@@ -12,6 +12,7 @@ import { IDocument } from "hexa-sdk";
 import { Button, Flex, Menu } from "@mantine/core";
 import { IconFileSpreadsheet, IconPackgeExport } from "@tabler/icons";
 import jsPDF from "jspdf";
+import dayjs from "dayjs";
 
 const AnalyticsPage = () => {
   const { data: templates } = useAppSelector((state) => state.templates);
@@ -136,11 +137,25 @@ const AnalyticsPage = () => {
       data[0].push(c.header);
     });
 
-    filteredData.forEach((d: any) => {
+    filteredData.forEach((d: IDocument) => {
       const tempVals: string[] = [];
-      Object.entries(d).forEach(([key]) => {
-        tempVals.push(d[_.camelCase(key)]);
+
+      tempVals.push(d["title"]);
+      tempVals.push(d["description"]);
+      tempVals.push(d["status"]);
+      tempVals.push(d["priority"]);
+      tempVals.push(dayjs(d["startDate"]).format("MM/DD/YYYY"));
+      tempVals.push(dayjs(d["dueDate"]).format("MM/DD/YYYY"));
+
+      d.template.fields.forEach((f) => {
+        // @ts-ignore
+        tempVals.push(d[f.key]);
       });
+
+      // tempVals.push(d["endDate"]);
+      // Object.entries(d).forEach(([key]) => {
+
+      // });
       data.push(tempVals);
     });
 
@@ -152,7 +167,7 @@ const AnalyticsPage = () => {
   const handleGeneratePdf = () => {
     const doc = new jsPDF({
       orientation: "l",
-      format: "a0",
+      format: "a2",
       unit: "px",
     });
 
@@ -213,7 +228,7 @@ const AnalyticsPage = () => {
         {!isNaN(total.total) ? total.total : "Please select valid numbers"}
       </h2>
 
-      <div className="">
+      <div className="hidden">
         <table className="border border-black p-2" ref={reportTemplateRef}>
           <thead>
             <tr className="border border-black p-2">
@@ -237,7 +252,7 @@ const AnalyticsPage = () => {
               return (
                 <tr className="border border-black p-2" key={i + "bodyRow"}>
                   {d.map((v, valIndex) => {
-                    if (valIndex === 0) return;
+                    if (i === 0) return;
                     return (
                       <td
                         className="border border-black p-2"
