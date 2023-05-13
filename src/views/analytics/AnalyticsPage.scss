@@ -2,3 +2,10 @@ $DATAGRID_THEME_NAME: "default-dark";
 $INOVUA_DATAGRID_ACCENT_COLOR: red;
 
 @import "@inovua/reactdatagrid-community/style/theme/default-dark/index.scss";
+
+table,
+th,
+td {
+  border: 1px solid black !important;
+  border-collapse: collapse !important;
+}

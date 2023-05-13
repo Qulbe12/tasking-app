@@ -77,7 +77,11 @@ const DashboardLayout = () => {
 
             {/* Center */}
             {location.pathname === "/board" && (
-              <Tabs value={boardTab} onTabChange={(t) => dispatch(setBoardTab(t))}>
+              <Tabs
+                defaultValue="Work Items"
+                value={boardTab}
+                onTabChange={(t) => dispatch(setBoardTab(t))}
+              >
                 <Tabs.List>
                   <Tabs.Tab value="Work Items">{t("workItems")}</Tabs.Tab>
                   <Tabs.Tab value="Sheets">{t("sheets")}</Tabs.Tab>

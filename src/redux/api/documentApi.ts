@@ -100,18 +100,6 @@ export const addDocumentUsers = createAsyncThunk(
   },
 );
 
-export const getDocumentById = createAsyncThunk(
-  "documents/getDocumentById",
-  async ({ documentId }: { documentId: string }, { rejectWithValue, dispatch }) => {
-    try {
-      const res = await getById(documentId);
-      return res.data;
-    } catch (err) {
-      return centralizedErrorHandler(err, rejectWithValue, dispatch);
-    }
-  },
-);
-
 export const removeDocumentUser = createAsyncThunk(
   "documents/removeUser",
   async (
@@ -128,6 +116,18 @@ export const removeDocumentUser = createAsyncThunk(
   ) => {
     try {
       const res = await removeUser(documentId, type, email);
+      return res.data;
+    } catch (err) {
+      return centralizedErrorHandler(err, rejectWithValue, dispatch);
+    }
+  },
+);
+
+export const getDocumentById = createAsyncThunk(
+  "documents/getDocumentById",
+  async ({ documentId }: { documentId: string }, { rejectWithValue, dispatch }) => {
+    try {
+      const res = await getById(documentId);
       return res.data;
     } catch (err) {
       return centralizedErrorHandler(err, rejectWithValue, dispatch);

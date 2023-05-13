@@ -6,6 +6,8 @@ import {
   Flex,
   Grid,
   LoadingOverlay,
+  Modal,
+  MultiSelect,
   Paper,
   ScrollArea,
   SimpleGrid,
@@ -26,11 +28,16 @@ import PdfViewerComponent from "../../components/PdfViewerComponent";
 
 import { useDisclosure } from "@mantine/hooks";
 import DocumentsListModal from "../../modals/DocumentsListModal";
-import { addLinkedDocsAction, removeLinkedDocsAction } from "../../redux/api/documentApi";
+import {
+  addDocumentUsers,
+  addLinkedDocsAction,
+  removeLinkedDocsAction,
+} from "../../redux/api/documentApi";
 import ConfirmationModal from "../../modals/ConfirmationModal";
 import DocumentUpdateModal from "../../modals/DocumentUpdateModal";
 import DocumentModal from "../../modals/DocumentModal";
 import { useTranslation } from "react-i18next";
+import AvatarGroup from "../../components/AvatarGroup";
 
 const DocumentsBoardView = () => {
   const { t } = useTranslation();
@@ -45,6 +52,22 @@ const DocumentsBoardView = () => {
   const { data: templates } = useAppSelector((state) => state.templates);
   const { user } = useAppSelector((state) => state.auth);
   const { search } = useAppSelector((state) => state.filters);
+  const { activeBoard } = useAppSelector((state) => state.boards);
+
+  const [aUsers, setAUsers] = useState<{ value: string; label: string }[]>([]);
+
+  useEffect(() => {
+    if (activeBoard) {
+      setAUsers(
+        activeBoard.members.map((m) => {
+          return {
+            label: m.email,
+            value: m.email,
+          };
+        }),
+      );
+    }
+  }, [activeBoard]);
 
   const [filter, setFilter] = useState<string[]>([]);
   const [statusFilter, setStatusFilter] = useState<string[]>([]);
@@ -81,6 +104,8 @@ const DocumentsBoardView = () => {
   const [showEditModal, { toggle: toggleShowEditModal }] = useDisclosure(false);
 
   const [selectedLinkedDocument, setSelectedLinkedDocument] = useState<string | undefined>();
+
+  const [showNewMemberModal, setShowMember] = useState(false);
 
   useEffect(() => {
     if (selectedDocument) {
@@ -213,6 +238,18 @@ const DocumentsBoardView = () => {
                         Status:
                       </Text>
                       <Text size="sm">{selectedDocument.status}</Text>
+                    </Flex>
+
+                    <Flex direction="column">
+                      <Flex direction="row" align="center" justify="space-between">
+                        <Text weight="bolder" size="sm">
+                          Assigned Users:
+                        </Text>
+                        <ActionIcon variant="filled" onClick={() => setShowMember((o) => !o)}>
+                          <IconPlus />
+                        </ActionIcon>
+                      </Flex>
+                      <AvatarGroup />
                     </Flex>
 
                     {Object.entries(selectedDocument).map(([k, v], i) => {
@@ -393,6 +430,53 @@ const DocumentsBoardView = () => {
       />
 
       <DocumentModal onClose={toggle} opened={opened} title="Create Document" />
+
+      <Modal
+        title={`Assign Users to document - ${selectedDocument?.title}`}
+        opened={showNewMemberModal}
+        onClose={() => setShowMember((o) => !o)}
+      >
+        <MultiSelect
+          label="Member Emails"
+          data={aUsers}
+          placeholder="Please select users..."
+          searchable
+          creatable
+          getCreateLabel={(query) => `+ Add ${query}`}
+          onCreate={(query) => {
+            const item = { value: query, label: query };
+            setAUsers((current) => [...current, item]);
+            return item;
+          }}
+        />
+
+        <Flex mt="md" justify="flex-end" gap="md">
+          <Button
+            variant="outline"
+            onClick={() => {
+              setShowMember((o) => !o);
+            }}
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={async () => {
+              if (!selectedDocument) return;
+              await dispatch(
+                addDocumentUsers({
+                  documentId: selectedDocument?.id,
+                  emails: aUsers,
+                  type: "assignedUsers",
+                }),
+              );
+
+              setShowMember((o) => !o);
+            }}
+          >
+            Add users
+          </Button>
+        </Flex>
+      </Modal>
     </Paper>
   );
 };

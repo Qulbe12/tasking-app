@@ -1,6 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { IDocument } from "hexa-sdk/dist/app.api";
 import {
+  addDocumentUsers,
   addLinkedDocsAction,
   createDocument,
   getDocuments,
@@ -101,6 +102,22 @@ export const documentsSlice = createSlice({
         state.loaders.linkingDocument = null;
       })
       .addCase(removeLinkedDocsAction.rejected, (state, action) => {
+        state.loaders.linkingDocument = null;
+        state.error = action.error.message;
+        showError(action.error.message);
+      })
+      // Add Document Users
+      .addCase(addDocumentUsers.pending, (state) => {
+        state.loaders.linkingDocument = true;
+      })
+      .addCase(addDocumentUsers.fulfilled, (state, action) => {
+        // const foundIndex = state.data.findIndex((d) => d.id === action.payload.id);
+        console.log(action.payload);
+
+        // state.data[foundIndex] = action.payload;
+        // state.loaders.linkingDocument = null;
+      })
+      .addCase(addDocumentUsers.rejected, (state, action) => {
         state.loaders.linkingDocument = null;
         state.error = action.error.message;
         showError(action.error.message);

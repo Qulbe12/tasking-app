@@ -1,6 +1,13 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { IBoard } from "hexa-sdk/dist/app.api";
-import { addBoard, deleteBoard, getBoards, updateBoard } from "../api/boardsApi";
+import {
+  addBoard,
+  addBoardMembers,
+  deleteBoard,
+  getBoards,
+  removeBoardMember,
+  updateBoard,
+} from "../api/boardsApi";
 import { showError } from "../commonSliceFunctions";
 
 export interface BoardsState {
@@ -12,6 +19,8 @@ export interface BoardsState {
     adding: string | null;
     updating: string | null;
     deleting: string | null;
+    addingMembers: boolean;
+    removingMember: boolean;
   };
 }
 
@@ -22,6 +31,8 @@ const initialState: BoardsState = {
     adding: null,
     updating: null,
     deleting: null,
+    addingMembers: false,
+    removingMember: false,
   },
 };
 
@@ -91,6 +102,40 @@ export const boardsSlice = createSlice({
       })
       .addCase(deleteBoard.rejected, (state, action) => {
         state.loaders.deleting = null;
+        state.error = action.error.message;
+        showError(action.error.message);
+      })
+      .addCase(addBoardMembers.pending, (state) => {
+        state.loaders.addingMembers = true;
+      })
+      .addCase(addBoardMembers.fulfilled, (state, action) => {
+        state.loaders.addingMembers = false;
+        const foundIndex = state.data.findIndex((b) => b.id === action.payload.id);
+
+        if (foundIndex) {
+          state.data[foundIndex].members = action.payload.members;
+        }
+        state.activeBoard = action.payload;
+      })
+      .addCase(addBoardMembers.rejected, (state, action) => {
+        state.loaders.addingMembers = false;
+        state.error = action.error.message;
+        showError(action.error.message);
+      })
+      .addCase(removeBoardMember.pending, (state) => {
+        state.loaders.removingMember = true;
+      })
+      .addCase(removeBoardMember.fulfilled, (state, action) => {
+        state.loaders.removingMember = false;
+        const foundIndex = state.data.findIndex((b) => b.id === action.payload.id);
+
+        if (foundIndex) {
+          state.data[foundIndex].members = action.payload.members;
+        }
+        state.activeBoard = action.payload;
+      })
+      .addCase(removeBoardMember.rejected, (state, action) => {
+        state.loaders.removingMember = false;
         state.error = action.error.message;
         showError(action.error.message);
       });
