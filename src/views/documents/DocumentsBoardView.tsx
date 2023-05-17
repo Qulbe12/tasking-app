@@ -368,7 +368,7 @@ const DocumentsBoardView = () => {
                 </Flex>
 
                 {!nylasToken && (
-                  <Flex>
+                  <Flex direction="column" gap="md">
                     <Text>Email is not connected, please establish a connection</Text>
                     <Button
                       onClick={() => {
@@ -379,7 +379,7 @@ const DocumentsBoardView = () => {
                     </Button>
                   </Flex>
                 )}
-                <Text c="dimmed"> {t("relatedEmailsEmpty")}...</Text>
+                {nylasToken && <Text c="dimmed"> {t("relatedEmailsEmpty")}...</Text>}
               </Card>
             </Grid.Col>
           )}

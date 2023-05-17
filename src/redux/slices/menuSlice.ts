@@ -6,7 +6,7 @@ interface MenuState {
 }
 
 const initialState: MenuState = {
-  boardTab: null,
+  boardTab: "Work Items",
 };
 
 const menuSlice = createSlice({

@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { setActiveWorkspace } from "../redux/slices/workspacesSlice";
 import { useAppDispatch, useAppSelector } from "../redux/store";
 import { useTranslation } from "react-i18next";
+import { getAllTemplates } from "../redux/api/templateApi";
 
 type WorkspaceCardProps = {
   workspace: IWorkspace;
@@ -22,8 +23,9 @@ const WorkspaceCard = ({ workspace, onEditClick, onDeleteClick }: WorkspaceCardP
 
   return (
     <Card
-      onClick={() => {
+      onClick={async () => {
         dispatch(setActiveWorkspace(workspace));
+        dispatch(getAllTemplates(workspace.id));
         navigate("/workspaces/boards");
       }}
       shadow="sm"

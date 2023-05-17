@@ -18,6 +18,7 @@ const BoardsList = () => {
   const { data: boards, loading } = useAppSelector((state) => state.boards);
   const { activeWorkspace } = useAppSelector((state) => state.workspaces);
   const { search } = useAppSelector((state) => state.filters);
+  const { loading: templatesLoading } = useAppSelector((state) => state.templates);
 
   useEffect(() => {
     if (!activeWorkspace?.id) return;
@@ -38,7 +39,7 @@ const BoardsList = () => {
 
   return (
     <div>
-      <LoadingOverlay visible={!!loading} overlayBlur={2} />
+      <LoadingOverlay visible={!!loading || !!templatesLoading} overlayBlur={2} />
       <div className="flex justify-between items-center mb-4">
         <Title className="flex items-center gap-4">
           <IconClock size={32} />

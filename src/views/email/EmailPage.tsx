@@ -1,4 +1,4 @@
-import { Button, Flex, LoadingOverlay, Pagination, Title } from "@mantine/core";
+import { Button, Flex, Pagination, Title } from "@mantine/core";
 
 import React, { useEffect, useMemo, useState } from "react";
 import Calander from "../../components/Calendar";
