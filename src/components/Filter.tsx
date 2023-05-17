@@ -9,11 +9,12 @@ type FilterProps = {
   options: string[];
   onChange: (vals: string[]) => void;
   singleSelection?: boolean;
+  defaultValues?: string[];
 };
 
 type scrollVisibilityApiType = React.ContextType<typeof VisibilityContext>;
 
-const Filter = ({ options, onChange, singleSelection }: FilterProps) => {
+const Filter = ({ options, onChange, singleSelection, defaultValues }: FilterProps) => {
   const { dragStart, dragStop, dragMove, dragging } = useDrag();
 
   const handleDrag =
@@ -25,7 +26,7 @@ const Filter = ({ options, onChange, singleSelection }: FilterProps) => {
         }
       });
 
-  const [selected, setSelected] = React.useState<string[]>([]);
+  const [selected, setSelected] = React.useState<string[]>(defaultValues || []);
 
   const handleItemClick = (itemId: string) => () => {
     if (dragging) {

@@ -22,7 +22,7 @@ import DocumentCard from "../../components/DocumentCard";
 import { useAppDispatch, useAppSelector } from "../../redux/store";
 import _ from "lodash";
 import dayjs from "dayjs";
-import { IconFileText, IconPlus } from "@tabler/icons";
+import { IconFileText, IconLink, IconPlus } from "@tabler/icons";
 import Filter from "../../components/Filter";
 import PdfViewerComponent from "../../components/PdfViewerComponent";
 
@@ -38,6 +38,9 @@ import DocumentUpdateModal from "../../modals/DocumentUpdateModal";
 import DocumentModal from "../../modals/DocumentModal";
 import { useTranslation } from "react-i18next";
 import AvatarGroup from "../../components/AvatarGroup";
+import { connectNylas } from "../../redux/api/nylasApi";
+import EmailModal from "../../modals/EmailModal";
+import { nylasAxios } from "../../config/nylasAxios";
 
 const DocumentsBoardView = () => {
   const { t } = useTranslation();
@@ -53,21 +56,27 @@ const DocumentsBoardView = () => {
   const { user } = useAppSelector((state) => state.auth);
   const { search } = useAppSelector((state) => state.filters);
   const { activeBoard } = useAppSelector((state) => state.boards);
+  const { nylasToken } = useAppSelector((state) => state.nylas);
 
   const [aUsers, setAUsers] = useState<{ value: string; label: string }[]>([]);
+  const [userType, setUserType] = useState<"ccUsers" | "assignedUsers">("assignedUsers");
 
   useEffect(() => {
     if (activeBoard) {
-      setAUsers(
-        activeBoard.members.map((m) => {
-          return {
-            label: m.email,
-            value: m.email,
-          };
-        }),
-      );
+      if (userType === "assignedUsers") {
+        setAUsers(
+          activeBoard.members.map((m) => {
+            return {
+              label: m.email,
+              value: m.email,
+            };
+          }),
+        );
+      } else {
+        setAUsers([]);
+      }
     }
-  }, [activeBoard]);
+  }, [activeBoard, userType]);
 
   const [filter, setFilter] = useState<string[]>([]);
   const [statusFilter, setStatusFilter] = useState<string[]>([]);
@@ -107,6 +116,8 @@ const DocumentsBoardView = () => {
 
   const [showNewMemberModal, setShowMember] = useState(false);
 
+  const [showEmailModal, { toggle: toggleShowEmailModal }] = useDisclosure(false);
+
   useEffect(() => {
     if (selectedDocument) {
       const foundDocument = documents.find((d) => d.id === selectedDocument.id);
@@ -129,6 +140,14 @@ const DocumentsBoardView = () => {
     toggle();
   };
 
+  async function getEmailsBySelectedDocuments() {
+    return nylasAxios.get("/threads/search", {
+      params: {
+        q: "wabalaba",
+      },
+    });
+  }
+
   return (
     <Paper h="80vh">
       <div className="mb-2">
@@ -137,6 +156,15 @@ const DocumentsBoardView = () => {
       </div>
 
       <LoadingOverlay visible={!!documentsLoading} overlayBlur={2} />
+
+      <Button
+        onClick={async () => {
+          const res = await getEmailsBySelectedDocuments();
+          console.log(res.data);
+        }}
+      >
+        Get Emails
+      </Button>
 
       {!selectedDocument && (
         <div className="flex justify-end items-center mb-4">
@@ -245,11 +273,35 @@ const DocumentsBoardView = () => {
                         <Text weight="bolder" size="sm">
                           Assigned Users:
                         </Text>
-                        <ActionIcon variant="filled" onClick={() => setShowMember((o) => !o)}>
+                        <ActionIcon
+                          variant="filled"
+                          onClick={() => {
+                            setShowMember((o) => !o);
+                            setUserType("assignedUsers");
+                          }}
+                        >
                           <IconPlus />
                         </ActionIcon>
                       </Flex>
-                      <AvatarGroup />
+                      <AvatarGroup users={selectedDocument.assignedUsers} />
+                    </Flex>
+
+                    <Flex direction="column">
+                      <Flex direction="row" align="center" justify="space-between">
+                        <Text weight="bolder" size="sm">
+                          CC Users:
+                        </Text>
+                        <ActionIcon
+                          variant="filled"
+                          onClick={() => {
+                            setShowMember((o) => !o);
+                            setUserType("ccUsers");
+                          }}
+                        >
+                          <IconPlus />
+                        </ActionIcon>
+                      </Flex>
+                      <AvatarGroup ccUsers={selectedDocument.ccUsers} />
                     </Flex>
 
                     {Object.entries(selectedDocument).map(([k, v], i) => {
@@ -301,10 +353,32 @@ const DocumentsBoardView = () => {
           {selectedDocument && (
             <Grid.Col span={2}>
               <Card shadow="md" className="h-full">
-                <Title order={4} mb="md">
-                  {t("relatedEmails")}
-                </Title>
+                <Flex justify="space-between" mb="xl">
+                  <Title order={4} mb="md">
+                    {t("relatedEmails")}
+                  </Title>
+                  <Button
+                    leftIcon={<IconLink size={14} />}
+                    variant="subtle"
+                    size="xs"
+                    onClick={toggleShowEmailModal}
+                  >
+                    Compose Email
+                  </Button>
+                </Flex>
 
+                {!nylasToken && (
+                  <Flex>
+                    <Text>Email is not connected, please establish a connection</Text>
+                    <Button
+                      onClick={() => {
+                        dispatch(connectNylas());
+                      }}
+                    >
+                      Connect
+                    </Button>
+                  </Flex>
+                )}
                 <Text c="dimmed"> {t("relatedEmailsEmpty")}...</Text>
               </Card>
             </Grid.Col>
@@ -434,7 +508,9 @@ const DocumentsBoardView = () => {
       <Modal
         title={`Assign Users to document - ${selectedDocument?.title}`}
         opened={showNewMemberModal}
-        onClose={() => setShowMember((o) => !o)}
+        onClose={() => {
+          setShowMember((o) => !o);
+        }}
       >
         <MultiSelect
           label="Member Emails"
@@ -465,8 +541,8 @@ const DocumentsBoardView = () => {
               await dispatch(
                 addDocumentUsers({
                   documentId: selectedDocument?.id,
-                  emails: aUsers,
-                  type: "assignedUsers",
+                  emails: aUsers.map((u) => u.value),
+                  type: userType,
                 }),
               );
 
@@ -477,6 +553,12 @@ const DocumentsBoardView = () => {
           </Button>
         </Flex>
       </Modal>
+
+      <EmailModal
+        selectedDocument={selectedDocument}
+        opened={showEmailModal}
+        onClose={toggleShowEmailModal}
+      />
     </Paper>
   );
 };

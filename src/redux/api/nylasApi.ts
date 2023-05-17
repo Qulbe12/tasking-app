@@ -14,9 +14,16 @@ export const connectNylas = createAsyncThunk(
 
 export const fetchEmails = createAsyncThunk(
   "nylas/fetchEmails",
-  async ({ offset }: { offset: number }, { rejectWithValue, dispatch }) => {
+  async (
+    { offset, folder }: { offset: number; folder?: string },
+    { rejectWithValue, dispatch },
+  ) => {
     try {
-      const res = await nylasAxios.get<IEmailThreadResponse[]>("/threads");
+      const res = await nylasAxios.get<IEmailThreadResponse[]>("/threads", {
+        params: {
+          in: folder || "inbox",
+        },
+      });
       return res.data;
     } catch (err) {
       return centralizedErrorHandler(err, rejectWithValue, dispatch);

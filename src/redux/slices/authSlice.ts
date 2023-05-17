@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import api from "../../config/api";
-import { IAuthUser, IRegisterUser, NylasConnectedPayload } from "hexa-sdk/dist/app.api";
+import { IAuthUser, IRegisterUser } from "hexa-sdk/dist/app.api";
 import { centralizedErrorHandler } from "../commonSliceFunctions";
 
 interface User {
@@ -61,12 +61,6 @@ export const authSlice = createSlice({
       localStorage.clear();
       state.token = "";
     },
-    updateUserNylasToken: (state, action: PayloadAction<NylasConnectedPayload>) => {
-      if (state.user) {
-        localStorage.setItem("nylasToken", action.payload.access_token);
-        state.user.nylasToken = action.payload;
-      }
-    },
     removeNylasToken: (state) => {
       localStorage.removeItem("nylasToken");
 
@@ -84,10 +78,6 @@ export const authSlice = createSlice({
       .addCase(loginUser.fulfilled, (state, action) => {
         state.loading -= 1;
         state.user = action.payload;
-
-        if (action.payload?.nylasToken) {
-          localStorage.setItem("nylasToken", action.payload.nylasToken.access_token);
-        }
         if (action.payload?.accessToken) {
           state.token = action.payload.accessToken;
         }
@@ -111,7 +101,7 @@ export const authSlice = createSlice({
   },
 });
 
-export const { setAuthUser, logout, updateUserNylasToken, removeNylasToken } = authSlice.actions;
+export const { setAuthUser, logout, removeNylasToken } = authSlice.actions;
 
 const authReducer = authSlice.reducer;
 

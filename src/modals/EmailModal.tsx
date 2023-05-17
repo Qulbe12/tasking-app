@@ -22,8 +22,13 @@ import { showError } from "../redux/commonSliceFunctions";
 import { useAppSelector } from "../redux/store";
 import { generateDocumentColor } from "../utils/generateDocumentColor";
 import CommonModalProps from "./CommonModalProps";
+import { IDocument } from "hexa-sdk";
 
-const EmailModal = ({ opened, onClose }: CommonModalProps) => {
+type EmailModalProps = {
+  selectedDocument?: IDocument | null;
+};
+
+const EmailModal = ({ opened, onClose, selectedDocument }: CommonModalProps & EmailModalProps) => {
   const { data } = useAppSelector((state) => state.documents);
 
   const [form, setForm] = useState<ICreateEmail>({
@@ -42,19 +47,25 @@ const EmailModal = ({ opened, onClose }: CommonModalProps) => {
   const [documents, setDocuments] = useState<TransferListData>([[], []]);
 
   useEffect(() => {
-    setDocuments([
-      [
-        ...data.map((d) => {
-          return {
-            value: d.id,
-            label: d.title,
-            ...d,
-          };
-        }),
-      ],
-      [],
-    ]);
-  }, [data]);
+    const newDocumentTransferListData: TransferListData = [[], []];
+    data.forEach((d) => {
+      newDocumentTransferListData[0].push({
+        value: d.id,
+        label: d.title,
+        ...d,
+      });
+    });
+
+    if (selectedDocument) {
+      newDocumentTransferListData[1].push({
+        label: selectedDocument.title,
+        value: selectedDocument.id,
+        ...selectedDocument,
+      });
+    }
+
+    setDocuments(newDocumentTransferListData);
+  }, [data, selectedDocument]);
 
   const ItemComponent: TransferListItemComponent = ({
     data,

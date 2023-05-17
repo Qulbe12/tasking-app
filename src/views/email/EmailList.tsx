@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Box, Card, Flex, Text, Divider, Button, Affix, Grid } from "@mantine/core";
+import { Box, Card, Flex, Text, Divider, Button, Affix, Grid, Skeleton } from "@mantine/core";
 
 import EmailModal from "../../modals/EmailModal";
 import EmailDetailsModal from "../../modals/EmailDetailsModal";
@@ -7,12 +7,15 @@ import { IEmailResponse, IEmailThreadResponse } from "../../interfaces/IEmailRes
 import { nylasAxios } from "../../config/nylasAxios";
 import { showError } from "../../redux/commonSliceFunctions";
 import generateDate from "../../utils/generateDate";
+import { useAppSelector } from "../../redux/store";
 
 type EmailListProps = {
   emails: IEmailThreadResponse[];
 };
 
 const EmailList = ({ emails }: EmailListProps) => {
+  const { loaders } = useAppSelector((state) => state.nylas);
+
   const [opened, setOpened] = useState(false);
 
   async function getEmailsByThreadId(threadId: string) {
@@ -20,6 +23,22 @@ const EmailList = ({ emails }: EmailListProps) => {
   }
 
   const [threadEmails, setThreadEmails] = useState<IEmailResponse[] | null>(null);
+
+  if (loaders.fetchingEmails) {
+    return (
+      <div>
+        <Skeleton height={48} />
+        <Divider />
+        <Skeleton height={48} />
+        <Divider />
+        <Skeleton height={48} />
+        <Divider />
+        <Skeleton height={48} />
+        <Divider />
+        <Skeleton height={48} />
+      </div>
+    );
+  }
 
   return (
     <Grid>
@@ -48,7 +67,8 @@ const EmailList = ({ emails }: EmailListProps) => {
                       <Grid>
                         <Grid.Col span={3}>
                           <Text className={"cursor"} fw={500}>
-                            {email.participants[0].name || email.participants[1].name}
+                            {email.participants.length > 0 &&
+                              (email.participants[0].name || email.participants[1].name)}
                           </Text>
                         </Grid.Col>
                         <Grid.Col span={7}>

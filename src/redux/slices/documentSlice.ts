@@ -5,6 +5,7 @@ import {
   addLinkedDocsAction,
   createDocument,
   getDocuments,
+  removeDocumentUser,
   removeLinkedDocsAction,
   updateDocument,
 } from "../api/documentApi";
@@ -19,6 +20,7 @@ export interface DocumentState {
     updating: string | null;
     deleting: string | null;
     linkingDocument: boolean | null;
+    addingUser: boolean | null;
   };
 }
 
@@ -30,6 +32,7 @@ const initialState: DocumentState = {
     updating: null,
     deleting: null,
     linkingDocument: null,
+    addingUser: null,
   },
 };
 
@@ -108,17 +111,33 @@ export const documentsSlice = createSlice({
       })
       // Add Document Users
       .addCase(addDocumentUsers.pending, (state) => {
-        state.loaders.linkingDocument = true;
+        state.loaders.addingUser = true;
       })
       .addCase(addDocumentUsers.fulfilled, (state, action) => {
-        // const foundIndex = state.data.findIndex((d) => d.id === action.payload.id);
-        console.log(action.payload);
-
-        // state.data[foundIndex] = action.payload;
-        // state.loaders.linkingDocument = null;
+        const foundIndex = state.data.findIndex((d) => d.id === action.payload.id);
+        if (foundIndex) {
+          state.data[foundIndex] = action.payload;
+        }
+        state.loaders.addingUser = false;
       })
       .addCase(addDocumentUsers.rejected, (state, action) => {
-        state.loaders.linkingDocument = null;
+        state.loaders.addingUser = false;
+        state.error = action.error.message;
+        showError(action.error.message);
+      })
+      // Remove Document Users
+      .addCase(removeDocumentUser.pending, (state) => {
+        state.loaders.addingUser = true;
+      })
+      .addCase(removeDocumentUser.fulfilled, (state, action) => {
+        const foundIndex = state.data.findIndex((d) => d.id === action.payload.id);
+        if (foundIndex) {
+          state.data[foundIndex] = action.payload;
+        }
+        state.loaders.addingUser = false;
+      })
+      .addCase(removeDocumentUser.rejected, (state, action) => {
+        state.loaders.addingUser = false;
         state.error = action.error.message;
         showError(action.error.message);
       });

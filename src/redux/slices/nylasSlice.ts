@@ -1,13 +1,15 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { IEmailThreadResponse } from "../../interfaces/IEmailResponse";
 import { connectNylas, fetchEmails } from "../api/nylasApi";
 import { showError } from "../commonSliceFunctions";
+import { NylasConnectedPayload } from "hexa-sdk";
 
 export interface GroupsState {
   data: any;
   loading: number;
   emails: IEmailThreadResponse[];
   status: "conencted" | null;
+  nylasToken?: NylasConnectedPayload;
   loaders: {
     connecting: boolean;
     fetchingEmails: boolean;
@@ -28,7 +30,15 @@ const initialState: GroupsState = {
 export const nylasSlice = createSlice({
   name: "nylas",
   initialState,
-  reducers: {},
+  reducers: {
+    setNylasToken: (state, action: PayloadAction<NylasConnectedPayload | undefined>) => {
+      console.log("NYLAS PAYLOAD IN ACTION: " + action.payload);
+      state.nylasToken = action.payload;
+      if (action.payload) {
+        localStorage.setItem("nylasToken", action.payload?.access_token);
+      }
+    },
+  },
   extraReducers: (builder) =>
     builder
       .addCase(connectNylas.pending, (state) => {
@@ -60,5 +70,6 @@ export const nylasSlice = createSlice({
 });
 
 const nylasReducer = nylasSlice.reducer;
+export const { setNylasToken } = nylasSlice.actions;
 
 export default nylasReducer;

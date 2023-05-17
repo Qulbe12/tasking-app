@@ -1,4 +1,4 @@
-import { Button, Grid, LoadingOverlay, Title } from "@mantine/core";
+import { Button, Grid, Skeleton, Title } from "@mantine/core";
 import { IconDeviceLaptop, IconPlus } from "@tabler/icons";
 import { IWorkspace } from "hexa-sdk/dist/app.api";
 import { useEffect, useState } from "react";
@@ -24,7 +24,6 @@ const WorkspacesList = () => {
 
   return (
     <div>
-      <LoadingOverlay visible={!!loading} overlayBlur={2} />
       <div className="flex justify-between items-center mb-4 mt-4">
         <Title className="flex items-center gap-4">
           <IconDeviceLaptop size={32} />
@@ -36,25 +35,27 @@ const WorkspacesList = () => {
           {t("createWorkspace")}
         </Button>
       </div>
-
-      <Grid>
-        {workspaces?.map((workspace, i) => {
-          return (
-            <Grid.Col span="content" key={i}>
-              <WorkspaceCard
-                workspace={workspace}
-                onEditClick={() => {
-                  setSelectedWorkspace(workspace);
-                  setModalOpen(true);
-                }}
-                onDeleteClick={() => {
-                  dispatch(removeWorkspace(workspace.id));
-                }}
-              />
-            </Grid.Col>
-          );
-        })}
-      </Grid>
+      {!!loading && <Skeleton height={64} width={300} radius="sm" />}
+      {!loading && (
+        <Grid>
+          {workspaces?.map((workspace, i) => {
+            return (
+              <Grid.Col span="content" key={i}>
+                <WorkspaceCard
+                  workspace={workspace}
+                  onEditClick={() => {
+                    setSelectedWorkspace(workspace);
+                    setModalOpen(true);
+                  }}
+                  onDeleteClick={() => {
+                    dispatch(removeWorkspace(workspace.id));
+                  }}
+                />
+              </Grid.Col>
+            );
+          })}
+        </Grid>
+      )}
 
       {modalOpen && (
         <WorkspaceModal

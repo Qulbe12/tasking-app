@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import PSPDFKit from "pspdfkit";
+import { useAppSelector } from "../redux/store";
 
 type PdfViewerComponentProps = {
   documentUrl: string;
@@ -7,6 +8,8 @@ type PdfViewerComponentProps = {
 
 export default function PdfViewerComponent({ documentUrl }: PdfViewerComponentProps) {
   const containerRef = useRef<string | HTMLElement>();
+
+  const { mode } = useAppSelector((state) => state.theme);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -16,6 +19,7 @@ export default function PdfViewerComponent({ documentUrl }: PdfViewerComponentPr
 
     PSPDFKit.load({
       container,
+      theme: mode === "dark" ? "DARK" : "LIGHT",
       document: documentUrl,
       baseUrl: `${window.location.protocol}//${window.location.host}/`,
     });
