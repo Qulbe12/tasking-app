@@ -322,7 +322,12 @@ const DocumentUpdateModal = ({ onClose, opened, document }: DocumentUpdateModalP
             )}
           </Grid.Col>
           <Grid.Col span={9}>
-            {selectedAttachment && <PdfViewerComponent documentUrl={selectedAttachment.url} />}
+            {selectedAttachment && (
+              <PdfViewerComponent
+                selectedDocument={selectedDocument}
+                attachment={selectedAttachment}
+              />
+            )}
           </Grid.Col>
         </Grid>
       </Drawer>

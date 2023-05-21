@@ -77,7 +77,9 @@ const DocumentPublicView = () => {
           setSelectedAttachment(null);
         }}
       >
-        {selectedAttachment && <PdfViewerComponent documentUrl={selectedAttachment.url} />}
+        {selectedAttachment && (
+          <PdfViewerComponent selectedDocument={document} attachment={selectedAttachment} />
+        )}
       </Drawer>
     </div>
   );

@@ -3,7 +3,7 @@ import { Calendar as CalendarComponent, dayjsLocalizer } from "react-big-calenda
 import dayjs from "dayjs";
 
 import "react-big-calendar/lib/css/react-big-calendar.css";
-import { IEmailResponse, IEmailThreadResponse } from "../interfaces/IEmailResponse";
+import { IEmailThreadResponse } from "../interfaces/IEmailResponse";
 
 const localizer = dayjsLocalizer(dayjs);
 

@@ -1,4 +1,4 @@
-import { ActionIcon, Avatar, Button, Menu, Tooltip } from "@mantine/core";
+import { Avatar, Menu, Tooltip } from "@mantine/core";
 import { IconTrash } from "@tabler/icons";
 import { IUser } from "hexa-sdk";
 import React from "react";

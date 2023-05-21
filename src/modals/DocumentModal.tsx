@@ -13,8 +13,8 @@ import {
   TextInput,
 } from "@mantine/core";
 import { useForm, yupResolver } from "@mantine/form";
-import { DocumentPriority, DocumentStatus, ICreateDocument, IField } from "hexa-sdk/dist/app.api";
-import React, { useEffect, useMemo, useState } from "react";
+import { DocumentPriority, DocumentStatus, IField } from "hexa-sdk/dist/app.api";
+import { useEffect, useMemo, useState } from "react";
 import { getAllTemplates } from "../redux/api/templateApi";
 import { useAppDispatch, useAppSelector } from "../redux/store";
 import CommonModalProps from "./CommonModalProps";
@@ -89,27 +89,22 @@ const DocumentModal = ({ onClose, opened, title }: CommonModalProps) => {
 
           const { title, description, startDate, dueDate, priority, status } = form.values;
 
-          const doc: ICreateDocument = {
-            ...values,
-            title,
-            description,
-            startDate: startDate.toISOString() as any,
-            dueDate: dueDate.toISOString() as any,
-            priority,
-            status,
-            files: (attachments as unknown as FileList) || ([] as any),
-            assignedUsers: [],
-            ccUsers: [],
-            templateId: data.find((t) => t.name === selectedTemplate)?.id || "",
-          };
+          const formData = new FormData();
+          formData.append("title", title);
+          formData.append("description", description);
+          formData.append("startDate", startDate.toISOString());
+          formData.append("dueDate", dueDate.toISOString());
+          formData.append("priority", priority);
+          formData.append("status", status);
+          formData.append("templateId", data.find((t) => t.name === selectedTemplate)?.id || "");
+          attachments.forEach((a) => {
+            formData.append("files", a);
+          });
 
-          // console.log(form.values);
-
-          await dispatch(createDocument({ boardId: activeBoard.id, document: doc }));
+          await dispatch(createDocument({ boardId: activeBoard.id, document: formData }));
 
           form.reset();
           setAttachments([]);
-          // form.reset();
           onClose();
         })}
       >
@@ -209,6 +204,14 @@ const DocumentModal = ({ onClose, opened, title }: CommonModalProps) => {
               </Flex>
             );
           })}
+
+          <input
+            type="file"
+            onChange={async (e) => {
+              if (!activeBoard) return;
+              if (!e.target.files) return;
+            }}
+          />
 
           {selectedTemplate && (
             <Paper>

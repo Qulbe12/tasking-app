@@ -438,13 +438,16 @@ const DocumentsBoardView = () => {
         </SimpleGrid>
       )}
       <Drawer
+        title={selectedAttachment?.name}
         padding="md"
         size={selectedAttachment?.type === "Sheets" ? "100%" : "50%"}
         position="right"
         opened={!!selectedAttachment}
         onClose={() => setSelectedAttachment(null)}
       >
-        {selectedAttachment && <PdfViewerComponent documentUrl={selectedAttachment.url} />}
+        {selectedAttachment && (
+          <PdfViewerComponent selectedDocument={selectedDocument} attachment={selectedAttachment} />
+        )}
       </Drawer>
 
       <DocumentsListModal

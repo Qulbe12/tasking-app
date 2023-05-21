@@ -1,30 +1,24 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { ICreateDocument, IDocumentQuery, IUpdateDocument } from "hexa-sdk/dist/app.api";
+import { IDocumentQuery, IUpdateDocument } from "hexa-sdk/dist/app.api";
 import api from "../../config/api";
 import { centralizedErrorHandler } from "../commonSliceFunctions";
+import { axiosPrivate } from "../../config/axios";
 
 const { documentApi } = api;
 
-const {
-  addFiles,
-  addUsers,
-  create,
-  get,
-  getById,
-  removeUser,
-  update,
-  addLinkedDocs,
-  removeLinkedDocs,
-} = documentApi;
+const { addFiles, addUsers, get, getById, removeUser, update, addLinkedDocs, removeLinkedDocs } =
+  documentApi;
 
 export const createDocument = createAsyncThunk(
   "documents/createDocument",
   async (
-    { boardId, document }: { boardId: string; document: ICreateDocument & any },
+    { boardId, document }: { boardId: string; document: FormData },
     { rejectWithValue, dispatch },
   ) => {
     try {
-      const res = await create(boardId, document);
+      // const res = await create(boardId, document);
+      const res = await axiosPrivate.post(`/boards/${boardId}/documents/`, document);
+
       return res.data;
     } catch (err) {
       return centralizedErrorHandler(err, rejectWithValue, dispatch);
