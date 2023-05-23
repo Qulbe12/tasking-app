@@ -17,6 +17,7 @@ import { SOCKET_URL } from "../constants/URLS";
 import { useAppDispatch, useAppSelector } from "../redux/store";
 import { updateSocketBoard } from "../redux/slices/boardsSlice";
 import { setNylasToken } from "../redux/slices/nylasSlice";
+import { fetchEmails } from "../redux/api/nylasApi";
 
 const useSockets = () => {
   const dispatch = useAppDispatch();
@@ -83,8 +84,9 @@ const useSockets = () => {
     });
 
     // Nylas Events
-    socket.on(NylasEvents.Connected, (payload: NylasConnectedPayload) => {
-      dispatch(setNylasToken(payload));
+    socket.on(NylasEvents.Connected, async (payload: NylasConnectedPayload) => {
+      await dispatch(setNylasToken(payload));
+      dispatch(fetchEmails({ offset: 0 }));
     });
     socket.on(NylasEvents.Failed, (payload) => {
       console.log(payload);
