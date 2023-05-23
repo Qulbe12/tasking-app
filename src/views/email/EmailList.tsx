@@ -1,5 +1,16 @@
 import React, { useState } from "react";
-import { Box, Card, Flex, Text, Divider, Button, Affix, Grid, Skeleton } from "@mantine/core";
+import {
+  Box,
+  Card,
+  Flex,
+  Text,
+  Divider,
+  Button,
+  Affix,
+  Grid,
+  Skeleton,
+  Badge,
+} from "@mantine/core";
 
 import EmailModal from "../../modals/EmailModal";
 import EmailDetailsModal from "../../modals/EmailDetailsModal";
@@ -8,19 +19,17 @@ import { nylasAxios } from "../../config/nylasAxios";
 import { showError } from "../../redux/commonSliceFunctions";
 import generateDate from "../../utils/generateDate";
 import { useAppSelector } from "../../redux/store";
+import getEmailsByThreadId from "../../utils/getEmailsByThreadId";
 
 type EmailListProps = {
   emails: IEmailThreadResponse[];
+  filter?: string[];
 };
 
-const EmailList = ({ emails }: EmailListProps) => {
+const EmailList = ({ emails, filter }: EmailListProps) => {
   const { loaders } = useAppSelector((state) => state.nylas);
 
   const [opened, setOpened] = useState(false);
-
-  async function getEmailsByThreadId(threadId: string) {
-    return await nylasAxios.get<IEmailResponse[]>(`/messages?thread_id=${threadId}`);
-  }
 
   const [threadEmails, setThreadEmails] = useState<IEmailResponse[] | null>(null);
 
@@ -78,7 +87,12 @@ const EmailList = ({ emails }: EmailListProps) => {
                           </Text>
                         </Grid.Col>
                         <Grid.Col span={2}>
-                          <Text align="right">{generateDate(email.last_message_timestamp)}</Text>
+                          <Flex justify="flex-end" gap="md">
+                            {filter && filter[0] === "All" && (
+                              <Badge> {email.folders[0].name}</Badge>
+                            )}
+                            <Text align="right">{generateDate(email.last_message_timestamp)}</Text>
+                          </Flex>
                         </Grid.Col>
                       </Grid>
                       {i < emails.length - 1 && <Divider />}

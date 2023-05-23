@@ -32,9 +32,15 @@ const Filter = ({ options, onChange, singleSelection, defaultValues }: FilterPro
     if (dragging) {
       return false;
     }
+
+    if (singleSelection && selected[0] === itemId) {
+      return false;
+    }
+
     const newSelected = JSON.parse(JSON.stringify(selected));
     if (newSelected.includes(itemId)) {
       const index = newSelected.indexOf(itemId);
+
       singleSelection ? (newSelected.length = 0) : newSelected.splice(index, 1);
     } else {
       singleSelection ? (newSelected[0] = itemId) : newSelected.push(itemId);

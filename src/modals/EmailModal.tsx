@@ -101,6 +101,8 @@ const EmailModal = ({ opened, onClose, selectedDocument }: CommonModalProps & Em
           e.preventDefault();
           setLoading(true);
 
+          let newSubject = form.subject + " - [";
+
           try {
             let newBody: string = JSON.parse(JSON.stringify(form.body));
 
@@ -108,12 +110,16 @@ const EmailModal = ({ opened, onClose, selectedDocument }: CommonModalProps & Em
             newBody += "<p>Linked Documents:</p>";
 
             documents[1].forEach((d) => {
-              newBody += `<a href=${"https://hexadesk.ca/documents/" + d.value}>${
-                d.label
-              }</a><br />`;
+              const foundDocument = data.find((doc) => doc.id === d.value);
+              newSubject += `${foundDocument?.type}: ${foundDocument?.id}, `;
+              newBody += `<a href=${"https://hexadesk.ca/documents/" + d.value} type=${
+                foundDocument?.type
+              }>${d.label}</a><br />`;
             });
 
-            await nylasAxios.post("/send", { ...form, body: newBody });
+            newSubject += "]";
+
+            await nylasAxios.post("/send", { ...form, subject: newSubject, body: newBody });
             showError("Message Sent Successfully");
             setForm({ body: "", subject: "", to: [{ email: "", name: "" }] });
             onClose();

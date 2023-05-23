@@ -16,11 +16,7 @@ export const fetchEmails = createAsyncThunk(
   "nylas/fetchEmails",
   async ({ offset, folder }: { offset: number; folder?: string }, { rejectWithValue }) => {
     try {
-      const res = await nylasAxios.get<IEmailThreadResponse[]>("/threads", {
-        params: {
-          in: folder || "inbox",
-        },
-      });
+      const res = await nylasAxios.get<IEmailThreadResponse[]>("/threads");
       return res.data;
     } catch (err) {
       const error = err as unknown as IErrorResponse;

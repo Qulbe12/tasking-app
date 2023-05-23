@@ -1,4 +1,3 @@
-/* eslint-disable camelcase */
 import { Button, Flex, Pagination, Title } from "@mantine/core";
 
 import React, { useEffect, useMemo, useState } from "react";
@@ -9,7 +8,8 @@ import { connectNylas, fetchEmails } from "../../redux/api/nylasApi";
 import { useAppDispatch, useAppSelector } from "../../redux/store";
 import EmailList from "./EmailList";
 import { ITemplate } from "hexa-sdk";
-import { setNylasToken } from "../../redux/slices/nylasSlice";
+import { nylasAxios } from "../../config/nylasAxios";
+import _ from "lodash";
 
 const EmailPage = () => {
   const dispatch = useAppDispatch();
@@ -26,18 +26,31 @@ const EmailPage = () => {
 
   useEffect(() => {
     if (nylasToken?.access_token) {
-      dispatch(fetchEmails({ offset: emailOffset, folder: emailFilter[0] }));
+      dispatch(fetchEmails({ offset: emailOffset }));
     }
-  }, [emailOffset, emailFilter]);
+  }, [emailOffset]);
 
   const filteredEmails = useMemo<IEmailThreadResponse[]>(() => {
-    return emails.filter((e: IEmailThreadResponse) => {
-      return (
-        JSON.stringify(e).toLowerCase().includes(search.toLowerCase()) &&
-        JSON.stringify(e.folders).toLowerCase().includes(emailFilter[0]?.toLowerCase())
-      );
+    let eFilter = emailFilter;
+    let fEmails = emails;
+    const lowSearch = _.lowerCase(search);
+
+    if (emailFilter[0] === "All") {
+      eFilter = [""];
+    }
+
+    if (search) {
+      fEmails = fEmails.filter((e) => {
+        return _.lowerCase(e.subject + e.snippet).includes(lowSearch);
+      });
+    }
+
+    fEmails = fEmails.filter((e: IEmailThreadResponse) => {
+      return _.lowerCase(JSON.stringify(e.folders)).includes(eFilter[0]?.toLowerCase());
     });
-  }, [emails, search, emailFilter]);
+
+    return fEmails;
+  }, [emails, search, emailFilter, filter]);
 
   if (!nylasToken?.access_token) {
     return (
@@ -68,28 +81,28 @@ const EmailPage = () => {
     <div className="p-2">
       <Filter
         // options={templates.map((t) => t.name)}
-        options={templates.map((t: ITemplate) => t.name)}
+        options={[...templates.map((t: ITemplate) => t.name)]}
         onChange={setFilter}
       />
       <Filter
         singleSelection
         defaultValues={["Inbox"]}
         // options={templates.map((t) => t.name)}
-        options={["Inbox", "Sent", "Spam", "Trash"]}
+        options={["All", "Inbox", "Sent", "Spam", "Trash"]}
         onChange={setEmailFilter}
       />
-      <Button
-        onClick={() => {
-          dispatch(
-            setNylasToken({
-              ...nylasToken,
-              access_token: "asdasd",
-            }),
-          );
+
+      <button
+        onClick={async () => {
+          const res = await nylasAxios.get("/threads");
+          res.data.map((e: IEmailThreadResponse) => {
+            console.log(e.folders);
+          });
         }}
       >
-        Clear Token
-      </Button>
+        Get Emails
+      </button>
+
       <Flex justify="space-between" align="center" mb="md">
         <Title order={2}>Emails</Title>
         <Button onClick={() => setSelectedMode((o) => !o)}>
@@ -97,7 +110,7 @@ const EmailPage = () => {
         </Button>
       </Flex>
 
-      {selectedMode && <EmailList emails={filteredEmails} />}
+      {selectedMode && <EmailList emails={filteredEmails} filter={emailFilter} />}
       {!selectedMode && <Calander emails={filteredEmails} />}
       {!emailLoaders.fetchingEmails && (
         <Pagination

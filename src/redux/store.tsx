@@ -37,13 +37,7 @@ const reducers = combineReducers({
   menus: menuReducer,
 });
 
-const persistedReducer = persistReducer(persistConfig, (state: any, action) => {
-  if (action.type === "user/logout") {
-    state = undefined;
-  }
-
-  return reducers(state, action);
-});
+const persistedReducer = persistReducer(persistConfig, reducers);
 
 const store = configureStore({
   reducer: persistedReducer,

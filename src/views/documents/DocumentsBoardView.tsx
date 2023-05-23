@@ -40,7 +40,8 @@ import { useTranslation } from "react-i18next";
 import AvatarGroup from "../../components/AvatarGroup";
 import { connectNylas } from "../../redux/api/nylasApi";
 import EmailModal from "../../modals/EmailModal";
-import { nylasAxios } from "../../config/nylasAxios";
+import EmailCard from "../../components/EmailCard";
+import { IEmailThreadResponse } from "../../interfaces/IEmailResponse";
 
 const DocumentsBoardView = () => {
   const { t } = useTranslation();
@@ -56,7 +57,7 @@ const DocumentsBoardView = () => {
   const { user } = useAppSelector((state) => state.auth);
   const { search } = useAppSelector((state) => state.filters);
   const { activeBoard } = useAppSelector((state) => state.boards);
-  const { nylasToken } = useAppSelector((state) => state.nylas);
+  const { nylasToken, emails } = useAppSelector((state) => state.nylas);
 
   const [aUsers, setAUsers] = useState<{ value: string; label: string }[]>([]);
   const [userType, setUserType] = useState<"ccUsers" | "assignedUsers">("assignedUsers");
@@ -82,26 +83,28 @@ const DocumentsBoardView = () => {
   const [statusFilter, setStatusFilter] = useState<string[]>([]);
 
   const filteredData: IDocument[] = useMemo<IDocument[]>(() => {
-    if (search && filter.length) {
-      return documents.filter((d) => {
-        return (
-          JSON.stringify(d).toLowerCase().includes(search.toLocaleLowerCase()) &&
-          filter.includes(d.template.name)
-        );
-      });
-    }
+    const lowerSearch = search.toLocaleLowerCase();
+    let emailsToFilter: IDocument[] = documents;
+
     if (search) {
-      return documents.filter((d) => {
-        return JSON.stringify(d).toLowerCase().includes(search.toLocaleLowerCase());
-      });
-    }
-    if (filter.length || statusFilter.length) {
-      return documents.filter((d) => {
-        return filter.includes(d.template.name) || statusFilter.includes(d.status);
+      emailsToFilter = emailsToFilter.filter((d) => {
+        return _.lowerCase(d.title + d.description + d.status + d.priority).includes(lowerSearch);
       });
     }
 
-    return documents;
+    if (filter.length) {
+      emailsToFilter = emailsToFilter.filter((d) => {
+        return filter.includes(d.template.name);
+      });
+    }
+
+    if (statusFilter.length) {
+      emailsToFilter = emailsToFilter.filter((d) => {
+        return statusFilter.includes(d.status);
+      });
+    }
+
+    return emailsToFilter;
   }, [filter, documents, search, statusFilter]);
 
   const [selectedDocument, setSelectedDocument] = React.useState<IDocument | null>(null);
@@ -140,9 +143,12 @@ const DocumentsBoardView = () => {
     toggle();
   };
 
-  async function getEmailsBySelectedDocuments() {
-    return nylasAxios.get("/threads");
-  }
+  const filteredEmails: IEmailThreadResponse[] = useMemo(() => {
+    if (!selectedDocument) return [];
+    return emails.filter((e) => {
+      return e.subject.includes(selectedDocument.id);
+    });
+  }, [emails, selectedDocument]);
 
   return (
     <Paper h="80vh">
@@ -152,15 +158,6 @@ const DocumentsBoardView = () => {
       </div>
 
       <LoadingOverlay visible={!!documentsLoading} overlayBlur={2} />
-
-      <Button
-        onClick={async () => {
-          const res = await getEmailsBySelectedDocuments();
-          console.log(res.data);
-        }}
-      >
-        Get Emails
-      </Button>
 
       {!selectedDocument && (
         <div className="flex justify-end items-center mb-4">
@@ -375,7 +372,13 @@ const DocumentsBoardView = () => {
                     </Button>
                   </Flex>
                 )}
-                {nylasToken && <Text c="dimmed"> {t("relatedEmailsEmpty")}...</Text>}
+                {nylasToken && !filteredEmails.length && (
+                  <Text c="dimmed"> {t("relatedEmailsEmpty")}...</Text>
+                )}
+                {nylasToken &&
+                  filteredEmails.map((e) => {
+                    return <EmailCard key={e.id} email={e} />;
+                  })}
               </Card>
             </Grid.Col>
           )}
