@@ -40,12 +40,12 @@ export const registerUser = createAsyncThunk(
 export interface AuthState {
   user?: IAuthUser;
   token: string;
-  loading: number;
+  loading: boolean;
   error?: string;
 }
 
 const initialState: AuthState = {
-  loading: 0,
+  loading: false,
   token: "",
 };
 
@@ -73,30 +73,30 @@ export const authSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(loginUser.pending, (state) => {
-        state.loading += 1;
+        state.loading = true;
       })
       .addCase(loginUser.fulfilled, (state, action) => {
-        state.loading -= 1;
+        state.loading = false;
         state.user = action.payload;
         if (action.payload?.accessToken) {
           state.token = action.payload.accessToken;
         }
       })
       .addCase(loginUser.rejected, (state) => {
-        state.loading -= 1;
+        state.loading = false;
       })
       .addCase(registerUser.pending, (state) => {
-        state.loading += 1;
+        state.loading = true;
       })
       .addCase(registerUser.fulfilled, (state, action) => {
-        state.loading -= 1;
+        state.loading = false;
         state.user = action.payload;
         if (action.payload?.accessToken) {
           state.token = action.payload.accessToken;
         }
       })
       .addCase(registerUser.rejected, (state) => {
-        state.loading -= 1;
+        state.loading = false;
       });
   },
 });
