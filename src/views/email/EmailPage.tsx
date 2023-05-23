@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 import { Button, Flex, Pagination, Title } from "@mantine/core";
 
 import React, { useEffect, useMemo, useState } from "react";
@@ -7,6 +8,8 @@ import { IEmailThreadResponse } from "../../interfaces/IEmailResponse";
 import { connectNylas, fetchEmails } from "../../redux/api/nylasApi";
 import { useAppDispatch, useAppSelector } from "../../redux/store";
 import EmailList from "./EmailList";
+import { ITemplate } from "hexa-sdk";
+import { setNylasToken } from "../../redux/slices/nylasSlice";
 
 const EmailPage = () => {
   const dispatch = useAppDispatch();
@@ -28,7 +31,7 @@ const EmailPage = () => {
   }, [emailOffset, emailFilter]);
 
   const filteredEmails = useMemo<IEmailThreadResponse[]>(() => {
-    return emails.filter((e) => {
+    return emails.filter((e: IEmailThreadResponse) => {
       return (
         JSON.stringify(e).toLowerCase().includes(search.toLowerCase()) &&
         JSON.stringify(e.folders).toLowerCase().includes(emailFilter[0]?.toLowerCase())
@@ -65,7 +68,7 @@ const EmailPage = () => {
     <div className="p-2">
       <Filter
         // options={templates.map((t) => t.name)}
-        options={templates.map((t) => t.name)}
+        options={templates.map((t: ITemplate) => t.name)}
         onChange={setFilter}
       />
       <Filter
@@ -75,6 +78,18 @@ const EmailPage = () => {
         options={["Inbox", "Sent", "Spam", "Trash"]}
         onChange={setEmailFilter}
       />
+      <Button
+        onClick={() => {
+          dispatch(
+            setNylasToken({
+              ...nylasToken,
+              access_token: "asdasd",
+            }),
+          );
+        }}
+      >
+        Clear Token
+      </Button>
       <Flex justify="space-between" align="center" mb="md">
         <Title order={2}>Emails</Title>
         <Button onClick={() => setSelectedMode((o) => !o)}>

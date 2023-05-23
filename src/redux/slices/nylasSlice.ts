@@ -32,7 +32,6 @@ export const nylasSlice = createSlice({
   initialState,
   reducers: {
     setNylasToken: (state, action: PayloadAction<NylasConnectedPayload | undefined>) => {
-      console.log("NYLAS PAYLOAD IN ACTION: " + action.payload);
       state.nylasToken = action.payload;
       if (action.payload) {
         localStorage.setItem("nylasToken", action.payload?.access_token);
@@ -65,6 +64,7 @@ export const nylasSlice = createSlice({
       })
       .addCase(fetchEmails.rejected, (state, action) => {
         state.loaders.fetchingEmails = false;
+        state.nylasToken = undefined;
         showError(action.payload as string);
       }),
 });

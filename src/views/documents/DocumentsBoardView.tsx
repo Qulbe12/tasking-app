@@ -141,11 +141,7 @@ const DocumentsBoardView = () => {
   };
 
   async function getEmailsBySelectedDocuments() {
-    return nylasAxios.get("/threads/search", {
-      params: {
-        q: "wabalaba",
-      },
-    });
+    return nylasAxios.get("/threads");
   }
 
   return (
