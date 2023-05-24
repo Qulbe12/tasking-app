@@ -180,7 +180,7 @@ const DocumentUpdateModal = ({ onClose, opened, document }: DocumentUpdateModalP
                   <div key={i + "document"}>
                     {inputIndex >= 0 ? (
                       <UpdateDynamicField
-                        value={v}
+                        value={v || ""}
                         field={selectedDocument.template.fields[inputIndex]}
                         onChange={(e) => {
                           setNewForm({
@@ -309,7 +309,7 @@ const DocumentUpdateModal = ({ onClose, opened, document }: DocumentUpdateModalP
                               <Text weight="bolder" size="sm">
                                 {_.startCase(k)}:
                               </Text>
-                              <Text size="sm">{v}</Text>
+                              <Text size="sm">{v || ""}</Text>
                             </Flex>
                           ) : (
                             <Text>{k}:</Text>

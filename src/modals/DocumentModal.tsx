@@ -27,6 +27,7 @@ import { FileWithPath } from "@mantine/dropzone";
 import { showError } from "../redux/commonSliceFunctions";
 import { IconX } from "@tabler/icons";
 import * as yup from "yup";
+import { defaultDocumentFields } from "../constants/defaultDocumentFields";
 
 const DocumentModal = ({ onClose, opened, title }: CommonModalProps) => {
   const dispatch = useAppDispatch();
@@ -84,7 +85,7 @@ const DocumentModal = ({ onClose, opened, title }: CommonModalProps) => {
     <Modal opened={opened} onClose={onClose} title={title}>
       <LoadingOverlay visible={!!loaders.adding} />
       <form
-        onSubmit={form.onSubmit(async (values) => {
+        onSubmit={form.onSubmit(async (values: any) => {
           if (!activeBoard?.id) return;
 
           const { title, description, startDate, dueDate, priority, status } = form.values;
@@ -99,6 +100,12 @@ const DocumentModal = ({ onClose, opened, title }: CommonModalProps) => {
           formData.append("templateId", data.find((t) => t.name === selectedTemplate)?.id || "");
           attachments.forEach((a) => {
             formData.append("files", a);
+          });
+
+          Object.keys(values).map((k, v) => {
+            if (!defaultDocumentFields.includes(k)) {
+              formData.append(k, values[k]);
+            }
           });
 
           await dispatch(createDocument({ boardId: activeBoard.id, document: formData }));

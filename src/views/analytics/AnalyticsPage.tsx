@@ -261,7 +261,7 @@ const AnalyticsPage = () => {
                         }}
                         key={valIndex + "rowData"}
                       >
-                        {v.toString()}
+                        {`${v || ""}`}
                       </td>
                     );
                   })}
