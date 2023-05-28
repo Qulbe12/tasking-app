@@ -102,7 +102,7 @@ const DocumentModal = ({ onClose, opened, title }: CommonModalProps) => {
             formData.append("files", a);
           });
 
-          Object.keys(values).map((k, v) => {
+          Object.keys(values).map((k) => {
             if (!defaultDocumentFields.includes(k)) {
               formData.append(k, values[k]);
             }

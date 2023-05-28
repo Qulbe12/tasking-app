@@ -9,7 +9,6 @@ import {
   removeLinkedDocsAction,
   updateDocument,
 } from "../api/documentApi";
-import { showError } from "../commonSliceFunctions";
 
 export interface DocumentState {
   data: IDocument[];
@@ -50,10 +49,8 @@ export const documentsSlice = createSlice({
         state.data?.unshift(action.payload);
         state.loaders.adding = null;
       })
-      .addCase(createDocument.rejected, (state, action) => {
+      .addCase(createDocument.rejected, (state) => {
         state.loaders.adding = null;
-        state.error = action.error.message;
-        showError(action.error.message);
       })
       // Get Documents
       .addCase(getDocuments.pending, (state) => {
@@ -63,10 +60,8 @@ export const documentsSlice = createSlice({
         state.data = action.payload;
         state.loading -= 1;
       })
-      .addCase(getDocuments.rejected, (state, action) => {
+      .addCase(getDocuments.rejected, (state) => {
         state.loading -= 1;
-        state.error = action.error.message;
-        showError(action.error.message);
       }) // Update Documents
       .addCase(updateDocument.pending, (state, action) => {
         state.loaders.updating = action.meta.requestId;
@@ -76,13 +71,11 @@ export const documentsSlice = createSlice({
         state.data[foundIndex] = action.payload;
         state.loaders.updating = null;
       })
-      .addCase(updateDocument.rejected, (state, action) => {
+      .addCase(updateDocument.rejected, (state) => {
         state.loaders.updating = null;
-        state.error = action.error.message;
-        showError(action.error.message);
       })
       // Link Document
-      .addCase(addLinkedDocsAction.pending, (state, action) => {
+      .addCase(addLinkedDocsAction.pending, (state) => {
         state.loaders.linkingDocument = true;
       })
       .addCase(addLinkedDocsAction.fulfilled, (state, action) => {
@@ -90,10 +83,8 @@ export const documentsSlice = createSlice({
         state.data[foundIndex] = action.payload;
         state.loaders.linkingDocument = null;
       })
-      .addCase(addLinkedDocsAction.rejected, (state, action) => {
+      .addCase(addLinkedDocsAction.rejected, (state) => {
         state.loaders.linkingDocument = null;
-        state.error = action.error.message;
-        showError(action.error.message);
       })
       // Unlink Document
       .addCase(removeLinkedDocsAction.pending, (state) => {
@@ -104,10 +95,8 @@ export const documentsSlice = createSlice({
         state.data[foundIndex] = action.payload;
         state.loaders.linkingDocument = null;
       })
-      .addCase(removeLinkedDocsAction.rejected, (state, action) => {
+      .addCase(removeLinkedDocsAction.rejected, (state) => {
         state.loaders.linkingDocument = null;
-        state.error = action.error.message;
-        showError(action.error.message);
       })
       // Add Document Users
       .addCase(addDocumentUsers.pending, (state) => {
@@ -120,10 +109,8 @@ export const documentsSlice = createSlice({
         }
         state.loaders.addingUser = false;
       })
-      .addCase(addDocumentUsers.rejected, (state, action) => {
+      .addCase(addDocumentUsers.rejected, (state) => {
         state.loaders.addingUser = false;
-        state.error = action.error.message;
-        showError(action.error.message);
       })
       // Remove Document Users
       .addCase(removeDocumentUser.pending, (state) => {
@@ -136,10 +123,8 @@ export const documentsSlice = createSlice({
         }
         state.loaders.addingUser = false;
       })
-      .addCase(removeDocumentUser.rejected, (state, action) => {
+      .addCase(removeDocumentUser.rejected, (state) => {
         state.loaders.addingUser = false;
-        state.error = action.error.message;
-        showError(action.error.message);
       });
   },
 });

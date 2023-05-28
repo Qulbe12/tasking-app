@@ -16,6 +16,7 @@ import nylasReducer from "./slices/nylasSlice";
 import stripeReducer from "./slices/stripeSlice";
 import filterReducer from "./slices/filterSlice";
 import menuReducer from "./slices/menuSlice";
+import sheetsReducer from "./slices/sheetSlice";
 
 const persistConfig = {
   blacklist: ["filters"], // eg: ["Boards"]
@@ -35,6 +36,7 @@ const reducers = combineReducers({
   stripe: stripeReducer,
   filters: filterReducer,
   menus: menuReducer,
+  sheets: sheetsReducer,
 });
 
 const persistedReducer = persistReducer(

@@ -15,7 +15,6 @@ import {
 import EmailModal from "../../modals/EmailModal";
 import EmailDetailsModal from "../../modals/EmailDetailsModal";
 import { IEmailResponse, IEmailThreadResponse } from "../../interfaces/IEmailResponse";
-import { nylasAxios } from "../../config/nylasAxios";
 import { showError } from "../../redux/commonSliceFunctions";
 import generateDate from "../../utils/generateDate";
 import { useAppSelector } from "../../redux/store";
