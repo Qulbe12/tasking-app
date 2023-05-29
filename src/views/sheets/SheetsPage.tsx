@@ -128,7 +128,7 @@ const SheetsPage = () => {
           </Grid.Col>
           <Grid.Col span={2}>
             <Text weight="bold">Documents:</Text>
-            {selectedSheet?.attachments.map((a) => {
+            {selectedSheet?.attachments.map((a: any) => {
               return (
                 <Text
                   lineClamp={1}
