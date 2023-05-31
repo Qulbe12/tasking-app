@@ -1,5 +1,6 @@
 import {
   ActionIcon,
+  Breadcrumbs,
   Button,
   Card,
   Drawer,
@@ -150,6 +151,18 @@ const DocumentsBoardView = () => {
     });
   }, [emails, selectedDocument]);
 
+  const handleEscapePress = (e: KeyboardEvent) => {
+    if (e.key === "Escape") {
+      e.preventDefault();
+      setSelectedDocument(null);
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener("keydown", handleEscapePress, false);
+    return () => window.removeEventListener("keydown", handleEscapePress, false);
+  }, []);
+
   return (
     <Paper h="80vh">
       <div className="mb-2">
@@ -201,7 +214,7 @@ const DocumentsBoardView = () => {
             </Card>
           </Grid.Col>
           {selectedDocument && (
-            <Grid.Col className="h-full" span={4}>
+            <Grid.Col className="h-full" span={5}>
               <Card shadow="lg" className="h-full">
                 <ScrollArea className="h-full">
                   <Flex justify="space-between" mb="xl">
@@ -384,7 +397,7 @@ const DocumentsBoardView = () => {
           )}
 
           {selectedDocument && (
-            <Grid.Col span={3}>
+            <Grid.Col span={2}>
               <Card shadow="md" className="h-full">
                 <Flex justify="space-between">
                   <Title order={4} mb="md">
@@ -453,12 +466,13 @@ const DocumentsBoardView = () => {
         okText={t("link")}
         onOk={async () => {
           if (selectedDocument && selectedDocumentToLink) {
-            dispatch(
-              await addLinkedDocsAction({
+            await dispatch(
+              addLinkedDocsAction({
                 documentId: selectedDocument.id,
                 documentsToLink: selectedDocumentToLink,
               }),
             );
+            setSelectedDocumentToLink([]);
             toggleShowDocumentsModal();
           }
         }}
@@ -467,7 +481,10 @@ const DocumentsBoardView = () => {
         title={t("selectedDocumentToLink") + " - " + selectedDocument?.title}
         selectedDocuments={selectedDocumentToLink}
         opened={showDocumentsModal}
-        onClose={toggleShowDocumentsModal}
+        onClose={() => {
+          toggleShowDocumentsModal();
+          setSelectedDocumentToLink([]);
+        }}
         onDocumentClick={(doc) => {
           if (selectedDocumentToLink.includes(doc.id)) {
             setSelectedDocumentToLink(selectedDocumentToLink.filter((d) => d !== doc.id));

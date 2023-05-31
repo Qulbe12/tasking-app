@@ -61,6 +61,13 @@ const DocumentsListModal = ({
 
   return (
     <Modal size="80%" opened={opened} onClose={onClose} title={title}>
+      <button
+        onClick={() => {
+          console.log(selectedDocument);
+        }}
+      >
+        asd
+      </button>
       <Stack spacing={"md"}>
         <Input
           icon={<IconSearch />}
@@ -75,6 +82,7 @@ const DocumentsListModal = ({
             filteredData.map((d) => {
               if (!d) return "NO D";
               if (d.id === selectedDocument?.id) return;
+              if (selectedDocument?.linkedDocs.find((doc) => doc === d.id)) return;
               return (
                 <DocumentCard
                   selected={selectedDocuments?.find((docId) => d.id === docId)}
