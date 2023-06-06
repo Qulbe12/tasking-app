@@ -44,12 +44,10 @@ export const nylasSlice = createSlice({
         state.loaders.connecting = true;
       })
       .addCase(connectNylas.fulfilled, (state, action) => {
-        console.log(action.payload);
         state.loaders.connecting = false;
         window.open(action.payload);
       })
       .addCase(connectNylas.rejected, (state, action) => {
-        console.log(action.error);
         state.loaders.connecting = false;
       })
       .addCase(fetchEmails.pending, (state) => {

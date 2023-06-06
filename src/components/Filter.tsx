@@ -71,6 +71,10 @@ const Filter = ({ options, onChange, singleSelection, defaultValues }: FilterPro
               title={option}
               //   itemId={option} // NOTE: itemId is required for track items
               key={option}
+              onDoubleClick={() => {
+                setSelected([]);
+                onChange([]);
+              }}
               onClick={handleItemClick(option)}
             >
               <Badge

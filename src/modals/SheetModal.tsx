@@ -79,8 +79,6 @@ const SheetModal = ({ onClose, opened, title }: CommonModalProps) => {
             formData.append("files", a);
           });
 
-          console.log(formData);
-
           await dispatch(createSheet({ boardId: activeBoard.id, sheet: formData }));
 
           form.reset();

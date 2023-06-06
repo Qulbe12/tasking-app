@@ -8,10 +8,12 @@ import { deleteBoard, getBoards } from "../../redux/api/boardsApi";
 import { setActiveBoard } from "../../redux/slices/boardsSlice";
 import { useAppDispatch, useAppSelector } from "../../redux/store";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 
 const BoardsList = () => {
   const { t } = useTranslation();
   const [modalOpen, setModalOpen] = useState(false);
+  const navigate = useNavigate();
 
   const dispatch = useAppDispatch();
 
@@ -22,7 +24,9 @@ const BoardsList = () => {
 
   useEffect(() => {
     if (!activeWorkspace?.id) return;
-    dispatch(getBoards(activeWorkspace?.id));
+    dispatch(getBoards(activeWorkspace?.id)).finally(() => {
+      navigate("/workspaces/boards");
+    });
   }, [activeWorkspace]);
 
   const filteredBoards = useMemo(() => {

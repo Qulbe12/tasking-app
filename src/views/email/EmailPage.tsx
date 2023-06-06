@@ -8,7 +8,6 @@ import { connectNylas, fetchEmails } from "../../redux/api/nylasApi";
 import { useAppDispatch, useAppSelector } from "../../redux/store";
 import EmailList from "./EmailList";
 import { ITemplate } from "hexa-sdk";
-import { nylasAxios } from "../../config/nylasAxios";
 import _ from "lodash";
 
 const EmailPage = () => {
@@ -91,17 +90,6 @@ const EmailPage = () => {
         options={["All", "Inbox", "Sent", "Spam", "Trash"]}
         onChange={setEmailFilter}
       />
-
-      <button
-        onClick={async () => {
-          const res = await nylasAxios.get("/threads");
-          res.data.map((e: IEmailThreadResponse) => {
-            console.log(e.folders);
-          });
-        }}
-      >
-        Get Emails
-      </button>
 
       <Flex justify="space-between" align="center" mb="md">
         <Title order={2}>Emails</Title>

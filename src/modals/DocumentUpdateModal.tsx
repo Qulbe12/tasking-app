@@ -4,7 +4,6 @@ import {
   TextInput,
   Textarea,
   Select,
-  MultiSelect,
   Flex,
   Button,
   Drawer,
@@ -17,14 +16,14 @@ import { DatePicker } from "@mantine/dates";
 import { IconFileText } from "@tabler/icons";
 import dayjs from "dayjs";
 import { IAttachment, IDocument, IUpdateDocument } from "hexa-sdk";
-import { DocumentPriority, DocumentStatus, SubscriptionStatus } from "hexa-sdk/dist/app.api";
+import { DocumentPriority, DocumentStatus } from "hexa-sdk/dist/app.api";
 import _ from "lodash";
 import React, { useEffect, useState } from "react";
 
 import PdfViewerComponent from "../components/PdfViewerComponent";
 import UpdateDynamicField from "../components/UpdateDynamicField";
 import { updateDocument } from "../redux/api/documentApi";
-import { useDisclosure, useId } from "@mantine/hooks";
+import { useDisclosure } from "@mantine/hooks";
 import CommonModalProps from "./CommonModalProps";
 import { useAppDispatch, useAppSelector } from "../redux/store";
 import { useForm } from "@mantine/form";
@@ -35,7 +34,6 @@ type DocumentUpdateModalProps = {
 
 const DocumentUpdateModal = ({ onClose, opened, document }: DocumentUpdateModalProps) => {
   const [selectedAttachment, setSelectedAttachment] = useState<IAttachment | null>(null);
-  const id = useId();
 
   const dispatch = useAppDispatch();
 
@@ -123,51 +121,6 @@ const DocumentUpdateModal = ({ onClose, opened, document }: DocumentUpdateModalP
               value={newForm?.status}
               onChange={(e: DocumentStatus) => setNewForm({ ...newForm, status: e })}
             />
-            <MultiSelect
-              disabled
-              label="Assign Users"
-              data={newForm.assignedUsers.map((u) => u.email)}
-              placeholder="Select users"
-              searchable
-              creatable
-              getCreateLabel={(query) => `+ Add ${query}`}
-              onCreate={(query) => {
-                const item = { value: query, label: query };
-                setNewForm({
-                  ...newForm,
-                  assignedUsers: [
-                    ...newForm.assignedUsers,
-                    {
-                      avatar: "",
-                      email: item.value,
-                      id: id,
-                      name: item.value,
-                      role: "user",
-                      subscription: SubscriptionStatus.Active,
-                    },
-                  ],
-                });
-                return item;
-              }}
-            />
-
-            <MultiSelect
-              label="CC'd Users"
-              data={newForm.ccUsers}
-              value={newForm.ccUsers}
-              placeholder="Add emails"
-              searchable
-              creatable
-              getCreateLabel={(query) => `+ Add ${query}`}
-              onCreate={(query) => {
-                const item = { value: query, label: query };
-                setNewForm({
-                  ...newForm,
-                  ccUsers: [...newForm.ccUsers, item.value],
-                });
-                return item;
-              }}
-            />
 
             {selectedDocument &&
               Object.entries(selectedDocument).map(([k, v], i) => {
@@ -187,7 +140,6 @@ const DocumentUpdateModal = ({ onClose, opened, document }: DocumentUpdateModalP
                             ...newForm,
                             [selectedDocument.template.fields[inputIndex].key]: e,
                           });
-                          console.log(e);
                         }}
                       />
                     ) : (
@@ -244,15 +196,11 @@ const DocumentUpdateModal = ({ onClose, opened, document }: DocumentUpdateModalP
               <form
                 onSubmit={form.onSubmit(async () => {
                   if (!selectedDocument) return;
-                  // form.setValues();
-                  console.log(newForm);
 
                   await dispatch(
                     updateDocument({ documentId: selectedDocument?.id, document: newForm }),
                   );
                   setSelectedDocument(null);
-
-                  // console.log(vals);
                 })}
               >
                 <Stack>

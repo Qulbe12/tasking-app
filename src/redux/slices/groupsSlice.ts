@@ -37,7 +37,7 @@ export const groupsSlice = createSlice({
       })
       .addCase(createGroup.rejected, (state, action) => {
         state.loaders.adding = false;
-        console.log(action.error.message);
+
         showError("Something went wrong");
       }),
 });

@@ -25,9 +25,6 @@ const Calendar = ({ emails }: CalanderProps) => {
       })}
       startAccessor="start"
       endAccessor="end"
-      onDoubleClickEvent={(e) => {
-        console.log(e);
-      }}
       style={{ height: 500 }}
     />
   );

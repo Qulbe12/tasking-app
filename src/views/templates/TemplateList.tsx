@@ -12,6 +12,8 @@ const TemplateList = () => {
 
   const templates = useAppSelector((state) => state.templates);
   const { activeWorkspace } = useAppSelector((state) => state.workspaces);
+  const { user } = useAppSelector((state) => state.auth);
+  const { activeBoard } = useAppSelector((state) => state.boards);
 
   function toggleOpen() {
     setOpen((o) => !o);
@@ -28,7 +30,9 @@ const TemplateList = () => {
     <div className="p-4">
       <Flex justify="space-between" align="center" mb="md">
         <Title order={2}>Form Templates</Title>
-        <Button onClick={toggleOpen}>Add Form</Button>
+        {user?.user.email === activeBoard?.owner.email && (
+          <Button onClick={toggleOpen}>Add Form</Button>
+        )}
       </Flex>
       <Divider label="Default Templates" my="md" />
       <Grid>

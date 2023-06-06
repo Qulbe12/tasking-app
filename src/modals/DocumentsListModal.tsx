@@ -61,13 +61,6 @@ const DocumentsListModal = ({
 
   return (
     <Modal size="80%" opened={opened} onClose={onClose} title={title}>
-      <button
-        onClick={() => {
-          console.log(selectedDocument);
-        }}
-      >
-        asd
-      </button>
       <Stack spacing={"md"}>
         <Input
           icon={<IconSearch />}

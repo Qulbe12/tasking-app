@@ -117,7 +117,6 @@ export default function PdfViewerComponent({
               if (!selectedDocument) return;
               try {
                 const annots = await instance?.exportInstantJSON();
-                console.log(annots);
 
                 const res = await axiosPrivate.put(
                   `/documents/${selectedDocument.id}/annotations/${attachment.id}`,

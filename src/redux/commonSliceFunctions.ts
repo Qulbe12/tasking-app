@@ -18,8 +18,6 @@ export const centralizedErrorHandler = (error: unknown, rejectWithValue: any, di
   const errMessage = err.response?.data.message;
 
   if (err.response?.status === 401) {
-    console.log(err.response);
-
     showError("You are not authorized to perform this action. Please login again.");
     dispatch(logout());
     return rejectWithValue(errMessage);

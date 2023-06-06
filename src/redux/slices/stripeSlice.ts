@@ -68,7 +68,6 @@ export const stripeSlice = createSlice({
       .addCase(addPaymentMethod.fulfilled, (state, action) => {
         state.loaders.addingPaymentMethod = false;
         state.paymentMethods.push(action.payload);
-        console.log(action.payload);
       })
       .addCase(addPaymentMethod.rejected, (state, action) => {
         state.loaders.addingPaymentMethod = false;
@@ -79,7 +78,7 @@ export const stripeSlice = createSlice({
         //
       })
       .addCase(subscribeToPlan.fulfilled, (state, action) => {
-        console.log(action);
+        //
       })
       .addCase(subscribeToPlan.rejected, (state, action) => {
         showError(action.error.message);

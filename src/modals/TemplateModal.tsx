@@ -12,10 +12,17 @@ import {
   Stack,
   Text,
   TextInput,
+  Textarea,
 } from "@mantine/core";
 import { useForm, yupResolver } from "@mantine/form";
 import { IconPlus } from "@tabler/icons";
-import { FieldType, ICreateField, ITemplate } from "hexa-sdk/dist/app.api";
+import {
+  DocumentPriority,
+  DocumentStatus,
+  FieldType,
+  ICreateField,
+  ITemplate,
+} from "hexa-sdk/dist/app.api";
 import React, { useEffect, useState } from "react";
 import DynamicField from "../components/DynamicField";
 import {
@@ -26,6 +33,7 @@ import {
 } from "../redux/api/templateApi";
 import { useAppDispatch, useAppSelector } from "../redux/store";
 import * as yup from "yup";
+import { DatePicker } from "@mantine/dates";
 
 type TemplateModalProps = {
   template?: ITemplate;
@@ -36,6 +44,8 @@ const TemplateModal = ({ onClose, opened, template }: ModalProps & TemplateModal
 
   const { loading } = useAppSelector((state) => state.templates);
   const { activeWorkspace } = useAppSelector((state) => state.workspaces);
+  const { activeBoard } = useAppSelector((state) => state.boards);
+  const { user } = useAppSelector((state) => state.auth);
 
   const [fieldVals, setFieldVals] = useState<ICreateField>({
     label: "",
@@ -91,7 +101,34 @@ const TemplateModal = ({ onClose, opened, template }: ModalProps & TemplateModal
             {...form.getInputProps("name")}
           />
 
-          {!template?.default && template && (
+          <Stack>
+            <TextInput label="Title" withAsterisk />
+            <Textarea label="Description" withAsterisk />
+            <DatePicker aria-errormessage="asdsad" label="Start Date" withAsterisk />
+            <DatePicker label="Due Date" withAsterisk />
+            <Select
+              label="Priority"
+              placeholder="Pick one"
+              withAsterisk
+              data={[
+                { value: DocumentPriority.Low, label: "Low" },
+                { value: DocumentPriority.High, label: "High" },
+                { value: DocumentPriority.Urgent, label: "Urgent" },
+              ]}
+            />
+            <Select
+              label="Status"
+              placeholder="Pick one"
+              withAsterisk
+              data={[
+                { value: DocumentStatus.Todo, label: "Todo" },
+                { value: DocumentStatus.InProgresss, label: "In Progress" },
+                { value: DocumentStatus.Complete, label: "Complete" },
+              ]}
+            />
+          </Stack>
+
+          {!template?.default && template && activeBoard?.owner.email === user?.user.email && (
             <Flex gap="md">
               <Text>Fields</Text>
               <ActionIcon variant="filled" color="blue" onClick={() => setNewFieldModal(true)}>
@@ -105,7 +142,7 @@ const TemplateModal = ({ onClose, opened, template }: ModalProps & TemplateModal
           })}
 
           <Group position="apart" mt="md">
-            {template && !template.default && (
+            {template && !template.default && activeBoard?.owner.email === user?.user.email && (
               <Button
                 variant="light"
                 color="red"
@@ -121,9 +158,9 @@ const TemplateModal = ({ onClose, opened, template }: ModalProps & TemplateModal
             )}
             <Group position="right">
               <Button variant="outline" onClick={onClose}>
-                Cancel
+                {activeBoard?.owner.email === user?.user.email ? "Cancel" : "Close"}
               </Button>
-              {!template?.default && (
+              {!template?.default && activeBoard?.owner.email === user?.user.email && (
                 <Button loading={!!loading} type="submit">
                   {template ? "Update" : "Create Form"}
                 </Button>

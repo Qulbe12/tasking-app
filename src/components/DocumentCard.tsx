@@ -56,20 +56,11 @@ const DocumentCard = ({
           )}
           <Text weight="bold">{document?.title}</Text>
         </Flex>
+      </Flex>
+      <Flex gap="sm" mt="sm">
         <Badge size="sm" color={generateDocumentColor(document?.template.name)} mb="sm">
           {document?.template.name}
         </Badge>
-      </Flex>
-      <Text size="sm" lineClamp={2}>
-        {document?.description}
-      </Text>
-      <Divider my="sm" />
-      <Flex align="center" justify="space-between">
-        <Flex gap="md" align={"center"}>
-          {document?.attachments.length ? <IconPaperclip size="1.2em" /> : ""}
-          <IconClock size="1.2em" />
-          <Text>{dayjs(document?.dueDate).format("MMM DD")}</Text>
-        </Flex>
         <Badge
           size="xs"
           color={
@@ -82,6 +73,18 @@ const DocumentCard = ({
         >
           {document?.status}
         </Badge>
+      </Flex>
+      <Text size="sm" lineClamp={2}>
+        {document?.description}
+      </Text>
+      <Divider my="sm" />
+      <Flex align="center" justify="space-between">
+        <Flex gap="md" align={"center"}>
+          {document?.attachments.length ? <IconPaperclip size="1.2em" /> : ""}
+          <IconClock size="1.2em" />
+          <Text>{dayjs(document?.dueDate).format("MMM DD")}</Text>
+        </Flex>
+
         <Avatar radius="xl" />
       </Flex>
     </Card>

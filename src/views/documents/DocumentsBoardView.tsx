@@ -1,6 +1,5 @@
 import {
   ActionIcon,
-  Breadcrumbs,
   Button,
   Card,
   Drawer,
@@ -162,6 +161,9 @@ const DocumentsBoardView = () => {
     window.addEventListener("keydown", handleEscapePress, false);
     return () => window.removeEventListener("keydown", handleEscapePress, false);
   }, []);
+
+  const [showAssignConfirmationModal, { toggle: toggleAssignConfirmationModal }] =
+    useDisclosure(false);
 
   return (
     <Paper h="80vh">
@@ -557,6 +559,21 @@ const DocumentsBoardView = () => {
           <Button
             onClick={async () => {
               if (!selectedDocument) return;
+
+              let hasExtra = false;
+              activeBoard?.members.forEach((am) => {
+                aUsers.forEach((au) => {
+                  if (au.value !== am.email) {
+                    hasExtra = true;
+                  }
+                });
+              });
+
+              if (hasExtra && userType === "assignedUsers") {
+                toggleAssignConfirmationModal();
+                return;
+              }
+
               await dispatch(
                 addDocumentUsers({
                   documentId: selectedDocument?.id,
@@ -565,13 +582,33 @@ const DocumentsBoardView = () => {
                 }),
               );
 
-              setShowMember((o) => !o);
+              setShowMember(false);
             }}
           >
             Add users
           </Button>
         </Flex>
       </Modal>
+
+      <ConfirmationModal
+        onClose={toggleAssignConfirmationModal}
+        onOk={async () => {
+          if (!selectedDocument) return;
+          await dispatch(
+            addDocumentUsers({
+              documentId: selectedDocument?.id,
+              emails: aUsers.map((u) => u.value),
+              type: userType,
+            }),
+          );
+          toggleAssignConfirmationModal();
+          setShowMember(false);
+        }}
+        opened={showAssignConfirmationModal}
+        type="archive"
+        title="Assign Users Confirmation"
+        body="Are you sure you want to assign users that are not members of the board?"
+      />
 
       <EmailModal
         selectedDocument={selectedDocument}

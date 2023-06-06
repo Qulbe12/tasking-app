@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import {
   AppShell,
   Navbar,
@@ -7,7 +7,6 @@ import {
   TextInput,
   Flex,
   ActionIcon,
-  Text,
   Burger,
   Title,
   Tabs,
@@ -33,6 +32,7 @@ const DashboardLayout = () => {
   const { search, filtersOpen } = useAppSelector((state) => state.filters);
   const { activeBoard } = useAppSelector((state) => state.boards);
   const { boardTab } = useAppSelector((state) => state.menus);
+  const { user } = useAppSelector((state) => state.auth);
 
   const changeLanguage = (lng: string) => {
     i18n.changeLanguage(lng);
@@ -43,35 +43,29 @@ const DashboardLayout = () => {
     dispatch(resetFilters());
   }, [window.location.href]);
 
-  const [opened, { toggle }] = useDisclosure(true);
+  const [opened, { toggle }] = useDisclosure(false);
 
   return (
     <AppShell
-      padding="md"
-      fixed={true}
+      navbarOffsetBreakpoint="sm"
+      asideOffsetBreakpoint="sm"
       navbar={
         opened ? (
-          <Navbar display={opened ? "block" : "none"} width={{ base: 250 }} h="screen" p="xs">
-            <Navbar.Section grow mt="xs">
-              <MainLinks />
-            </Navbar.Section>
-            <Navbar.Section>
-              <Flex>
-                <Text className="fixed bottom-2 left-2">v0.88</Text>
-              </Flex>
-            </Navbar.Section>
+          <Navbar p="md" hiddenBreakpoint="sm" hidden={!opened} width={{ sm: 200, lg: 200 }}>
+            <MainLinks />
           </Navbar>
         ) : undefined
       }
       header={
-        <Header height={60}>
-          <Group sx={{ height: "100%" }} px={20} position="apart">
+        <Header height={{ base: 50, md: 60 }} p="md">
+          <Group px={20} position="apart">
             {/* LEFT SIDE */}
             <Flex align={"center"} gap="lg">
+              <Burger opened={opened} onClick={toggle} aria-label={"Toggle Sidenav"} size="sm" />
               <div className="cursor-pointer" onClick={() => navigate("/")}>
                 HEXADESK
               </div>
-              <Burger opened={opened} onClick={toggle} aria-label={"Toggle Sidenav"} size="sm" />
+
               <Title order={4}>{activeBoard?.title}</Title>
             </Flex>
 
@@ -86,7 +80,9 @@ const DashboardLayout = () => {
                   <Tabs.Tab value="Work Items">{t("workItems")}</Tabs.Tab>
                   <Tabs.Tab value="Sheets">{t("sheets")}</Tabs.Tab>
                   <Tabs.Tab value="Analytics">{t("analytics")}</Tabs.Tab>
-                  <Tabs.Tab value="Teams">{t("teams")}</Tabs.Tab>
+                  {activeBoard?.owner.email === user?.user.email && (
+                    <Tabs.Tab value="Teams">{t("teams")}</Tabs.Tab>
+                  )}
                 </Tabs.List>
               </Tabs>
             )}

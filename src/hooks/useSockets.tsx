@@ -36,7 +36,6 @@ const useSockets = () => {
 
   useEffect(() => {
     socket.on("connect", () => {
-      console.log("connected");
       setIsConnected(true);
     });
 
@@ -46,41 +45,41 @@ const useSockets = () => {
 
     // General Events
     socket.on(GeneralEvents.Message, (message) => {
-      console.log("General Event: ", message);
+      //
     });
 
     // Board Events
     socket.on(BoardEvents.Created, (payload: IBoard) => {
-      console.log(payload);
+      //
     });
     socket.on(BoardEvents.Updated, (payload: IBoard) => {
       dispatch(updateSocketBoard(payload));
-      console.log(payload);
+      //
     });
     socket.on(BoardEvents.Deleted, (payload: IBoard) => {
-      console.log(payload);
+      //
     });
 
     // Document Events
     socket.on(DocumentEvents.Created, (payload: IDocument) => {
-      console.log(payload);
+      //
     });
     socket.on(DocumentEvents.Updated, (payload: IDocument) => {
-      console.log(payload);
+      //
     });
     socket.on(DocumentEvents.Deleted, (payload: IDocument) => {
-      console.log(payload);
+      //
     });
 
     // Template Events
     socket.on(TemplateEvents.Created, (payload: ITemplate) => {
-      console.log(payload);
+      //
     });
     socket.on(TemplateEvents.Updated, (payload: ITemplate) => {
-      console.log(payload);
+      //
     });
     socket.on(TemplateEvents.Deleted, (payload: ITemplate) => {
-      console.log(payload);
+      //
     });
 
     // Nylas Events
@@ -89,7 +88,7 @@ const useSockets = () => {
       dispatch(fetchEmails({ offset: 0 }));
     });
     socket.on(NylasEvents.Failed, (payload) => {
-      console.log(payload);
+      //
     });
 
     return () => {

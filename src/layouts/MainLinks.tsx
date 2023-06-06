@@ -1,9 +1,10 @@
 import React from "react";
-import { IconLayout, IconMail, IconNews } from "@tabler/icons";
-import { ThemeIcon, UnstyledButton, Group, Text, Divider } from "@mantine/core";
+import { IconChevronDown, IconLayout, IconMail, IconNews } from "@tabler/icons";
+import { ThemeIcon, UnstyledButton, Group, Text, Menu, Flex } from "@mantine/core";
 import { useNavigate } from "react-router-dom";
-import { useAppSelector } from "../redux/store";
+import { useAppDispatch, useAppSelector } from "../redux/store";
 import { useTranslation } from "react-i18next";
+import { setActiveWorkspace } from "../redux/slices/workspacesSlice";
 
 interface MainLinkProps {
   icon: React.ReactNode;
@@ -14,6 +15,7 @@ interface MainLinkProps {
 
 function MainLink({ icon, color, label, to }: MainLinkProps) {
   const navigate = useNavigate();
+
   return (
     <UnstyledButton
       sx={(theme) => ({
@@ -42,7 +44,8 @@ function MainLink({ icon, color, label, to }: MainLinkProps) {
 
 export function MainLinks() {
   const { t } = useTranslation();
-  const { activeWorkspace } = useAppSelector((state) => state.workspaces);
+  const dispatch = useAppDispatch();
+  const { activeWorkspace, data: workspaces } = useAppSelector((state) => state.workspaces);
 
   const mainLinks: MainLinkProps[] = [
     { icon: <IconLayout size={16} />, color: "blue", label: t("boards"), to: "/workspaces/boards" },
@@ -54,7 +57,34 @@ export function MainLinks() {
 
   return (
     <div>
-      <Divider label={activeWorkspace?.name} />
+      <Menu shadow="md" width={200}>
+        <Menu.Target>
+          {/* <Divider className="cursor-pointer" label={activeWorkspace?.name} /> */}
+          <Flex justify="space-between" align="center" className="cursor-pointer">
+            <Text size="sm">{activeWorkspace?.name}</Text>
+            <IconChevronDown size={14} />
+          </Flex>
+        </Menu.Target>
+
+        <Menu.Dropdown>
+          <Menu.Label>Workspaces</Menu.Label>
+          {workspaces.map((w) => {
+            return (
+              <Menu.Item
+                key={w.id}
+                onClick={() => {
+                  const foundWorkspace = workspaces.find((ws) => ws.id === w.id);
+                  if (!foundWorkspace) return;
+                  dispatch(setActiveWorkspace(foundWorkspace));
+                }}
+              >
+                {w.name}
+              </Menu.Item>
+            );
+          })}
+        </Menu.Dropdown>
+      </Menu>
+      <div className="mb-4" />
       {links}
     </div>
   );

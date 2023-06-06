@@ -63,8 +63,6 @@ const EmailList = ({ emails, filter }: EmailListProps) => {
                       onClick={async () => {
                         try {
                           const res = await getEmailsByThreadId(email.id);
-                          console.log(res.data[0]);
-
                           setThreadEmails(res.data);
                         } catch (error: any) {
                           showError(error.message);

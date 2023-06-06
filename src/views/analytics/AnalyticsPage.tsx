@@ -75,8 +75,6 @@ const AnalyticsPage = () => {
       newTotal += +d[key];
     });
 
-    // console.log(id, key);
-
     return {
       cell: key,
       total: newTotal,

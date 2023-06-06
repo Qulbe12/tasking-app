@@ -8,9 +8,6 @@ const CustomDropzone = (props: Partial<DropzoneProps>) => {
 
   return (
     <Dropzone
-      onReject={(files) => {
-        console.log("Rejected Files", files);
-      }}
       maxSize={3 * 1024 ** 2}
       accept={PDF_MIME_TYPE}
       onDrop={function (files: FileWithPath[]): void {

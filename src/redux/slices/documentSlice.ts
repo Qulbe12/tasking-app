@@ -104,7 +104,8 @@ export const documentsSlice = createSlice({
       })
       .addCase(addDocumentUsers.fulfilled, (state, action) => {
         const foundIndex = state.data.findIndex((d) => d.id === action.payload.id);
-        if (foundIndex) {
+        console.log(foundIndex);
+        if (foundIndex >= 0) {
           state.data[foundIndex] = action.payload;
         }
         state.loaders.addingUser = false;
