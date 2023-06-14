@@ -5,17 +5,16 @@ import { useAppSelector } from "../../redux/store";
 import "@inovua/reactdatagrid-enterprise/index.css";
 import "@inovua/reactdatagrid-enterprise/theme/default-dark.css";
 import "@inovua/reactdatagrid-enterprise/theme/default-light.css";
-import _, { uniqueId } from "lodash";
+import _ from "lodash";
 import Filter from "../../components/Filter";
 import { CSVLink } from "react-csv";
-import { IAttachment, IDocument } from "hexa-sdk";
+import { IDocument } from "hexa-sdk";
 import { Button, Flex, Menu } from "@mantine/core";
 import { IconFileSpreadsheet, IconPackgeExport } from "@tabler/icons";
 import jsPDF from "jspdf";
 import dayjs from "dayjs";
 import JSZip from "jszip";
 import fileSaver from "file-saver";
-import axios from "axios";
 
 const AnalyticsPage = () => {
   const { data: templates } = useAppSelector((state) => state.templates);
