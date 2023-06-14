@@ -5,14 +5,17 @@ import { useAppSelector } from "../../redux/store";
 import "@inovua/reactdatagrid-enterprise/index.css";
 import "@inovua/reactdatagrid-enterprise/theme/default-dark.css";
 import "@inovua/reactdatagrid-enterprise/theme/default-light.css";
-import _ from "lodash";
+import _, { uniqueId } from "lodash";
 import Filter from "../../components/Filter";
 import { CSVLink } from "react-csv";
-import { IDocument } from "hexa-sdk";
+import { IAttachment, IDocument } from "hexa-sdk";
 import { Button, Flex, Menu } from "@mantine/core";
 import { IconFileSpreadsheet, IconPackgeExport } from "@tabler/icons";
 import jsPDF from "jspdf";
 import dayjs from "dayjs";
+import JSZip from "jszip";
+import fileSaver from "file-saver";
+import axios from "axios";
 
 const AnalyticsPage = () => {
   const { data: templates } = useAppSelector((state) => state.templates);
@@ -24,7 +27,13 @@ const AnalyticsPage = () => {
     "2,city": true,
   });
 
-  const [selectedTemplate, setSelectedTemplate] = useState<string | null>(templates[0].id || null);
+  const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (templates.length > 0) {
+      setSelectedTemplate(templates[0].id);
+    }
+  }, [templates]);
 
   const columns = useMemo(() => {
     const baseCols = [
@@ -179,6 +188,29 @@ const AnalyticsPage = () => {
     });
   };
 
+  const handleExportAllDocuments = async () => {
+    const folderName = `files ${dayjs(new Date()).format("DD-MM-YYYY HHmm")}`;
+
+    const zip = new JSZip();
+    const folder = zip.folder(folderName);
+
+    if (!folder) return;
+
+    filteredData.forEach((document) => {
+      document.attachments.forEach((attachment) => {
+        const blobPromise = fetch(attachment.url).then((r) => {
+          return r.blob();
+        });
+
+        folder.file(attachment.name, blobPromise);
+      });
+    });
+
+    zip.generateAsync({ type: "blob" }).then(function (content) {
+      fileSaver(content, folderName);
+    });
+  };
+
   return (
     <div>
       <div className="mb-2">
@@ -187,7 +219,7 @@ const AnalyticsPage = () => {
       </div>
 
       <Flex justify="flex-end">
-        <Menu shadow="md" width={200}>
+        <Menu shadow="md" width={300}>
           <Menu.Target>
             <Button leftIcon={<IconPackgeExport size={14} />}>Export</Button>
           </Menu.Target>
@@ -203,6 +235,9 @@ const AnalyticsPage = () => {
               </CSVLink>
             </Menu.Item>
             <Menu.Item onClick={handleGeneratePdf}>PDF</Menu.Item>
+            <Menu.Item onClick={handleExportAllDocuments}>
+              All {filter ? filter + " Attachments" : "Attachments"}
+            </Menu.Item>
           </Menu.Dropdown>
         </Menu>
       </Flex>

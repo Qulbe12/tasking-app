@@ -23,6 +23,7 @@ import { useAppSelector } from "../redux/store";
 import { generateDocumentColor } from "../utils/generateDocumentColor";
 import CommonModalProps from "./CommonModalProps";
 import { IDocument } from "hexa-sdk";
+import { showNotification } from "@mantine/notifications";
 
 type EmailModalProps = {
   selectedDocument?: IDocument | null;
@@ -120,7 +121,10 @@ const EmailModal = ({ opened, onClose, selectedDocument }: CommonModalProps & Em
             newSubject += "]";
 
             await nylasAxios.post("/send", { ...form, subject: newSubject, body: newBody });
-            showError("Message Sent Successfully");
+            showNotification({
+              message: "Message Sent Successfully",
+              color: "indigo",
+            });
             setForm({ body: "", subject: "", to: [{ email: "", name: "" }] });
             onClose();
             setLoading(false);

@@ -10,6 +10,7 @@ export const showError = (err?: string) => {
   showNotification({
     title: "Error",
     message: err,
+    color: "red",
   });
 };
 

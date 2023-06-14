@@ -55,6 +55,7 @@ export const documentsSlice = createSlice({
       // Get Documents
       .addCase(getDocuments.pending, (state) => {
         state.loading += 1;
+        state.data = [];
       })
       .addCase(getDocuments.fulfilled, (state, action) => {
         state.data = action.payload;

@@ -101,6 +101,7 @@ const TemplateModal = ({ onClose, opened, template }: ModalProps & TemplateModal
             {...form.getInputProps("name")}
           />
 
+          <Divider label="Default Fields" />
           <Stack>
             <TextInput label="Title" withAsterisk />
             <Textarea label="Description" withAsterisk />

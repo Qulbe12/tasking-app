@@ -3,9 +3,9 @@ import { IconFileText } from "@tabler/icons";
 import { IAttachment, IDocument } from "hexa-sdk";
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import PdfViewerComponent from "../../components/PdfViewerComponent";
 import { axiosPrivate } from "../../config/axios";
 import { showError } from "../../redux/commonSliceFunctions";
+import PdfViewerComponentPublic from "../../components/PdfViewerComponentPublic";
 
 const DocumentPublicView = () => {
   const [loading, setLoading] = useState(false);
@@ -78,7 +78,7 @@ const DocumentPublicView = () => {
         }}
       >
         {selectedAttachment && (
-          <PdfViewerComponent selectedDocument={document} attachment={selectedAttachment} />
+          <PdfViewerComponentPublic selectedDocument={document} attachment={selectedAttachment} />
         )}
       </Drawer>
     </div>

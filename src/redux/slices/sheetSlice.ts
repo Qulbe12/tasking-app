@@ -27,6 +27,7 @@ export const sheetsSlice = createSlice({
       // Get All Sheets
       .addCase(getSheets.pending, (state) => {
         state.loaders.gettingSheets = true;
+        state.data = [];
       })
       .addCase(getSheets.fulfilled, (state, action: PayloadAction<ISheetResponse[]>) => {
         state.loaders.gettingSheets = false;

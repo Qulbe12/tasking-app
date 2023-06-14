@@ -42,6 +42,7 @@ export const templateSlice = createSlice({
       // Get All Templates
       .addCase(getAllTemplates.pending, (state) => {
         state.loading++;
+        state.data = [];
       })
       .addCase(getAllTemplates.fulfilled, (state, action) => {
         state.loading--;

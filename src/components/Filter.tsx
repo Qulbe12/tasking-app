@@ -72,6 +72,8 @@ const Filter = ({ options, onChange, singleSelection, defaultValues }: FilterPro
               //   itemId={option} // NOTE: itemId is required for track items
               key={option}
               onDoubleClick={() => {
+                console.log(option);
+
                 setSelected([]);
                 onChange([]);
               }}

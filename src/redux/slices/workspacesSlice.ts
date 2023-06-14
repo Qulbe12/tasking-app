@@ -43,6 +43,7 @@ export const workspacesSlice = createSlice({
       // Get all workspaces
       .addCase(getAllWorkSpaces.pending, (state) => {
         state.loading += 1;
+        state.data = [];
       })
       .addCase(getAllWorkSpaces.fulfilled, (state, action) => {
         state.loading -= 1;

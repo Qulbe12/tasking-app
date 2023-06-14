@@ -66,6 +66,7 @@ export const boardsSlice = createSlice({
       // Get All Boards
       .addCase(getBoards.pending, (state) => {
         state.loading += 1;
+        state.data = [];
       })
       .addCase(getBoards.fulfilled, (state, action) => {
         state.data = action.payload;

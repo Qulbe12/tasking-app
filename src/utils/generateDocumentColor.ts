@@ -1,10 +1,10 @@
 import { DefaultMantineColor } from "@mantine/core";
 import { defaultTemplateTypes } from "../constants/defaultTemplateTypes";
 
-export function generateDocumentColor(templateName?: string): DefaultMantineColor {
-  if (!templateName) return "indigo";
+export function generateDocumentColor(value?: string): DefaultMantineColor {
+  if (!value) return "indigo";
 
-  switch (templateName) {
+  switch (value) {
     case defaultTemplateTypes.budget:
       return "cyan";
     case defaultTemplateTypes.changeEvents:
@@ -33,6 +33,7 @@ export function generateDocumentColor(templateName?: string): DefaultMantineColo
       return "yellow";
     case defaultTemplateTypes.task:
       return "indigo";
+
     default:
       return "indigo";
   }

@@ -52,6 +52,7 @@ export const nylasSlice = createSlice({
       })
       .addCase(fetchEmails.pending, (state) => {
         state.loaders.fetchingEmails = true;
+        state.emails = [];
       })
       .addCase(fetchEmails.fulfilled, (state, action) => {
         state.loaders.fetchingEmails = false;
