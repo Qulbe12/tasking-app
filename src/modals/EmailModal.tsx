@@ -1,7 +1,6 @@
 import {
   Stack,
   Input,
-  Textarea,
   Flex,
   Button,
   Drawer,
@@ -24,6 +23,7 @@ import { generateDocumentColor } from "../utils/generateDocumentColor";
 import CommonModalProps from "./CommonModalProps";
 import { IDocument } from "hexa-sdk";
 import { showNotification } from "@mantine/notifications";
+import CustomTextEditor from "../components/CustomTextEditor";
 
 type EmailModalProps = {
   selectedDocument?: IDocument | null;
@@ -102,13 +102,17 @@ const EmailModal = ({ opened, onClose, selectedDocument }: CommonModalProps & Em
           e.preventDefault();
           setLoading(true);
 
-          let newSubject = form.subject + " - [";
+          let newSubject = form.subject;
 
           try {
             let newBody: string = JSON.parse(JSON.stringify(form.body));
 
             newBody += "<br />";
-            newBody += "<p>Linked Documents:</p>";
+
+            if (documents.length > 0) {
+              newSubject += " - [";
+              newBody += "<p>Linked Documents:</p>";
+            }
 
             documents[1].forEach((d) => {
               const foundDocument = data.find((doc) => doc.id === d.value);
@@ -118,7 +122,9 @@ const EmailModal = ({ opened, onClose, selectedDocument }: CommonModalProps & Em
               }>${d.label}</a><br />`;
             });
 
-            newSubject += "]";
+            if (documents.length > 0) {
+              newSubject += "]";
+            }
 
             await nylasAxios.post("/send", { ...form, subject: newSubject, body: newBody });
             showNotification({
@@ -150,16 +156,17 @@ const EmailModal = ({ opened, onClose, selectedDocument }: CommonModalProps & Em
           />
 
           <Input
+            variant="default"
             placeholder="Subject"
             value={form.subject}
             onChange={(e) => setForm({ ...form, subject: e.target.value })}
           />
 
-          <Textarea
-            value={form.body}
-            onChange={(e) => setForm({ ...form, body: e.target.value })}
-            placeholder={"Compose your message."}
-            autosize
+          <CustomTextEditor
+            content={form.body}
+            onUpdate={(content) => {
+              setForm({ ...form, body: content });
+            }}
           />
 
           <Divider label="Attach Documents" />
