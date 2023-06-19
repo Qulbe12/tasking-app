@@ -13,7 +13,8 @@
     "lint:fix": "eslint --fix 'src/**/*.{ts,tsx}'",
     "format": "prettier --write 'src/**/*.{ts,tsx,css,md}' --config ./.prettierrc",
     "deploy": "npm ci --legacy-peer-deps && npm run build",
-    "sdk": "npm i hexa-sdk@latest --legacy-peer-deps"
+    "sdk": "npm i hexa-sdk@latest --legacy-peer-deps",
+    "prepare": "husky install"
   },
   "dependencies": {
     "@emotion/react": "^11.10.5",

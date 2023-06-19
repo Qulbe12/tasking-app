@@ -63,7 +63,7 @@ const SheetModal = ({ onClose, opened, title }: CommonModalProps) => {
     <Modal opened={opened} onClose={onClose} title={title}>
       <LoadingOverlay visible={!!loaders.adding} />
       <form
-        onSubmit={form.onSubmit(async (values: any) => {
+        onSubmit={form.onSubmit(async () => {
           if (!activeBoard?.id) return;
 
           const { title, description, startDate, dueDate, priority, status } = form.values;

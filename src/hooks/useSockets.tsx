@@ -9,8 +9,6 @@ import {
   IJoinRoomPayload,
   JoinRoom,
   IBoard,
-  IDocument,
-  ITemplate,
   NylasConnectedPayload,
 } from "hexa-sdk/dist/app.api";
 import { SOCKET_URL } from "../constants/URLS";
@@ -44,41 +42,41 @@ const useSockets = () => {
     });
 
     // General Events
-    socket.on(GeneralEvents.Message, (message) => {
+    socket.on(GeneralEvents.Message, () => {
       //
     });
 
     // Board Events
-    socket.on(BoardEvents.Created, (payload: IBoard) => {
+    socket.on(BoardEvents.Created, () => {
       //
     });
     socket.on(BoardEvents.Updated, (payload: IBoard) => {
       dispatch(updateSocketBoard(payload));
       //
     });
-    socket.on(BoardEvents.Deleted, (payload: IBoard) => {
+    socket.on(BoardEvents.Deleted, () => {
       //
     });
 
     // Document Events
-    socket.on(DocumentEvents.Created, (payload: IDocument) => {
+    socket.on(DocumentEvents.Created, () => {
       //
     });
-    socket.on(DocumentEvents.Updated, (payload: IDocument) => {
+    socket.on(DocumentEvents.Updated, () => {
       //
     });
-    socket.on(DocumentEvents.Deleted, (payload: IDocument) => {
+    socket.on(DocumentEvents.Deleted, () => {
       //
     });
 
     // Template Events
-    socket.on(TemplateEvents.Created, (payload: ITemplate) => {
+    socket.on(TemplateEvents.Created, () => {
       //
     });
-    socket.on(TemplateEvents.Updated, (payload: ITemplate) => {
+    socket.on(TemplateEvents.Updated, () => {
       //
     });
-    socket.on(TemplateEvents.Deleted, (payload: ITemplate) => {
+    socket.on(TemplateEvents.Deleted, () => {
       //
     });
 
@@ -87,7 +85,7 @@ const useSockets = () => {
       await dispatch(setNylasToken(payload));
       dispatch(fetchEmails({ offset: 0 }));
     });
-    socket.on(NylasEvents.Failed, (payload) => {
+    socket.on(NylasEvents.Failed, () => {
       //
     });
 
