@@ -1,4 +1,4 @@
-import { ActionIcon, Avatar, Badge, Card, Divider, Flex, Text } from "@mantine/core";
+import { ActionIcon, Avatar, Badge, Card, Divider, Flex, Text, Tooltip } from "@mantine/core";
 import { IconClock, IconPaperclip, IconUnlink } from "@tabler/icons";
 import dayjs from "dayjs";
 import { DocumentStatus, IDocument } from "hexa-sdk/dist/app.api";
@@ -78,10 +78,23 @@ const DocumentCard = ({
         {document?.description}
       </Text>
       <Divider my="sm" />
+
       <Flex align="center" justify="space-between">
         <Flex gap="md" align={"center"}>
-          {document?.attachments.length ? <IconPaperclip size="1.2em" /> : ""}
-          <IconClock size="1.2em" />
+          {document?.attachments.length ? (
+            <Tooltip label="Has attachments">
+              <div>
+                <IconPaperclip size="1.2em" />
+              </div>
+            </Tooltip>
+          ) : (
+            ""
+          )}
+          <Tooltip label="Due Date">
+            <div>
+              <IconClock size="1.2em" />
+            </div>
+          </Tooltip>
           <Text>{dayjs(document?.dueDate).format("MMM DD")}</Text>
         </Flex>
 

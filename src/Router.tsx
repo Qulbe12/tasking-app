@@ -7,7 +7,6 @@ import Forgot from "./views/auth/Forgot";
 import Login from "./views/auth/Login";
 import Pay from "./views/auth/Pay";
 import Register from "./views/auth/Register";
-import BoardDetails from "./views/board/BoardDetails";
 import TemplateList from "./views/templates/TemplateList";
 import Teams from "./views/teams/Teams";
 import WorkspacesList from "./views/workspaces/WorkspacesList";
@@ -17,6 +16,8 @@ import AnalyticsPage from "./views/analytics/AnalyticsPage";
 import PaymentPage from "./views/payment/PaymentPage";
 import SettingsLayout from "./layouts/SettingsLayout";
 import DocumentPublicView from "./views/documents/DocumentPublicView";
+import SheetsPage from "./views/sheets/SheetsPage";
+import DocumentsBoardView from "./views/documents/DocumentsBoardView";
 
 const router = createBrowserRouter([
   {
@@ -63,11 +64,11 @@ const router = createBrowserRouter([
         children: [
           {
             path: "/board",
-            element: <BoardDetails />,
+            element: <DocumentsBoardView />,
           },
           {
-            path: "/board/details",
-            element: <BoardDetails />,
+            path: "/board/sheets",
+            element: <SheetsPage />,
           },
           {
             path: "/board/analytics",

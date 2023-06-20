@@ -107,7 +107,11 @@ export default function PdfViewerComponent({
   }, []);
 
   return (
-    <div>
+    <div
+      onDoubleClick={() => {
+        console.log("Double Clicked");
+      }}
+    >
       <Flex justify="flex-end">
         {annotsChanged && (
           <Button

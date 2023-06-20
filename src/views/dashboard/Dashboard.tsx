@@ -20,7 +20,7 @@ const Dashboard = () => {
     <div>
       <LoadingOverlay visible={!!loading} overlayBlur={2} />
       <div className="flex justify-between items-center mb-4">
-        <Title className="flex items-center gap-4">
+        <Title className="flex items-center gap-4" order={3}>
           <IconClock size={32} />
           Personal Board
         </Title>
@@ -36,6 +36,9 @@ const Dashboard = () => {
           return (
             <Grid.Col span="content" key={i}>
               <BoardCard
+                onClick={() => {
+                  //
+                }}
                 board={board}
                 onEditClick={() => {
                   setSelectedBoard(board);

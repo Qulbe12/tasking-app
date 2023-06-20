@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import {
   AppShell,
   Navbar,
@@ -8,9 +8,13 @@ import {
   Flex,
   ActionIcon,
   Burger,
-  Title,
   Tabs,
   Menu,
+  Breadcrumbs,
+  Anchor,
+  Modal,
+  Center,
+  Progress,
 } from "@mantine/core";
 
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
@@ -22,16 +26,25 @@ import { resetFilters, setSearch, toggleFilterOpen } from "../redux/slices/filte
 import { useDisclosure } from "@mantine/hooks";
 import { setBoardTab } from "../redux/slices/menuSlice";
 import { useTranslation } from "react-i18next";
+import useChangeWorkspace from "../hooks/useChangeWorkspace";
+import useChangeBoard from "../hooks/useChangeBoard";
 
 const DashboardLayout = () => {
   const { t, i18n } = useTranslation();
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
+  const { handleWorkspaceChange, loadingText, loadingValue } = useChangeWorkspace();
+  const {
+    handleBoardChange,
+    loadingText: boardLoadingText,
+    loadingValue: boardLoadingValue,
+  } = useChangeBoard();
+
   const location = useLocation();
   const { search, filtersOpen } = useAppSelector((state) => state.filters);
-  const { activeBoard } = useAppSelector((state) => state.boards);
-  const { boardTab } = useAppSelector((state) => state.menus);
+  const { activeWorkspace, data: workspaces } = useAppSelector((state) => state.workspaces);
+  const { activeBoard, data: boards } = useAppSelector((state) => state.boards);
   const { user } = useAppSelector((state) => state.auth);
 
   const changeLanguage = (lng: string) => {
@@ -45,13 +58,17 @@ const DashboardLayout = () => {
 
   const [opened, { toggle }] = useDisclosure(false);
 
+  const isBoardsPage = useMemo(() => {
+    return location.pathname.split("/")[1] === "board";
+  }, [location.pathname]);
+
   return (
     <AppShell
       navbarOffsetBreakpoint="sm"
       asideOffsetBreakpoint="sm"
       navbar={
         opened ? (
-          <Navbar p="md" hiddenBreakpoint="sm" hidden={!opened} width={{ sm: 200, lg: 200 }}>
+          <Navbar p="md" hiddenBreakpoint="sm" hidden={!opened} width={{ sm: 95, lg: 95 }}>
             <MainLinks />
           </Navbar>
         ) : undefined
@@ -66,22 +83,83 @@ const DashboardLayout = () => {
                 HEXADESK
               </div>
 
-              <Title order={4}>{activeBoard?.title}</Title>
+              <Breadcrumbs ml="xl" separator="→">
+                <Anchor href="/"></Anchor>
+                {activeWorkspace && (
+                  <Menu shadow="md" width={200}>
+                    <Menu.Target>
+                      <Anchor>{activeWorkspace.name}</Anchor>
+                    </Menu.Target>
+
+                    <Menu.Dropdown>
+                      <Menu.Label>Workspaces</Menu.Label>
+                      {workspaces.map((w) => {
+                        return (
+                          <Menu.Item
+                            key={w.id}
+                            onClick={() => {
+                              const foundWorkspace = workspaces.find((ws) => ws.id === w.id);
+                              if (!foundWorkspace) return;
+                              handleWorkspaceChange(foundWorkspace);
+                            }}
+                          >
+                            {w.name}
+                          </Menu.Item>
+                        );
+                      })}
+                    </Menu.Dropdown>
+                  </Menu>
+                )}
+
+                {activeBoard && (
+                  <Menu shadow="md" width={200}>
+                    <Menu.Target>
+                      <Anchor>{activeBoard.title}</Anchor>
+                    </Menu.Target>
+
+                    <Menu.Dropdown>
+                      <Menu.Label>Boards</Menu.Label>
+                      {boards.map((b) => {
+                        return (
+                          <Menu.Item
+                            key={b.id}
+                            onClick={() => {
+                              const foundBoard = boards.find((board) => board.id === b.id);
+                              if (!foundBoard) return;
+                              handleBoardChange(foundBoard);
+                            }}
+                          >
+                            {b.title}
+                          </Menu.Item>
+                        );
+                      })}
+                    </Menu.Dropdown>
+                  </Menu>
+                )}
+              </Breadcrumbs>
             </Flex>
 
             {/* Center */}
-            {location.pathname === "/board" && (
+            {isBoardsPage && (
               <Tabs
                 defaultValue="Work Items"
-                value={boardTab}
+                value={location.pathname}
                 onTabChange={(t) => dispatch(setBoardTab(t))}
               >
                 <Tabs.List>
-                  <Tabs.Tab value="Work Items">{t("workItems")}</Tabs.Tab>
-                  <Tabs.Tab value="Sheets">{t("sheets")}</Tabs.Tab>
-                  <Tabs.Tab value="Analytics">{t("analytics")}</Tabs.Tab>
+                  <Tabs.Tab value="/board" onClick={() => navigate("/board")}>
+                    {t("workItems")}
+                  </Tabs.Tab>
+                  <Tabs.Tab value="/board/sheets" onClick={() => navigate("/board/sheets")}>
+                    {t("sheets")}
+                  </Tabs.Tab>
+                  <Tabs.Tab value="/board/analytics" onClick={() => navigate("/board/analytics")}>
+                    {t("analytics")}
+                  </Tabs.Tab>
                   {activeBoard?.owner.email === user?.user.email && (
-                    <Tabs.Tab value="Teams">{t("teams")}</Tabs.Tab>
+                    <Tabs.Tab value="/board/teams" onClick={() => navigate("/board/teams")}>
+                      {t("teams")}
+                    </Tabs.Tab>
                   )}
                 </Tabs.List>
               </Tabs>
@@ -122,6 +200,44 @@ const DashboardLayout = () => {
       }
     >
       <Outlet />
+
+      <Modal
+        opacity={0.8}
+        opened={!!loadingText}
+        onClose={() => {
+          //
+        }}
+        withCloseButton={false}
+        fullScreen
+        transition="fade"
+        transitionDuration={100}
+      >
+        <Center maw={900} h={"50vh"} mx="auto">
+          <div className="w-full">
+            <Progress value={loadingValue} animate />
+            {loadingText || "Loading..."}
+          </div>
+        </Center>
+      </Modal>
+
+      <Modal
+        opacity={0.8}
+        opened={!!boardLoadingText}
+        onClose={() => {
+          //
+        }}
+        withCloseButton={false}
+        fullScreen
+        transition="fade"
+        transitionDuration={100}
+      >
+        <Center maw={900} h={"50vh"} mx="auto">
+          <div className="w-full">
+            <Progress value={boardLoadingValue} animate />
+            {boardLoadingText || "Loading..."}
+          </div>
+        </Center>
+      </Modal>
     </AppShell>
   );
 };

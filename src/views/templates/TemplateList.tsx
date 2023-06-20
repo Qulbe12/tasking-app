@@ -1,28 +1,19 @@
 import { Button, Divider, Flex, Grid, Title } from "@mantine/core";
-import React, { useEffect, useState } from "react";
+import { useState } from "react";
 import TemplateCard from "../../components/TemplateCard";
-import { getAllTemplates } from "../../redux/api/templateApi";
-import { useAppDispatch, useAppSelector } from "../../redux/store";
+import { useAppSelector } from "../../redux/store";
 import TemplateModal from "../../modals/TemplateModal";
 
 const TemplateList = () => {
   const [open, setOpen] = useState(false);
 
-  const dispatch = useAppDispatch();
-
   const templates = useAppSelector((state) => state.templates);
-  const { activeWorkspace } = useAppSelector((state) => state.workspaces);
   const { user } = useAppSelector((state) => state.auth);
   const { activeBoard } = useAppSelector((state) => state.boards);
 
   function toggleOpen() {
     setOpen((o) => !o);
   }
-
-  useEffect(() => {
-    if (!activeWorkspace?.id) return;
-    dispatch(getAllTemplates(activeWorkspace.id));
-  }, []);
 
   const [selectedTemplate, setSelectedTemplate] = useState<string | undefined>();
 

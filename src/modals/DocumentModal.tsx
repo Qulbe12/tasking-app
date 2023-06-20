@@ -14,8 +14,7 @@ import {
 } from "@mantine/core";
 import { useForm, yupResolver } from "@mantine/form";
 import { DocumentPriority, DocumentStatus, IField } from "hexa-sdk/dist/app.api";
-import { useEffect, useMemo, useState } from "react";
-import { getAllTemplates } from "../redux/api/templateApi";
+import { useMemo, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../redux/store";
 import CommonModalProps from "./CommonModalProps";
 import DynamicField from "../components/DynamicField";
@@ -34,13 +33,7 @@ const DocumentModal = ({ onClose, opened, title }: CommonModalProps) => {
 
   const { data, loading } = useAppSelector((state) => state.templates);
   const { activeBoard, loaders } = useAppSelector((state) => state.boards);
-  const { activeWorkspace } = useAppSelector((state) => state.workspaces);
   const { loaders: docLoaders } = useAppSelector((state) => state.documents);
-
-  useEffect(() => {
-    if (!activeWorkspace?.id) return;
-    dispatch(getAllTemplates(activeWorkspace.id));
-  }, []);
 
   const [fields, setFields] = useState<IField[]>();
   const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
@@ -211,14 +204,6 @@ const DocumentModal = ({ onClose, opened, title }: CommonModalProps) => {
               </Flex>
             );
           })}
-
-          <input
-            type="file"
-            onChange={async (e) => {
-              if (!activeBoard) return;
-              if (!e.target.files) return;
-            }}
-          />
 
           {selectedTemplate && (
             <Paper>

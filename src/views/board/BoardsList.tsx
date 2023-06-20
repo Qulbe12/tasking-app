@@ -1,33 +1,31 @@
-import { Button, Grid, LoadingOverlay, Title } from "@mantine/core";
+import { Button, Center, Grid, Modal, Progress, Title } from "@mantine/core";
 import { IconClock, IconPlus } from "@tabler/icons";
 import { IBoard } from "hexa-sdk/dist/app.api";
-import React, { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import BoardCard from "../../components/BoardCard";
 import BoardModal from "../../modals/BoardModal";
-import { deleteBoard, getBoards } from "../../redux/api/boardsApi";
-import { setActiveBoard } from "../../redux/slices/boardsSlice";
+import { deleteBoard } from "../../redux/api/boardsApi";
 import { useAppDispatch, useAppSelector } from "../../redux/store";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
+import useChangeBoard from "../../hooks/useChangeBoard";
+import { setActiveBoard } from "../../redux/slices/boardsSlice";
 
 const BoardsList = () => {
   const { t } = useTranslation();
-  const [modalOpen, setModalOpen] = useState(false);
-  const navigate = useNavigate();
 
   const dispatch = useAppDispatch();
 
-  const { data: boards, loading } = useAppSelector((state) => state.boards);
-  const { activeWorkspace } = useAppSelector((state) => state.workspaces);
-  const { search } = useAppSelector((state) => state.filters);
-  const { loading: templatesLoading } = useAppSelector((state) => state.templates);
+  const { handleBoardChange, loadingText, loadingValue } = useChangeBoard();
 
   useEffect(() => {
-    if (!activeWorkspace?.id) return;
-    dispatch(getBoards(activeWorkspace?.id)).finally(() => {
-      navigate("/workspaces/boards");
-    });
-  }, [activeWorkspace]);
+    dispatch(setActiveBoard(null));
+  }, []);
+
+  const { data: boards, loading: gettingBoards } = useAppSelector((state) => state.boards);
+  const { search } = useAppSelector((state) => state.filters);
+
+  const [selectedBoard, setSelectedBoard] = useState<IBoard | undefined>();
+  const [modalOpen, setModalOpen] = useState(false);
 
   const filteredBoards = useMemo(() => {
     return boards.filter((board) => {
@@ -35,22 +33,15 @@ const BoardsList = () => {
     });
   }, [search, boards]);
 
-  const [selectedBoard, setSelectedBoard] = useState<IBoard | undefined>();
-
-  useEffect(() => {
-    dispatch(setActiveBoard(null));
-  }, []);
-
   return (
     <div>
-      <LoadingOverlay visible={!!loading || !!templatesLoading} overlayBlur={2} />
       <div className="flex justify-between items-center mb-4">
-        <Title className="flex items-center gap-4">
+        <Title className="flex items-center gap-4" order={3}>
           <IconClock size={32} />
           {t("boards")}
         </Title>
 
-        <Button onClick={() => setModalOpen(true)} size="xs">
+        <Button disabled={!!gettingBoards} onClick={() => setModalOpen(true)} size="xs">
           <IconPlus size={16} />
           {t("createBoard")}
         </Button>
@@ -61,6 +52,7 @@ const BoardsList = () => {
           return (
             <Grid.Col span="content" key={i}>
               <BoardCard
+                onClick={() => handleBoardChange(board)}
                 board={board}
                 onEditClick={() => {
                   setSelectedBoard(board);
@@ -74,7 +66,6 @@ const BoardsList = () => {
           );
         })}
       </Grid>
-
       {modalOpen && (
         <BoardModal
           title={!selectedBoard ? t("createBoard") : t("updateBoard")}
@@ -86,6 +77,25 @@ const BoardsList = () => {
           board={selectedBoard}
         />
       )}
+
+      <Modal
+        opacity={0.9}
+        opened={!!loadingText}
+        onClose={() => {
+          //
+        }}
+        withCloseButton={false}
+        fullScreen
+        transition="fade"
+        transitionDuration={100}
+      >
+        <Center maw={900} h={"90vh"} mx="auto">
+          <div className="w-full">
+            <Progress value={loadingValue} animate />
+            {loadingText || "Loading..."}
+          </div>
+        </Center>
+      </Modal>
     </div>
   );
 };

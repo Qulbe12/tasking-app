@@ -10,13 +10,12 @@ import {
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { ICreateGroup } from "hexa-sdk/dist/app.api";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import CommonModalProps from "../../../modals/CommonModalProps";
 import { createGroup } from "../../../redux/api/groupsApi";
-import { getAllTemplates } from "../../../redux/api/templateApi";
 import { useAppDispatch, useAppSelector } from "../../../redux/store";
 
-const CreateGroupModal = ({ onClose, opened, title }: CommonModalProps) => {
+const CreateGroupModal = ({ onClose, opened }: CommonModalProps) => {
   const form = useForm<ICreateGroup>({
     initialValues: {
       name: "",
@@ -27,15 +26,10 @@ const CreateGroupModal = ({ onClose, opened, title }: CommonModalProps) => {
 
   const { loading, data } = useAppSelector((state) => state.templates);
   const { loaders } = useAppSelector((state) => state.groups);
-  const { activeWorkspace } = useAppSelector((state) => state.workspaces);
+
   const { activeBoard } = useAppSelector((state) => state.boards);
 
   const dispatch = useAppDispatch();
-
-  useEffect(() => {
-    if (!activeWorkspace?.id) return;
-    dispatch(getAllTemplates(activeWorkspace?.id));
-  }, []);
 
   const [ccUsers, setCcUsers] = useState<string[]>([]);
 

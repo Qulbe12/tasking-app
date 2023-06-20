@@ -4,6 +4,7 @@ import {
   addBoard,
   addBoardMembers,
   deleteBoard,
+  getBoardById,
   getBoards,
   removeBoardMember,
   updateBoard,
@@ -12,10 +13,11 @@ import { showError } from "../commonSliceFunctions";
 
 export interface BoardsState {
   data: IBoard[];
-  loading: number;
+  loading: boolean;
   error?: string;
-  activeBoard?: IBoard;
+  activeBoard?: IBoard | null;
   loaders: {
+    gettingById: boolean | null;
     adding: string | null;
     updating: string | null;
     deleting: string | null;
@@ -25,9 +27,10 @@ export interface BoardsState {
 }
 
 const initialState: BoardsState = {
-  loading: 0,
+  loading: false,
   data: [],
   loaders: {
+    gettingById: null,
     adding: null,
     updating: null,
     deleting: null,
@@ -40,7 +43,7 @@ export const boardsSlice = createSlice({
   name: "boards",
   initialState,
   reducers: {
-    setActiveBoard: (state, action) => {
+    setActiveBoard: (state, action: PayloadAction<IBoard | null>) => {
       state.activeBoard = action.payload;
     },
     updateSocketBoard: (state, action: PayloadAction<IBoard>) => {
@@ -65,16 +68,29 @@ export const boardsSlice = createSlice({
       })
       // Get All Boards
       .addCase(getBoards.pending, (state) => {
-        state.loading += 1;
+        state.loading = true;
         state.data = [];
       })
       .addCase(getBoards.fulfilled, (state, action) => {
         state.data = action.payload;
-        state.loading -= 1;
+        state.loading = false;
       })
       .addCase(getBoards.rejected, (state, action) => {
-        state.loading -= 1;
+        state.loading = false;
         state.loaders.adding = null;
+        state.error = action.error.message;
+        showError(action.error.message);
+      }) // Get Board By Id
+      .addCase(getBoardById.pending, (state) => {
+        state.loaders.gettingById = true;
+        state.activeBoard = null;
+      })
+      .addCase(getBoardById.fulfilled, (state, action) => {
+        state.activeBoard = action.payload;
+        state.loaders.gettingById = false;
+      })
+      .addCase(getBoardById.rejected, (state, action) => {
+        state.loaders.gettingById = false;
         state.error = action.error.message;
         showError(action.error.message);
       })

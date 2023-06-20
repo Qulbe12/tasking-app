@@ -5,7 +5,6 @@ import {
   Drawer,
   Flex,
   Grid,
-  LoadingOverlay,
   Modal,
   MultiSelect,
   Paper,
@@ -48,11 +47,7 @@ const DocumentsBoardView = () => {
 
   const dispatch = useAppDispatch();
 
-  const {
-    data: documents,
-    loading: documentsLoading,
-    loaders: documentLoaders,
-  } = useAppSelector((state) => state.documents);
+  const { data: documents, loaders: documentLoaders } = useAppSelector((state) => state.documents);
   const { data: templates } = useAppSelector((state) => state.templates);
   const { user } = useAppSelector((state) => state.auth);
   const { search } = useAppSelector((state) => state.filters);
@@ -171,8 +166,6 @@ const DocumentsBoardView = () => {
         <Filter options={templates.map((t) => t.name)} onChange={setFilter} />
         <Filter options={["Complete", "In Progress", "Todo"]} onChange={setStatusFilter} />
       </div>
-
-      <LoadingOverlay visible={!!documentsLoading} overlayBlur={2} />
 
       {!selectedDocument && (
         <div className="flex justify-end items-center mb-4">

@@ -32,7 +32,7 @@
     "@mantine/hooks": "^5.10.5",
     "@mantine/modals": "^5.9.3",
     "@mantine/notifications": "^5.9.3",
-    "@mantine/nprogress": "^5.9.3",
+    "@mantine/nprogress": "^5.10.5",
     "@mantine/spotlight": "^5.9.3",
     "@mantine/tiptap": "^5.10.5",
     "@nylas/components-agenda": "^1.1.6",

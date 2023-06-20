@@ -1,7 +1,6 @@
 import {
   ActionIcon,
   Avatar,
-  Badge,
   Button,
   Card,
   Flex,
@@ -40,9 +39,9 @@ const MembersTab = () => {
         <Button onClick={() => setCreateOpen(true)}>Add Member</Button>
       </Group>
       <Grid>
-        {activeBoard?.members.map((m) => {
+        {activeBoard?.members.map((m, i) => {
           return (
-            <Grid.Col key={m.id} md={6} lg={3}>
+            <Grid.Col key={m.id || i + "member"} md={6} lg={3}>
               <Card className="relative h-fit">
                 <Flex direction="column" align="center" justify="center" gap="md" mb="md">
                   <Avatar radius={"xl"} size="xl" src={m.avatar} />
@@ -51,7 +50,6 @@ const MembersTab = () => {
                     <IconMail /> {m.email}
                   </Flex>
                   <Text size="sm">Last Online: 23-04-2023 at 9:51</Text>
-                  <Badge>All Items: 112</Badge>
                 </Flex>
 
                 <div className="absolute top-4 right-4">

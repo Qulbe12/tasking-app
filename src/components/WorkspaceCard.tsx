@@ -1,37 +1,23 @@
 import { ActionIcon, Card, Group, LoadingOverlay, Menu, Title } from "@mantine/core";
 import { IconDots, IconEdit, IconTrash } from "@tabler/icons";
 import { IWorkspace } from "hexa-sdk/dist/app.api";
-import React from "react";
-import { useNavigate } from "react-router-dom";
-import { setActiveWorkspace } from "../redux/slices/workspacesSlice";
-import { useAppDispatch, useAppSelector } from "../redux/store";
+import { useAppSelector } from "../redux/store";
 import { useTranslation } from "react-i18next";
-import { getAllTemplates } from "../redux/api/templateApi";
 
 type WorkspaceCardProps = {
   workspace: IWorkspace;
   onEditClick: () => void;
   onDeleteClick: () => void;
+  onClick: () => void;
 };
 
-const WorkspaceCard = ({ workspace, onEditClick, onDeleteClick }: WorkspaceCardProps) => {
+const WorkspaceCard = ({ workspace, onEditClick, onDeleteClick, onClick }: WorkspaceCardProps) => {
   const { t } = useTranslation();
-  const dispatch = useAppDispatch();
-  const navigate = useNavigate();
 
   const { loaders } = useAppSelector((state) => state.workspaces);
 
   return (
-    <Card
-      onClick={async () => {
-        dispatch(setActiveWorkspace(workspace));
-        dispatch(getAllTemplates(workspace.id));
-        navigate("/workspaces/boards");
-      }}
-      shadow="sm"
-      withBorder
-      className="hover:cursor-pointer h-full"
-    >
+    <Card onClick={onClick} shadow="sm" withBorder className="hover:cursor-pointer h-full">
       <LoadingOverlay
         visible={loaders.deleting === workspace.id || loaders.updating === workspace.id}
       />

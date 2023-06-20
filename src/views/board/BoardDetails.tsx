@@ -1,27 +1,14 @@
 import { Tabs } from "@mantine/core";
 import { IconChartBar, IconPhoto, IconUser } from "@tabler/icons";
-import React, { useEffect } from "react";
-import { useAppDispatch, useAppSelector } from "../../redux/store";
-import { getDocuments } from "../../redux/api/documentApi";
-import { getAllTemplates } from "../../redux/api/templateApi";
+import React from "react";
+import { useAppSelector } from "../../redux/store";
 import Teams from "../teams/Teams";
 import AnalyticsPage from "../analytics/AnalyticsPage";
 import DocumentsBoardView from "../documents/DocumentsBoardView";
 import SheetsPage from "../sheets/SheetsPage";
 
 const BoardDetails = () => {
-  const dispatch = useAppDispatch();
-
-  const { activeBoard } = useAppSelector((state) => state.boards);
-  const { activeWorkspace } = useAppSelector((state) => state.workspaces);
   const { boardTab } = useAppSelector((state) => state.menus);
-
-  useEffect(() => {
-    if (!activeBoard?.id) return;
-    dispatch(getDocuments({ boardId: activeBoard?.id, query: {} }));
-    if (!activeWorkspace?.id) return;
-    dispatch(getAllTemplates(activeWorkspace?.id));
-  }, []);
 
   const tabs = [
     {

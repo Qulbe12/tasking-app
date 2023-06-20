@@ -1,18 +1,16 @@
-import React, { useEffect, useState } from "react";
-import { useAppDispatch, useAppSelector } from "../../redux/store";
+import { useEffect, useState } from "react";
+import { useAppSelector } from "../../redux/store";
 import {
   ActionIcon,
   Button,
   Drawer,
   Flex,
   Grid,
-  LoadingOverlay,
   Paper,
   SimpleGrid,
   Text,
   Title,
 } from "@mantine/core";
-import { getSheets } from "../../redux/api/sheetsApi";
 import { IconArrowLeft, IconPlus } from "@tabler/icons";
 import SheetModal from "../../modals/SheetModal";
 import { useDisclosure } from "@mantine/hooks";
@@ -28,15 +26,7 @@ pdfjs.GlobalWorkerOptions.workerSrc = new URL(
 ).toString();
 
 const SheetsPage = () => {
-  const dispatch = useAppDispatch();
-
-  const { data: sheets, loaders } = useAppSelector((state) => state.sheets);
-  const { activeBoard } = useAppSelector((state) => state.boards);
-
-  useEffect(() => {
-    if (!activeBoard) return;
-    dispatch(getSheets({ boardId: activeBoard.id }));
-  }, []);
+  const { data: sheets } = useAppSelector((state) => state.sheets);
 
   const [showSheetModal, { toggle: toggleSheetModal }] = useDisclosure(false);
 
@@ -56,7 +46,6 @@ const SheetsPage = () => {
 
   return (
     <Paper>
-      <LoadingOverlay visible={loaders.gettingSheets} />
       <Flex mb="md" justify="space-between">
         {selectedSheet ? (
           <Flex gap="md" align={"center"}>
