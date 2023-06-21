@@ -2,6 +2,7 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import { ICreateBoard, IUpdateBoard } from "hexa-sdk/dist/app.api";
 import api from "../../config/api";
 import { centralizedErrorHandler } from "../commonSliceFunctions";
+import { addBoardToWorkspace } from "../slices/workspacesSlice";
 
 const { boardApi } = api;
 const { create, get, getById, update, remove, addMembers, removeMember } = boardApi;
@@ -14,6 +15,9 @@ export const addBoard = createAsyncThunk(
   ) => {
     try {
       const res = await create(workspaceId, board);
+
+      dispatch(addBoardToWorkspace({ workspaceId, board: res.data }));
+
       return res.data;
     } catch (err: any) {
       return centralizedErrorHandler(err, rejectWithValue, dispatch);

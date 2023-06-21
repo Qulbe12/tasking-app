@@ -5,6 +5,8 @@ import { getAllGroups } from "../redux/api/groupsApi";
 import { getDocuments } from "../redux/api/documentApi";
 import { useNavigate } from "react-router-dom";
 import { IBoard } from "hexa-sdk";
+import { IEntityBoard } from "../interfaces/IEntityBoard";
+import { getAllTemplates } from "../redux/api/templateApi";
 
 const useChangeBoard = () => {
   const dispatch = useAppDispatch();
@@ -15,14 +17,20 @@ const useChangeBoard = () => {
   const [loadingText, setLoadingText] = useState<string | null>(null);
   const [loadingValue, setLoadingValue] = useState(0);
 
-  const handleBoardChange = async (board: IBoard) => {
+  const handleBoardChange = async (board: IEntityBoard | IBoard, workspaceId?: string) => {
     if (!activeWorkspace) return;
 
     setLoadingValue(0);
 
     setLoadingText("Getting Board Details...");
-    setLoadingValue((v) => (v += 50));
+    setLoadingValue((v) => (v += 25));
     await dispatch(getBoardById(board.id));
+
+    if (workspaceId) {
+      setLoadingText("Getting Templates...");
+      setLoadingValue((v) => (v += 25));
+      await dispatch(getAllTemplates(workspaceId));
+    }
 
     setLoadingText("Getting Groups...");
     setLoadingValue((v) => (v += 25));

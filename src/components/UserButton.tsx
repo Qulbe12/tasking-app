@@ -7,23 +7,23 @@ import { toggleTheme } from "../redux/slices/themeSlice";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
-const image =
-  "https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=255&q=80";
-
 const UserButton = () => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+
+  const { user } = useAppSelector((state) => state.auth);
 
   const { mode } = useAppSelector((state) => state.theme);
 
   return (
     <Menu shadow="md" width={200}>
       <Menu.Target>
-        <Avatar className="cursor-pointer" src={image} radius="md" size="md" />
+        <Avatar className="cursor-pointer" src={user?.user.avatar} radius="md" size="md" />
       </Menu.Target>
 
       <Menu.Dropdown>
+        <Menu.Label>{user?.user.email}</Menu.Label>
         {/* <Menu.Item icon={<IconUser size={14} />}>Profile</Menu.Item> */}
 
         <Menu.Item

@@ -1,17 +1,18 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { IWorkspace } from "hexa-sdk/dist/app.api";
 import {
   createWorkspace,
   getAllWorkSpaces,
   removeWorkspace,
   updateWorkspace,
 } from "../api/workspacesApi";
+import { IWorkspaceResponse } from "../../interfaces/workspaces/IWorkspaceResponse";
+import { IEntityBoard } from "../../interfaces/IEntityBoard";
 
 export interface WorkspacesState {
-  data: IWorkspace[];
-  loading: number;
+  data: IWorkspaceResponse[];
+  loading: boolean;
   error?: string;
-  activeWorkspace?: IWorkspace;
+  activeWorkspace?: IWorkspaceResponse;
   loaders: {
     adding: string | null;
     updating: string | null;
@@ -20,7 +21,7 @@ export interface WorkspacesState {
 }
 
 const initialState: WorkspacesState = {
-  loading: 0,
+  loading: false,
   data: [],
   loaders: {
     adding: null,
@@ -33,8 +34,18 @@ export const workspacesSlice = createSlice({
   name: "workspaces",
   initialState,
   reducers: {
-    setActiveWorkspace: (state, action: PayloadAction<IWorkspace>) => {
+    setActiveWorkspace: (state, action: PayloadAction<IWorkspaceResponse>) => {
       state.activeWorkspace = action.payload;
+    },
+    addBoardToWorkspace: (
+      state,
+      action: PayloadAction<{ workspaceId: string; board: IEntityBoard }>,
+    ) => {
+      const foundIndex = state.data.findIndex((w) => w.id === action.payload.workspaceId);
+
+      if (foundIndex < 0) return;
+
+      state.data[foundIndex].boards.push(action.payload.board);
     },
   },
 
@@ -42,15 +53,15 @@ export const workspacesSlice = createSlice({
     builder
       // Get all workspaces
       .addCase(getAllWorkSpaces.pending, (state) => {
-        state.loading += 1;
+        state.loading = true;
         state.data = [];
       })
       .addCase(getAllWorkSpaces.fulfilled, (state, action) => {
-        state.loading -= 1;
+        state.loading = false;
         state.data = action.payload;
       })
       .addCase(getAllWorkSpaces.rejected, (state) => {
-        state.loading -= 1;
+        state.loading = false;
       })
       // Create Workspace
       .addCase(createWorkspace.pending, (state) => {
@@ -92,6 +103,6 @@ export const workspacesSlice = createSlice({
 
 const workspacesReducer = workspacesSlice.reducer;
 
-export const { setActiveWorkspace } = workspacesSlice.actions;
+export const { setActiveWorkspace, addBoardToWorkspace } = workspacesSlice.actions;
 
 export default workspacesReducer;

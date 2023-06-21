@@ -2,9 +2,11 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import { ICreateWorkspace, IUpdateWorkspace } from "hexa-sdk/dist/app.api";
 import api from "../../config/api";
 import { centralizedErrorHandler } from "../commonSliceFunctions";
+import { axiosPrivate } from "../../config/axios";
+import { IWorkspaceResponse } from "../../interfaces/workspaces/IWorkspaceResponse";
 
 const { workspaceAPi } = api;
-const { create, get, remove, update } = workspaceAPi;
+const { create, remove, update } = workspaceAPi;
 
 export const createWorkspace = createAsyncThunk(
   "workspaces/createWorkspace",
@@ -22,7 +24,7 @@ export const getAllWorkSpaces = createAsyncThunk(
   "workspaces/getAllWorkSpaces",
   async (_, { rejectWithValue, dispatch }) => {
     try {
-      const res = await get();
+      const res = await axiosPrivate.get<IWorkspaceResponse[]>("/workspaces");
       return res.data;
     } catch (err) {
       return centralizedErrorHandler(err, rejectWithValue, dispatch);

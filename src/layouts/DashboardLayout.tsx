@@ -15,6 +15,7 @@ import {
   Modal,
   Center,
   Progress,
+  Tooltip,
 } from "@mantine/core";
 
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
@@ -79,16 +80,19 @@ const DashboardLayout = () => {
             {/* LEFT SIDE */}
             <Flex align={"center"} gap="lg">
               <Burger opened={opened} onClick={toggle} aria-label={"Toggle Sidenav"} size="sm" />
-              <div className="cursor-pointer" onClick={() => navigate("/")}>
+              {/* <div className="cursor-pointer" onClick={() => navigate("/")}>
                 HEXADESK
-              </div>
+              </div> */}
 
               <Breadcrumbs ml="xl" separator="→">
-                <Anchor href="/"></Anchor>
                 {activeWorkspace && (
                   <Menu shadow="md" width={200}>
                     <Menu.Target>
-                      <Anchor>{activeWorkspace.name}</Anchor>
+                      <Tooltip label="Workspace">
+                        <Anchor size="xl" variant="text">
+                          {activeWorkspace.name}
+                        </Anchor>
+                      </Tooltip>
                     </Menu.Target>
 
                     <Menu.Dropdown>
@@ -114,7 +118,9 @@ const DashboardLayout = () => {
                 {activeBoard && (
                   <Menu shadow="md" width={200}>
                     <Menu.Target>
-                      <Anchor>{activeBoard.title}</Anchor>
+                      <Tooltip label="board">
+                        <Anchor variant="text">{activeBoard.title}</Anchor>
+                      </Tooltip>
                     </Menu.Target>
 
                     <Menu.Dropdown>

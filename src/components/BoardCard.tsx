@@ -3,15 +3,18 @@ import { IconDots, IconEdit, IconTrash } from "@tabler/icons";
 import { IBoard } from "hexa-sdk/dist/app.api";
 import { useAppSelector } from "../redux/store";
 import { t } from "i18next";
+import { IEntityBoard } from "../interfaces/IEntityBoard";
+import { IWorkspaceResponse } from "../interfaces/workspaces/IWorkspaceResponse";
 
 type BoardCardProps = {
-  board: IBoard;
+  board: IBoard | IEntityBoard;
   onEditClick: () => void;
   onDeleteClick: () => void;
   onClick: () => void;
+  workspace?: IWorkspaceResponse;
 };
 
-const BoardCard = ({ board, onEditClick, onDeleteClick, onClick }: BoardCardProps) => {
+const BoardCard = ({ board, onEditClick, onDeleteClick, onClick, workspace }: BoardCardProps) => {
   const { loaders } = useAppSelector((state) => state.boards);
 
   return (
@@ -56,7 +59,7 @@ const BoardCard = ({ board, onEditClick, onDeleteClick, onClick }: BoardCardProp
         </Group>
       </Card.Section>
 
-      <Text>{board.description}</Text>
+      <Text>{workspace?.name || board.description}</Text>
     </Card>
   );
 };

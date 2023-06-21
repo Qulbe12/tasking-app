@@ -1,4 +1,6 @@
 import { DocumentPriority, DocumentStatus, IAttachment } from "hexa-sdk";
+import { IEntityUser } from "../IEntityUser";
+import { IEntityBoard } from "../IEntityBoard";
 
 export interface ISheetResponse {
   id: string;
@@ -8,37 +10,11 @@ export interface ISheetResponse {
   dueDate: string;
   status: DocumentStatus;
   priority: DocumentPriority;
-  assignedUsers: {
-    avatar: string;
-    name: string;
-    email: string;
-    role: string;
-  }[];
+  assignedUsers: IEntityUser[];
   attachments: IAttachment[];
   ccUsers: string[];
-  createdBy: {
-    avatar: string;
-    name: string;
-    email: string;
-    role: string;
-  };
-  board: {
-    id: string;
-    title: string;
-    description: string;
-    members: {
-      avatar: string;
-      name: string;
-      email: string;
-      role: string;
-    }[];
-    owner: {
-      avatar: string;
-      name: string;
-      email: string;
-      role: string;
-    };
-  };
+  createdBy: IEntityUser;
+  board: IEntityBoard;
   notifyAssignedUsers: boolean;
   notifyCcUsers: boolean;
 }

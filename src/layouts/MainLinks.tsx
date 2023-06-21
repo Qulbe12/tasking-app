@@ -1,5 +1,5 @@
 import React from "react";
-import { IconLayout, IconMail, IconNews } from "@tabler/icons";
+import { IconArtboard, IconLayout, IconMail, IconNews } from "@tabler/icons";
 import { ThemeIcon, UnstyledButton, Group, Tooltip } from "@mantine/core";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -46,6 +46,7 @@ export function MainLinks() {
   const { t } = useTranslation();
 
   const mainLinks: MainLinkProps[] = [
+    { icon: <IconArtboard size={16} />, color: "blue", label: t("workspaces"), to: "/" },
     { icon: <IconLayout size={16} />, color: "blue", label: t("boards"), to: "/workspaces/boards" },
     { icon: <IconMail size={16} />, color: "violet", label: "Email", to: "/board/emails" },
     { icon: <IconNews size={16} />, color: "pink", label: t("templates"), to: "/templates" },
@@ -53,5 +54,9 @@ export function MainLinks() {
 
   const links = mainLinks.map((link) => <MainLink {...link} key={link.label} />);
 
-  return <div>{links}</div>;
+  return (
+    <div className="flex flex-col items-center justify-between h-full">
+      <div>{links}</div>
+    </div>
+  );
 }
