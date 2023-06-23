@@ -2,9 +2,11 @@ import {
   ActionIcon,
   Button,
   Card,
+  Divider,
   Drawer,
   Flex,
   Grid,
+  Loader,
   Modal,
   MultiSelect,
   Paper,
@@ -30,6 +32,7 @@ import DocumentsListModal from "../../modals/DocumentsListModal";
 import {
   addDocumentUsers,
   addLinkedDocsAction,
+  getDocuments,
   removeLinkedDocsAction,
 } from "../../redux/api/documentApi";
 import ConfirmationModal from "../../modals/ConfirmationModal";
@@ -41,13 +44,19 @@ import { connectNylas } from "../../redux/api/nylasApi";
 import EmailModal from "../../modals/EmailModal";
 import EmailCard from "../../components/EmailCard";
 import { IEmailThreadResponse } from "../../interfaces/IEmailResponse";
+import useChangeLog from "../../hooks/useChangeLog";
 
 const DocumentsBoardView = () => {
   const { t } = useTranslation();
 
   const dispatch = useAppDispatch();
+  const { getChangeLog, gettingChangeLog, changeLog } = useChangeLog();
 
-  const { data: documents, loaders: documentLoaders } = useAppSelector((state) => state.documents);
+  const {
+    data: documents,
+    loaders: documentLoaders,
+    loading: documentsLoading,
+  } = useAppSelector((state) => state.documents);
   const { data: templates } = useAppSelector((state) => state.templates);
   const { user } = useAppSelector((state) => state.auth);
   const { search } = useAppSelector((state) => state.filters);
@@ -58,19 +67,24 @@ const DocumentsBoardView = () => {
   const [userType, setUserType] = useState<"ccUsers" | "assignedUsers">("assignedUsers");
 
   useEffect(() => {
-    if (activeBoard) {
-      if (userType === "assignedUsers") {
-        setAUsers(
-          activeBoard.members.map((m) => {
-            return {
-              label: m.email,
-              value: m.email,
-            };
-          }),
-        );
-      } else {
-        setAUsers([]);
-      }
+    if (!activeBoard) return;
+    dispatch(getDocuments({ boardId: activeBoard.id, query: {} }));
+  }, []);
+
+  useEffect(() => {
+    if (!activeBoard) return;
+
+    if (userType === "assignedUsers") {
+      setAUsers(
+        activeBoard.members.map((m) => {
+          return {
+            label: m.email,
+            value: m.email,
+          };
+        }),
+      );
+    } else {
+      setAUsers([]);
     }
   }, [activeBoard, userType]);
 
@@ -157,6 +171,11 @@ const DocumentsBoardView = () => {
     return () => window.removeEventListener("keydown", handleEscapePress, false);
   }, []);
 
+  useEffect(() => {
+    if (!selectedDocument) return;
+    getChangeLog(selectedDocument.id);
+  }, [selectedDocument]);
+
   const [showAssignConfirmationModal, { toggle: toggleAssignConfirmationModal }] =
     useDisclosure(false);
 
@@ -168,7 +187,8 @@ const DocumentsBoardView = () => {
       </div>
 
       {!selectedDocument && (
-        <div className="flex justify-end items-center mb-4">
+        <div className="flex justify-between items-center mb-4">
+          {documentsLoading ? <Loader size="xs" /> : <div />}
           <Button onClick={handleAddButtonClick} size="xs">
             <IconPlus size={16} />
             {t("newDocument")}
@@ -200,7 +220,9 @@ const DocumentsBoardView = () => {
                       <DocumentCard
                         selected={selectedDocument ? selectedDocument.id : undefined}
                         document={document}
-                        onClick={() => setSelectedDocument(document)}
+                        onClick={() => {
+                          setSelectedDocument(document);
+                        }}
                       />
                     </div>
                   );
@@ -208,228 +230,241 @@ const DocumentsBoardView = () => {
               </ScrollArea>
             </Card>
           </Grid.Col>
-          {selectedDocument && (
-            <Grid.Col className="h-full" span={5}>
-              <Card shadow="lg" className="h-full">
-                <ScrollArea className="h-full">
-                  <Flex justify="space-between" mb="xl">
-                    <Text size="lg">{selectedDocument?.title}</Text>
-                    <Button size="xs" onClick={() => toggleShowEditModal()}>
-                      {t("edit")}
-                    </Button>
+
+          {/* Document Details */}
+          <Grid.Col className="h-full" span={5}>
+            <Card shadow="lg" className="h-full w-full">
+              <Flex justify="space-between" mb="xl">
+                <Text size="lg">{selectedDocument?.title}</Text>
+                <Button size="xs" onClick={() => toggleShowEditModal()}>
+                  {t("edit")}
+                </Button>
+              </Flex>
+              <ScrollArea className="h-full w-full">
+                <Stack>
+                  <Flex direction="column">
+                    <Text weight="bolder" size="sm">
+                      Created By:
+                    </Text>
+                    <Text size="sm">
+                      {selectedDocument.createdBy.name}
+                      {user?.user.id === selectedDocument.createdBy.id && " (me)"}
+                    </Text>
                   </Flex>
-                  <Stack>
-                    <Flex direction="column">
-                      <Text weight="bolder" size="sm">
-                        Created By:
-                      </Text>
-                      <Text size="sm">
-                        {selectedDocument.createdBy.name}
-                        {user?.user.id === selectedDocument.createdBy.id && " (me)"}
-                      </Text>
-                    </Flex>
-                    <Flex direction="column">
-                      <Text weight="bolder" size="sm">
-                        Title:
-                      </Text>
-                      <Text size="sm">{selectedDocument.title}</Text>
-                    </Flex>
-                    <Flex direction="column">
-                      <Text weight="bolder" size="sm">
-                        Description:
-                      </Text>
-                      <Text size="sm">{selectedDocument.description}</Text>
-                    </Flex>
-                    <Flex direction="column">
-                      <Text weight="bolder" size="sm">
-                        Start Date:
-                      </Text>
-                      <Text size="sm">
-                        {dayjs(selectedDocument.startDate).format("MMMM DD, YYYY")}
-                      </Text>
-                    </Flex>
-                    <Flex direction="column">
-                      <Text weight="bolder" size="sm">
-                        Due Date:
-                      </Text>
-                      <Text size="sm">
-                        {dayjs(selectedDocument.dueDate).format("MMMM DD, YYYY")}
-                      </Text>
-                    </Flex>
-                    <Flex direction="column">
-                      <Text weight="bolder" size="sm">
-                        Priority:
-                      </Text>
-                      <Text size="sm">{selectedDocument.priority}</Text>
-                    </Flex>
-                    <Flex direction="column">
-                      <Text weight="bolder" size="sm">
-                        Status:
-                      </Text>
-                      <Text size="sm">{selectedDocument.status}</Text>
-                    </Flex>
-
-                    <Flex direction="column">
-                      <Flex direction="row" align="center" justify="space-between">
-                        <Text weight="bolder" size="sm">
-                          Assigned Users:
-                        </Text>
-                        <ActionIcon
-                          variant="filled"
-                          onClick={() => {
-                            setShowMember((o) => !o);
-                            setUserType("assignedUsers");
-                          }}
-                        >
-                          <IconPlus />
-                        </ActionIcon>
-                      </Flex>
-                      <AvatarGroup users={selectedDocument.assignedUsers} />
-                    </Flex>
-
-                    <Flex direction="column">
-                      <Flex direction="row" align="center" justify="space-between">
-                        <Text weight="bolder" size="sm">
-                          CC Users:
-                        </Text>
-                        <ActionIcon
-                          variant="filled"
-                          onClick={() => {
-                            setShowMember((o) => !o);
-                            setUserType("ccUsers");
-                          }}
-                        >
-                          <IconPlus />
-                        </ActionIcon>
-                      </Flex>
-                      <AvatarGroup ccUsers={selectedDocument.ccUsers} />
-                    </Flex>
-
-                    {Object.entries(selectedDocument).map(([k, v], i) => {
-                      const inputIndex = selectedDocument.template.fields.findIndex(
-                        (f) => f.key === k,
-                      );
-
-                      if (k === "template") return;
-                      if (inputIndex < 0) return;
-
-                      return (
-                        <div key={i + "document"}>
-                          {inputIndex >= 0 ? (
-                            <Flex direction="column">
-                              <Text weight="bolder" size="sm">
-                                {_.startCase(k)}:
-                              </Text>
-                              <Text size="sm">{v || "no value"}</Text>
-                            </Flex>
-                          ) : (
-                            <Text>{k}:</Text>
-                          )}
-                        </div>
-                      );
-                    })}
-
-                    <Text>{t("attachments")}:</Text>
-                    {selectedDocument.attachments.map((a) => {
-                      return (
-                        <Flex
-                          onClick={() => {
-                            setSelectedAttachment(a);
-                          }}
-                          gap="md"
-                          style={{ cursor: "pointer" }}
-                          align="center"
-                          key={a.id}
-                        >
-                          <IconFileText size={32} />
-                          <p>{a.name}</p>
-                        </Flex>
-                      );
-                    })}
-                  </Stack>
-                </ScrollArea>
-              </Card>
-            </Grid.Col>
-          )}
-          {selectedDocument && (
-            <Grid.Col span={2}>
-              <Card shadow="md" className="h-full">
-                <Flex justify="space-between" mb="xl">
-                  <Title order={4} mb="md">
-                    {t("relatedEmails")}
-                  </Title>
-                  <Button
-                    leftIcon={<IconLink size={14} />}
-                    variant="subtle"
-                    size="xs"
-                    onClick={toggleShowEmailModal}
-                  >
-                    Compose Email
-                  </Button>
-                </Flex>
-
-                {!nylasToken && (
-                  <Flex direction="column" gap="md">
-                    <Text>Email is not connected, please establish a connection</Text>
-                    <Button
-                      onClick={() => {
-                        dispatch(connectNylas());
-                      }}
-                    >
-                      Connect
-                    </Button>
+                  <Flex direction="column">
+                    <Text weight="bolder" size="sm">
+                      Title:
+                    </Text>
+                    <Text size="sm">{selectedDocument.title}</Text>
                   </Flex>
-                )}
-                {nylasToken && !filteredEmails.length && (
-                  <Text c="dimmed"> {t("relatedEmailsEmpty")}...</Text>
-                )}
-                {nylasToken &&
-                  filteredEmails.map((e) => {
-                    return <EmailCard key={e.id} email={e} />;
-                  })}
-              </Card>
-            </Grid.Col>
-          )}
+                  <Flex direction="column">
+                    <Text weight="bolder" size="sm">
+                      Description:
+                    </Text>
+                    <Text size="sm">{selectedDocument.description}</Text>
+                  </Flex>
+                  <Flex direction="column">
+                    <Text weight="bolder" size="sm">
+                      Start Date:
+                    </Text>
+                    <Text size="sm">
+                      {dayjs(selectedDocument.startDate).format("MMMM DD, YYYY")}
+                    </Text>
+                  </Flex>
+                  <Flex direction="column">
+                    <Text weight="bolder" size="sm">
+                      Due Date:
+                    </Text>
+                    <Text size="sm">{dayjs(selectedDocument.dueDate).format("MMMM DD, YYYY")}</Text>
+                  </Flex>
+                  <Flex direction="column">
+                    <Text weight="bolder" size="sm">
+                      Priority:
+                    </Text>
+                    <Text size="sm">{selectedDocument.priority}</Text>
+                  </Flex>
+                  <Flex direction="column">
+                    <Text weight="bolder" size="sm">
+                      Status:
+                    </Text>
+                    <Text size="sm">{selectedDocument.status}</Text>
+                  </Flex>
 
-          {selectedDocument && (
-            <Grid.Col span={2}>
-              <Card shadow="md" className="h-full">
-                <Flex justify="space-between">
-                  <Title order={4} mb="md">
-                    {t("linkedDocuments")}
-                  </Title>
-                  <ActionIcon
-                    variant="filled"
-                    radius="xl"
-                    size="sm"
-                    onClick={toggleShowDocumentsModal}
-                  >
-                    <IconPlus size={24} />
-                  </ActionIcon>
-                </Flex>
-                <ScrollArea>
-                  {selectedDocument?.linkedDocs.map((d) => {
-                    const foundDocument = documents.find((doc) => doc.id === d);
+                  <Flex direction="column">
+                    <Flex direction="row" align="center" justify="space-between">
+                      <Text weight="bolder" size="sm">
+                        Assigned Users:
+                      </Text>
+                      <ActionIcon
+                        variant="filled"
+                        onClick={() => {
+                          setShowMember((o) => !o);
+                          setUserType("assignedUsers");
+                        }}
+                      >
+                        <IconPlus />
+                      </ActionIcon>
+                    </Flex>
+                    <AvatarGroup users={selectedDocument.assignedUsers} />
+                  </Flex>
+
+                  <Flex direction="column">
+                    <Flex direction="row" align="center" justify="space-between">
+                      <Text weight="bolder" size="sm">
+                        CC Users:
+                      </Text>
+                      <ActionIcon
+                        variant="filled"
+                        onClick={() => {
+                          setShowMember((o) => !o);
+                          setUserType("ccUsers");
+                        }}
+                      >
+                        <IconPlus />
+                      </ActionIcon>
+                    </Flex>
+                    <AvatarGroup ccUsers={selectedDocument.ccUsers} />
+                  </Flex>
+
+                  {Object.entries(selectedDocument).map(([k, v], i) => {
+                    const inputIndex = selectedDocument.template.fields.findIndex(
+                      (f) => f.key === k,
+                    );
+
+                    if (k === "template") return;
+                    if (inputIndex < 0) return;
+
                     return (
-                      <div key={d} className="mb-4">
-                        <DocumentCard
-                          linkedView
-                          document={foundDocument}
-                          onClick={() => {
-                            if (foundDocument) setSelectedDocument(foundDocument);
-                          }}
-                          onUnlinkIconClick={() => {
-                            setSelectedLinkedDocument(d);
-                            toggleShowConfirmationModal();
-                          }}
-                        />
+                      <div key={i + "document"}>
+                        {inputIndex >= 0 ? (
+                          <Flex direction="column">
+                            <Text weight="bolder" size="sm">
+                              {_.startCase(k)}:
+                            </Text>
+                            <Text size="sm">{v || "no value"}</Text>
+                          </Flex>
+                        ) : (
+                          <Text>{k}:</Text>
+                        )}
                       </div>
                     );
                   })}
-                </ScrollArea>
-              </Card>
-            </Grid.Col>
-          )}
+
+                  <Text>{t("attachments")}:</Text>
+                  {selectedDocument.attachments.map((a) => {
+                    return (
+                      <Flex
+                        onClick={() => {
+                          setSelectedAttachment(a);
+                        }}
+                        gap="md"
+                        style={{ cursor: "pointer" }}
+                        align="center"
+                        key={a.id}
+                      >
+                        <IconFileText size={32} />
+                        <p>{a.name}</p>
+                      </Flex>
+                    );
+                  })}
+                </Stack>
+
+                <Divider label="Document History" my="md" />
+
+                {gettingChangeLog && <Loader size="sm" />}
+                {changeLog.map((cl) => {
+                  return (
+                    <div key={cl.rid}>
+                      {cl.change.reverse().map((ch, i) => {
+                        return (
+                          <Text size="sm" key={i}>{`${cl.by.name} changed ${_(
+                            ch.key,
+                          ).startCase()} from ${ch.oldVal} to ${ch.val}`}</Text>
+                        );
+                      })}
+                    </div>
+                  );
+                })}
+              </ScrollArea>
+            </Card>
+          </Grid.Col>
+
+          {/* Related Emails */}
+          <Grid.Col span={2}>
+            <Card shadow="md" className="h-full">
+              <Flex justify="space-between" mb="xl">
+                <Title order={4} mb="md">
+                  {t("relatedEmails")}
+                </Title>
+                <Button
+                  leftIcon={<IconLink size={14} />}
+                  variant="subtle"
+                  size="xs"
+                  onClick={toggleShowEmailModal}
+                >
+                  Compose Email
+                </Button>
+              </Flex>
+
+              {!nylasToken && (
+                <Flex direction="column" gap="md">
+                  <Text>Email is not connected, please establish a connection</Text>
+                  <Button
+                    onClick={() => {
+                      dispatch(connectNylas());
+                    }}
+                  >
+                    Connect
+                  </Button>
+                </Flex>
+              )}
+              {nylasToken && !filteredEmails.length && (
+                <Text c="dimmed"> {t("relatedEmailsEmpty")}...</Text>
+              )}
+              {nylasToken &&
+                filteredEmails.map((e) => {
+                  return <EmailCard key={e.id} email={e} />;
+                })}
+            </Card>
+          </Grid.Col>
+
+          <Grid.Col span={2}>
+            <Card shadow="md" className="h-full">
+              <Flex justify="space-between">
+                <Title order={4} mb="md">
+                  {t("linkedDocuments")}
+                </Title>
+                <ActionIcon
+                  variant="filled"
+                  radius="xl"
+                  size="sm"
+                  onClick={toggleShowDocumentsModal}
+                >
+                  <IconPlus size={24} />
+                </ActionIcon>
+              </Flex>
+              <ScrollArea>
+                {selectedDocument?.linkedDocs.map((d) => {
+                  const foundDocument = documents.find((doc) => doc.id === d);
+                  return (
+                    <div key={d} className="mb-4">
+                      <DocumentCard
+                        linkedView
+                        document={foundDocument}
+                        onClick={() => {
+                          if (foundDocument) setSelectedDocument(foundDocument);
+                        }}
+                        onUnlinkIconClick={() => {
+                          setSelectedLinkedDocument(d);
+                          toggleShowConfirmationModal();
+                        }}
+                      />
+                    </div>
+                  );
+                })}
+              </ScrollArea>
+            </Card>
+          </Grid.Col>
         </Grid>
       ) : (
         <SimpleGrid cols={4}>
@@ -444,6 +479,7 @@ const DocumentsBoardView = () => {
           })}
         </SimpleGrid>
       )}
+
       <Drawer
         title={selectedAttachment?.name}
         padding="md"

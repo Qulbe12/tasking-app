@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { useAppDispatch } from "../redux/store";
 import { useNavigate } from "react-router-dom";
-import { IWorkspace } from "hexa-sdk";
 import { setActiveBoard } from "../redux/slices/boardsSlice";
 import { setActiveWorkspace } from "../redux/slices/workspacesSlice";
 import { getAllTemplates } from "../redux/api/templateApi";
 import { getBoards } from "../redux/api/boardsApi";
+import { IWorkspaceResponse } from "../interfaces/workspaces/IWorkspaceResponse";
 
 const useChangeWorkspace = () => {
   const dispatch = useAppDispatch();
@@ -14,7 +14,7 @@ const useChangeWorkspace = () => {
   const [loadingText, setLoadingText] = useState<string | null>(null);
   const [loadingValue, setLoadingValue] = useState(0);
 
-  const handleWorkspaceChange = async (workspace: IWorkspace) => {
+  const handleWorkspaceChange = async (workspace: IWorkspaceResponse) => {
     setLoadingValue(0);
 
     setLoadingText("Getting Workspace Details...");
