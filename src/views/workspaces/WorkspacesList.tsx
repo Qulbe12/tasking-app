@@ -112,9 +112,7 @@ const WorkspacesList = () => {
                 workspace={workspace}
                 key={board.id + workspace.id}
                 board={board}
-                onClick={() => {
-                  //
-                }}
+                onClick={() => handleBoardChange(board, workspace.id)}
                 onDeleteClick={() => {
                   //
                 }}

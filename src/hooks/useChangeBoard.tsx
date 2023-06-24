@@ -7,18 +7,23 @@ import { useNavigate } from "react-router-dom";
 import { IBoard } from "hexa-sdk";
 import { IEntityBoard } from "../interfaces/IEntityBoard";
 import { getAllTemplates } from "../redux/api/templateApi";
+import { setActiveWorkspace } from "../redux/slices/workspacesSlice";
 
 const useChangeBoard = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
-  const { activeWorkspace } = useAppSelector((state) => state.workspaces);
+  const { activeWorkspace, data: workspaces } = useAppSelector((state) => state.workspaces);
 
   const [loadingText, setLoadingText] = useState<string | null>(null);
   const [loadingValue, setLoadingValue] = useState(0);
 
   const handleBoardChange = async (board: IEntityBoard | IBoard, workspaceId?: string) => {
-    if (!activeWorkspace) return;
+    if (!activeWorkspace) {
+      const foundWorkspace = workspaces.find((ws) => ws.id === workspaceId);
+      if (!foundWorkspace) return;
+      dispatch(setActiveWorkspace(foundWorkspace));
+    }
 
     setLoadingValue(0);
 
