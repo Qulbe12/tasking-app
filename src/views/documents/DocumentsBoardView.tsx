@@ -6,6 +6,7 @@ import {
   Drawer,
   Flex,
   Grid,
+  Group,
   Loader,
   Modal,
   MultiSelect,
@@ -13,8 +14,10 @@ import {
   ScrollArea,
   SimpleGrid,
   Stack,
+  Tabs,
   Text,
   Title,
+  Tooltip,
 } from "@mantine/core";
 import { IAttachment, IDocument } from "hexa-sdk";
 
@@ -23,7 +26,7 @@ import DocumentCard from "../../components/DocumentCard";
 import { useAppDispatch, useAppSelector } from "../../redux/store";
 import _ from "lodash";
 import dayjs from "dayjs";
-import { IconFileText, IconLink, IconPlus } from "@tabler/icons";
+import { IconFileText, IconLink, IconPlus, IconTrash } from "@tabler/icons";
 import Filter from "../../components/Filter";
 import PdfViewerComponent from "../../components/PdfViewerComponent";
 
@@ -33,6 +36,7 @@ import {
   addDocumentUsers,
   addLinkedDocsAction,
   getDocuments,
+  removeDocumentFiles,
   removeLinkedDocsAction,
 } from "../../redux/api/documentApi";
 import ConfirmationModal from "../../modals/ConfirmationModal";
@@ -45,6 +49,11 @@ import EmailModal from "../../modals/EmailModal";
 import EmailCard from "../../components/EmailCard";
 import { IEmailThreadResponse } from "../../interfaces/IEmailResponse";
 import useChangeLog from "../../hooks/useChangeLog";
+import CommentInput from "../../components/CommentInput";
+import CommentsList from "../../components/CommentsList";
+import { getDocumentComments } from "../../redux/api/commentsApi";
+import AddDocumentFilesModal from "../../modals/AddDocumentFilesModal";
+import { openConfirmModal } from "@mantine/modals";
 
 const DocumentsBoardView = () => {
   const { t } = useTranslation();
@@ -130,6 +139,8 @@ const DocumentsBoardView = () => {
 
   const [showEmailModal, { toggle: toggleShowEmailModal }] = useDisclosure(false);
 
+  const [showAttachmentsModal, { toggle: toggleAttachmentsModal }] = useDisclosure(false);
+
   useEffect(() => {
     if (selectedDocument) {
       const foundDocument = documents.find((d) => d.id === selectedDocument.id);
@@ -144,6 +155,7 @@ const DocumentsBoardView = () => {
   useEffect(() => {
     if (!selectedDocument) return;
     setNewForm({ ...newForm, ...selectedDocument });
+    dispatch(getDocumentComments({ documentId: selectedDocument.id }));
   }, [selectedDocument]);
 
   const [opened, { toggle }] = useDisclosure(false);
@@ -213,7 +225,7 @@ const DocumentsBoardView = () => {
                   {t("newDocument")}
                 </Button>
               </Flex>
-              <ScrollArea className="h-full">
+              <ScrollArea style={{ height: "90%" }}>
                 {filteredData.map((document, i) => {
                   return (
                     <div key={i} className="mb-4">
@@ -240,7 +252,7 @@ const DocumentsBoardView = () => {
                   {t("edit")}
                 </Button>
               </Flex>
-              <ScrollArea className="h-full w-full">
+              <ScrollArea offsetScrollbars style={{ height: "90%" }}>
                 <Stack>
                   <Flex direction="column">
                     <Text weight="bolder" size="sm">
@@ -296,6 +308,7 @@ const DocumentsBoardView = () => {
                         Assigned Users:
                       </Text>
                       <ActionIcon
+                        size="sm"
                         variant="filled"
                         onClick={() => {
                           setShowMember((o) => !o);
@@ -314,6 +327,7 @@ const DocumentsBoardView = () => {
                         CC Users:
                       </Text>
                       <ActionIcon
+                        size="sm"
                         variant="filled"
                         onClick={() => {
                           setShowMember((o) => !o);
@@ -350,7 +364,12 @@ const DocumentsBoardView = () => {
                     );
                   })}
 
-                  <Text>{t("attachments")}:</Text>
+                  <Group position="apart" align="center">
+                    <Text>{t("attachments")}:</Text>
+                    <ActionIcon variant="filled" size="sm" onClick={toggleAttachmentsModal}>
+                      <IconPlus />
+                    </ActionIcon>
+                  </Group>
                   {selectedDocument.attachments.map((a) => {
                     return (
                       <Flex
@@ -360,10 +379,46 @@ const DocumentsBoardView = () => {
                         gap="md"
                         style={{ cursor: "pointer" }}
                         align="center"
+                        justify="space-between"
                         key={a.id}
                       >
-                        <IconFileText size={32} />
-                        <p>{a.name}</p>
+                        <Group align="center">
+                          <IconFileText size={24} />
+                          <p>{a.name}</p>
+                        </Group>
+                        <ActionIcon
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (!selectedDocument) return;
+                            openConfirmModal({
+                              title: "Please confirm your action",
+                              confirmProps: {
+                                loading: !!documentLoaders.updating,
+                              },
+                              children: (
+                                <Text size="sm">
+                                  Are you sure you want to delete {a.name} file from{" "}
+                                  {selectedDocument.title}
+                                </Text>
+                              ),
+                              labels: { confirm: "Confirm", cancel: "Cancel" },
+                              onCancel: () => console.log("Cancel"),
+                              onConfirm: async () => {
+                                await dispatch(
+                                  removeDocumentFiles({
+                                    documentId: selectedDocument.id,
+                                    attachments: [a.id],
+                                  }),
+                                );
+                              },
+                            });
+                          }}
+                          variant="subtle"
+                          size="sm"
+                          color="red"
+                        >
+                          <IconTrash />
+                        </ActionIcon>
                       </Flex>
                     );
                   })}
@@ -372,14 +427,36 @@ const DocumentsBoardView = () => {
                 <Divider label="Document History" my="md" />
 
                 {gettingChangeLog && <Loader size="sm" />}
+                <button
+                  onClick={() => {
+                    console.log(changeLog);
+                  }}
+                >
+                  asd
+                </button>
                 {changeLog.map((cl) => {
                   return (
                     <div key={cl.rid}>
                       {cl.change.reverse().map((ch, i) => {
+                        if (typeof ch.oldVal !== "string" || typeof ch.val !== "string") {
+                          return (
+                            <Text lineClamp={1} size="sm" key={i}>{`${cl.by.name} ${ch.type} ${_(
+                              ch.key,
+                            ).startCase()}`}</Text>
+                          );
+                        }
                         return (
-                          <Text size="sm" key={i}>{`${cl.by.name} changed ${_(
-                            ch.key,
-                          ).startCase()} from ${ch.oldVal} to ${ch.val}`}</Text>
+                          <Tooltip
+                            zIndex={99}
+                            key={i}
+                            label={`${cl.by.name} ${ch.type} ${_(ch.key).startCase()} from ${
+                              ch.oldVal
+                            } to ${ch.val}`}
+                          >
+                            <Text lineClamp={1} size="sm">{`${cl.by.name} ${ch.type} ${_(
+                              ch.key,
+                            ).startCase()} from ${ch.oldVal} to ${ch.val}`}</Text>
+                          </Tooltip>
                         );
                       })}
                     </div>
@@ -390,41 +467,66 @@ const DocumentsBoardView = () => {
           </Grid.Col>
 
           {/* Related Emails */}
-          <Grid.Col span={2}>
+          <Grid.Col span={2} className="h-full">
             <Card shadow="md" className="h-full">
-              <Flex justify="space-between" mb="xl">
-                <Title order={4} mb="md">
-                  {t("relatedEmails")}
-                </Title>
-                <Button
-                  leftIcon={<IconLink size={14} />}
-                  variant="subtle"
-                  size="xs"
-                  onClick={toggleShowEmailModal}
-                >
-                  Compose Email
-                </Button>
-              </Flex>
+              <Tabs variant="outline" defaultValue="comments" className="h-full">
+                <Tabs.List mb="md">
+                  <Tabs.Tab value="emails">Emails</Tabs.Tab>
+                  <Tabs.Tab value="comments">Comments</Tabs.Tab>
+                </Tabs.List>
 
-              {!nylasToken && (
-                <Flex direction="column" gap="md">
-                  <Text>Email is not connected, please establish a connection</Text>
-                  <Button
-                    onClick={() => {
-                      dispatch(connectNylas());
+                <Tabs.Panel value="emails">
+                  <Flex justify="space-between" mb="xl">
+                    <Title order={4} mb="md">
+                      {t("relatedEmails")}
+                    </Title>
+                    <Button
+                      disabled={!nylasToken ? true : false}
+                      leftIcon={<IconLink size={14} />}
+                      variant="subtle"
+                      size="xs"
+                      onClick={toggleShowEmailModal}
+                    >
+                      Compose Email
+                    </Button>
+                  </Flex>
+
+                  {!nylasToken && (
+                    <Flex direction="column" gap="md" style={{ height: "90%" }}>
+                      <Text>Email is not connected, please establish a connection</Text>
+                      <Button
+                        onClick={() => {
+                          dispatch(connectNylas());
+                        }}
+                      >
+                        Connect
+                      </Button>
+                    </Flex>
+                  )}
+                  {nylasToken && !filteredEmails.length && (
+                    <Text c="dimmed"> {t("relatedEmailsEmpty")}...</Text>
+                  )}
+                  {nylasToken &&
+                    filteredEmails.map((e) => {
+                      return <EmailCard key={e.id} email={e} />;
+                    })}
+                </Tabs.Panel>
+
+                <Tabs.Panel value="comments" className="h-full">
+                  <Flex
+                    direction="column"
+                    style={{
+                      height: "90%",
                     }}
+                    justify="space-between"
                   >
-                    Connect
-                  </Button>
-                </Flex>
-              )}
-              {nylasToken && !filteredEmails.length && (
-                <Text c="dimmed"> {t("relatedEmailsEmpty")}...</Text>
-              )}
-              {nylasToken &&
-                filteredEmails.map((e) => {
-                  return <EmailCard key={e.id} email={e} />;
-                })}
+                    <ScrollArea className="h-full w-full">
+                      <CommentsList />
+                    </ScrollArea>
+                    <CommentInput documentId={selectedDocument.id} />
+                  </Flex>
+                </Tabs.Panel>
+              </Tabs>
             </Card>
           </Grid.Col>
 
@@ -643,6 +745,12 @@ const DocumentsBoardView = () => {
         selectedDocument={selectedDocument}
         opened={showEmailModal}
         onClose={toggleShowEmailModal}
+      />
+
+      <AddDocumentFilesModal
+        document={selectedDocument}
+        onClose={toggleAttachmentsModal}
+        opened={showAttachmentsModal}
       />
     </Paper>
   );

@@ -1,10 +1,12 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { IDocument } from "hexa-sdk/dist/app.api";
 import {
+  addDocumentFiles,
   addDocumentUsers,
   addLinkedDocsAction,
   createDocument,
   getDocuments,
+  removeDocumentFiles,
   removeDocumentUser,
   removeLinkedDocsAction,
   updateDocument,
@@ -72,6 +74,32 @@ export const documentsSlice = createSlice({
         state.loaders.updating = null;
       })
       .addCase(updateDocument.rejected, (state) => {
+        state.loaders.updating = null;
+      })
+      // Add Document Files
+      .addCase(addDocumentFiles.pending, (state, action) => {
+        state.loaders.updating = action.meta.requestId;
+      })
+      .addCase(addDocumentFiles.fulfilled, (state, action) => {
+        const foundIndex = state.data.findIndex((d) => d.id === action.payload?.id);
+        if (!foundIndex || !action.payload) return;
+        state.data[foundIndex] = action.payload;
+        state.loaders.updating = null;
+      })
+      .addCase(addDocumentFiles.rejected, (state) => {
+        state.loaders.updating = null;
+      })
+      // Remove Document Files
+      .addCase(removeDocumentFiles.pending, (state, action) => {
+        state.loaders.updating = action.meta.requestId;
+      })
+      .addCase(removeDocumentFiles.fulfilled, (state, action) => {
+        const foundIndex = state.data.findIndex((d) => d.id === action.payload?.id);
+        if (!foundIndex || !action.payload) return;
+        state.data[foundIndex] = action.payload;
+        state.loaders.updating = null;
+      })
+      .addCase(removeDocumentFiles.rejected, (state) => {
         state.loaders.updating = null;
       })
       // Link Document

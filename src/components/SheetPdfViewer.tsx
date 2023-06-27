@@ -137,20 +137,6 @@ export default function SheetPdfViewer({ file }: SheetPdfViewerProps) {
         }, 300);
       });
 
-      // pspdfInstance.contentDocument.addEventListener("dblclick", (e) => {
-      //   // setWheelScroll((o) => !o);
-
-      //   if (zoom) {
-      //     pspdfInstance?.contentDocument.removeEventListener("wheel", handleScroll);
-      //     zoom = false;
-      //     setWheelScroll(false);
-      //   } else {
-      //     pspdfInstance?.contentDocument.addEventListener("wheel", handleScroll);
-      //     zoom = true;
-      //     setWheelScroll(true);
-      //   }
-      // });
-
       const toolbarItems = pspdfInstance.toolbarItems;
       pspdfInstance.setToolbarItems(toolbarItems.filter((item) => item.type !== "export-pdf"));
       setInstance(pspdfInstance);

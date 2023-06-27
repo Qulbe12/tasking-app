@@ -1,13 +1,13 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { IDocumentQuery, IUpdateDocument } from "hexa-sdk/dist/app.api";
+import { IDocumentQuery, IDocument } from "hexa-sdk/dist/app.api";
 import api from "../../config/api";
 import { centralizedErrorHandler } from "../commonSliceFunctions";
 import { axiosPrivate } from "../../config/axios";
+import { IUpdateDocument } from "../../interfaces/IUpdateDocument";
 
 const { documentApi } = api;
 
-const { addFiles, addUsers, get, getById, removeUser, update, addLinkedDocs, removeLinkedDocs } =
-  documentApi;
+const { addUsers, get, getById, removeUser, addLinkedDocs, removeLinkedDocs } = documentApi;
 
 export const createDocument = createAsyncThunk(
   "documents/createDocument",
@@ -48,7 +48,7 @@ export const updateDocument = createAsyncThunk(
     { rejectWithValue, dispatch },
   ) => {
     try {
-      const res = await update(documentId, document);
+      const res = await axiosPrivate.patch<IDocument>(`/documents/${documentId}`, document);
       return res.data;
     } catch (err) {
       return centralizedErrorHandler(err, rejectWithValue, dispatch);
@@ -59,11 +59,28 @@ export const updateDocument = createAsyncThunk(
 export const addDocumentFiles = createAsyncThunk(
   "documents/addDocumentFiles",
   async (
-    { documentId, attachment }: { documentId: string; attachment: FileList },
+    { documentId, attachment }: { documentId: string; attachment: FormData },
     { rejectWithValue, dispatch },
   ) => {
     try {
-      const res = await addFiles(documentId, attachment);
+      const res = await axiosPrivate.post<IDocument>(`/documents/${documentId}/files`, attachment);
+      return res.data;
+    } catch (err) {
+      centralizedErrorHandler(err, rejectWithValue, dispatch);
+    }
+  },
+);
+
+export const removeDocumentFiles = createAsyncThunk(
+  "documents/removeDocumentFiles",
+  async (
+    { documentId, attachments }: { documentId: string; attachments: string[] },
+    { rejectWithValue, dispatch },
+  ) => {
+    try {
+      const res = await axiosPrivate.delete(`/documents/${documentId}/files`, {
+        data: attachments,
+      });
       return res.data;
     } catch (err) {
       return centralizedErrorHandler(err, rejectWithValue, dispatch);

@@ -1,3 +1,4 @@
+import React, { useEffect, useState } from "react";
 import {
   Modal,
   Stack,
@@ -11,14 +12,14 @@ import {
   Text,
   Title,
   Checkbox,
+  TransferList,
+  TransferListData,
 } from "@mantine/core";
 import { DatePicker } from "@mantine/dates";
-import { IconFileText } from "@tabler/icons";
 import dayjs from "dayjs";
-import { IAttachment, IDocument, IUpdateDocument } from "hexa-sdk";
+import { IAttachment, IDocument } from "hexa-sdk";
 import { DocumentPriority, DocumentStatus } from "hexa-sdk/dist/app.api";
 import _ from "lodash";
-import React, { useEffect, useState } from "react";
 
 import PdfViewerComponent from "../components/PdfViewerComponent";
 import UpdateDynamicField from "../components/UpdateDynamicField";
@@ -27,6 +28,7 @@ import { useDisclosure } from "@mantine/hooks";
 import CommonModalProps from "./CommonModalProps";
 import { useAppDispatch, useAppSelector } from "../redux/store";
 import { useForm } from "@mantine/form";
+import { IUpdateDocument } from "../interfaces/IUpdateDocument";
 
 type DocumentUpdateModalProps = {
   document?: IDocument | null;
@@ -39,6 +41,9 @@ const DocumentUpdateModal = ({ onClose, opened, document }: DocumentUpdateModalP
 
   const { loaders } = useAppSelector((state) => state.documents);
 
+  const [ccUsers, setCCUsers] = useState<TransferListData>([[], []]);
+  const [assUsers, setAssUsers] = useState<TransferListData>([[], []]);
+
   const [selectedDocument, setSelectedDocument] = useState<IDocument | null>();
 
   const [notifySettings, setNotifySettings] = useState({
@@ -46,18 +51,34 @@ const DocumentUpdateModal = ({ onClose, opened, document }: DocumentUpdateModalP
     notifyCcUsers: false,
   });
 
-  const [newForm, setNewForm] = useState<IDocument>();
+  const [newForm, setNewForm] = useState<any>();
   const [pdfOpen, { toggle: togglePdfOpen }] = useDisclosure(false);
 
   useEffect(() => {
     if (!document) return;
     setSelectedDocument(document);
     setNewForm({ ...newForm, ...document });
+    const modCCUsers = document.ccUsers.map((u) => {
+      return {
+        value: u,
+        label: u,
+      };
+    });
+    setCCUsers([modCCUsers, []]);
+
+    const modAssUsers = document.assignedUsers.map((u) => {
+      return {
+        value: u.email,
+        label: `${u.email} (${u.name})`,
+      };
+    });
+
+    setAssUsers([modAssUsers, []]);
   }, [document]);
 
   const form = useForm<IUpdateDocument>();
 
-  const [showConfirmationModa, { toggle }] = useDisclosure(false);
+  const [showConfirmationModal, { toggle }] = useDisclosure(false);
 
   return (
     <Modal opened={opened} title={"Update: " + selectedDocument?.title} onClose={onClose}>
@@ -148,25 +169,6 @@ const DocumentUpdateModal = ({ onClose, opened, document }: DocumentUpdateModalP
                   </div>
                 );
               })}
-
-            <p>Attachments</p>
-            {selectedDocument?.attachments.map((a) => {
-              return (
-                <Flex
-                  onClick={() => {
-                    setSelectedAttachment(a);
-                    togglePdfOpen();
-                  }}
-                  gap="md"
-                  style={{ cursor: "pointer" }}
-                  align="center"
-                  key={a.id}
-                >
-                  <IconFileText size={32} />
-                  <p>{a.name}</p>
-                </Flex>
-              );
-            })}
 
             <Button type="submit" loading={!!loaders.updating}>
               Update
@@ -281,7 +283,8 @@ const DocumentUpdateModal = ({ onClose, opened, document }: DocumentUpdateModalP
       </Drawer>
 
       <Modal
-        opened={showConfirmationModa}
+        size="50%"
+        opened={showConfirmationModal}
         onClose={toggle}
         title={`Update confirmation: ${newForm?.title}`}
       >
@@ -289,20 +292,46 @@ const DocumentUpdateModal = ({ onClose, opened, document }: DocumentUpdateModalP
           <Title mb="md" order={5}>
             Notify:
           </Title>
-          <Checkbox
-            label="Assigned Users"
-            checked={notifySettings.notifyAssignedUsers}
-            onChange={(e) =>
-              setNotifySettings({ ...notifySettings, notifyAssignedUsers: e.currentTarget.checked })
-            }
-          />
-          <Checkbox
-            label="CC Users"
-            checked={notifySettings.notifyCcUsers}
-            onChange={(e) =>
-              setNotifySettings({ ...notifySettings, notifyCcUsers: e.currentTarget.checked })
-            }
-          />
+          <Stack>
+            <Checkbox
+              size="md"
+              label="CC Users"
+              checked={notifySettings.notifyCcUsers}
+              onChange={(e) =>
+                setNotifySettings({ ...notifySettings, notifyCcUsers: e.currentTarget.checked })
+              }
+            />
+
+            <TransferList
+              value={ccUsers}
+              onChange={setCCUsers}
+              searchPlaceholder="Search..."
+              nothingFound="Nothing here"
+              titles={["Current CC Users", "Excluded Users"]}
+              breakpoint="sm"
+            />
+
+            <Checkbox
+              size="md"
+              label="Notify All Assigned Users"
+              checked={notifySettings.notifyAssignedUsers}
+              onChange={(e) => {
+                setNotifySettings({
+                  ...notifySettings,
+                  notifyAssignedUsers: e.currentTarget.checked,
+                });
+              }}
+            />
+
+            <TransferList
+              value={assUsers}
+              onChange={setAssUsers}
+              searchPlaceholder="Search..."
+              nothingFound="Nothing here"
+              titles={["Current Assigned Users", "Excluded Users"]}
+              breakpoint="sm"
+            />
+          </Stack>
         </div>
         <Flex justify="flex-end">
           <Button
@@ -312,7 +341,19 @@ const DocumentUpdateModal = ({ onClose, opened, document }: DocumentUpdateModalP
               await dispatch(
                 updateDocument({
                   documentId: selectedDocument?.id,
-                  document: { ...newForm, ...notifySettings },
+                  document: {
+                    ...newForm,
+                    notifyUsers: {
+                      ccUsers: {
+                        notify: notifySettings.notifyCcUsers,
+                        exclude: ccUsers[1].map((u) => u.value),
+                      },
+                      assignedUsers: {
+                        notify: notifySettings.notifyAssignedUsers,
+                        exclude: assUsers[1].map((u) => u.value),
+                      },
+                    },
+                  },
                 }),
               );
               toggle();

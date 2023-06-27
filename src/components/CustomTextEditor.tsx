@@ -31,7 +31,7 @@ export default function CustomTextEditor({ onUpdate, content }: CustomTextEditor
   return (
     <div>
       <RichTextEditor editor={editor} w="100%">
-        <RichTextEditor.Content mih={300} placeholder="asd" />
+        <RichTextEditor.Content mih={300} placeholder="Compose Email" />
 
         <RichTextEditor.Toolbar sticky stickyOffset={60}>
           <RichTextEditor.ControlsGroup>
@@ -69,15 +69,6 @@ export default function CustomTextEditor({ onUpdate, content }: CustomTextEditor
           </RichTextEditor.ControlsGroup>
         </RichTextEditor.Toolbar>
       </RichTextEditor>
-
-      <button
-        type="button"
-        onClick={() => {
-          console.log(editor?.getHTML());
-        }}
-      >
-        asd
-      </button>
     </div>
   );
 }
