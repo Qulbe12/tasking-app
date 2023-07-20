@@ -87,6 +87,13 @@ const SheetsPage = () => {
 
   return (
     <Paper>
+      <button
+        onClick={() => {
+          console.log(detailedResponse);
+        }}
+      >
+        asd
+      </button>
       <LoadingOverlay visible={loading} />
       <Flex mb="md" justify="space-between">
         {selectedSheet ? (

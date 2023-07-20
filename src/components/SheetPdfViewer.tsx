@@ -84,62 +84,65 @@ export default function SheetPdfViewer({ file }: SheetPdfViewerProps) {
 
       setLoadingAnnotations(false);
 
-      const pspdfInstance = await PSPDFKit.load({
-        container,
-        theme: mode === "dark" ? "DARK" : "LIGHT",
-        document: file.url,
-        baseUrl: `${window.location.protocol}//${window.location.host}/`,
-      });
+      try {
+        const pspdfInstance = await PSPDFKit.load({
+          container,
+          theme: mode === "dark" ? "DARK" : "LIGHT",
+          document: file.url,
+          baseUrl: `${window.location.protocol}//${window.location.host}/`,
+        });
+        const viewState = pspdfInstance.viewState;
 
-      const viewState = pspdfInstance.viewState;
+        pspdfInstance.setViewState(
+          viewState.merge({
+            interactionMode: "PAN",
+          }),
+        );
 
-      pspdfInstance.setViewState(
-        viewState.merge({
-          interactionMode: "PAN",
-        }),
-      );
+        pspdfInstance.addEventListener("annotations.didSave", () => {
+          setAnnotsChanged(true);
+        });
 
-      pspdfInstance.addEventListener("annotations.didSave", () => {
-        setAnnotsChanged(true);
-      });
-
-      const handleScroll = (e: WheelEvent) => {
-        if (e.deltaY < 0) {
-          pspdfInstance?.setViewState((viewState) => viewState.zoomIn());
-        } else if (e.deltaY > 0) {
-          pspdfInstance?.setViewState((viewState) => viewState.zoomOut());
-        }
-      };
-
-      // pspdfInstance?.contentDocument.addEventListener("wheel", handleScroll);
-      var zoom = false;
-      var clickCount = 0;
-      pspdfInstance.contentDocument.addEventListener("mousedown", (e) => {
-        if (e.button !== 1) return;
-
-        clickCount++;
-
-        if (clickCount !== 1) return;
-
-        setTimeout(function () {
-          if (clickCount === 1) return;
-          if (zoom) {
-            pspdfInstance?.contentDocument.removeEventListener("wheel", handleScroll);
-            zoom = false;
-            setWheelScroll(false);
-          } else {
-            pspdfInstance?.contentDocument.addEventListener("wheel", handleScroll);
-            zoom = true;
-            setWheelScroll(true);
+        const handleScroll = (e: WheelEvent) => {
+          if (e.deltaY < 0) {
+            pspdfInstance?.setViewState((viewState) => viewState.zoomIn());
+          } else if (e.deltaY > 0) {
+            pspdfInstance?.setViewState((viewState) => viewState.zoomOut());
           }
+        };
 
-          clickCount = 0;
-        }, 300);
-      });
+        // pspdfInstance?.contentDocument.addEventListener("wheel", handleScroll);
+        var zoom = false;
+        var clickCount = 0;
+        pspdfInstance.contentDocument.addEventListener("mousedown", (e) => {
+          if (e.button !== 1) return;
 
-      const toolbarItems = pspdfInstance.toolbarItems;
-      pspdfInstance.setToolbarItems(toolbarItems.filter((item) => item.type !== "export-pdf"));
-      setInstance(pspdfInstance);
+          clickCount++;
+
+          if (clickCount !== 1) return;
+
+          setTimeout(function () {
+            if (clickCount === 1) return;
+            if (zoom) {
+              pspdfInstance?.contentDocument.removeEventListener("wheel", handleScroll);
+              zoom = false;
+              setWheelScroll(false);
+            } else {
+              pspdfInstance?.contentDocument.addEventListener("wheel", handleScroll);
+              zoom = true;
+              setWheelScroll(true);
+            }
+
+            clickCount = 0;
+          }, 300);
+        });
+
+        const toolbarItems = pspdfInstance.toolbarItems;
+        pspdfInstance.setToolbarItems(toolbarItems.filter((item) => item.type !== "export-pdf"));
+        setInstance(pspdfInstance);
+      } catch (err) {
+        console.log(err);
+      }
     })();
 
     return () => {
