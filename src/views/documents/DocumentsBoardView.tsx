@@ -427,13 +427,7 @@ const DocumentsBoardView = () => {
                 <Divider label="Document History" my="md" />
 
                 {gettingChangeLog && <Loader size="sm" />}
-                <button
-                  onClick={() => {
-                    console.log(changeLog);
-                  }}
-                >
-                  asd
-                </button>
+
                 {changeLog.map((cl) => {
                   return (
                     <div key={cl.rid}>

@@ -147,7 +147,7 @@ const DocumentModal = ({ onClose, opened, title }: CommonModalProps) => {
               <TextInput label="Title" withAsterisk {...form.getInputProps("title")} />
               <Textarea label="Description" withAsterisk {...form.getInputProps("description")} />
               <DatePicker
-                aria-errormessage="asdsad"
+                aria-errormessage="Invalid Start Date"
                 label="Start Date"
                 withAsterisk
                 {...form.getInputProps("startDate")}

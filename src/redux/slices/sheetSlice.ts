@@ -1,12 +1,13 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { ISheetResponse } from "../../interfaces/sheets/ISheetResponse";
-import { createSheet, getSheets } from "../api/sheetsApi";
+import { createSheet, createSheetVersion, getSheets } from "../api/sheetsApi";
 
 export interface SheetsState {
   data: ISheetResponse[];
   loaders: {
     gettingSheets: boolean;
     addingSheet: boolean;
+    addingVersion: boolean;
   };
 }
 
@@ -15,6 +16,7 @@ const initialState: SheetsState = {
   loaders: {
     gettingSheets: false,
     addingSheet: false,
+    addingVersion: false,
   },
 };
 
@@ -46,6 +48,19 @@ export const sheetsSlice = createSlice({
       })
       .addCase(createSheet.rejected, (state) => {
         state.loaders.addingSheet = false;
+      })
+      // Create Sheet Version
+      .addCase(createSheetVersion.pending, (state) => {
+        state.loaders.addingVersion = true;
+      })
+      .addCase(createSheetVersion.fulfilled, (state, action: PayloadAction<ISheetResponse>) => {
+        const sheetIndex = state.data.findIndex((s) => s.id === action.payload.id);
+        if (sheetIndex < 0) return;
+        state.data[sheetIndex] = action.payload;
+        state.loaders.addingVersion = false;
+      })
+      .addCase(createSheetVersion.rejected, (state) => {
+        state.loaders.addingVersion = false;
       });
   },
 });

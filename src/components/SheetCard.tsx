@@ -62,11 +62,6 @@ const SheetCard = ({
       </Text>
       <Divider my="sm" />
       <Flex align="center" justify="space-between">
-        <Flex gap="md" align={"center"}>
-          {sheet?.attachments.length ? <IconPaperclip size="1.2em" /> : ""}
-          <IconClock size="1.2em" />
-          <Text>{dayjs(sheet?.dueDate).format("MMM DD")}</Text>
-        </Flex>
         <Badge
           size="xs"
           color={

@@ -1,5 +1,5 @@
-import { FileWithPath } from "@mantine/dropzone";
 import { DocumentPriority, DocumentStatus } from "hexa-sdk";
+import { ISheetProcessResponse } from "./ISheetProcessResponse";
 
 export interface ISheetCreate {
   title: string;
@@ -8,5 +8,5 @@ export interface ISheetCreate {
   priority: DocumentPriority;
   startDate: string;
   dueDate: string;
-  files: FileWithPath[];
+  records: ISheetProcessResponse[];
 }

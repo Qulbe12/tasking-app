@@ -1,20 +1,25 @@
-import { DocumentPriority, DocumentStatus, IAttachment } from "hexa-sdk";
+import { DocumentPriority, DocumentStatus } from "hexa-sdk";
 import { IEntityUser } from "../IEntityUser";
-import { IEntityBoard } from "../IEntityBoard";
 
 export interface ISheetResponse {
   id: string;
   title: string;
   description: string;
-  startDate: string;
-  dueDate: string;
   status: DocumentStatus;
   priority: DocumentPriority;
-  assignedUsers: IEntityUser[];
-  attachments: IAttachment[];
+  startDate: string;
+  dueDate: string;
+  group: string;
   ccUsers: string[];
   createdBy: IEntityUser;
-  board: IEntityBoard;
-  notifyAssignedUsers: boolean;
-  notifyCcUsers: boolean;
+  isArchived: boolean;
+  versions: { title: string; version: number }[];
+  currentVerion: {
+    version: number;
+    title: string;
+  };
+  latestVersion: {
+    version: number;
+    title: string;
+  };
 }

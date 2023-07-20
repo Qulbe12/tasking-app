@@ -7,17 +7,14 @@ import {
   Image,
   LoadingOverlay,
   Modal,
-  Select,
   Stack,
   TextInput,
-  Textarea,
 } from "@mantine/core";
 import { useAppDispatch, useAppSelector } from "../redux/store";
 import CommonModalProps from "./CommonModalProps";
 import SheetDropzone from "../components/SheetDropzone";
 import { useForm, yupResolver } from "@mantine/form";
 import * as yup from "yup";
-import { DocumentPriority, DocumentStatus } from "hexa-sdk/dist/app.api";
 import { useState } from "react";
 import axios from "axios";
 import { SHEETS_URL } from "../constants/URLS";
@@ -25,35 +22,33 @@ import { ISheetProcessResponse } from "../interfaces/sheets/ISheetProcessRespons
 import { showError } from "../redux/commonSliceFunctions";
 import { startNavigationProgress, completeNavigationProgress } from "@mantine/nprogress";
 import { IconTrash } from "@tabler/icons";
-import { DatePicker } from "@mantine/dates";
-import { ISheetCreate } from "../interfaces/sheets/ISheetCreate";
-import { createSheet } from "../redux/api/sheetsApi";
+import ISheetCreateVersion from "../interfaces/sheets/ISheetCreateVersion";
+import { createSheetVersion } from "../redux/api/sheetsApi";
 
-const SheetModal = ({ onClose, opened, title }: CommonModalProps) => {
+type SheetVersionModalProps = {
+  sheetId?: string;
+};
+
+const SheetVersionModal = ({
+  onClose,
+  opened,
+  title,
+  sheetId,
+}: CommonModalProps & SheetVersionModalProps) => {
   const dispatch = useAppDispatch();
 
-  const { activeBoard, loaders } = useAppSelector((state) => state.boards);
+  const { loaders } = useAppSelector((state) => state.boards);
   const {
-    loaders: { addingSheet },
+    loaders: { addingVersion },
   } = useAppSelector((state) => state.sheets);
 
   const formSchema = yup.object().shape({
-    title: yup.string().required("Document title is required"),
-    description: yup.string().required("Description is required"),
-    startDate: yup.date().required("Start date is required"),
-    dueDate: yup.date().required("Due date is required"),
-    priority: yup.string().required("Priority is required"),
-    status: yup.string().required("Status is required"),
+    versionTitle: yup.string().required("Document title is required"),
   });
 
   const form = useForm({
     initialValues: {
-      title: "",
-      description: "",
-      startDate: new Date(),
-      dueDate: new Date(),
-      priority: DocumentPriority.Low,
-      status: DocumentStatus.Todo,
+      versionTitle: "",
     },
     validate: yupResolver(formSchema),
   });
@@ -80,57 +75,32 @@ const SheetModal = ({ onClose, opened, title }: CommonModalProps) => {
       <LoadingOverlay visible={!!loaders.adding} />
       <form
         onSubmit={form.onSubmit(async () => {
-          if (!activeBoard) return;
+          if (!sheetId) return;
           const newRecords: ISheetProcessResponse[] = [];
           sheetRes.forEach((s, i) => {
             s.code = newCodes[i];
             newRecords.push(s);
           });
-          const preppedSheet: ISheetCreate = {
+          const preppedSheet: ISheetCreateVersion = {
             ...form.values,
-            startDate: form.values.startDate.toISOString(),
-            dueDate: form.values.dueDate.toISOString(),
             records: newRecords,
           };
-          await dispatch(createSheet({ boardId: activeBoard.id, sheet: preppedSheet }));
+          await dispatch(createSheetVersion({ sheetId, sheet: preppedSheet }));
+          setNewCodes([]);
+          setSheetRes([]);
+          completeNavigationProgress();
+          setSheetUploaded(false);
           onClose();
-          console.log(preppedSheet);
         })}
       >
         <Card>
           <Grid>
             <Grid.Col span={3}>
               <Stack>
-                <TextInput label="Title" withAsterisk {...form.getInputProps("title")} />
-                <Textarea label="Description" withAsterisk {...form.getInputProps("description")} />
-                <DatePicker
-                  aria-errormessage="Invalid Start Date"
-                  label="Start Date"
+                <TextInput
+                  label="Version Title"
                   withAsterisk
-                  {...form.getInputProps("startDate")}
-                />
-                <DatePicker label="Due Date" withAsterisk {...form.getInputProps("dueDate")} />
-                <Select
-                  {...form.getInputProps("priority")}
-                  label="Priority"
-                  placeholder="Pick one"
-                  withAsterisk
-                  data={[
-                    { value: DocumentPriority.Low, label: "Low" },
-                    { value: DocumentPriority.High, label: "High" },
-                    { value: DocumentPriority.Urgent, label: "Urgent" },
-                  ]}
-                />
-                <Select
-                  {...form.getInputProps("status")}
-                  label="Status"
-                  placeholder="Pick one"
-                  withAsterisk
-                  data={[
-                    { value: DocumentStatus.Todo, label: "Todo" },
-                    { value: DocumentStatus.InProgresss, label: "In Progress" },
-                    { value: DocumentStatus.Complete, label: "Complete" },
-                  ]}
+                  {...form.getInputProps("versionTitle")}
                 />
               </Stack>
             </Grid.Col>
@@ -198,8 +168,8 @@ const SheetModal = ({ onClose, opened, title }: CommonModalProps) => {
           </Grid>
         </Card>
         <Group mt="md" position="right">
-          <Button type="submit" disabled={!sheetUploaded} loading={addingSheet}>
-            Create Sheet
+          <Button type="submit" disabled={!sheetUploaded} loading={addingVersion}>
+            Create Version
           </Button>
         </Group>
       </form>
@@ -207,4 +177,4 @@ const SheetModal = ({ onClose, opened, title }: CommonModalProps) => {
   );
 };
 
-export default SheetModal;
+export default SheetVersionModal;

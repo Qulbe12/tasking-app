@@ -34,7 +34,7 @@ const UserButton = () => {
           {mode === "dark" ? t("lightMode") : t("darkMode")}
         </Menu.Item>
         <Menu.Item onClick={() => navigate("/account/settings")} icon={<IconSettings size={14} />}>
-          {t("manageSubscription")}
+          Account Settings
         </Menu.Item>
 
         <Menu.Divider />

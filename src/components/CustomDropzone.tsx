@@ -3,18 +3,26 @@ import { Group, Text, useMantineTheme } from "@mantine/core";
 import { IconUpload, IconX, IconFile } from "@tabler/icons";
 import { Dropzone, DropzoneProps, FileWithPath, PDF_MIME_TYPE } from "@mantine/dropzone";
 
-const CustomDropzone = (props: Partial<DropzoneProps>) => {
+type CustomDropzoneProps = {
+  isSheet?: boolean;
+};
+
+const CustomDropzone = (props: Partial<DropzoneProps> & CustomDropzoneProps) => {
   const theme = useMantineTheme();
 
   return (
     <Dropzone
-      maxSize={3 * 1024 ** 2}
+      maxSize={props.isSheet ? undefined : 3 * 1024 ** 2}
       accept={PDF_MIME_TYPE}
       onDrop={function (files: FileWithPath[]): void {
         props.onDrop?.(files);
       }}
     >
-      <Group position="center" spacing="xl" style={{ minHeight: 20, pointerEvents: "none" }}>
+      <Group
+        position="center"
+        spacing="xl"
+        style={{ minHeight: props.isSheet ? "80vh" : 20, pointerEvents: "none" }}
+      >
         <Dropzone.Accept>
           <IconUpload
             size={50}
@@ -35,10 +43,12 @@ const CustomDropzone = (props: Partial<DropzoneProps>) => {
 
         <div>
           <Text size="xl" inline>
-            Drag documents here or click to select files
+            Drag document here or click to select the file
           </Text>
           <Text size="sm" color="dimmed" inline mt={7}>
-            Attach as many files as you like, each file should not exceed 5mb
+            {props.isSheet
+              ? "Attach a sheet type pdf file"
+              : "Attach as many files as you like, each file should not exceed 5mb"}
           </Text>
         </div>
       </Group>

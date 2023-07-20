@@ -2,15 +2,32 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import { centralizedErrorHandler } from "../commonSliceFunctions";
 import { axiosPrivate } from "../../config/axios";
 import { ISheetResponse } from "../../interfaces/sheets/ISheetResponse";
+import { ISheetCreate } from "../../interfaces/sheets/ISheetCreate";
+import ISheetCreateVersion from "../../interfaces/sheets/ISheetCreateVersion";
 
 export const createSheet = createAsyncThunk(
   "sheets/createSheet",
   async (
-    { boardId, sheet }: { boardId: string; sheet: FormData },
+    { boardId, sheet }: { boardId: string; sheet: ISheetCreate },
     { rejectWithValue, dispatch },
   ) => {
     try {
       const res = await axiosPrivate.post<ISheetResponse>(`/boards/${boardId}/sheets`, sheet);
+      return res.data;
+    } catch (err) {
+      return centralizedErrorHandler(err, rejectWithValue, dispatch);
+    }
+  },
+);
+
+export const createSheetVersion = createAsyncThunk(
+  "sheets/createSheetVersion",
+  async (
+    { sheetId, sheet }: { sheetId: string; sheet: ISheetCreateVersion },
+    { rejectWithValue, dispatch },
+  ) => {
+    try {
+      const res = await axiosPrivate.post<ISheetResponse>(`/sheets/${sheetId}/version`, sheet);
       return res.data;
     } catch (err) {
       return centralizedErrorHandler(err, rejectWithValue, dispatch);
