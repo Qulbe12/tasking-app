@@ -1,6 +1,5 @@
 import { ActionIcon, Avatar, Badge, Card, Divider, Flex, Text } from "@mantine/core";
-import { IconClock, IconPaperclip, IconUnlink } from "@tabler/icons";
-import dayjs from "dayjs";
+import { IconUnlink } from "@tabler/icons";
 import { DocumentStatus } from "hexa-sdk/dist/app.api";
 import React from "react";
 import { ISheetResponse } from "../interfaces/sheets/ISheetResponse";
