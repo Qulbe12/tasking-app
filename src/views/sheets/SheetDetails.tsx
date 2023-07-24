@@ -1,0 +1,178 @@
+import React, { useEffect, useMemo, useState } from "react";
+import { useLocation } from "react-router-dom";
+import { IRecord, ISheetDetailedResponse } from "../../interfaces/sheets/ISheetDetailedResponse";
+import {
+  ActionIcon,
+  Card,
+  Drawer,
+  Flex,
+  Grid,
+  Group,
+  Image,
+  LoadingOverlay,
+  NavLink,
+  Paper,
+  Text,
+  Title,
+} from "@mantine/core";
+import { showError } from "../../redux/commonSliceFunctions";
+import { axiosPrivate } from "../../config/axios";
+import { ISubFile } from "../../interfaces/sheets/common";
+import Filter from "../../components/Filter";
+import SheetVersionModal from "../../modals/SheetVersionModal";
+import { useDisclosure } from "@mantine/hooks";
+import { IconPlus } from "@tabler/icons";
+import SheetPdfViewer from "../../components/SheetPdfViewer";
+import _ from "lodash";
+
+const SheetDetails = () => {
+  const location = useLocation();
+
+  const [detailedResponse, setDetailedResponse] = useState<ISheetDetailedResponse | null>(null);
+  const [selectedVersion, setSelectedVersion] = useState<number | null>(null);
+  const [selectedPage, setSelectedPage] = useState<ISubFile | null>(null);
+
+  const [showSheetVersionModal, { toggle: toggleSheetVersionModal }] = useDisclosure(false);
+
+  const [loading, setLoading] = useState(false);
+
+  const currentSheetId = useMemo(() => {
+    return location.pathname.split("/")[3];
+  }, [location]);
+
+  const getDetailedSheet = async (latest?: boolean) => {
+    if (!currentSheetId) return;
+    setDetailedResponse(null);
+    setLoading(true);
+    let queryString = `/sheets/${currentSheetId}`;
+
+    if (selectedVersion) {
+      queryString += `?version=${selectedVersion}`;
+    }
+
+    if (latest) {
+      queryString = `/sheets/${currentSheetId}`;
+    }
+
+    try {
+      const res = await axiosPrivate.get<ISheetDetailedResponse>(queryString);
+      setDetailedResponse(res.data);
+      setLoading(false);
+    } catch (err) {
+      console.log(err);
+      showError("Something went wrong");
+
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    getDetailedSheet();
+  }, [currentSheetId, selectedVersion]);
+
+  const [tagFilter, setTagFilter] = useState<string[]>([]);
+
+  const filteredRecords: IRecord[] = useMemo<IRecord[]>(() => {
+    if (!detailedResponse) return [];
+
+    if (tagFilter.length <= 0) return detailedResponse.records;
+
+    return _.filter(detailedResponse.records, (obj) => {
+      return _.some(tagFilter, (tag) => _.includes(obj.tags, tag));
+    });
+  }, [detailedResponse, tagFilter]);
+
+  const pageTitle: string = useMemo<string>(() => {
+    if (!detailedResponse) return "";
+
+    return `${detailedResponse?.title} (${detailedResponse?.currentVerion.title} - ${detailedResponse?.currentVerion.version})`;
+  }, [detailedResponse]);
+
+  return (
+    <Paper>
+      <LoadingOverlay visible={loading} />
+
+      <Flex gap="md" align={"center"}>
+        <Title order={4}>{pageTitle}</Title>
+      </Flex>
+      <Filter onChange={(e) => setTagFilter(e)} options={detailedResponse?.tags || []} />
+
+      <Grid h="84vh">
+        <Grid.Col p="md" span={10}>
+          <Grid>
+            {filteredRecords.map((r) => {
+              return (
+                <Grid.Col key={r.id} span="content">
+                  <Flex
+                    onClick={() => {
+                      setSelectedPage({
+                        id: r.id,
+                        name: r.code,
+                        url: r.file.url,
+                      });
+                    }}
+                    direction="column"
+                    align="center"
+                    justify="center"
+                    className="hover:scale-110 cursor-pointer"
+                  >
+                    <Image src={r.thumbnail.url} maw={150} />
+                    {r.code}
+                  </Flex>
+                </Grid.Col>
+              );
+            })}
+          </Grid>
+        </Grid.Col>
+        <Grid.Col span={2}>
+          <Paper h="100%">
+            <Card h="100%">
+              <Group position="apart" mb="xs">
+                <Text>Versions:</Text>
+                <ActionIcon size="sm" onClick={toggleSheetVersionModal}>
+                  <IconPlus />
+                </ActionIcon>
+              </Group>
+              {detailedResponse?.versions.map((v, i) => {
+                return (
+                  <NavLink
+                    key={v.title + i}
+                    label={v.title}
+                    active={detailedResponse.currentVerion.version === v.version}
+                    onClick={async () => {
+                      setSelectedVersion(v.version);
+                    }}
+                  />
+                );
+              })}
+            </Card>
+          </Paper>
+        </Grid.Col>
+      </Grid>
+
+      <SheetVersionModal
+        onComplete={() => {
+          console.log("COMPLETED");
+
+          getDetailedSheet(true);
+        }}
+        sheet={detailedResponse}
+        onClose={toggleSheetVersionModal}
+        opened={showSheetVersionModal}
+        title={"Create New Version"}
+      />
+      <Drawer
+        title={"Page " + selectedPage?.name.split("_")[1]}
+        padding="md"
+        size={"100%"}
+        position="right"
+        opened={!!selectedPage}
+        onClose={() => setSelectedPage(null)}
+      >
+        {detailedResponse && selectedPage && <SheetPdfViewer file={selectedPage} />}
+      </Drawer>
+    </Paper>
+  );
+};
+
+export default SheetDetails;

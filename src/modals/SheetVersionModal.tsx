@@ -7,6 +7,8 @@ import {
   Image,
   LoadingOverlay,
   Modal,
+  MultiSelect,
+  Paper,
   Stack,
   TextInput,
 } from "@mantine/core";
@@ -15,7 +17,7 @@ import CommonModalProps from "./CommonModalProps";
 import SheetDropzone from "../components/SheetDropzone";
 import { useForm, yupResolver } from "@mantine/form";
 import * as yup from "yup";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import { SHEETS_URL } from "../constants/URLS";
 import { ISheetProcessResponse } from "../interfaces/sheets/ISheetProcessResponse";
@@ -24,16 +26,19 @@ import { startNavigationProgress, completeNavigationProgress } from "@mantine/np
 import { IconTrash } from "@tabler/icons";
 import ISheetCreateVersion from "../interfaces/sheets/ISheetCreateVersion";
 import { createSheetVersion } from "../redux/api/sheetsApi";
+import { ISheetDetailedResponse } from "../interfaces/sheets/ISheetDetailedResponse";
 
 type SheetVersionModalProps = {
-  sheetId?: string;
+  sheet?: ISheetDetailedResponse | null;
+  onComplete: () => void;
 };
 
 const SheetVersionModal = ({
   onClose,
   opened,
   title,
-  sheetId,
+  sheet,
+  onComplete,
 }: CommonModalProps & SheetVersionModalProps) => {
   const dispatch = useAppDispatch();
 
@@ -58,6 +63,22 @@ const SheetVersionModal = ({
   const [sheetRes, setSheetRes] = useState<ISheetProcessResponse[]>([]);
   const [newCodes, setNewCodes] = useState<string[]>([]);
 
+  const [tags, setTags] = useState<{ value: string; label: string; recordindex: number }[]>([]);
+
+  useEffect(() => {
+    if (sheet) {
+      setTags(
+        sheet.tags.map((t) => {
+          return {
+            label: t,
+            value: t,
+            recordindex: -1,
+          };
+        }),
+      );
+    }
+  }, [sheet]);
+
   return (
     <Modal
       opened={opened}
@@ -67,6 +88,7 @@ const SheetVersionModal = ({
         completeNavigationProgress();
         setSheetUploaded(false);
         form.reset();
+
         onClose();
       }}
       title={title}
@@ -75,21 +97,29 @@ const SheetVersionModal = ({
       <LoadingOverlay visible={!!loaders.adding} />
       <form
         onSubmit={form.onSubmit(async () => {
-          if (!sheetId) return;
+          if (!sheet?.id) return;
           const newRecords: ISheetProcessResponse[] = [];
           sheetRes.forEach((s, i) => {
             s.code = newCodes[i];
+            s.tags = [];
             newRecords.push(s);
           });
+
+          tags.forEach((t) => {
+            if (t.recordindex < 0) return;
+            newRecords[t.recordindex].tags.push(t.label);
+          });
+
           const preppedSheet: ISheetCreateVersion = {
             ...form.values,
             records: newRecords,
           };
-          await dispatch(createSheetVersion({ sheetId, sheet: preppedSheet }));
+          await dispatch(createSheetVersion({ sheetId: sheet.id, sheet: preppedSheet }));
           setNewCodes([]);
           setSheetRes([]);
           completeNavigationProgress();
           setSheetUploaded(false);
+          onComplete();
           onClose();
         })}
       >
@@ -140,7 +170,7 @@ const SheetVersionModal = ({
                 <Stack>
                   {sheetRes.map((s, i) => {
                     return (
-                      <Card key={s.code + i} withBorder>
+                      <Paper key={s.code + i} p="md">
                         <Group position="apart">
                           <Group>
                             <Image maw={240} src={s.codeMeta.url} />
@@ -154,12 +184,26 @@ const SheetVersionModal = ({
                                 }}
                               />
                             </Stack>
+                            <Stack>
+                              <MultiSelect
+                                data={tags}
+                                placeholder="Select tags"
+                                searchable
+                                creatable
+                                getCreateLabel={(query) => `+ Create ${query}`}
+                                onCreate={(query) => {
+                                  const item = { value: query, label: query, recordindex: i };
+                                  setTags((current) => [...current, item]);
+                                  return item;
+                                }}
+                              />
+                            </Stack>
                           </Group>
                           <ActionIcon color="red" size="sm">
                             <IconTrash />
                           </ActionIcon>
                         </Group>
-                      </Card>
+                      </Paper>
                     );
                   })}
                 </Stack>

@@ -5,6 +5,33 @@ interface IVersion {
   version: number;
 }
 
+export interface IRecord {
+  id: string;
+  date: string;
+  code: string;
+  tags: string[];
+  meta: {
+    code: {
+      key: string;
+      url: string;
+    };
+    summary: {
+      key: string;
+      url: string;
+    };
+  };
+  file: {
+    key: string;
+    url: string;
+  };
+  thumbnail: {
+    key: string;
+    url: string;
+  };
+  version: number;
+  versions: number[];
+}
+
 export interface ISheetDetailedResponse {
   id: string;
   title: string;
@@ -17,29 +44,6 @@ export interface ISheetDetailedResponse {
   versions: IVersion[];
   currentVerion: IVersion;
   latestVersion: IVersion;
-  records: {
-    id: string;
-    date: string;
-    code: string;
-    meta: {
-      code: {
-        key: string;
-        url: string;
-      };
-      summary: {
-        key: string;
-        url: string;
-      };
-    };
-    file: {
-      key: string;
-      url: string;
-    };
-    thumbnail: {
-      key: string;
-      url: string;
-    };
-    version: number;
-    versions: number[];
-  }[];
+  tags: string[];
+  records: IRecord[];
 }

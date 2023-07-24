@@ -14,6 +14,7 @@ export interface ISheetResponse {
   createdBy: IEntityUser;
   isArchived: boolean;
   versions: { title: string; version: number }[];
+  tags: string[];
   currentVerion: {
     version: number;
     title: string;

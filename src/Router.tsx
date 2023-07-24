@@ -18,6 +18,7 @@ import SettingsLayout from "./layouts/SettingsLayout";
 import DocumentPublicView from "./views/documents/DocumentPublicView";
 import SheetsPage from "./views/sheets/SheetsPage";
 import DocumentsBoardView from "./views/documents/DocumentsBoardView";
+import SheetDetails from "./views/sheets/SheetDetails";
 
 const router = createBrowserRouter([
   {
@@ -69,6 +70,10 @@ const router = createBrowserRouter([
           {
             path: "/board/sheets",
             element: <SheetsPage />,
+          },
+          {
+            path: "/board/sheets/:id",
+            element: <SheetDetails />,
           },
           {
             path: "/board/analytics",

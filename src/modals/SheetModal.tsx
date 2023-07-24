@@ -7,6 +7,8 @@ import {
   Image,
   LoadingOverlay,
   Modal,
+  MultiSelect,
+  Paper,
   Select,
   Stack,
   TextInput,
@@ -63,6 +65,8 @@ const SheetModal = ({ onClose, opened, title }: CommonModalProps) => {
   const [sheetRes, setSheetRes] = useState<ISheetProcessResponse[]>([]);
   const [newCodes, setNewCodes] = useState<string[]>([]);
 
+  const [tags, setTags] = useState<{ value: string; label: string; recordindex: number }[]>([]);
+
   return (
     <Modal
       opened={opened}
@@ -71,6 +75,7 @@ const SheetModal = ({ onClose, opened, title }: CommonModalProps) => {
         setSheetRes([]);
         completeNavigationProgress();
         setSheetUploaded(false);
+        setTags([]);
         form.reset();
         onClose();
       }}
@@ -84,8 +89,14 @@ const SheetModal = ({ onClose, opened, title }: CommonModalProps) => {
           const newRecords: ISheetProcessResponse[] = [];
           sheetRes.forEach((s, i) => {
             s.code = newCodes[i];
+            s.tags = [];
             newRecords.push(s);
           });
+
+          tags.forEach((t) => {
+            newRecords[t.recordindex].tags.push(t.label);
+          });
+
           const preppedSheet: ISheetCreate = {
             ...form.values,
             startDate: form.values.startDate.toISOString(),
@@ -170,12 +181,13 @@ const SheetModal = ({ onClose, opened, title }: CommonModalProps) => {
                 <Stack>
                   {sheetRes.map((s, i) => {
                     return (
-                      <Card key={s.code + i} withBorder>
+                      <Paper key={s.code + i} p="md">
                         <Group position="apart">
                           <Group>
                             <Image maw={240} src={s.codeMeta.url} />
                             <Stack>
                               <TextInput
+                                label="Sheet Code"
                                 value={newCodes[i]}
                                 onChange={(e) => {
                                   const oldCodes = [...newCodes];
@@ -184,12 +196,28 @@ const SheetModal = ({ onClose, opened, title }: CommonModalProps) => {
                                 }}
                               />
                             </Stack>
+                            <Stack>
+                              <MultiSelect
+                                // maxSelectedValues={1}
+                                label="Tags"
+                                data={tags}
+                                placeholder="Select tags"
+                                searchable
+                                creatable
+                                getCreateLabel={(query) => `+ Create ${query}`}
+                                onCreate={(query) => {
+                                  const item = { value: query, label: query, recordindex: i };
+                                  setTags((current) => [...current, item]);
+                                  return item;
+                                }}
+                              />
+                            </Stack>
                           </Group>
                           <ActionIcon color="red" size="sm">
                             <IconTrash />
                           </ActionIcon>
                         </Group>
-                      </Card>
+                      </Paper>
                     );
                   })}
                 </Stack>

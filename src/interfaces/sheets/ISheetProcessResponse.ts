@@ -1,5 +1,6 @@
 export interface ISheetProcessResponse {
   code: string;
+  tags: string[];
   codeMeta: {
     key: string;
     url: string;
