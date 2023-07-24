@@ -125,7 +125,7 @@ const SheetVersionModal = ({
       >
         <Card>
           <Grid>
-            <Grid.Col span={3}>
+            <Grid.Col span={2}>
               <Stack>
                 <TextInput
                   label="Version Title"
@@ -134,7 +134,7 @@ const SheetVersionModal = ({
                 />
               </Stack>
             </Grid.Col>
-            <Grid.Col span={9}>
+            <Grid.Col span={10}>
               {!sheetUploaded && (
                 <SheetDropzone
                   onDrop={async (file) => {
@@ -173,9 +173,11 @@ const SheetVersionModal = ({
                       <Paper key={s.code + i} p="md">
                         <Group position="apart">
                           <Group>
+                            <Image maw={240} src={s.thumbnail.url} />
                             <Image maw={240} src={s.codeMeta.url} />
                             <Stack>
                               <TextInput
+                                label="Sheet Code"
                                 value={newCodes[i]}
                                 onChange={(e) => {
                                   const oldCodes = [...newCodes];
@@ -186,6 +188,7 @@ const SheetVersionModal = ({
                             </Stack>
                             <Stack>
                               <MultiSelect
+                                label="Tags"
                                 data={tags}
                                 placeholder="Select tags"
                                 searchable

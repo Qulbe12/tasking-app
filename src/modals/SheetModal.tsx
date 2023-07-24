@@ -9,7 +9,6 @@ import {
   Modal,
   MultiSelect,
   Paper,
-  Select,
   Stack,
   TextInput,
   Textarea,
@@ -41,7 +40,7 @@ const SheetModal = ({ onClose, opened, title }: CommonModalProps) => {
 
   const formSchema = yup.object().shape({
     title: yup.string().required("Document title is required"),
-    description: yup.string().required("Description is required"),
+    description: yup.string(),
     startDate: yup.date().required("Start date is required"),
     dueDate: yup.date().required("Due date is required"),
     priority: yup.string().required("Priority is required"),
@@ -110,42 +109,19 @@ const SheetModal = ({ onClose, opened, title }: CommonModalProps) => {
       >
         <Card>
           <Grid>
-            <Grid.Col span={3}>
+            <Grid.Col span={2}>
               <Stack>
                 <TextInput label="Title" withAsterisk {...form.getInputProps("title")} />
-                <Textarea label="Description" withAsterisk {...form.getInputProps("description")} />
+                <Textarea label="Description" {...form.getInputProps("description")} />
                 <DatePicker
                   aria-errormessage="Invalid Start Date"
-                  label="Start Date"
+                  label="Emission Date"
                   withAsterisk
                   {...form.getInputProps("startDate")}
                 />
-                <DatePicker label="Due Date" withAsterisk {...form.getInputProps("dueDate")} />
-                <Select
-                  {...form.getInputProps("priority")}
-                  label="Priority"
-                  placeholder="Pick one"
-                  withAsterisk
-                  data={[
-                    { value: DocumentPriority.Low, label: "Low" },
-                    { value: DocumentPriority.High, label: "High" },
-                    { value: DocumentPriority.Urgent, label: "Urgent" },
-                  ]}
-                />
-                <Select
-                  {...form.getInputProps("status")}
-                  label="Status"
-                  placeholder="Pick one"
-                  withAsterisk
-                  data={[
-                    { value: DocumentStatus.Todo, label: "Todo" },
-                    { value: DocumentStatus.InProgresss, label: "In Progress" },
-                    { value: DocumentStatus.Complete, label: "Complete" },
-                  ]}
-                />
               </Stack>
             </Grid.Col>
-            <Grid.Col span={9}>
+            <Grid.Col span={10}>
               {!sheetUploaded && (
                 <SheetDropzone
                   onDrop={async (file) => {
@@ -184,6 +160,7 @@ const SheetModal = ({ onClose, opened, title }: CommonModalProps) => {
                       <Paper key={s.code + i} p="md">
                         <Group position="apart">
                           <Group>
+                            <Image height={150} width={150} src={s.thumbnail.url} />
                             <Image maw={240} src={s.codeMeta.url} />
                             <Stack>
                               <TextInput
