@@ -17,12 +17,14 @@ import {
 import GoogleButton from "../../components/GoogleButton";
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../redux/store";
-import { registerUser } from "../../redux/slices/authSlice";
+
 import { showNotification } from "@mantine/notifications";
 import * as Yup from "yup";
 import { useTranslation } from "react-i18next";
+import { registerUser } from "../../redux/api/authApi";
 
 const schema = Yup.object().shape({
+  businessName: Yup.string().required(),
   name: Yup.string().required(),
   email: Yup.string().email("Invalid email").required("Email is required"),
   password: Yup.string()
@@ -45,6 +47,7 @@ const Register = () => {
       password: "",
       terms: false,
       confirmPassword: "",
+      businessName: "",
     },
 
     validate: yupResolver(schema),
@@ -74,7 +77,16 @@ const Register = () => {
           <form onSubmit={form.onSubmit(handleSubmit)}>
             <Stack>
               <TextInput
+                label="Business Name"
+                withAsterisk
+                placeholder="Business name"
+                value={form.values.businessName}
+                onChange={(event) => form.setFieldValue("businessName", event.currentTarget.value)}
+                error={form.errors.name && form.errors.name}
+              />
+              <TextInput
                 label={t("name")}
+                withAsterisk
                 placeholder="Your name"
                 value={form.values.name}
                 onChange={(event) => form.setFieldValue("name", event.currentTarget.value)}
@@ -82,6 +94,7 @@ const Register = () => {
               />
               <TextInput
                 label="Email"
+                withAsterisk
                 placeholder="john@email.com"
                 value={form.values.email}
                 onChange={(event) => form.setFieldValue("email", event.currentTarget.value)}
@@ -89,6 +102,7 @@ const Register = () => {
               />
               <PasswordInput
                 label={t("password")}
+                withAsterisk
                 placeholder="********"
                 value={form.values.password}
                 onChange={(event) => form.setFieldValue("password", event.currentTarget.value)}
@@ -97,6 +111,7 @@ const Register = () => {
 
               <PasswordInput
                 label={t("confirmPassword")}
+                withAsterisk
                 placeholder="********"
                 value={form.values.confirmPassword}
                 onChange={(event) =>

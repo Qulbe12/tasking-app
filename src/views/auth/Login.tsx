@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback, useState } from "react";
 import { useForm } from "@mantine/form";
 import {
   TextInput,
@@ -13,12 +13,13 @@ import {
   Checkbox,
   Anchor,
   Flex,
+  Radio,
 } from "@mantine/core";
 import GoogleButton from "../../components/GoogleButton";
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../redux/store";
-import { loginUser } from "../../redux/slices/authSlice";
 import { useTranslation } from "react-i18next";
+import { businessLogin, loginUser } from "../../redux/api/authApi";
 
 const Login = () => {
   const { t } = useTranslation();
@@ -33,6 +34,7 @@ const Login = () => {
     initialValues: {
       email: "",
       password: "",
+      businessCode: "",
     },
     validate: {
       email: (val) => (/^\S+@\S+$/.test(val) ? null : "Invalid email"),
@@ -40,9 +42,18 @@ const Login = () => {
     },
   });
 
-  const handleSubmit = () => {
-    dispatch(loginUser(form.values));
-  };
+  const [userType, setUserType] = useState("root");
+
+  const handleSubmit = useCallback(() => {
+    const { businessCode, email, password } = form.values;
+
+    if (userType === "root") {
+      dispatch(loginUser({ email, password }));
+    }
+    if (userType === "business") {
+      dispatch(businessLogin({ businessCode, email, password }));
+    }
+  }, [userType, form.values]);
 
   return (
     <Paper p="xl" className="h-screen">
@@ -53,6 +64,32 @@ const Login = () => {
 
           <form onSubmit={form.onSubmit(handleSubmit)}>
             <Stack>
+              <Radio.Group
+                value={userType}
+                onChange={(e) => setUserType(e)}
+                name="loginType"
+                label="Login Type"
+                withAsterisk
+              >
+                <Group mt="xs">
+                  <Radio value="root" label="Root" />
+                  <Radio value="business" label="Business" />
+                </Group>
+              </Radio.Group>
+
+              {userType === "business" && (
+                <TextInput
+                  required
+                  label="Business Code"
+                  placeholder="1000"
+                  value={form.values.businessCode}
+                  onChange={(event) =>
+                    form.setFieldValue("businessCode", event.currentTarget.value)
+                  }
+                  error={form.errors.businessCode && "Invalid Code"}
+                />
+              )}
+
               <TextInput
                 required
                 label="Email"

@@ -6,7 +6,11 @@ import { setSearch } from "../redux/slices/filterSlice";
 import { useTranslation } from "react-i18next";
 import LanguageButton from "./LanguageButton";
 
-const Header = () => {
+type HeaderProps = {
+  isUnsubscribed?: boolean;
+};
+
+const Header = ({ isUnsubscribed }: HeaderProps) => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
 
@@ -14,24 +18,27 @@ const Header = () => {
 
   return (
     <div className="flex justify-end items-center h-full gap-4">
-      <Input
-        icon={<IconSearch />}
-        placeholder={`${t("search")}...`}
-        variant="filled"
-        w="400px"
-        value={search}
-        onChange={(e) => {
-          dispatch(setSearch(e.target.value));
-        }}
-      />
-
-      <ActionIcon>
-        <IconBell size={48} />
-      </ActionIcon>
+      {!isUnsubscribed && (
+        <>
+          <Input
+            icon={<IconSearch />}
+            placeholder={`${t("search")}...`}
+            variant="filled"
+            w="400px"
+            value={search}
+            onChange={(e) => {
+              dispatch(setSearch(e.target.value));
+            }}
+          />
+          <ActionIcon>
+            <IconBell size={48} />
+          </ActionIcon>
+        </>
+      )}
 
       <LanguageButton />
 
-      <UserButton />
+      <UserButton isUnsubscribed={isUnsubscribed} />
     </div>
   );
 };

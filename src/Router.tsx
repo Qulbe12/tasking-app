@@ -13,22 +13,31 @@ import WorkspacesList from "./views/workspaces/WorkspacesList";
 import BoardsList from "./views/board/BoardsList";
 import EmailPage from "./views/email/EmailPage";
 import AnalyticsPage from "./views/analytics/AnalyticsPage";
-import PaymentPage from "./views/payment/PaymentPage";
+import PaymentPage from "./views/settings/PaymentPage";
 import SettingsLayout from "./layouts/SettingsLayout";
 import DocumentPublicView from "./views/documents/DocumentPublicView";
 import SheetsPage from "./views/sheets/SheetsPage";
 import DocumentsBoardView from "./views/documents/DocumentsBoardView";
 import SheetDetails from "./views/sheets/SheetDetails";
+import PaymentMethodsPage from "./views/settings/PaymentMethodsPage";
+import ManageSeats from "./views/settings/ManageSeats";
+import InvitationDetailsPage from "./views/invitation/InvitationDetailsPage";
+import SecurityManagementPage from "./views/settings/SecurityManagementPage";
+import ProfileManagementPage from "./views/settings/ProfileManagementPage";
 
 const router = createBrowserRouter([
+  {
+    path: "accept/:invitationId/:token/:businessName/:ownerName",
+    element: <InvitationDetailsPage />,
+  },
+  {
+    path: "/documents/:documentId",
+    element: <DocumentPublicView />,
+  },
   {
     path: "/",
     element: <RouteGuard />,
     children: [
-      {
-        path: "/documents/:documentId",
-        element: <DocumentPublicView />,
-      },
       {
         path: "/",
         element: <HomeLayout />,
@@ -42,8 +51,24 @@ const router = createBrowserRouter([
             element: <SettingsLayout />,
             children: [
               {
-                path: "payment",
+                path: "payments",
                 element: <PaymentPage />,
+              },
+              {
+                path: "payment-methods",
+                element: <PaymentMethodsPage />,
+              },
+              {
+                path: "manage-seats",
+                element: <ManageSeats />,
+              },
+              {
+                path: "security",
+                element: <SecurityManagementPage />,
+              },
+              {
+                path: "profile",
+                element: <ProfileManagementPage />,
               },
             ],
           },

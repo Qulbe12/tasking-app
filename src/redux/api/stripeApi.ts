@@ -1,17 +1,31 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { ICreatePaymentMethod, ICreateSubscription } from "hexa-sdk/dist/stripe/stripe.dtos";
-import api from "../../config/api";
 import { centralizedErrorHandler } from "../commonSliceFunctions";
-
-const { stripeApi } = api;
-const { paymentMethods, plans, subscriptions } = stripeApi;
+import { axiosPrivate } from "../../config/axios";
+import IPaymentMethodsResponse from "../../interfaces/stripe/IPaymentMethodsResponse";
+import ICreatePaymentMethod from "../../interfaces/stripe/ICreatePaymentMethod";
+import { showNotification } from "@mantine/notifications";
 
 // Payment Methods
+export const getAllPaymentMethods = createAsyncThunk(
+  "stripe/getAllPaymentMethods",
+  async (method, { rejectWithValue, dispatch }) => {
+    try {
+      const res = await axiosPrivate.get<IPaymentMethodsResponse[]>("/stripe/payment-methods");
+      return res.data;
+    } catch (err) {
+      return centralizedErrorHandler(err, rejectWithValue, dispatch);
+    }
+  },
+);
+
 export const addPaymentMethod = createAsyncThunk(
   "stripe/addPaymentMethod",
   async (method: ICreatePaymentMethod, { rejectWithValue, dispatch }) => {
     try {
-      const res = await paymentMethods.create(method);
+      const res = await axiosPrivate.post<IPaymentMethodsResponse>(
+        "/stripe/payment-methods",
+        method,
+      );
       return res.data;
     } catch (err) {
       return centralizedErrorHandler(err, rejectWithValue, dispatch);
@@ -19,61 +33,17 @@ export const addPaymentMethod = createAsyncThunk(
   },
 );
 
-export const getAllPaymentMethods = createAsyncThunk(
-  "stripe/getAllPaymentMethods",
-  async (_, { rejectWithValue, dispatch }) => {
-    try {
-      const res = await paymentMethods.list();
-      return res.data;
-    } catch (err) {
-      return centralizedErrorHandler(err, rejectWithValue, dispatch);
-    }
-  },
-);
-
-export const setDefaultPaymentMethod = createAsyncThunk(
-  "stripe/setDefaultPaymentMethod",
+export const setDefaultMethod = createAsyncThunk(
+  "stripe/setDefaultMethod",
   async (paymentMethodId: string, { rejectWithValue, dispatch }) => {
     try {
-      const res = await paymentMethods.setDefault(paymentMethodId);
-      return res.data;
-    } catch (err) {
-      return centralizedErrorHandler(err, rejectWithValue, dispatch);
-    }
-  },
-);
-
-// Payment Plans
-export const getAllPaymentPlans = createAsyncThunk(
-  "stripe/getAllPaymentPlans",
-  async (_, { rejectWithValue, dispatch }) => {
-    try {
-      const res = await plans.list();
-      return res.data;
-    } catch (err) {
-      return centralizedErrorHandler(err, rejectWithValue, dispatch);
-    }
-  },
-);
-
-// Subscriptions
-export const subscribeToPlan = createAsyncThunk(
-  "stripe/subscribeToPlan",
-  async (subscription: ICreateSubscription, { rejectWithValue, dispatch }) => {
-    try {
-      const res = await subscriptions.create(subscription);
-      return res.data;
-    } catch (err) {
-      return centralizedErrorHandler(err, rejectWithValue, dispatch);
-    }
-  },
-);
-
-export const getAllSubscriptions = createAsyncThunk(
-  "stripe/getAllSubscriptions",
-  async (_, { rejectWithValue, dispatch }) => {
-    try {
-      const res = await subscriptions.list();
+      const res = await axiosPrivate.get<IPaymentMethodsResponse>(
+        `/stripe/payment-methods/${paymentMethodId}/set-as-default`,
+      );
+      await dispatch(getAllPaymentMethods());
+      showNotification({
+        message: "Default Payment Method Updated Successfully",
+      });
       return res.data;
     } catch (err) {
       return centralizedErrorHandler(err, rejectWithValue, dispatch);

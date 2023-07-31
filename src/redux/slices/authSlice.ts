@@ -1,44 +1,17 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import api from "../../config/api";
-import { IAuthUser, IRegisterUser } from "hexa-sdk/dist/app.api";
-import { centralizedErrorHandler } from "../commonSliceFunctions";
 
-interface User {
-  email: string;
-  password: string;
-}
-
-export const loginUser = createAsyncThunk(
-  "user/login",
-  async (user: User, { rejectWithValue, dispatch }) => {
-    localStorage.removeItem("token");
-    try {
-      const res = await api.userApi.login(user);
-      localStorage.setItem("token", res.data.accessToken);
-      return res.data;
-    } catch (err: any) {
-      return centralizedErrorHandler(err, rejectWithValue, dispatch);
-    }
-  },
-);
-
-export const registerUser = createAsyncThunk(
-  "user/register",
-  async (userInfo: IRegisterUser, { rejectWithValue, dispatch }) => {
-    try {
-      localStorage.removeItem("token");
-      const res = await api.userApi.register(userInfo);
-      localStorage.setItem("token", res.data.accessToken);
-      return res.data;
-    } catch (err: any) {
-      centralizedErrorHandler(err, rejectWithValue, dispatch);
-    }
-  },
-);
+import { createSlice } from "@reduxjs/toolkit";
+import IUserResponse from "../../interfaces/account/IUserResponse";
+import {
+  acceptInvitation,
+  businessLogin,
+  loginUser,
+  registerUser,
+  subscribeToPlan,
+} from "../api/authApi";
 
 export interface AuthState {
-  user?: IAuthUser;
+  user?: IUserResponse;
   token: string;
   loading: boolean;
   error?: string;
@@ -57,6 +30,10 @@ export const authSlice = createSlice({
       state.user = action.payload;
       state.token = action.payload.token;
     },
+    updateName: (state, action) => {
+      if (!state.user) return;
+      state.user.user.name = action.payload;
+    },
     logout: (state: AuthState) => {
       localStorage.clear();
       state.token = "";
@@ -72,6 +49,7 @@ export const authSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+      // Login User
       .addCase(loginUser.pending, (state) => {
         state.loading = true;
       })
@@ -85,6 +63,21 @@ export const authSlice = createSlice({
       .addCase(loginUser.rejected, (state) => {
         state.loading = false;
       })
+      // Business Login
+      .addCase(businessLogin.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(businessLogin.fulfilled, (state, action) => {
+        state.loading = false;
+        state.user = action.payload;
+        if (action.payload?.accessToken) {
+          state.token = action.payload.accessToken;
+        }
+      })
+      .addCase(businessLogin.rejected, (state) => {
+        state.loading = false;
+      })
+      // Register User
       .addCase(registerUser.pending, (state) => {
         state.loading = true;
       })
@@ -97,11 +90,40 @@ export const authSlice = createSlice({
       })
       .addCase(registerUser.rejected, (state) => {
         state.loading = false;
+      })
+      // Subscribe to Plan
+      .addCase(subscribeToPlan.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(subscribeToPlan.fulfilled, (state) => {
+        state.loading = false;
+        if (state.user) {
+          state.user.user.subscription = "active";
+        }
+      })
+      .addCase(subscribeToPlan.rejected, (state) => {
+        state.loading = false;
+      })
+      // Accept Invitation
+      .addCase(acceptInvitation.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(acceptInvitation.fulfilled, (state, action) => {
+        state.loading = false;
+        console.log(action.payload);
+
+        state.user = action.payload;
+        if (action.payload?.accessToken) {
+          state.token = action.payload.accessToken;
+        }
+      })
+      .addCase(acceptInvitation.rejected, (state) => {
+        state.loading = false;
       });
   },
 });
 
-export const { setAuthUser, logout, removeNylasToken } = authSlice.actions;
+export const { setAuthUser, logout, removeNylasToken, updateName } = authSlice.actions;
 
 const authReducer = authSlice.reducer;
 

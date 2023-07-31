@@ -7,7 +7,11 @@ import { toggleTheme } from "../redux/slices/themeSlice";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
-const UserButton = () => {
+type UserButtonProps = {
+  isUnsubscribed?: boolean;
+};
+
+const UserButton = ({ isUnsubscribed }: UserButtonProps) => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
@@ -33,9 +37,14 @@ const UserButton = () => {
         >
           {mode === "dark" ? t("lightMode") : t("darkMode")}
         </Menu.Item>
-        <Menu.Item onClick={() => navigate("/account/settings")} icon={<IconSettings size={14} />}>
-          Account Settings
-        </Menu.Item>
+        {!isUnsubscribed && (
+          <Menu.Item
+            onClick={() => navigate("/account/settings")}
+            icon={<IconSettings size={14} />}
+          >
+            Account Settings
+          </Menu.Item>
+        )}
 
         <Menu.Divider />
 
