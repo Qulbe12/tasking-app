@@ -29,7 +29,7 @@ export const businessLogin = createAsyncThunk(
   async (user: User & { businessCode: string }, { rejectWithValue, dispatch }) => {
     localStorage.removeItem("token");
     try {
-      const res = await axiosPrivate.post<IUserResponse>("/users/login", user);
+      const res = await axiosPrivate.post<IUserResponse>("/users/business-login", user);
       localStorage.setItem("token", res.data.accessToken);
       return res.data;
     } catch (err: any) {
