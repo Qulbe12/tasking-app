@@ -1,4 +1,9 @@
-import { createEmotionCache, MantineProvider } from "@mantine/core";
+import {
+  createEmotionCache,
+  MantineProvider,
+  MantineThemeOverride,
+  useMantineTheme,
+} from "@mantine/core";
 
 import { RouterProvider } from "react-router-dom";
 import router from "./Router";
@@ -12,14 +17,21 @@ const myCache = createEmotionCache({ key: "mantine", prepend: false });
 
 const Providers = () => {
   const { mode } = useAppSelector((state) => state.theme);
+
   const { isConnected } = useSockets();
+
+  const theme: MantineThemeOverride = {
+    colors: {},
+    primaryColor: "indigo",
+    primaryShade: 8,
+  };
 
   return (
     <MantineProvider
       emotionCache={myCache}
       withGlobalStyles
       withNormalizeCSS
-      theme={{ colorScheme: mode }}
+      theme={{ colorScheme: mode, ...theme }}
     >
       <NavigationProgress size={8} autoReset />
 

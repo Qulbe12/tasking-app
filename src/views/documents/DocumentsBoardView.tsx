@@ -447,9 +447,12 @@ const DocumentsBoardView = () => {
                               ch.oldVal
                             } to ${ch.val}`}
                           >
-                            <Text lineClamp={1} size="sm">{`${cl.by.name} ${ch.type} ${_(
-                              ch.key,
-                            ).startCase()} from ${ch.oldVal} to ${ch.val}`}</Text>
+                            <Group align="center" position="apart">
+                              <Text lineClamp={1} size="sm">{`${cl.by.name} ${ch.type} ${_(
+                                ch.key,
+                              ).startCase()} from ${ch.oldVal} to ${ch.val}`}</Text>
+                              <Text size="xs">{dayjs(cl.date).format("MM/DD/YY HH:mm")}</Text>
+                            </Group>
                           </Tooltip>
                         );
                       })}

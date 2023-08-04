@@ -14,7 +14,7 @@ import {
 
 export interface DocumentState {
   data: IDocument[];
-  loading: number;
+  loading: boolean;
   error?: string;
   loaders: {
     adding: string | null;
@@ -26,7 +26,7 @@ export interface DocumentState {
 }
 
 const initialState: DocumentState = {
-  loading: 0,
+  loading: false,
   data: [],
   loaders: {
     adding: null,
@@ -56,14 +56,14 @@ export const documentsSlice = createSlice({
       })
       // Get Documents
       .addCase(getDocuments.pending, (state) => {
-        state.loading += 1;
+        state.loading = true;
       })
       .addCase(getDocuments.fulfilled, (state, action) => {
         state.data = action.payload;
-        state.loading -= 1;
+        state.loading = false;
       })
       .addCase(getDocuments.rejected, (state) => {
-        state.loading -= 1;
+        state.loading = false;
       }) // Update Documents
       .addCase(updateDocument.pending, (state, action) => {
         state.loaders.updating = action.meta.requestId;
@@ -107,6 +107,8 @@ export const documentsSlice = createSlice({
         state.loaders.linkingDocument = true;
       })
       .addCase(addLinkedDocsAction.fulfilled, (state, action) => {
+        console.log(action.payload);
+
         const foundIndex = state.data.findIndex((d) => d.id === action.payload.id);
         state.data[foundIndex] = action.payload;
         state.loaders.linkingDocument = null;

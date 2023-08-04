@@ -16,6 +16,8 @@ import dayjs from "dayjs";
 import JSZip from "jszip";
 import fileSaver from "file-saver";
 
+import "./AnalyticsPage.scss";
+
 const AnalyticsPage = () => {
   const { data: templates } = useAppSelector((state) => state.templates);
   const { data: documents } = useAppSelector((state) => state.documents);
@@ -41,6 +43,7 @@ const AnalyticsPage = () => {
       { name: "description", header: "Description", defaultFlex: 1 },
       { name: "status", header: "Status", defaultFlex: 1 },
       { name: "priority", header: "Priority", defaultFlex: 1 },
+
       {
         name: "startDate",
         header: "Start Date",
@@ -56,6 +59,10 @@ const AnalyticsPage = () => {
         render: ({ value }: { value: string }) => new Date(value).toDateString(),
       },
     ];
+
+    if (!selectedTemplate) {
+      baseCols.splice(3, 0, { name: "type", header: "Type", defaultFlex: 1 });
+    }
 
     const foundTemplate = templates.find((t) => t.id === selectedTemplate);
 
@@ -252,7 +259,7 @@ const AnalyticsPage = () => {
           columns={columns}
           defaultGroupBy={[]}
           dataSource={filteredData}
-          className="h-screen"
+          className="data-grid"
         />
       </div>
       <h2>

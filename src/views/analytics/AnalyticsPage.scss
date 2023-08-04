@@ -1,5 +1,5 @@
 $DATAGRID_THEME_NAME: "default-dark";
-$INOVUA_DATAGRID_ACCENT_COLOR: red;
+$INOVUA_DATAGRID_ACCENT_COLOR: #1864ab;
 
 @import "@inovua/reactdatagrid-community/style/theme/default-dark/index";
 
@@ -8,4 +8,8 @@ th,
 td {
   border: 1px solid black !important;
   border-collapse: collapse !important;
+}
+
+.data-grid {
+  height: calc(100vh - 240px);
 }

@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { IconArtboard, IconLayout, IconMail, IconNews } from "@tabler/icons";
 import { ThemeIcon, UnstyledButton, Group, Tooltip } from "@mantine/core";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { useAppSelector } from "../redux/store";
 
 interface MainLinkProps {
   icon: React.ReactNode;
@@ -44,13 +45,26 @@ function MainLink({ icon, color, label, to }: MainLinkProps) {
 
 export function MainLinks() {
   const { t } = useTranslation();
+  const { activeBoard } = useAppSelector((state) => state.boards);
 
-  const mainLinks: MainLinkProps[] = [
-    { icon: <IconArtboard size={16} />, color: "blue", label: t("workspaces"), to: "/" },
-    { icon: <IconLayout size={16} />, color: "blue", label: t("boards"), to: "/workspaces/boards" },
-    { icon: <IconMail size={16} />, color: "violet", label: "Email", to: "/board/emails" },
-    { icon: <IconNews size={16} />, color: "pink", label: t("templates"), to: "/templates" },
-  ];
+  const mainLinks: MainLinkProps[] = useMemo(() => {
+    const links = [
+      { icon: <IconArtboard size={16} />, color: "blue", label: t("workspaces"), to: "/" },
+
+      { icon: <IconMail size={16} />, color: "violet", label: "Email", to: "/board/emails" },
+      { icon: <IconNews size={16} />, color: "pink", label: t("templates"), to: "/templates" },
+    ];
+
+    if (activeBoard) {
+      links.splice(1, 0, {
+        icon: <IconLayout size={16} />,
+        color: "blue",
+        label: activeBoard ? "Board" : t("boards"),
+        to: "/board",
+      });
+    }
+    return links;
+  }, [activeBoard]);
 
   const links = mainLinks.map((link) => <MainLink {...link} key={link.label} />);
 

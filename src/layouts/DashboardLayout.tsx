@@ -35,7 +35,7 @@ const DashboardLayout = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
-  const { handleWorkspaceChange, loadingText, loadingValue } = useChangeWorkspace();
+  const { loadingText, loadingValue } = useChangeWorkspace();
   const {
     handleBoardChange,
     loadingText: boardLoadingText,
@@ -44,7 +44,7 @@ const DashboardLayout = () => {
 
   const location = useLocation();
   const { search, filtersOpen } = useAppSelector((state) => state.filters);
-  const { activeWorkspace, data: workspaces } = useAppSelector((state) => state.workspaces);
+  const { activeWorkspace } = useAppSelector((state) => state.workspaces);
   const { activeBoard, data: boards } = useAppSelector((state) => state.boards);
   const { user } = useAppSelector((state) => state.auth);
 
@@ -86,33 +86,15 @@ const DashboardLayout = () => {
 
               <Breadcrumbs ml="xl" separator="→">
                 {activeWorkspace && (
-                  <Menu shadow="md" width={200}>
-                    <Menu.Target>
-                      <Tooltip label="Workspace">
-                        <Anchor size="xl" variant="text">
-                          {activeWorkspace.name}
-                        </Anchor>
-                      </Tooltip>
-                    </Menu.Target>
-
-                    <Menu.Dropdown>
-                      <Menu.Label>Workspaces</Menu.Label>
-                      {workspaces.map((w) => {
-                        return (
-                          <Menu.Item
-                            key={w.id}
-                            onClick={() => {
-                              const foundWorkspace = workspaces.find((ws) => ws.id === w.id);
-                              if (!foundWorkspace) return;
-                              handleWorkspaceChange(foundWorkspace);
-                            }}
-                          >
-                            {w.name}
-                          </Menu.Item>
-                        );
-                      })}
-                    </Menu.Dropdown>
-                  </Menu>
+                  <Anchor
+                    size="xl"
+                    variant="text"
+                    onClick={() => {
+                      navigate("/");
+                    }}
+                  >
+                    {activeWorkspace.name}
+                  </Anchor>
                 )}
 
                 {activeBoard && (

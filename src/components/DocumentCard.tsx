@@ -43,16 +43,18 @@ const DocumentCard = ({
       <Flex align="center" justify="space-between">
         <Flex gap="md">
           {linkedView && (
-            <ActionIcon
-              color="red"
-              size="sm"
-              onClick={(e) => {
-                e.stopPropagation();
-                onUnlinkIconClick && onUnlinkIconClick();
-              }}
-            >
-              <IconUnlink />
-            </ActionIcon>
+            <Tooltip label="Unlink Document">
+              <ActionIcon
+                color="red"
+                size="sm"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onUnlinkIconClick && onUnlinkIconClick();
+                }}
+              >
+                <IconUnlink />
+              </ActionIcon>
+            </Tooltip>
           )}
           <Text weight="bold">{document?.title}</Text>
         </Flex>

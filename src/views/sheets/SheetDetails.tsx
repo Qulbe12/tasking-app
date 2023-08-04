@@ -3,6 +3,7 @@ import { useLocation } from "react-router-dom";
 import { IRecord, ISheetDetailedResponse } from "../../interfaces/sheets/ISheetDetailedResponse";
 import {
   ActionIcon,
+  Badge,
   Card,
   Drawer,
   Flex,
@@ -12,6 +13,7 @@ import {
   LoadingOverlay,
   NavLink,
   Paper,
+  Stack,
   Text,
   Title,
 } from "@mantine/core";
@@ -92,41 +94,58 @@ const SheetDetails = () => {
     <Paper>
       <LoadingOverlay visible={loading} />
 
-      <Flex gap="md" align={"center"}>
+      <Flex gap="md" align={"end"} direction="row">
         <Title order={4}>{pageTitle}</Title>
+        <Text> {selectedPage?.name}</Text>
       </Flex>
-      <Filter onChange={(e) => setTagFilter(e)} options={detailedResponse?.tags || []} />
+      {/* <Filter onChange={(e) => setTagFilter(e)} options={detailedResponse?.tags || []} /> */}
 
       <Grid h="84vh">
-        <Grid.Col p="md" span={10}>
-          <Grid>
+        <Grid.Col span={1}>
+          <Stack>
             {filteredRecords.map((r) => {
               return (
-                <Grid.Col key={r.id} span="content">
-                  <Flex
-                    onClick={() => {
-                      setSelectedPage({
-                        id: r.id,
-                        name: r.code,
-                        url: r.file.url,
-                      });
-                    }}
-                    direction="column"
-                    align="center"
-                    justify="center"
-                    className="hover:scale-110 cursor-pointer"
-                  >
-                    <Image src={r.thumbnail.url} maw={150} />
-                    {r.code}
-                  </Flex>
-                </Grid.Col>
+                <Flex
+                  key={r.id}
+                  onClick={() => {
+                    setSelectedPage({
+                      id: r.id,
+                      name: r.code,
+                      url: r.file.url,
+                    });
+                  }}
+                  direction="column"
+                  align="center"
+                  justify="center"
+                  className="hover:scale-110 cursor-pointer"
+                >
+                  <Image src={r.thumbnail.url} maw={150} />
+                  {r.code}
+                </Flex>
               );
             })}
-          </Grid>
+          </Stack>
+        </Grid.Col>
+        <Grid.Col p="md" span={9}>
+          {detailedResponse && selectedPage && <SheetPdfViewer file={selectedPage} />}
         </Grid.Col>
         <Grid.Col span={2}>
           <Paper h="100%">
-            <Card h="100%">
+            <Card h="30%" mb="md">
+              <Stack mb="xs">
+                <Text>Versions:</Text>
+                <Grid>
+                  {detailedResponse?.tags.map((t) => {
+                    return (
+                      <Grid.Col span="content" key={t}>
+                        <Badge>{t}</Badge>
+                      </Grid.Col>
+                    );
+                  })}
+                </Grid>
+              </Stack>
+            </Card>
+            <Card h="70%">
               <Group position="apart" mb="xs">
                 <Text>Versions:</Text>
                 <ActionIcon size="sm" onClick={toggleSheetVersionModal}>
@@ -161,8 +180,8 @@ const SheetDetails = () => {
         opened={showSheetVersionModal}
         title={"Create New Version"}
       />
-      <Drawer
-        title={"Page " + selectedPage?.name.split("_")[1]}
+      {/* <Drawer
+        title={selectedPage?.name}
         padding="md"
         size={"100%"}
         position="right"
@@ -170,7 +189,7 @@ const SheetDetails = () => {
         onClose={() => setSelectedPage(null)}
       >
         {detailedResponse && selectedPage && <SheetPdfViewer file={selectedPage} />}
-      </Drawer>
+      </Drawer> */}
     </Paper>
   );
 };

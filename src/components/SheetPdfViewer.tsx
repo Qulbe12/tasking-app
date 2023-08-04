@@ -78,9 +78,8 @@ export default function SheetPdfViewer({ file }: SheetPdfViewerProps) {
 
       setLoadingAnnotations(true);
 
-      //   const res = await axiosPrivate.get(
-      //     `/documents/${selectedDocument.id}/annotations/${attachment.id}`,
-      //   );
+      const res = await axiosPrivate.get(`/annotations/${file.id}`);
+      console.log("ANNOTATIONS", res.data);
 
       setLoadingAnnotations(false);
 
@@ -90,6 +89,10 @@ export default function SheetPdfViewer({ file }: SheetPdfViewerProps) {
           theme: mode === "dark" ? "DARK" : "LIGHT",
           document: file.url,
           baseUrl: `${window.location.protocol}//${window.location.host}/`,
+          instantJSON: {
+            annotations: res.data,
+            format: "https://pspdfkit.com/instant-json/v1",
+          },
         });
         const viewState = pspdfInstance.viewState;
 
@@ -148,14 +151,69 @@ export default function SheetPdfViewer({ file }: SheetPdfViewerProps) {
     return () => {
       PSPDFKit && PSPDFKit.unload(container);
     };
-  }, []);
+  }, [file]);
 
   return (
-    <div>
-      {/* @ts-ignore */}
-      <div ref={containerRef} style={{ width: "100%", height: "90vh" }} />
+    <div style={{ height: "100%" }}>
+      {/* <Flex justify="flex-end">
+        {annotsChanged && (
+          <Button
+            leftIcon={<IconRectangle size={14} />}
+            variant="outline"
+            onClick={async () => {
+              try {
+                const annots = await instance?.exportInstantJSON();
 
-      <div className="absolute right-8 top-28">
+                const res = await axiosPrivate.patch(
+                  `/annotations/${file.id}`,
+                  annots?.annotations,
+                );
+                showNotification({
+                  message: "Annotation changes have been saved",
+                });
+                setAnnotsChanged(false);
+              } catch (error: any) {
+                const err: IErrorResponse = error;
+                showError(err.response?.data.message);
+              }
+            }}
+          >
+            Save Annotations
+          </Button>
+        )}
+        <Menu shadow="md" width={200}>
+          <Menu.Target>
+            <Button color="gray" leftIcon={<IconFileExport size={14} />} variant="subtle">
+              Export
+            </Button>
+          </Menu.Target>
+
+          <Menu.Dropdown>
+            <Menu.Item
+              onClick={() => {
+                exportPdf(false);
+              }}
+              icon={<IconFileExport size={14} />}
+            >
+              With Annotations
+            </Menu.Item>
+            <Menu.Item
+              onClick={() => {
+                exportPdf(true);
+              }}
+              icon={<IconFileExport size={14} />}
+            >
+              Without Annotations
+            </Menu.Item>
+          </Menu.Dropdown>
+        </Menu>
+      </Flex>
+
+      {loadingAnnotations && <Text>Loading annotations...</Text>} */}
+      {/* @ts-ignore */}
+      <div ref={containerRef} style={{ width: "100%", height: "100%" }} />
+
+      {/* <div className="absolute right-8 top-28">
         <Flex direction="column" gap="md">
           <Tooltip label="Double middle click to toggle zoom or scroll">
             <ActionIcon color="gray" variant="filled" size="lg" disabled={!wheelScroll}>
@@ -163,7 +221,7 @@ export default function SheetPdfViewer({ file }: SheetPdfViewerProps) {
             </ActionIcon>
           </Tooltip>
         </Flex>
-      </div>
+      </div> */}
     </div>
   );
 }

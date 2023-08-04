@@ -22,8 +22,8 @@ const AuthLayout = () => {
       <div className="col-span-4">
         <Outlet />
       </div>
-      <div className="bg-indigo-500 col-span-8 flex items-center justify-center">
-        <Title color="white">Hexa</Title>
+      <div className="bg-indigo-600 col-span-8 flex items-center justify-center">
+        <Title color="white">Hexadesk</Title>
       </div>
       <div className="absolute top-0 right-0 p-4">
         <Select
