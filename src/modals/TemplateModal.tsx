@@ -175,6 +175,7 @@ const TemplateModal = ({ onClose, opened, template }: ModalProps & TemplateModal
         centered
         opened={newFieldModal}
         onClose={() => {
+          setFieldVals({ label: "", options: [], required: false, type: FieldType.Text });
           setNewFieldModal(false);
         }}
         title="Add new field"
@@ -206,8 +207,10 @@ const TemplateModal = ({ onClose, opened, template }: ModalProps & TemplateModal
           fieldVals.type === FieldType.Radio ||
           fieldVals.type === FieldType.Select ? (
             <MultiSelect
-              label="Creatable MultiSelect"
+              label="Options"
               data={[]}
+              withAsterisk
+              required
               placeholder="Select items"
               searchable
               creatable
@@ -215,7 +218,6 @@ const TemplateModal = ({ onClose, opened, template }: ModalProps & TemplateModal
               onCreate={(query) => {
                 const item = query;
                 setFieldVals({ ...fieldVals, options: [...fieldVals.options, item] });
-
                 return item;
               }}
             />

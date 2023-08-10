@@ -27,6 +27,7 @@ import { IconTrash } from "@tabler/icons";
 import ISheetCreateVersion from "../interfaces/sheets/ISheetCreateVersion";
 import { createSheetVersion } from "../redux/api/sheetsApi";
 import { ISheetDetailedResponse } from "../interfaces/sheets/ISheetDetailedResponse";
+import { t } from "i18next";
 
 type SheetVersionModalProps = {
   sheet?: ISheetDetailedResponse | null;
@@ -177,7 +178,7 @@ const SheetVersionModal = ({
                             <Image maw={240} src={s.codeMeta.url} />
                             <Stack>
                               <TextInput
-                                label="Sheet Code"
+                                label={t("sheetCode")}
                                 value={newCodes[i]}
                                 onChange={(e) => {
                                   const oldCodes = [...newCodes];
@@ -188,9 +189,9 @@ const SheetVersionModal = ({
                             </Stack>
                             <Stack>
                               <MultiSelect
-                                label="Tags"
+                                label={t("tags")}
                                 data={tags}
-                                placeholder="Select tags"
+                                placeholder={t("selectTags") || ""}
                                 searchable
                                 creatable
                                 getCreateLabel={(query) => `+ Create ${query}`}
@@ -216,7 +217,7 @@ const SheetVersionModal = ({
         </Card>
         <Group mt="md" position="right">
           <Button type="submit" disabled={!sheetUploaded} loading={addingVersion}>
-            Create Version
+            {t("createVersion")}
           </Button>
         </Group>
       </form>

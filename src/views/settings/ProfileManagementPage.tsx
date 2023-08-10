@@ -5,8 +5,10 @@ import { axiosPrivate } from "../../config/axios";
 import { showNotification } from "@mantine/notifications";
 import { useAppDispatch, useAppSelector } from "../../redux/store";
 import { updateName } from "../../redux/slices/authSlice";
+import { useTranslation } from "react-i18next";
 
 const ProfileManagementPage = () => {
+  const { t } = useTranslation();
   const dispatch = useAppDispatch();
 
   const { user } = useAppSelector((state) => state.auth);
@@ -42,19 +44,19 @@ const ProfileManagementPage = () => {
     <Paper mt="md">
       <Card>
         <Title mb="md" order={4}>
-          Update User Information
+          {t("updateUserInformation")}
         </Title>
         <Stack>
           <TextInput
             placeholder={user?.user.name}
-            label="Name"
+            label={t("name")}
             withAsterisk
             value={name}
             onChange={(e) => setName(e.target.value)}
           />
 
           <Button loading={loading} onClick={handleNameUpdate}>
-            Update
+            {t("update")}
           </Button>
         </Stack>
       </Card>

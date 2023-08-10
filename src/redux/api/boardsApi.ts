@@ -2,7 +2,11 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import { ICreateBoard, IUpdateBoard } from "hexa-sdk/dist/app.api";
 import api from "../../config/api";
 import { centralizedErrorHandler } from "../commonSliceFunctions";
-import { addBoardToWorkspace } from "../slices/workspacesSlice";
+import {
+  addBoardToWorkspace,
+  removeBoardFromWorkspace,
+  updateBoardFromWorkspace,
+} from "../slices/workspacesSlice";
 
 const { boardApi } = api;
 const { create, get, getById, update, remove, addMembers, removeMember } = boardApi;
@@ -54,6 +58,7 @@ export const updateBoard = createAsyncThunk(
   async (data: { id: string; board: IUpdateBoard }, { rejectWithValue, dispatch }) => {
     try {
       const res = await update(data.id, data.board);
+      dispatch(updateBoardFromWorkspace(res.data));
       return res.data;
     } catch (err) {
       return centralizedErrorHandler(err, rejectWithValue, dispatch);
@@ -66,6 +71,9 @@ export const deleteBoard = createAsyncThunk(
   async (id: string, { rejectWithValue, dispatch }) => {
     try {
       const res = await remove(id);
+
+      dispatch(removeBoardFromWorkspace(res.data.id));
+
       return res.data;
     } catch (err) {
       return centralizedErrorHandler(err, rejectWithValue, dispatch);

@@ -13,7 +13,7 @@ import {
   TextInput,
 } from "@mantine/core";
 import { useForm, yupResolver } from "@mantine/form";
-import { DocumentPriority, DocumentStatus, IField } from "hexa-sdk/dist/app.api";
+import { DocumentPriority, DocumentStatus, FieldType, IField } from "hexa-sdk/dist/app.api";
 import { useMemo, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../redux/store";
 import CommonModalProps from "./CommonModalProps";
@@ -27,8 +27,10 @@ import { showError } from "../redux/commonSliceFunctions";
 import { IconX } from "@tabler/icons";
 import * as yup from "yup";
 import { defaultDocumentFields } from "../constants/defaultDocumentFields";
+import { useTranslation } from "react-i18next";
 
 const DocumentModal = ({ onClose, opened, title }: CommonModalProps) => {
+  const { t } = useTranslation();
   const dispatch = useAppDispatch();
 
   const { data, loading } = useAppSelector((state) => state.templates);
@@ -50,7 +52,11 @@ const DocumentModal = ({ onClose, opened, title }: CommonModalProps) => {
     };
     fields?.forEach((f) => {
       if (f.required) {
-        schema[f.key] = yup.string().required(`${f.label} is required`);
+        if (f.type === FieldType.Multiselect) {
+          schema[f.key] = yup.array().required(`${f.label} is required`);
+        } else {
+          schema[f.key] = yup.string().required(`${f.label} is required`);
+        }
       } else {
         schema[f.key] = yup.string();
       }
@@ -112,8 +118,8 @@ const DocumentModal = ({ onClose, opened, title }: CommonModalProps) => {
           <Select
             value={selectedTemplate}
             searchable
-            label="Document Type"
-            placeholder="Pick one"
+            label={t("documentType")}
+            placeholder={t("pickOne") || "Pick One"}
             disabled={!!loading || data.length <= 0}
             onChange={(e) => {
               setSelectedTemplate(e);
@@ -144,18 +150,22 @@ const DocumentModal = ({ onClose, opened, title }: CommonModalProps) => {
 
           {selectedTemplate && (
             <Stack>
-              <TextInput label="Title" withAsterisk {...form.getInputProps("title")} />
-              <Textarea label="Description" withAsterisk {...form.getInputProps("description")} />
+              <TextInput label={t("title")} withAsterisk {...form.getInputProps("title")} />
+              <Textarea
+                label={t("description")}
+                withAsterisk
+                {...form.getInputProps("description")}
+              />
               <DatePicker
                 aria-errormessage="Invalid Start Date"
-                label="Start Date"
+                label={t("startDate")}
                 withAsterisk
                 {...form.getInputProps("startDate")}
               />
-              <DatePicker label="Due Date" withAsterisk {...form.getInputProps("dueDate")} />
+              <DatePicker label={t("dueDate")} withAsterisk {...form.getInputProps("dueDate")} />
               <Select
                 {...form.getInputProps("priority")}
-                label="Priority"
+                label={t("priority")}
                 placeholder="Pick one"
                 withAsterisk
                 data={[
@@ -166,7 +176,7 @@ const DocumentModal = ({ onClose, opened, title }: CommonModalProps) => {
               />
               <Select
                 {...form.getInputProps("status")}
-                label="Status"
+                label={t("status")}
                 placeholder="Pick one"
                 withAsterisk
                 data={[
@@ -184,7 +194,7 @@ const DocumentModal = ({ onClose, opened, title }: CommonModalProps) => {
 
           {selectedTemplate && (
             <Text>
-              Attachments <small>({attachments.length}/10)</small>:
+              {t("attachments")} <small>({attachments.length}/10)</small>:
             </Text>
           )}
 
@@ -221,7 +231,7 @@ const DocumentModal = ({ onClose, opened, title }: CommonModalProps) => {
 
           <Group position="right" mt="md">
             <Button disabled={!selectedTemplate} loading={!!docLoaders.adding} type="submit">
-              Create Document
+              {t("createDocument")}
             </Button>
           </Group>
         </Stack>

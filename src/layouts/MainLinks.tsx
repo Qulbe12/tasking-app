@@ -51,7 +51,7 @@ export function MainLinks() {
     const links = [
       { icon: <IconArtboard size={16} />, color: "blue", label: t("workspaces"), to: "/" },
 
-      { icon: <IconMail size={16} />, color: "violet", label: "Email", to: "/board/emails" },
+      { icon: <IconMail size={16} />, color: "violet", label: t("email"), to: "/board/emails" },
       { icon: <IconNews size={16} />, color: "pink", label: t("templates"), to: "/templates" },
     ];
 
@@ -59,7 +59,7 @@ export function MainLinks() {
       links.splice(1, 0, {
         icon: <IconLayout size={16} />,
         color: "blue",
-        label: activeBoard ? "Board" : t("boards"),
+        label: activeBoard ? t("board") : t("boards"),
         to: "/board",
       });
     }

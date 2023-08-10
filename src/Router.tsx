@@ -46,6 +46,12 @@ const router = createBrowserRouter([
             path: "/",
             element: <WorkspacesList />,
           },
+        ],
+      },
+      {
+        path: "/",
+        element: <DashboardLayout />,
+        children: [
           {
             path: "/account/settings",
             element: <SettingsLayout />,

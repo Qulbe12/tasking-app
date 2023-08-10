@@ -37,6 +37,37 @@ export const workspacesSlice = createSlice({
     setActiveWorkspace: (state, action: PayloadAction<IWorkspaceResponse>) => {
       state.activeWorkspace = action.payload;
     },
+    removeBoardFromWorkspace: (state, action) => {
+      let workspaceIndex = 0;
+
+      state.data.map((w, wi) => {
+        w.boards.map((b) => {
+          if (b.id === action.payload) {
+            workspaceIndex = wi;
+          }
+        });
+      });
+
+      state.data[workspaceIndex] = {
+        ...state.data[workspaceIndex],
+        boards: state.data[workspaceIndex].boards.filter((b) => b.id !== action.payload),
+      };
+    },
+    updateBoardFromWorkspace: (state, action) => {
+      let workspaceIndex = 0;
+      let boardIndex = 0;
+
+      state.data.map((w, wi) => {
+        w.boards.map((b, bi) => {
+          if (b.id === action.payload.id) {
+            workspaceIndex = wi;
+            boardIndex = bi;
+          }
+        });
+      });
+
+      state.data[workspaceIndex].boards[boardIndex] = action.payload;
+    },
     addBoardToWorkspace: (
       state,
       action: PayloadAction<{ workspaceId: string; board: IEntityBoard }>,
@@ -103,6 +134,11 @@ export const workspacesSlice = createSlice({
 
 const workspacesReducer = workspacesSlice.reducer;
 
-export const { setActiveWorkspace, addBoardToWorkspace } = workspacesSlice.actions;
+export const {
+  setActiveWorkspace,
+  addBoardToWorkspace,
+  removeBoardFromWorkspace,
+  updateBoardFromWorkspace,
+} = workspacesSlice.actions;
 
 export default workspacesReducer;

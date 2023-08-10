@@ -3,8 +3,10 @@ import React, { useState } from "react";
 import { showError } from "../../redux/commonSliceFunctions";
 import { axiosPrivate } from "../../config/axios";
 import { showNotification } from "@mantine/notifications";
+import { useTranslation } from "react-i18next";
 
 const SecurityManagementPage = () => {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
 
   const [oldPassword, setOldPassword] = useState("");
@@ -45,23 +47,23 @@ const SecurityManagementPage = () => {
     <Paper mt="md">
       <Card>
         <Title mb="md" order={4}>
-          Update Password
+          {t("updatePassword")}
         </Title>
         <Stack>
           <TextInput
-            label="Old Password"
+            label={t("oldPassword")}
             withAsterisk
             value={oldPassword}
             onChange={(e) => setOldPassword(e.target.value)}
           />
           <TextInput
-            label="New Password"
+            label={t("newPassword")}
             withAsterisk
             value={newPassword}
             onChange={(e) => setNewPassword(e.target.value)}
           />
           <Button loading={loading} onClick={handleUpdatePassword}>
-            Update
+            {t("update")}
           </Button>
         </Stack>
       </Card>

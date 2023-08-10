@@ -2,35 +2,39 @@ import { Checkbox, MultiSelect, NumberInput, Radio, Select, TextInput } from "@m
 import { FieldType, IField } from "hexa-sdk/dist/app.api";
 import { DatePicker } from "@mantine/dates";
 import React from "react";
-import { UseFormReturnType } from "@mantine/form";
 
 type UpdateDynamicFieldProps = {
   field: IField;
-  form?: UseFormReturnType<any>;
   value?: string;
   onChange?: (e: string | boolean | Date | string[]) => void;
 };
 
-const UpdateDynamicField = ({ field, form, value, onChange }: UpdateDynamicFieldProps) => {
+const UpdateDynamicField = ({ field, value, onChange }: UpdateDynamicFieldProps) => {
   switch (field.type) {
     case FieldType.Text:
       return (
         <TextInput
           withAsterisk={field.required}
           label={field.label}
-          {...form?.getInputProps(field.key)}
           value={value}
           onChange={(e) => onChange && onChange(e.target.value)}
+        />
+      );
+    case FieldType.Number:
+      return (
+        <NumberInput
+          withAsterisk={field.required}
+          label={field.label}
+          value={parseInt(value || "")}
+          onChange={(e) => onChange && onChange(`${e}`)}
         />
       );
     case FieldType.Checkbox:
       return (
         <Checkbox
           label={field.label}
-          {...form?.getInputProps(field.key, { type: "checkbox" })}
-          value={value}
-          checked={value}
-          onChange={(e) => onChange && onChange(e.target.checked)}
+          checked={value === "true" ? true : false}
+          onChange={(e) => onChange && onChange(e.target.checked ? "true" : "false")}
         />
       );
     case FieldType.Date:
@@ -39,7 +43,7 @@ const UpdateDynamicField = ({ field, form, value, onChange }: UpdateDynamicField
           withAsterisk={field.required}
           placeholder="Pick date"
           label={field.label}
-          {...form?.getInputProps(field.key)}
+          value={new Date(value || "")}
           onChange={(e) => {
             if (!e) return;
             onChange && onChange(e);
@@ -49,31 +53,26 @@ const UpdateDynamicField = ({ field, form, value, onChange }: UpdateDynamicField
     case FieldType.Multiselect:
       return (
         <MultiSelect
+          onClick={() => {
+            console.log(value);
+          }}
           data={field.options}
           label={field.label}
+          value={value?.split(",")}
           placeholder="Pick values"
           withAsterisk={field.required}
-          {...form?.getInputProps(field.key)}
-          onChange={(e) => onChange && onChange(e)}
+          onChange={(e) => onChange && onChange(e.join())}
         />
       );
-    case FieldType.Number:
-      return (
-        <NumberInput
-          withAsterisk={field.required}
-          label={field.label}
-          value={parseInt(value || "")}
-          {...form?.getInputProps(field.key)}
-          onChange={(e) => onChange && onChange(`${e}`)}
-        />
-      );
+
     case FieldType.Radio:
       return (
         <Radio.Group
           name={field.key}
           label={field.label}
           withAsterisk={field.required}
-          {...form?.getInputProps(field.key)}
+          value={value}
+          onChange={(e) => onChange && onChange(e)}
         >
           {field.options.map((o, i) => {
             return <Radio key={o + i} value={o} label={o} />;
@@ -83,10 +82,11 @@ const UpdateDynamicField = ({ field, form, value, onChange }: UpdateDynamicField
     case FieldType.Select:
       return (
         <Select
-          {...form?.getInputProps(field.key)}
           label={field.label}
           placeholder="Pick one"
           data={field.options}
+          value={value}
+          onChange={(e) => onChange && onChange(e || "")}
         />
       );
     default:

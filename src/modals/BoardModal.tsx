@@ -1,6 +1,5 @@
 import { Button, Group, Modal, Stack, Textarea, TextInput } from "@mantine/core";
 import { useForm, yupResolver } from "@mantine/form";
-import { IBoard } from "hexa-sdk/dist/app.api";
 import React, { useEffect } from "react";
 import { addBoard, updateBoard } from "../redux/api/boardsApi";
 
@@ -8,9 +7,10 @@ import { useAppDispatch, useAppSelector } from "../redux/store";
 import CommonModalProps from "./CommonModalProps";
 import * as yup from "yup";
 import { useTranslation } from "react-i18next";
+import { IEntityBoard } from "../interfaces/IEntityBoard";
 
 type BoardModalProps = {
-  board?: IBoard;
+  board?: IEntityBoard;
 };
 
 const BoardModal = ({ opened, onClose, title, board }: CommonModalProps & BoardModalProps) => {
@@ -43,7 +43,14 @@ const BoardModal = ({ opened, onClose, title, board }: CommonModalProps & BoardM
   }, [board]);
 
   return (
-    <Modal opened={opened} onClose={onClose} title={title}>
+    <Modal
+      opened={opened}
+      onClose={() => {
+        form.reset();
+        onClose();
+      }}
+      title={title}
+    >
       <form
         onSubmit={form.onSubmit(async (values) => {
           if (!board) {

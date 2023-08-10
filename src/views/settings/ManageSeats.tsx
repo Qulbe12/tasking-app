@@ -6,8 +6,10 @@ import { getBusinessInfo } from "../../redux/api/businessApi";
 import { useDisclosure } from "@mantine/hooks";
 import PurchaseSeatsModal from "../../modals/PurchaseSeatsModal";
 import InviteUserModal from "../../modals/InviteUserModal";
+import { useTranslation } from "react-i18next";
 
 const ManageSeats = () => {
+  const { t } = useTranslation();
   const dispatch = useAppDispatch();
 
   const { businessInfo, loading } = useAppSelector((state) => state.business);
@@ -27,25 +29,25 @@ const ManageSeats = () => {
         <Card>
           <Group align="center" position="apart">
             <Title mb="md" order={4}>
-              Manage Seats
+              {t("manageSeats")}
             </Title>
             <Button size="xs" leftIcon={<IconPlus size={12} />} onClick={togglePurchaseModal}>
-              Purchase Seats
+              {t("purchaseSeats")}
             </Button>
           </Group>
 
           <Group>
             <Text>
-              <b>{businessInfo?.availableSeats}</b> Seats Available
+              <b>{businessInfo?.availableSeats}</b> {t("seatsAvailable")}
             </Text>
           </Group>
 
           <Table striped my="md">
             <thead>
               <tr>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Role</th>
+                <th>{t("name")}</th>
+                <th>{t("email")}</th>
+                <th>{t("role")}</th>
               </tr>
             </thead>
             <tbody>
@@ -66,7 +68,7 @@ const ManageSeats = () => {
               <tr>
                 <td colSpan={4}>
                   <Button w="100%" onClick={toggleInviteModal}>
-                    Invite User
+                    {t("inviteUsers")}
                   </Button>
                 </td>
               </tr>
@@ -76,11 +78,11 @@ const ManageSeats = () => {
       )}
 
       <Card mt="md">
-        <Title order={4}>Invited Users</Title>
+        <Title order={4}>{t("invitedUsers")}</Title>
         <Table>
           <thead>
             <tr>
-              <th>Email</th>
+              <th>{t("email")}</th>
             </tr>
           </thead>
           <tbody>

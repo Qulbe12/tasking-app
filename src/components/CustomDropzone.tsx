@@ -2,12 +2,14 @@ import React from "react";
 import { Group, Text, useMantineTheme } from "@mantine/core";
 import { IconUpload, IconX, IconFile } from "@tabler/icons";
 import { Dropzone, DropzoneProps, FileWithPath, PDF_MIME_TYPE } from "@mantine/dropzone";
+import { useTranslation } from "react-i18next";
 
 type CustomDropzoneProps = {
   isSheet?: boolean;
 };
 
 const CustomDropzone = (props: Partial<DropzoneProps> & CustomDropzoneProps) => {
+  const { t } = useTranslation();
   const theme = useMantineTheme();
 
   return (
@@ -43,12 +45,10 @@ const CustomDropzone = (props: Partial<DropzoneProps> & CustomDropzoneProps) => 
 
         <div>
           <Text size="xl" inline>
-            Drag document here or click to select the file
+            {t("dragDocument")}
           </Text>
           <Text size="sm" color="dimmed" inline mt={7}>
-            {props.isSheet
-              ? "Attach a sheet type pdf file"
-              : "Attach as many files as you like, each file should not exceed 5mb"}
+            {props.isSheet ? t("attachPdf") : t("attachMany")}
           </Text>
         </div>
       </Group>

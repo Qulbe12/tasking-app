@@ -14,8 +14,10 @@ import React, { useState } from "react";
 import CommonModalProps from "../../../modals/CommonModalProps";
 import { createGroup } from "../../../redux/api/groupsApi";
 import { useAppDispatch, useAppSelector } from "../../../redux/store";
+import { useTranslation } from "react-i18next";
 
 const CreateGroupModal = ({ onClose, opened }: CommonModalProps) => {
+  const { t } = useTranslation();
   const form = useForm<ICreateGroup>({
     initialValues: {
       name: "",
@@ -34,7 +36,7 @@ const CreateGroupModal = ({ onClose, opened }: CommonModalProps) => {
   const [ccUsers, setCcUsers] = useState<string[]>([]);
 
   return (
-    <Modal opened={opened} title={"Create New Group"} onClose={onClose}>
+    <Modal opened={opened} title={t("createNewGroup")} onClose={onClose}>
       <LoadingOverlay visible={!!loading} />
       <form
         onSubmit={form.onSubmit(async (values) => {
@@ -45,10 +47,10 @@ const CreateGroupModal = ({ onClose, opened }: CommonModalProps) => {
         })}
       >
         <Stack spacing={16}>
-          <TextInput label="Group Title" {...form.getInputProps("name")} />
+          <TextInput label={t("groupTitle")} {...form.getInputProps("name")} />
           <Select
-            label="Document Type"
-            placeholder="Pick one"
+            label={t("documentType")}
+            placeholder={t("pickOne")}
             data={data.map((d) => {
               return { label: d.name, value: d.id };
             })}
@@ -56,9 +58,9 @@ const CreateGroupModal = ({ onClose, opened }: CommonModalProps) => {
           />
 
           <MultiSelect
-            label="User Emails"
+            label={t("userEmails")}
             data={ccUsers}
-            placeholder="Select items"
+            placeholder={t("selectItems")}
             searchable
             creatable
             getCreateLabel={(query) => `+ Add ${query}`}
@@ -71,7 +73,7 @@ const CreateGroupModal = ({ onClose, opened }: CommonModalProps) => {
 
           <Group position="right">
             <Button loading={loaders.adding} type="submit">
-              Create
+              {t("create")}
             </Button>
           </Group>
         </Stack>

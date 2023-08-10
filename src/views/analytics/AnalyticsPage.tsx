@@ -17,8 +17,10 @@ import JSZip from "jszip";
 import fileSaver from "file-saver";
 
 import "./AnalyticsPage.scss";
+import { useTranslation } from "react-i18next";
 
 const AnalyticsPage = () => {
+  const { t } = useTranslation();
   const { data: templates } = useAppSelector((state) => state.templates);
   const { data: documents } = useAppSelector((state) => state.documents);
   const { mode } = useAppSelector((state) => state.theme);
@@ -39,21 +41,20 @@ const AnalyticsPage = () => {
   const columns = useMemo(() => {
     const baseCols = [
       //   { name: "type", header: "Type", defaultFlex: 1 },
-      { name: "title", header: "Document Title", defaultFlex: 1 },
-      { name: "description", header: "Description", defaultFlex: 1 },
-      { name: "status", header: "Status", defaultFlex: 1 },
-      { name: "priority", header: "Priority", defaultFlex: 1 },
-
+      { name: "title", header: t("title"), defaultFlex: 1 },
+      { name: "description", header: t("description"), defaultFlex: 1 },
+      { name: "status", header: t("status"), defaultFlex: 1 },
+      { name: "priority", header: t("priority"), defaultFlex: 1 },
       {
         name: "startDate",
-        header: "Start Date",
+        header: t("startDate"),
         defaultFlex: 1,
         groupBy: false,
         render: ({ value }: { value: string }) => new Date(value).toDateString(),
       },
       {
         name: "dueDate",
-        header: "Due Date",
+        header: t("dueDate"),
         defaultFlex: 1,
         groupBy: false,
         render: ({ value }: { value: string }) => new Date(value).toDateString(),
@@ -61,7 +62,7 @@ const AnalyticsPage = () => {
     ];
 
     if (!selectedTemplate) {
-      baseCols.splice(3, 0, { name: "type", header: "Type", defaultFlex: 1 });
+      baseCols.splice(3, 0, { name: "type", header: t("type"), defaultFlex: 1 });
     }
 
     const foundTemplate = templates.find((t) => t.id === selectedTemplate);
@@ -227,7 +228,7 @@ const AnalyticsPage = () => {
       <Flex justify="flex-end">
         <Menu shadow="md" width={300}>
           <Menu.Target>
-            <Button leftIcon={<IconPackgeExport size={14} />}>Export</Button>
+            <Button leftIcon={<IconPackgeExport size={14} />}>{t("export")}</Button>
           </Menu.Target>
 
           <Menu.Dropdown>

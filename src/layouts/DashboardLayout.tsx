@@ -63,6 +63,10 @@ const DashboardLayout = () => {
     return location.pathname.split("/")[1] === "board";
   }, [location.pathname]);
 
+  const isSettingsPage = useMemo(() => {
+    return location.pathname.includes("/account/settings");
+  }, [location.pathname]);
+
   return (
     <AppShell
       navbarOffsetBreakpoint="sm"
@@ -80,33 +84,32 @@ const DashboardLayout = () => {
             {/* LEFT SIDE */}
             <Flex align={"center"} gap="lg">
               <Burger opened={opened} onClick={toggle} aria-label={"Toggle Sidenav"} size="sm" />
-              {/* <div className="cursor-pointer" onClick={() => navigate("/")}>
-                HEXADESK
-              </div> */}
 
               <Breadcrumbs ml="xl" separator="→">
                 {activeWorkspace && (
-                  <Anchor
-                    size="xl"
-                    variant="text"
-                    onClick={() => {
-                      navigate("/");
-                    }}
-                  >
-                    {activeWorkspace.name}
-                  </Anchor>
+                  <Tooltip label={t("workspace")}>
+                    <Anchor
+                      size="xl"
+                      variant="text"
+                      onClick={() => {
+                        navigate("/");
+                      }}
+                    >
+                      {activeWorkspace.name}
+                    </Anchor>
+                  </Tooltip>
                 )}
 
                 {activeBoard && (
                   <Menu shadow="md" width={200}>
                     <Menu.Target>
-                      <Tooltip label="board">
+                      <Tooltip label={t("board")}>
                         <Anchor variant="text">{activeBoard.title}</Anchor>
                       </Tooltip>
                     </Menu.Target>
 
                     <Menu.Dropdown>
-                      <Menu.Label>Boards</Menu.Label>
+                      <Menu.Label>{t("boards")}</Menu.Label>
                       {boards.map((b) => {
                         return (
                           <Menu.Item
@@ -128,7 +131,7 @@ const DashboardLayout = () => {
             </Flex>
 
             {/* Center */}
-            {isBoardsPage && (
+            {(isBoardsPage || isSettingsPage) && (
               <Tabs
                 defaultValue="Work Items"
                 value={location.pathname}
@@ -188,7 +191,6 @@ const DashboardLayout = () => {
       }
     >
       <Outlet />
-
       <Modal
         opacity={0.8}
         opened={!!loadingText}
@@ -207,7 +209,6 @@ const DashboardLayout = () => {
           </div>
         </Center>
       </Modal>
-
       <Modal
         opacity={0.8}
         opened={!!boardLoadingText}

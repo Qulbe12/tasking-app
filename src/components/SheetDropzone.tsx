@@ -2,8 +2,10 @@ import React, { useRef } from "react";
 import { Button, Card, Center, Group, Text, useMantineTheme } from "@mantine/core";
 import { IconUpload, IconX, IconFile } from "@tabler/icons";
 import { Dropzone, DropzoneProps, FileWithPath, PDF_MIME_TYPE } from "@mantine/dropzone";
+import { useTranslation } from "react-i18next";
 
 const SheetDropzone = (props: Partial<DropzoneProps>) => {
+  const { t } = useTranslation();
   const theme = useMantineTheme();
   const openRef = useRef<() => void>(null);
 
@@ -37,10 +39,10 @@ const SheetDropzone = (props: Partial<DropzoneProps>) => {
 
           <div>
             <Text size="xl" inline>
-              Drag and drop document here
+              {t("dragAndDropHere")}
             </Text>
             <Text size="sm" color="dimmed" inline mt={7}>
-              Attach a sheet type pdf file
+              {t("attachPdfFile")}
             </Text>
           </div>
         </Group>
@@ -50,7 +52,7 @@ const SheetDropzone = (props: Partial<DropzoneProps>) => {
         <Center h="100%">
           <div>
             <Text size="xl" inline>
-              Drag and drop document here
+              {t("dragAndDropHere")}
             </Text>
             <Button
               onClick={() => {
@@ -63,7 +65,7 @@ const SheetDropzone = (props: Partial<DropzoneProps>) => {
               color="dimmed"
               mt={7}
             >
-              Or attach a sheet type pdf file
+              {t("orAttachPdfFile")}
             </Button>
           </div>
         </Center>

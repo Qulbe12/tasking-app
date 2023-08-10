@@ -19,7 +19,7 @@ import {
   Title,
   Tooltip,
 } from "@mantine/core";
-import { IAttachment, IDocument } from "hexa-sdk";
+import { FieldType, IAttachment, IDocument } from "hexa-sdk/dist/app.api";
 
 import React, { useEffect, useMemo, useState } from "react";
 import DocumentCard from "../../components/DocumentCard";
@@ -348,14 +348,28 @@ const DocumentsBoardView = () => {
                     if (k === "template") return;
                     if (inputIndex < 0) return;
 
+                    let value = v;
+
+                    if (selectedDocument.template.fields[inputIndex].type === FieldType.Date) {
+                      value = dayjs(v).format("MMMM D, YYYY");
+                    }
+
                     return (
-                      <div key={i + "document"}>
+                      <div key={i + "document" + k + v}>
                         {inputIndex >= 0 ? (
                           <Flex direction="column">
                             <Text weight="bolder" size="sm">
                               {_.startCase(k)}:
                             </Text>
-                            <Text size="sm">{v || "no value"}</Text>
+
+                            <Text
+                              onClick={() => {
+                                console.log(typeof v);
+                              }}
+                              size="sm"
+                            >
+                              {value || "no value"}
+                            </Text>
                           </Flex>
                         ) : (
                           <Text>{k}:</Text>
@@ -652,7 +666,7 @@ const DocumentsBoardView = () => {
         onClose={() => toggleShowEditModal()}
       />
 
-      <DocumentModal onClose={toggle} opened={opened} title="Create Document" />
+      <DocumentModal onClose={toggle} opened={opened} title={t("createDocument")} />
 
       <Modal
         title={`Assign Users to document - ${selectedDocument?.title}`}
@@ -713,7 +727,7 @@ const DocumentsBoardView = () => {
               setShowMember(false);
             }}
           >
-            Add users
+            Add usersF
           </Button>
         </Flex>
       </Modal>

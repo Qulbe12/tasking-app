@@ -3,8 +3,10 @@ import { IconBuilding, IconCards, IconUser } from "@tabler/icons";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useAppSelector } from "../redux/store";
 import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 
 const SettingsLayout = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   const location = useLocation();
@@ -23,27 +25,27 @@ const SettingsLayout = () => {
     <Container size="xl">
       <Grid>
         <Grid.Col span={3}>
-          <NavLink icon={<IconUser />} label="Account Settings">
+          <NavLink icon={<IconUser />} label={t("accountSettings")} opened>
             <NavLink
               active={location.pathname === "/account/settings/profile"}
-              label="Profile Management"
+              label={t("profileManagement")}
               onClick={() => {
                 onLinkClick("profile");
               }}
             />
             <NavLink
               active={location.pathname === "/account/settings/security"}
-              label="Security"
+              label={t("security")}
               onClick={() => {
                 onLinkClick("security");
               }}
             />
           </NavLink>
           {isOwner && (
-            <NavLink icon={<IconCards />} label="Billing and Plans">
+            <NavLink icon={<IconCards />} label={t("billingAndPlans")} opened>
               <NavLink
                 active={location.pathname === "/account/settings/payment-methods"}
-                label="Payment Methods"
+                label={t("paymentMethods")}
                 onClick={() => {
                   onLinkClick("payment-methods");
                 }}
@@ -51,10 +53,10 @@ const SettingsLayout = () => {
             </NavLink>
           )}
           {isOwner && (
-            <NavLink icon={<IconBuilding />} label="Business Management">
+            <NavLink icon={<IconBuilding />} label={t("businessManagement")} opened>
               <NavLink
                 active={location.pathname === "/account/settings/manage-seats"}
-                label="Manage Seats"
+                label={t("manageSeats")}
                 onClick={() => {
                   onLinkClick("manage-seats");
                 }}

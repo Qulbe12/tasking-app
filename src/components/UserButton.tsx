@@ -42,7 +42,7 @@ const UserButton = ({ isUnsubscribed }: UserButtonProps) => {
             onClick={() => navigate("/account/settings")}
             icon={<IconSettings size={14} />}
           >
-            Account Settings
+            {t("accountSettings")}
           </Menu.Item>
         )}
 

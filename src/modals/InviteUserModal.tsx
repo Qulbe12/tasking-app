@@ -3,8 +3,10 @@ import React, { useState } from "react";
 import CommonModalProps from "./CommonModalProps";
 import { useAppDispatch, useAppSelector } from "../redux/store";
 import { inviteUserToBusiness } from "../redux/api/businessApi";
+import { useTranslation } from "react-i18next";
 
 const InviteUserModal = ({ onClose, opened }: CommonModalProps) => {
+  const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const { businessInfo, loaders } = useAppSelector((state) => state.business);
 
@@ -18,17 +20,17 @@ const InviteUserModal = ({ onClose, opened }: CommonModalProps) => {
   };
 
   return (
-    <Modal opened={opened} onClose={onClose} title={`Invite User to ${businessInfo?.name}`}>
+    <Modal opened={opened} onClose={onClose} title={`${t("inviteUserTo")} ${businessInfo?.name}`}>
       <Stack>
         <TextInput
-          label="User Email"
+          label={t("userEmail")}
           value={email}
           withAsterisk
           onChange={(e) => setEmail(e.target.value)}
         />
 
         <Button loading={loaders.invitingUser} onClick={handleInvite}>
-          Invite
+          {t("invite")}
         </Button>
       </Stack>
     </Modal>

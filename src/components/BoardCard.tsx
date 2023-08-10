@@ -8,8 +8,8 @@ import { IWorkspaceResponse } from "../interfaces/workspaces/IWorkspaceResponse"
 
 type BoardCardProps = {
   board: IBoard | IEntityBoard;
-  onEditClick: () => void;
-  onDeleteClick: () => void;
+  onEditClick?: () => void;
+  onDeleteClick?: () => void;
   onClick: () => void;
   workspace?: IWorkspaceResponse;
 };
@@ -34,27 +34,29 @@ const BoardCard = ({ board, onEditClick, onDeleteClick, onClick, workspace }: Bo
               </ActionIcon>
             </Menu.Target>
 
-            <Menu.Dropdown>
-              <Menu.Item
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onEditClick();
-                }}
-                icon={<IconEdit size={14} />}
-              >
-                {t("edit")}
-              </Menu.Item>
-              <Menu.Item
-                icon={<IconTrash size={14} />}
-                color="red"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onDeleteClick();
-                }}
-              >
-                {t("delete")}
-              </Menu.Item>
-            </Menu.Dropdown>
+            {onEditClick && onDeleteClick && (
+              <Menu.Dropdown>
+                <Menu.Item
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onEditClick();
+                  }}
+                  icon={<IconEdit size={14} />}
+                >
+                  {t("edit")}
+                </Menu.Item>
+                <Menu.Item
+                  icon={<IconTrash size={14} />}
+                  color="red"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onDeleteClick();
+                  }}
+                >
+                  {t("delete")}
+                </Menu.Item>
+              </Menu.Dropdown>
+            )}
           </Menu>
         </Group>
       </Card.Section>

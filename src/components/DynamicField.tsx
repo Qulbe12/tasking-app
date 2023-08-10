@@ -23,6 +23,16 @@ const DynamicField = ({ field, form, value, onChange }: DynamicFieldProps) => {
           {...form?.getInputProps(field.key)}
         />
       );
+    case FieldType.Number:
+      return (
+        <NumberInput
+          withAsterisk={field.required}
+          label={field.label}
+          value={parseInt(value || "")}
+          onChange={(e) => onChange && onChange(`${e}`)}
+          {...form?.getInputProps(field.key)}
+        />
+      );
     case FieldType.Checkbox:
       return (
         <Checkbox
@@ -57,23 +67,18 @@ const DynamicField = ({ field, form, value, onChange }: DynamicFieldProps) => {
           {...form?.getInputProps(field.key)}
         />
       );
-    case FieldType.Number:
-      return (
-        <NumberInput
-          withAsterisk={field.required}
-          label={field.label}
-          value={parseInt(value || "")}
-          onChange={(e) => onChange && onChange(`${e}`)}
-          {...form?.getInputProps(field.key)}
-        />
-      );
+
     case FieldType.Radio:
       return (
-        <Radio.Group name={field.key} label={field.label} withAsterisk={field.required}>
+        <Radio.Group
+          name={field.key}
+          label={field.label}
+          withAsterisk={field.required}
+          {...form?.getInputProps(field.key)}
+        >
           {field.options.map((o, i) => {
             return <Radio key={o + i} value={o} label={o} />;
           })}
-          {...form?.getInputProps(field.key)}
         </Radio.Group>
       );
     case FieldType.Select:

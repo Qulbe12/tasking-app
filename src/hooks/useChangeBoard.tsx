@@ -13,8 +13,10 @@ import { setDocuments } from "../redux/slices/documentSlice";
 import { setSheets } from "../redux/slices/sheetSlice";
 import { showError } from "../redux/commonSliceFunctions";
 import { IErrorResponse } from "../interfaces/IErrorResponse";
+import { useTranslation } from "react-i18next";
 
 const useChangeBoard = () => {
+  const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
@@ -30,7 +32,7 @@ const useChangeBoard = () => {
       dispatch(setActiveWorkspace(foundWorkspace));
     }
 
-    setLoadingText("Gathering Resources...");
+    setLoadingText(t("gatheringResources"));
     try {
       const res = await axiosPrivate.get<IBoardResourceResponse>(`/resources/boards/${board.id}`);
 

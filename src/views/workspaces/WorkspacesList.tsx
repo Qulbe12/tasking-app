@@ -22,6 +22,8 @@ import useChangeBoard from "../../hooks/useChangeBoard";
 import BoardModal from "../../modals/BoardModal";
 import { useDisclosure } from "@mantine/hooks";
 import { setActiveWorkspace } from "../../redux/slices/workspacesSlice";
+import { deleteBoard } from "../../redux/api/boardsApi";
+import { IEntityBoard } from "../../interfaces/IEntityBoard";
 
 const WorkspacesList = () => {
   const { t } = useTranslation();
@@ -39,6 +41,9 @@ const WorkspacesList = () => {
   const [modalOpen, setModalOpen] = useState(false);
 
   const [showBoardModal, { toggle: toggleBoardModal }] = useDisclosure(false);
+
+  const [selectedBoard, setSelectedBoard] = useState<IEntityBoard | undefined>();
+  const [boardEditModalOpen, setBoardEditModalOpen] = useState(false);
 
   useEffect(() => {
     dispatch(getAllWorkSpaces());
@@ -69,11 +74,12 @@ const WorkspacesList = () => {
                 variant="subtle"
                 onClick={() => {
                   dispatch(setActiveWorkspace(workspace));
+                  setSelectedBoard(undefined);
                   toggleBoardModal();
                 }}
                 leftIcon={<IconPlus size={14} />}
               >
-                Add Board
+                {t("addBoard")}
               </Button>
             </Flex>
 
@@ -84,11 +90,12 @@ const WorkspacesList = () => {
                     key={board.id}
                     board={board}
                     onClick={() => handleBoardChange(board, workspace.id)}
-                    onDeleteClick={() => {
-                      //
-                    }}
                     onEditClick={() => {
-                      //
+                      setSelectedBoard(board);
+                      setBoardEditModalOpen(true);
+                    }}
+                    onDeleteClick={() => {
+                      dispatch(deleteBoard(board.id));
                     }}
                   />
                 );
@@ -113,12 +120,6 @@ const WorkspacesList = () => {
                 key={board.id + workspace.id}
                 board={board}
                 onClick={() => handleBoardChange(board, workspace.id)}
-                onDeleteClick={() => {
-                  //
-                }}
-                onEditClick={() => {
-                  //
-                }}
               />
             );
           });
@@ -170,12 +171,23 @@ const WorkspacesList = () => {
         <Center maw={900} h={"50vh"} mx="auto">
           <div className="w-full">
             <Progress value={100} animate />
-            Loading Workspaces
+            {t("loadingWorkspaces")}
           </div>
         </Center>
       </Modal>
 
       <BoardModal onClose={toggleBoardModal} opened={showBoardModal} />
+
+      <BoardModal
+        title={!selectedBoard ? t("createBoard") : t("updateBoard")}
+        opened={boardEditModalOpen}
+        onClose={() => {
+          setModalOpen(false);
+          setSelectedBoard(undefined);
+          setBoardEditModalOpen(false);
+        }}
+        board={selectedBoard}
+      />
     </div>
   );
 };

@@ -5,6 +5,7 @@ import React, { useState } from "react";
 import ICreatePaymentMethod from "../interfaces/stripe/ICreatePaymentMethod";
 import { addPaymentMethod } from "../redux/api/stripeApi";
 import { useAppDispatch, useAppSelector } from "../redux/store";
+import { t } from "i18next";
 
 type PaymentInformationFormProps = {
   onCancelClick?: () => void;
@@ -45,7 +46,7 @@ const PaymentInformationForm = ({ onCancelClick, afterComplete }: PaymentInforma
     >
       <Grid>
         <Grid.Col span={12}>
-          <Input.Wrapper id="cardNumber" label="Card Number" required>
+          <Input.Wrapper id="cardNumber" label={t("cardNumber")} required>
             <Input
               component={IMaskInput}
               mask="0000-0000-0000-0000"
@@ -61,7 +62,7 @@ const PaymentInformationForm = ({ onCancelClick, afterComplete }: PaymentInforma
           </Input.Wrapper>
         </Grid.Col>
         <Grid.Col span={6}>
-          <Input.Wrapper id="expDate" label="Card Expiration Date" required>
+          <Input.Wrapper id="expDate" label={t("cardExpirationDate")} required>
             <Input
               component={IMaskInput}
               mask="00/0000"
@@ -77,7 +78,7 @@ const PaymentInformationForm = ({ onCancelClick, afterComplete }: PaymentInforma
           </Input.Wrapper>
         </Grid.Col>
         <Grid.Col span={6}>
-          <Input.Wrapper id="cvvCode" label="CVV Code" required>
+          <Input.Wrapper id="cvvCode" label={t("cvcCode")} required>
             <Input
               component={IMaskInput}
               mask="000"
@@ -97,7 +98,7 @@ const PaymentInformationForm = ({ onCancelClick, afterComplete }: PaymentInforma
       <Group my="md" position="right">
         {onCancelClick && <Button onClick={() => onCancelClick()}>Cancel</Button>}
         <Button loading={addingPaymentMethod} type="submit">
-          Add Card
+          {t("addCard")}
         </Button>
       </Group>
     </form>

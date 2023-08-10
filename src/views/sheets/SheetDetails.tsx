@@ -3,7 +3,6 @@ import { useLocation } from "react-router-dom";
 import { IRecord, ISheetDetailedResponse } from "../../interfaces/sheets/ISheetDetailedResponse";
 import {
   ActionIcon,
-  Badge,
   Card,
   Flex,
   Grid,
@@ -26,8 +25,10 @@ import { IconPlus } from "@tabler/icons";
 import SheetPdfViewer from "../../components/SheetPdfViewer";
 import _ from "lodash";
 import Filter from "../../components/Filter";
+import { useTranslation } from "react-i18next";
 
 const SheetDetails = () => {
+  const { t } = useTranslation();
   const location = useLocation();
 
   const [detailedResponse, setDetailedResponse] = useState<ISheetDetailedResponse | null>(null);
@@ -133,23 +134,9 @@ const SheetDetails = () => {
         </Grid.Col>
         <Grid.Col span={2}>
           <Paper h="100%">
-            <Card h="30%" mb="md">
-              <Stack mb="xs">
-                <Text>Versions:</Text>
-                <Grid>
-                  {detailedResponse?.tags.map((t) => {
-                    return (
-                      <Grid.Col span="content" key={t}>
-                        <Badge>{t}</Badge>
-                      </Grid.Col>
-                    );
-                  })}
-                </Grid>
-              </Stack>
-            </Card>
-            <Card h="70%">
+            <Card h="100%">
               <Group position="apart" mb="xs">
-                <Text>Versions:</Text>
+                <Text>{t("versions")}:</Text>
                 <ActionIcon size="sm" onClick={toggleSheetVersionModal}>
                   <IconPlus />
                 </ActionIcon>
@@ -180,7 +167,7 @@ const SheetDetails = () => {
         sheet={detailedResponse}
         onClose={toggleSheetVersionModal}
         opened={showSheetVersionModal}
-        title={"Create New Version"}
+        title={t("createNewVersion")}
       />
       {/* <Drawer
         title={selectedPage?.name}

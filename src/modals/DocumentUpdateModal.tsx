@@ -54,7 +54,7 @@ const DocumentUpdateModal = ({ onClose, opened, document }: DocumentUpdateModalP
   const [newForm, setNewForm] = useState<any>();
   const [pdfOpen, { toggle: togglePdfOpen }] = useDisclosure(false);
 
-  useEffect(() => {
+  function updateNewForm() {
     if (!document) return;
     setSelectedDocument(document);
     setNewForm({ ...newForm, ...document });
@@ -74,6 +74,10 @@ const DocumentUpdateModal = ({ onClose, opened, document }: DocumentUpdateModalP
     });
 
     setAssUsers([modAssUsers, []]);
+  }
+
+  useEffect(() => {
+    updateNewForm();
   }, [document]);
 
   const form = useForm<IUpdateDocument>();
@@ -81,7 +85,14 @@ const DocumentUpdateModal = ({ onClose, opened, document }: DocumentUpdateModalP
   const [showConfirmationModal, { toggle }] = useDisclosure(false);
 
   return (
-    <Modal opened={opened} title={"Update: " + selectedDocument?.title} onClose={onClose}>
+    <Modal
+      opened={opened}
+      title={"Update: " + selectedDocument?.title}
+      onClose={() => {
+        updateNewForm();
+        onClose();
+      }}
+    >
       {newForm && (
         <form
           onSubmit={form.onSubmit(() => {
@@ -154,7 +165,7 @@ const DocumentUpdateModal = ({ onClose, opened, document }: DocumentUpdateModalP
                   <div key={i + "document"}>
                     {inputIndex >= 0 ? (
                       <UpdateDynamicField
-                        value={v || ""}
+                        value={newForm[selectedDocument.template.fields[inputIndex].key] || ""}
                         field={selectedDocument.template.fields[inputIndex]}
                         onChange={(e) => {
                           setNewForm({
@@ -338,6 +349,7 @@ const DocumentUpdateModal = ({ onClose, opened, document }: DocumentUpdateModalP
             loading={!!loaders.updating}
             onClick={async () => {
               if (!selectedDocument || !newForm) return;
+
               await dispatch(
                 updateDocument({
                   documentId: selectedDocument?.id,

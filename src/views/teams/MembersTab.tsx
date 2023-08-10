@@ -16,8 +16,10 @@ import { useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../redux/store";
 import { addBoardMembers, removeBoardMember } from "../../redux/api/boardsApi";
 import { IconDots, IconMail, IconTrash } from "@tabler/icons";
+import { useTranslation } from "react-i18next";
 
 const MembersTab = () => {
+  const { t } = useTranslation();
   const [createOpen, setCreateOpen] = useState(false);
 
   const dispatch = useAppDispatch();
@@ -36,7 +38,7 @@ const MembersTab = () => {
   return (
     <div>
       <Group position="right">
-        <Button onClick={() => setCreateOpen(true)}>Add Member</Button>
+        <Button onClick={() => setCreateOpen(true)}>{t("addMember")}</Button>
       </Group>
       <Grid>
         {activeBoard?.members.map((m, i) => {
@@ -49,7 +51,7 @@ const MembersTab = () => {
                   <Flex align="center" gap="sm">
                     <IconMail /> {m.email}
                   </Flex>
-                  <Text size="sm">Last Online: 23-04-2023 at 9:51</Text>
+                  <Text size="sm">{t("lastOnline")}: 23-04-2023 at 9:51</Text>
                 </Flex>
 
                 <div className="absolute top-4 right-4">
@@ -67,7 +69,7 @@ const MembersTab = () => {
                         }}
                         icon={<IconTrash color="red" size={16} />}
                       >
-                        Remove Member
+                        {t("removeMember")}
                       </Menu.Item>
                     </Menu.Dropdown>
                   </Menu>
@@ -79,12 +81,12 @@ const MembersTab = () => {
       </Grid>
 
       <Modal
-        title={`Add members to ${activeBoard?.title}`}
+        title={`${t("addMembersTo")} ${activeBoard?.title}`}
         opened={createOpen}
         onClose={() => setCreateOpen((o) => !o)}
       >
         <MultiSelect
-          label="Member Emails"
+          label={t("memberEmails")}
           data={emails}
           searchable
           creatable
@@ -105,10 +107,10 @@ const MembersTab = () => {
               setCreateOpen((o) => !o);
             }}
           >
-            Cancel
+            {t("cancel")}
           </Button>
           <Button loading={loaders.addingMembers} onClick={handleAddMembers}>
-            Add Members
+            {t("addMembers")}
           </Button>
         </Flex>
       </Modal>

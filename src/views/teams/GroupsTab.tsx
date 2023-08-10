@@ -6,8 +6,10 @@ import { deleteGroup } from "../../redux/api/groupsApi";
 import { useAppDispatch, useAppSelector } from "../../redux/store";
 import CreateGroupModal from "./modals/CreateGroupModal";
 import GroupModal from "./modals/GroupModal";
+import { useTranslation } from "react-i18next";
 
 const GroupsTab = () => {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const [createOpen, setCreateOpen] = useState(false);
 
@@ -48,7 +50,7 @@ const GroupsTab = () => {
                 dispatch(deleteGroup(g.id));
               }}
             >
-              Delete
+              {t("delete")}
             </Menu.Item>
           </Menu.Dropdown>
         </Menu>
@@ -58,14 +60,14 @@ const GroupsTab = () => {
   return (
     <div>
       <Group position="right">
-        <Button onClick={() => setCreateOpen(true)}>Create Group</Button>
+        <Button onClick={() => setCreateOpen(true)}>{t("createGroup")}</Button>
       </Group>
       <Table verticalSpacing="md" fontSize="md" highlightOnHover>
         <thead>
           <tr>
-            <th>Group</th>
-            <th>Users</th>
-            <th>Users</th>
+            <th>{t("group")}</th>
+            <th>{t("users")}</th>
+            <th></th>
           </tr>
         </thead>
         <tbody>{rows}</tbody>

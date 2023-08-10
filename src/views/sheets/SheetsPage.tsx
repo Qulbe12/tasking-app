@@ -6,6 +6,7 @@ import { useDisclosure } from "@mantine/hooks";
 import { pdfjs } from "react-pdf";
 import SheetCard from "../../components/SheetCard";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
   "pdfjs-dist/build/pdf.worker.min.js",
@@ -13,6 +14,7 @@ pdfjs.GlobalWorkerOptions.workerSrc = new URL(
 ).toString();
 
 const SheetsPage = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { data: sheets } = useAppSelector((state) => state.sheets);
 
@@ -25,9 +27,9 @@ const SheetsPage = () => {
   return (
     <Paper>
       <Group mb="md" position="right">
-        <Button onClick={handleAddButtonClick} size="xs" style={{ zIndex: 101 }}>
+        <Button onClick={handleAddButtonClick} size="xs">
           <IconPlus size={16} />
-          Add Sheet
+          {t("addSheet")}
         </Button>
       </Group>
       <SimpleGrid cols={4}>
@@ -44,7 +46,7 @@ const SheetsPage = () => {
         })}
       </SimpleGrid>
 
-      <SheetModal onClose={toggleSheetModal} opened={showSheetModal} title="Create New Sheet" />
+      <SheetModal onClose={toggleSheetModal} opened={showSheetModal} title={t("createNewSheet")} />
     </Paper>
   );
 };

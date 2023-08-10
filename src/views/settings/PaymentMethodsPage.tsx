@@ -18,8 +18,10 @@ import { getAllPaymentMethods, setDefaultMethod } from "../../redux/api/stripeAp
 import { IconPlus } from "@tabler/icons";
 import PaymentInformationForm from "../../components/PaymentInformationForm";
 import { useDisclosure } from "@mantine/hooks";
+import { useTranslation } from "react-i18next";
 
 const PaymentMethodsPage = () => {
+  const { t } = useTranslation();
   const dispatch = useAppDispatch();
 
   const {
@@ -46,7 +48,7 @@ const PaymentMethodsPage = () => {
     <Paper mt="md">
       <Card>
         <Title mb="md" order={4}>
-          Payment Methods
+          {t("paymentMethods")}
         </Title>
 
         <SimpleGrid cols={3}>
@@ -63,7 +65,7 @@ const PaymentMethodsPage = () => {
                 >
                   <Stack>
                     <Group position={p.default ? "apart" : "right"}>
-                      {p.default && <Badge>Default</Badge>}
+                      {p.default && <Badge>{t("default")}</Badge>}
                       <Badge radius="sm" size="xl">
                         {p.card.brand}
                       </Badge>
@@ -106,16 +108,16 @@ const PaymentMethodsPage = () => {
         {selectedCard && (
           <Group mt="md" position="right">
             <Button variant="subtle" onClick={() => setSelectedCard(null)}>
-              Cancel
+              {t("cancel")}
             </Button>
             <Button loading={settingDefaultMethod} onClick={handleDefaultPaymentMethodClick}>
-              Set As Default Payment Method
+              {t("setAsDefaultPaymentMethod")}
             </Button>
           </Group>
         )}
       </Card>
 
-      <Modal title="Add New Card" opened={showCardForm} onClose={toggleCardForm}>
+      <Modal title={t("addNewCard")} opened={showCardForm} onClose={toggleCardForm}>
         <PaymentInformationForm afterComplete={toggleCardForm} />
       </Modal>
     </Paper>

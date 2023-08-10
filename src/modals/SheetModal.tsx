@@ -29,8 +29,10 @@ import { IconTrash } from "@tabler/icons";
 import { DatePicker } from "@mantine/dates";
 import { ISheetCreate } from "../interfaces/sheets/ISheetCreate";
 import { createSheet } from "../redux/api/sheetsApi";
+import { useTranslation } from "react-i18next";
 
 const SheetModal = ({ onClose, opened, title }: CommonModalProps) => {
+  const { t } = useTranslation();
   const dispatch = useAppDispatch();
 
   const { activeBoard, loaders } = useAppSelector((state) => state.boards);
@@ -65,6 +67,15 @@ const SheetModal = ({ onClose, opened, title }: CommonModalProps) => {
   const [newCodes, setNewCodes] = useState<string[]>([]);
 
   const [tags, setTags] = useState<{ value: string; label: string; recordindex: number }[]>([]);
+
+  const handleSheetRemove = (sheetCode: string, index: number) => {
+    const updatedSheets = sheetRes.filter((sr) => sr.code !== sheetCode);
+    const updatedCodes = [...newCodes];
+    updatedCodes.splice(index, 1);
+
+    setSheetRes(updatedSheets);
+    setNewCodes(updatedCodes);
+  };
 
   return (
     <Modal
@@ -111,11 +122,11 @@ const SheetModal = ({ onClose, opened, title }: CommonModalProps) => {
           <Grid>
             <Grid.Col span={2}>
               <Stack>
-                <TextInput label="Title" withAsterisk {...form.getInputProps("title")} />
-                <Textarea label="Description" {...form.getInputProps("description")} />
+                <TextInput label={t("title")} withAsterisk {...form.getInputProps("title")} />
+                <Textarea label={t("description")} {...form.getInputProps("description")} />
                 <DatePicker
                   aria-errormessage="Invalid Start Date"
-                  label="Emission Date"
+                  label={t("emissionDate")}
                   withAsterisk
                   {...form.getInputProps("startDate")}
                 />
@@ -164,7 +175,7 @@ const SheetModal = ({ onClose, opened, title }: CommonModalProps) => {
                             <Image maw={240} src={s.codeMeta.url} />
                             <Stack>
                               <TextInput
-                                label="Sheet Code"
+                                label={t("sheetCode")}
                                 value={newCodes[i]}
                                 onChange={(e) => {
                                   const oldCodes = [...newCodes];
@@ -176,9 +187,9 @@ const SheetModal = ({ onClose, opened, title }: CommonModalProps) => {
                             <Stack>
                               <MultiSelect
                                 // maxSelectedValues={1}
-                                label="Tags"
+                                label={t("tags")}
                                 data={tags}
-                                placeholder="Select tags"
+                                placeholder={t("selectTags") || ""}
                                 searchable
                                 creatable
                                 getCreateLabel={(query) => `+ Create ${query}`}
@@ -190,7 +201,13 @@ const SheetModal = ({ onClose, opened, title }: CommonModalProps) => {
                               />
                             </Stack>
                           </Group>
-                          <ActionIcon color="red" size="sm">
+                          <ActionIcon
+                            color="red"
+                            size="sm"
+                            onClick={() => {
+                              handleSheetRemove(s.code, i);
+                            }}
+                          >
                             <IconTrash />
                           </ActionIcon>
                         </Group>
@@ -204,7 +221,7 @@ const SheetModal = ({ onClose, opened, title }: CommonModalProps) => {
         </Card>
         <Group mt="md" position="right">
           <Button type="submit" disabled={!sheetUploaded} loading={addingSheet}>
-            Create Sheet
+            {t("createSheet")}
           </Button>
         </Group>
       </form>
