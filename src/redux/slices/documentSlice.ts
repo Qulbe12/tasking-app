@@ -1,4 +1,4 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { IDocument } from "hexa-sdk/dist/app.api";
 import {
   addDocumentFiles,
@@ -40,7 +40,11 @@ const initialState: DocumentState = {
 export const documentsSlice = createSlice({
   name: "documents",
   initialState,
-  reducers: {},
+  reducers: {
+    setDocuments: (state, action: PayloadAction<IDocument[]>) => {
+      state.data = action.payload;
+    },
+  },
   extraReducers: (builder) => {
     builder
       // Create Document
@@ -161,5 +165,7 @@ export const documentsSlice = createSlice({
 });
 
 const documentsReducer = documentsSlice.reducer;
+
+export const { setDocuments } = documentsSlice.actions;
 
 export default documentsReducer;

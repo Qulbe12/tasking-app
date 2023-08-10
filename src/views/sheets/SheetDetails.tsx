@@ -1,11 +1,10 @@
-import React, { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { IRecord, ISheetDetailedResponse } from "../../interfaces/sheets/ISheetDetailedResponse";
 import {
   ActionIcon,
   Badge,
   Card,
-  Drawer,
   Flex,
   Grid,
   Group,
@@ -13,6 +12,7 @@ import {
   LoadingOverlay,
   NavLink,
   Paper,
+  ScrollArea,
   Stack,
   Text,
   Title,
@@ -20,12 +20,12 @@ import {
 import { showError } from "../../redux/commonSliceFunctions";
 import { axiosPrivate } from "../../config/axios";
 import { ISubFile } from "../../interfaces/sheets/common";
-import Filter from "../../components/Filter";
 import SheetVersionModal from "../../modals/SheetVersionModal";
 import { useDisclosure } from "@mantine/hooks";
 import { IconPlus } from "@tabler/icons";
 import SheetPdfViewer from "../../components/SheetPdfViewer";
 import _ from "lodash";
+import Filter from "../../components/Filter";
 
 const SheetDetails = () => {
   const location = useLocation();
@@ -98,33 +98,35 @@ const SheetDetails = () => {
         <Title order={4}>{pageTitle}</Title>
         <Text> {selectedPage?.name}</Text>
       </Flex>
-      {/* <Filter onChange={(e) => setTagFilter(e)} options={detailedResponse?.tags || []} /> */}
+      <Filter onChange={(e) => setTagFilter(e)} options={detailedResponse?.tags || []} />
 
-      <Grid h="84vh">
-        <Grid.Col span={1}>
-          <Stack>
-            {filteredRecords.map((r) => {
-              return (
-                <Flex
-                  key={r.id}
-                  onClick={() => {
-                    setSelectedPage({
-                      id: r.id,
-                      name: r.code,
-                      url: r.file.url,
-                    });
-                  }}
-                  direction="column"
-                  align="center"
-                  justify="center"
-                  className="hover:scale-110 cursor-pointer"
-                >
-                  <Image src={r.thumbnail.url} maw={150} />
-                  {r.code}
-                </Flex>
-              );
-            })}
-          </Stack>
+      <Grid mt="sm" h="75vh">
+        <Grid.Col span={1} h="100%">
+          <ScrollArea h="100%" offsetScrollbars>
+            <Stack>
+              {filteredRecords.map((r) => {
+                return (
+                  <Flex
+                    key={r.id}
+                    onClick={() => {
+                      setSelectedPage({
+                        id: r.id,
+                        name: r.code,
+                        url: r.file.url,
+                      });
+                    }}
+                    direction="column"
+                    align="center"
+                    justify="center"
+                    className="hover:scale-110 cursor-pointer"
+                  >
+                    <Image src={r.thumbnail.url} maw={150} />
+                    {r.code}
+                  </Flex>
+                );
+              })}
+            </Stack>
+          </ScrollArea>
         </Grid.Col>
         <Grid.Col p="md" span={9}>
           {detailedResponse && selectedPage && <SheetPdfViewer file={selectedPage} />}

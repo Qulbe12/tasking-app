@@ -1,14 +1,18 @@
 import { useState } from "react";
 import { useAppDispatch, useAppSelector } from "../redux/store";
-import { getBoardById } from "../redux/api/boardsApi";
-import { getAllGroups } from "../redux/api/groupsApi";
-import { getDocuments } from "../redux/api/documentApi";
 import { useNavigate } from "react-router-dom";
 import { IBoard } from "hexa-sdk";
 import { IEntityBoard } from "../interfaces/IEntityBoard";
-import { getAllTemplates } from "../redux/api/templateApi";
 import { setActiveWorkspace } from "../redux/slices/workspacesSlice";
-import { getSheets } from "../redux/api/sheetsApi";
+import { axiosPrivate } from "../config/axios";
+import IBoardResourceResponse from "../interfaces/resources/IBoardResourceResponse";
+import { setActiveBoard } from "../redux/slices/boardsSlice";
+import { setTemplates } from "../redux/slices/templateSlice";
+import { setGroups } from "../redux/slices/groupsSlice";
+import { setDocuments } from "../redux/slices/documentSlice";
+import { setSheets } from "../redux/slices/sheetSlice";
+import { showError } from "../redux/commonSliceFunctions";
+import { IErrorResponse } from "../interfaces/IErrorResponse";
 
 const useChangeBoard = () => {
   const dispatch = useAppDispatch();
@@ -17,7 +21,7 @@ const useChangeBoard = () => {
   const { activeWorkspace, data: workspaces } = useAppSelector((state) => state.workspaces);
 
   const [loadingText, setLoadingText] = useState<string | null>(null);
-  const [loadingValue, setLoadingValue] = useState(0);
+  const loadingValue = 100;
 
   const handleBoardChange = async (board: IEntityBoard | IBoard, workspaceId?: string) => {
     if (!activeWorkspace) {
@@ -26,34 +30,26 @@ const useChangeBoard = () => {
       dispatch(setActiveWorkspace(foundWorkspace));
     }
 
-    setLoadingValue(0);
+    setLoadingText("Gathering Resources...");
+    try {
+      const res = await axiosPrivate.get<IBoardResourceResponse>(`/resources/boards/${board.id}`);
 
-    setLoadingText("Getting Board Details...");
-    setLoadingValue((v) => (v += 20));
-    await dispatch(getBoardById(board.id));
+      const { data } = res;
+      const { documents, templates, groups, sheets } = data;
 
-    if (workspaceId) {
-      setLoadingText("Getting Templates...");
-      setLoadingValue((v) => (v += 20));
-      await dispatch(getAllTemplates(workspaceId));
+      dispatch(setActiveBoard(data.board));
+      dispatch(setTemplates(templates));
+      dispatch(setGroups(groups));
+      dispatch(setDocuments(documents));
+      dispatch(setSheets(sheets));
+
+      setLoadingText(null);
+
+      navigate("/board");
+    } catch (err) {
+      const error = err as unknown as IErrorResponse;
+      showError(error.response?.data.message);
     }
-
-    setLoadingText("Getting Groups...");
-    setLoadingValue((v) => (v += 20));
-    await dispatch(getAllGroups(board.id));
-
-    setLoadingText("Getting Documents...");
-    setLoadingValue((v) => (v += 20));
-    await dispatch(getDocuments({ boardId: board.id, query: {} }));
-
-    setLoadingText("Getting Sheets...");
-    setLoadingValue((v) => (v += 20));
-    await dispatch(getSheets({ boardId: board.id }));
-
-    setLoadingText(null);
-    setLoadingValue(0);
-
-    navigate("/board");
   };
 
   return { loadingText, loadingValue, handleBoardChange };

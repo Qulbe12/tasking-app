@@ -1,4 +1,4 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { ITemplate } from "hexa-sdk/dist/app.api";
 import {
   addTemplate,
@@ -24,7 +24,11 @@ const initialState: TemplatesState = {
 export const templateSlice = createSlice({
   name: "templates",
   initialState,
-  reducers: {},
+  reducers: {
+    setTemplates: (state, action: PayloadAction<ITemplate[]>) => {
+      state.data = action.payload;
+    },
+  },
   extraReducers: (builder) => {
     builder
       // Add Template
@@ -108,5 +112,6 @@ export const templateSlice = createSlice({
 });
 
 const templatesReducer = templateSlice.reducer;
+export const { setTemplates } = templateSlice.actions;
 
 export default templatesReducer;

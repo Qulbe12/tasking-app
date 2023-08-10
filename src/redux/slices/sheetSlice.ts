@@ -23,7 +23,11 @@ const initialState: SheetsState = {
 export const sheetsSlice = createSlice({
   name: "sheets",
   initialState,
-  reducers: {},
+  reducers: {
+    setSheets: (state, action: PayloadAction<ISheetResponse[]>) => {
+      state.data = action.payload;
+    },
+  },
   extraReducers(builder) {
     builder
       // Get All Sheets
@@ -66,5 +70,7 @@ export const sheetsSlice = createSlice({
 });
 
 const sheetsReducer = sheetsSlice.reducer;
+
+export const { setSheets } = sheetsSlice.actions;
 
 export default sheetsReducer;

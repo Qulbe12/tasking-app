@@ -1,4 +1,4 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { IGroup } from "hexa-sdk/dist/app.api";
 import { createGroup } from "../api/groupsApi";
 import { showError } from "../commonSliceFunctions";
@@ -25,7 +25,11 @@ const initialState: GroupsState = {
 export const groupsSlice = createSlice({
   name: "groups",
   initialState,
-  reducers: {},
+  reducers: {
+    setGroups: (state, action: PayloadAction<IGroup[]>) => {
+      state.data = action.payload;
+    },
+  },
   extraReducers: (builder) =>
     builder
       .addCase(createGroup.pending, (state) => {
@@ -35,7 +39,7 @@ export const groupsSlice = createSlice({
         state.data.unshift(action.payload);
         state.loaders.adding = false;
       })
-      .addCase(createGroup.rejected, (state, action) => {
+      .addCase(createGroup.rejected, (state) => {
         state.loaders.adding = false;
 
         showError("Something went wrong");
@@ -43,5 +47,7 @@ export const groupsSlice = createSlice({
 });
 
 const groupsReducer = groupsSlice.reducer;
+
+export const { setGroups } = groupsSlice.actions;
 
 export default groupsReducer;
