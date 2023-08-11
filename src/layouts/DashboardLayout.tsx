@@ -20,10 +20,9 @@ import {
 
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { MainLinks } from "./MainLinks";
-import UserButton from "../components/UserButton";
-import { IconFilter, IconLanguage } from "@tabler/icons";
+import { IconLanguage } from "@tabler/icons";
 import { useAppDispatch, useAppSelector } from "../redux/store";
-import { resetFilters, setSearch, toggleFilterOpen } from "../redux/slices/filterSlice";
+import { resetFilters, setSearch } from "../redux/slices/filterSlice";
 import { useDisclosure } from "@mantine/hooks";
 import { setBoardTab } from "../redux/slices/menuSlice";
 import { useTranslation } from "react-i18next";
@@ -43,7 +42,7 @@ const DashboardLayout = () => {
   } = useChangeBoard();
 
   const location = useLocation();
-  const { search, filtersOpen } = useAppSelector((state) => state.filters);
+  const { search } = useAppSelector((state) => state.filters);
   const { activeWorkspace } = useAppSelector((state) => state.workspaces);
   const { activeBoard, data: boards } = useAppSelector((state) => state.boards);
   const { user } = useAppSelector((state) => state.auth);
@@ -158,12 +157,12 @@ const DashboardLayout = () => {
 
             {/* RIGHT SIDE */}
             <Flex gap="md" align="center" justify="space-between">
-              <ActionIcon
+              {/* <ActionIcon
                 color={filtersOpen ? "orange" : undefined}
                 onClick={() => dispatch(toggleFilterOpen())}
               >
                 <IconFilter size={24} />
-              </ActionIcon>
+              </ActionIcon> */}
               <TextInput
                 w="400px"
                 placeholder={`${t("search")}`}
@@ -184,7 +183,6 @@ const DashboardLayout = () => {
                   <Menu.Item onClick={() => changeLanguage("fr")}>Français</Menu.Item>
                 </Menu.Dropdown>
               </Menu>
-              <UserButton />
             </Flex>
           </Group>
         </Header>

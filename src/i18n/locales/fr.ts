@@ -100,6 +100,7 @@ const fr = {
     versions: "Versions",
     createNewVersion: "Créer une nouvelle version",
     createVersion: "Créer une version",
+    versionTitle: "Titre de la version",
 
     // Analytics Page
     export: "Exporter",

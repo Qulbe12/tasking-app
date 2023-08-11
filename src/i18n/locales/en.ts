@@ -99,6 +99,7 @@ const en = {
     versions: "Versions",
     createNewVersion: "Create New Version",
     createVersion: "Create Version",
+    versionTitle: "Version Title",
 
     // Analytics Page
     export: "Export",

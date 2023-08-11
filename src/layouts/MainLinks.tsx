@@ -4,6 +4,7 @@ import { ThemeIcon, UnstyledButton, Group, Tooltip } from "@mantine/core";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useAppSelector } from "../redux/store";
+import UserButton from "../components/UserButton";
 
 interface MainLinkProps {
   icon: React.ReactNode;
@@ -71,6 +72,7 @@ export function MainLinks() {
   return (
     <div className="flex flex-col items-center justify-between h-full">
       <div>{links}</div>
+      <UserButton />
     </div>
   );
 }

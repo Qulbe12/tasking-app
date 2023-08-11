@@ -52,6 +52,7 @@ const SheetModal = ({ onClose, opened, title }: CommonModalProps) => {
   const form = useForm({
     initialValues: {
       title: "",
+      versionTitle: "",
       description: "",
       startDate: new Date(),
       dueDate: new Date(),
@@ -129,6 +130,11 @@ const SheetModal = ({ onClose, opened, title }: CommonModalProps) => {
                   label={t("emissionDate")}
                   withAsterisk
                   {...form.getInputProps("startDate")}
+                />
+                <TextInput
+                  label={t("versionTitle")}
+                  withAsterisk
+                  {...form.getInputProps("versionTitle")}
                 />
               </Stack>
             </Grid.Col>

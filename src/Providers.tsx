@@ -1,9 +1,4 @@
-import {
-  createEmotionCache,
-  MantineProvider,
-  MantineThemeOverride,
-  useMantineTheme,
-} from "@mantine/core";
+import { createEmotionCache, MantineProvider, MantineThemeOverride } from "@mantine/core";
 
 import { RouterProvider } from "react-router-dom";
 import router from "./Router";

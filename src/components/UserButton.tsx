@@ -1,4 +1,4 @@
-import { Avatar, Menu } from "@mantine/core";
+import { Avatar, Menu, Tooltip } from "@mantine/core";
 import { IconLogout, IconMoon, IconSettings, IconSun } from "@tabler/icons";
 import React from "react";
 import { logout } from "../redux/slices/authSlice";
@@ -23,7 +23,9 @@ const UserButton = ({ isUnsubscribed }: UserButtonProps) => {
   return (
     <Menu shadow="md" width={200}>
       <Menu.Target>
-        <Avatar className="cursor-pointer" src={user?.user.avatar} radius="md" size="md" />
+        <Tooltip label={user?.user.name}>
+          <Avatar className="cursor-pointer" src={user?.user.avatar} radius="md" size="md" />
+        </Tooltip>
       </Menu.Target>
 
       <Menu.Dropdown>
