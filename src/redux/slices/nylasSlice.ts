@@ -47,7 +47,7 @@ export const nylasSlice = createSlice({
         state.loaders.connecting = false;
         window.open(action.payload);
       })
-      .addCase(connectNylas.rejected, (state, action) => {
+      .addCase(connectNylas.rejected, (state) => {
         state.loaders.connecting = false;
       })
       .addCase(fetchEmails.pending, (state) => {

@@ -155,7 +155,7 @@ const DocumentUpdateModal = ({ onClose, opened, document }: DocumentUpdateModalP
             />
 
             {selectedDocument &&
-              Object.entries(selectedDocument).map(([k, v], i) => {
+              Object.entries(selectedDocument).map(([k], i) => {
                 const inputIndex = selectedDocument.template.fields.findIndex((f) => f.key === k);
 
                 if (k === "template") return;

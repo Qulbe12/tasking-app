@@ -83,7 +83,7 @@ const useSockets = () => {
     // Nylas Events
     socket.on(NylasEvents.Connected, async (payload: NylasConnectedPayload) => {
       await dispatch(setNylasToken(payload));
-      dispatch(fetchEmails({ offset: 0 }));
+      dispatch(fetchEmails());
     });
     socket.on(NylasEvents.Failed, () => {
       //

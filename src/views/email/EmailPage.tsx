@@ -25,7 +25,7 @@ const EmailPage = () => {
 
   useEffect(() => {
     if (nylasToken?.access_token) {
-      dispatch(fetchEmails({ offset: emailOffset }));
+      dispatch(fetchEmails());
     }
   }, [emailOffset]);
 
