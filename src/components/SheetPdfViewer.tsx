@@ -159,7 +159,7 @@ export default function SheetPdfViewer({ file }: SheetPdfViewerProps) {
         {annotsChanged && (
           <Button
             leftIcon={<IconRectangle size={14} />}
-            variant="outline"
+           
             onClick={async () => {
               try {
                 const annots = await instance?.exportInstantJSON();
@@ -183,7 +183,7 @@ export default function SheetPdfViewer({ file }: SheetPdfViewerProps) {
         )}
         <Menu shadow="md" width={200}>
           <Menu.Target>
-            <Button color="gray" leftIcon={<IconFileExport size={14} />} variant="subtle">
+            <Button color="gray" leftIcon={<IconFileExport size={14} />} >
               Export
             </Button>
           </Menu.Target>

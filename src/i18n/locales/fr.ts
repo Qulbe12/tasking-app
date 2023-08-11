@@ -69,6 +69,13 @@ const fr = {
     areYouSure: "Es-tu sûr",
     confirm: "Confirmer",
     cancel: "Annuler",
+    comment: "Commentaire",
+    composeEmail: "Écrire un email",
+    emailNotConnected: "L'e-mail n'est pas connecté, veuillez établir une connexion",
+    connect: "Connecter",
+    documentHistory: "Historique du document",
+    assignedUsers: "Utilisateurs assignés",
+    ccUsers: "Utilisateurs CC",
 
     // Document Modal
     documentType: "Type de document",
@@ -85,6 +92,7 @@ const fr = {
     attachMany:
       "Joignez autant de fichiers que vous le souhaitez, chaque fichier ne doit pas dépasser 5 Mo",
     type: "Taper",
+    addUsers: "Ajouter des utilisateurs",
 
     // Sheets Page
     addSheet: "Ajouter une feuille",
@@ -101,6 +109,7 @@ const fr = {
     createNewVersion: "Créer une nouvelle version",
     createVersion: "Créer une version",
     versionTitle: "Titre de la version",
+    versionDate: "Date de version",
 
     // Analytics Page
     export: "Exporter",

@@ -103,7 +103,7 @@ export default function PdfViewerComponentPublic({
       <Flex justify="flex-end">
         <Menu shadow="md" width={200}>
           <Menu.Target>
-            <Button color="gray" leftIcon={<IconFileExport size={14} />} variant="subtle">
+            <Button color="gray" leftIcon={<IconFileExport size={14} />}>
               Export
             </Button>
           </Menu.Target>

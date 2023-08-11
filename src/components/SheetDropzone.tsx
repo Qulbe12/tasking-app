@@ -60,8 +60,6 @@ const SheetDropzone = (props: Partial<DropzoneProps>) => {
                   openRef.current();
                 }
               }}
-              variant="subtle"
-              size="sm"
               color="dimmed"
               mt={7}
             >

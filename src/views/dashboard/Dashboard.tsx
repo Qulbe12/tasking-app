@@ -25,7 +25,7 @@ const Dashboard = () => {
           Personal Board
         </Title>
 
-        <Button onClick={() => setModalOpen(true)} size="xs">
+        <Button onClick={() => setModalOpen(true)}>
           <IconPlus size={16} />
           Create Project
         </Button>

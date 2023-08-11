@@ -12,6 +12,7 @@ import {
   Stack,
   TextInput,
 } from "@mantine/core";
+
 import { useAppDispatch, useAppSelector } from "../redux/store";
 import CommonModalProps from "./CommonModalProps";
 import SheetDropzone from "../components/SheetDropzone";
@@ -28,6 +29,7 @@ import ISheetCreateVersion from "../interfaces/sheets/ISheetCreateVersion";
 import { createSheetVersion } from "../redux/api/sheetsApi";
 import { ISheetDetailedResponse } from "../interfaces/sheets/ISheetDetailedResponse";
 import { t } from "i18next";
+import { DatePicker } from "@mantine/dates";
 
 type SheetVersionModalProps = {
   sheet?: ISheetDetailedResponse | null;
@@ -49,12 +51,14 @@ const SheetVersionModal = ({
   } = useAppSelector((state) => state.sheets);
 
   const formSchema = yup.object().shape({
-    versionTitle: yup.string().required("Document title is required"),
+    versionTitle: yup.string().required("Version is required"),
+    date: yup.string().required("Date is required"),
   });
 
   const form = useForm({
     initialValues: {
       versionTitle: "",
+      date: new Date().toISOString(),
     },
     validate: yupResolver(formSchema),
   });
@@ -129,9 +133,19 @@ const SheetVersionModal = ({
             <Grid.Col span={2}>
               <Stack>
                 <TextInput
-                  label="Version Title"
+                  label={t("versionTitle")}
                   withAsterisk
                   {...form.getInputProps("versionTitle")}
+                />
+
+                <DatePicker
+                  label={t("versionDate")}
+                  withAsterisk
+                  placeholder="Date input"
+                  maw={400}
+                  mx="auto"
+                  defaultValue={new Date()}
+                  {...form.getInputProps("date")}
                 />
               </Stack>
             </Grid.Col>

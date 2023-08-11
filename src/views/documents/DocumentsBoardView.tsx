@@ -26,7 +26,14 @@ import DocumentCard from "../../components/DocumentCard";
 import { useAppDispatch, useAppSelector } from "../../redux/store";
 import _ from "lodash";
 import dayjs from "dayjs";
-import { IconFileText, IconLink, IconPlus, IconTrash } from "@tabler/icons";
+import {
+  IconEdit,
+  IconFileText,
+  IconLink,
+  IconPlugConnected,
+  IconPlus,
+  IconTrash,
+} from "@tabler/icons";
 import Filter from "../../components/Filter";
 import PdfViewerComponent from "../../components/PdfViewerComponent";
 
@@ -201,7 +208,7 @@ const DocumentsBoardView = () => {
       {!selectedDocument && (
         <div className="flex justify-between items-center mb-4">
           {documentsLoading ? <Loader size="xs" /> : <div />}
-          <Button onClick={handleAddButtonClick} size="xs">
+          <Button onClick={handleAddButtonClick}>
             <IconPlus size={16} />
             {t("newDocument")}
           </Button>
@@ -216,12 +223,7 @@ const DocumentsBoardView = () => {
                 <Title order={4} mb="md">
                   {t("documents")}
                 </Title>
-                <Button
-                  leftIcon={<IconPlus size={"0.8em"} />}
-                  size="xs"
-                  variant="subtle"
-                  onClick={handleAddButtonClick}
-                >
+                <Button leftIcon={<IconPlus size={"0.8em"} />} onClick={handleAddButtonClick}>
                   {t("newDocument")}
                 </Button>
               </Flex>
@@ -248,7 +250,7 @@ const DocumentsBoardView = () => {
             <Card shadow="lg" className="h-full w-full">
               <Flex justify="space-between" mb="xl">
                 <Text size="lg">{selectedDocument?.title}</Text>
-                <Button size="xs" onClick={() => toggleShowEditModal()}>
+                <Button leftIcon={<IconEdit size="1rem" />} onClick={() => toggleShowEditModal()}>
                   {t("edit")}
                 </Button>
               </Flex>
@@ -265,19 +267,19 @@ const DocumentsBoardView = () => {
                   </Flex>
                   <Flex direction="column">
                     <Text weight="bolder" size="sm">
-                      Title:
+                      {t("title")}:
                     </Text>
                     <Text size="sm">{selectedDocument.title}</Text>
                   </Flex>
                   <Flex direction="column">
                     <Text weight="bolder" size="sm">
-                      Description:
+                      {t("description")}:
                     </Text>
                     <Text size="sm">{selectedDocument.description}</Text>
                   </Flex>
                   <Flex direction="column">
                     <Text weight="bolder" size="sm">
-                      Start Date:
+                      {t("startDate")}:
                     </Text>
                     <Text size="sm">
                       {dayjs(selectedDocument.startDate).format("MMMM DD, YYYY")}
@@ -285,19 +287,19 @@ const DocumentsBoardView = () => {
                   </Flex>
                   <Flex direction="column">
                     <Text weight="bolder" size="sm">
-                      Due Date:
+                      {t("dueDate")}:
                     </Text>
                     <Text size="sm">{dayjs(selectedDocument.dueDate).format("MMMM DD, YYYY")}</Text>
                   </Flex>
                   <Flex direction="column">
                     <Text weight="bolder" size="sm">
-                      Priority:
+                      {t("priority")}:
                     </Text>
                     <Text size="sm">{selectedDocument.priority}</Text>
                   </Flex>
                   <Flex direction="column">
                     <Text weight="bolder" size="sm">
-                      Status:
+                      {t("status")}:
                     </Text>
                     <Text size="sm">{selectedDocument.status}</Text>
                   </Flex>
@@ -305,7 +307,7 @@ const DocumentsBoardView = () => {
                   <Flex direction="column">
                     <Flex direction="row" align="center" justify="space-between">
                       <Text weight="bolder" size="sm">
-                        Assigned Users:
+                        {t("assignedUsers")}:
                       </Text>
                       <ActionIcon
                         size="sm"
@@ -324,7 +326,7 @@ const DocumentsBoardView = () => {
                   <Flex direction="column">
                     <Flex direction="row" align="center" justify="space-between">
                       <Text weight="bolder" size="sm">
-                        CC Users:
+                        {t("ccUsers")}:
                       </Text>
                       <ActionIcon
                         size="sm"
@@ -438,11 +440,11 @@ const DocumentsBoardView = () => {
                   })}
                 </Stack>
 
-                <Divider label="Document History" my="md" />
+                <Divider label={t("documentHistory")} my="md" />
 
                 {gettingChangeLog && <Loader size="sm" />}
 
-                {changeLog.map((cl) => {
+                {changeLog.reverse().map((cl) => {
                   return (
                     <div key={cl.rid}>
                       {cl.change.reverse().map((ch, i) => {
@@ -487,30 +489,29 @@ const DocumentsBoardView = () => {
                 </Tabs.List>
 
                 <Tabs.Panel value="emails">
-                  <Flex justify="space-between" mb="xl">
+                  <Stack justify="space-between" mb="xl">
                     <Title order={4} mb="md">
                       {t("relatedEmails")}
                     </Title>
                     <Button
                       disabled={!nylasToken ? true : false}
                       leftIcon={<IconLink size={14} />}
-                      variant="subtle"
-                      size="xs"
                       onClick={toggleShowEmailModal}
                     >
-                      Compose Email
+                      {t("composeEmail")}
                     </Button>
-                  </Flex>
+                  </Stack>
 
                   {!nylasToken && (
                     <Flex direction="column" gap="md" style={{ height: "90%" }}>
-                      <Text>Email is not connected, please establish a connection</Text>
+                      <Text>{t("emailNotConnected")}</Text>
                       <Button
+                        leftIcon={<IconPlugConnected size={"1rem"} />}
                         onClick={() => {
                           dispatch(connectNylas());
                         }}
                       >
-                        Connect
+                        {t("connect")}
                       </Button>
                     </Flex>
                   )}
@@ -691,12 +692,11 @@ const DocumentsBoardView = () => {
 
         <Flex mt="md" justify="flex-end" gap="md">
           <Button
-            variant="outline"
             onClick={() => {
               setShowMember((o) => !o);
             }}
           >
-            Cancel
+            {t("cancel")}
           </Button>
           <Button
             onClick={async () => {
@@ -727,7 +727,7 @@ const DocumentsBoardView = () => {
               setShowMember(false);
             }}
           >
-            Add usersF
+            {t("addUsers")}
           </Button>
         </Flex>
       </Modal>

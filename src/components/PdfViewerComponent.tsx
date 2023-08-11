@@ -116,7 +116,6 @@ export default function PdfViewerComponent({
         {annotsChanged && (
           <Button
             leftIcon={<IconRectangle size={14} />}
-            variant="outline"
             onClick={async () => {
               if (!selectedDocument) return;
               try {
@@ -141,7 +140,7 @@ export default function PdfViewerComponent({
         )}
         <Menu shadow="md" width={200}>
           <Menu.Target>
-            <Button color="gray" leftIcon={<IconFileExport size={14} />} variant="subtle">
+            <Button color="gray" leftIcon={<IconFileExport size={14} />}>
               Export
             </Button>
           </Menu.Target>

@@ -19,6 +19,20 @@ const Providers = () => {
     colors: {},
     primaryColor: "indigo",
     primaryShade: 8,
+    components: {
+      Button: {
+        defaultProps: {
+          size: "sm",
+          variant: "subtle",
+        },
+      },
+
+      Icon: {
+        defaultProps: {
+          size: "2rem",
+        },
+      },
+    },
   };
 
   return (

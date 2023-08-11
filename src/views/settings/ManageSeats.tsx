@@ -31,7 +31,7 @@ const ManageSeats = () => {
             <Title mb="md" order={4}>
               {t("manageSeats")}
             </Title>
-            <Button size="xs" leftIcon={<IconPlus size={12} />} onClick={togglePurchaseModal}>
+            <Button leftIcon={<IconPlus size={12} />} onClick={togglePurchaseModal}>
               {t("purchaseSeats")}
             </Button>
           </Group>

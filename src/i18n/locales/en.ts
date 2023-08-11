@@ -69,6 +69,14 @@ const en = {
     areYouSure: "Are you sure",
     confirm: "Confirm",
     cancel: "Cancel",
+    comment: "Comment",
+    composeEmail: "Compose Email",
+    emailNotConnected: "Email is not connected, please establish a connection",
+    connect: "Connect",
+    documentHistory: "Document History",
+    assignedUsers: "Assigned Users",
+    ccUsers: "CC Users",
+    addUsers: "Add Users",
 
     // Document Modal
     documentType: "Document Type",
@@ -100,6 +108,7 @@ const en = {
     createNewVersion: "Create New Version",
     createVersion: "Create Version",
     versionTitle: "Version Title",
+    versionDate: "Version Date",
 
     // Analytics Page
     export: "Export",

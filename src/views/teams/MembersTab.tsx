@@ -101,7 +101,7 @@ const MembersTab = () => {
         <Flex justify={"flex-end"} gap={"md"} mt="md">
           <Button
             loading={loaders.addingMembers}
-            variant="outline"
+            color="red"
             onClick={() => {
               setEmails([]);
               setCreateOpen((o) => !o);

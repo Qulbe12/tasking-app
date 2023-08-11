@@ -88,10 +88,10 @@ const DocumentsListModal = ({
         </SimpleGrid>
 
         <Flex gap="md" justify="flex-end">
-          <Button onClick={onClose} variant="outline">
+          <Button onClick={onClose} color="red">
             {t("cancel")}
           </Button>
-          <Button loading={loading} onClick={onOk} variant="filled">
+          <Button loading={loading} onClick={onOk}>
             {okText}
           </Button>
         </Flex>

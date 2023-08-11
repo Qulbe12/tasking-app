@@ -26,6 +26,7 @@ import SheetPdfViewer from "../../components/SheetPdfViewer";
 import _ from "lodash";
 import Filter from "../../components/Filter";
 import { useTranslation } from "react-i18next";
+import dayjs from "dayjs";
 
 const SheetDetails = () => {
   const { t } = useTranslation();
@@ -59,6 +60,7 @@ const SheetDetails = () => {
 
     try {
       const res = await axiosPrivate.get<ISheetDetailedResponse>(queryString);
+
       setDetailedResponse(res.data);
       setLoading(false);
     } catch (err) {
@@ -98,6 +100,11 @@ const SheetDetails = () => {
       <Flex gap="md" align={"end"} direction="row">
         <Title order={4}>{pageTitle}</Title>
         <Text> {selectedPage?.name}</Text>
+        <Text size="xs">
+          {dayjs(detailedResponse?.currentVerion.date ?? detailedResponse?.startDate).format(
+            "MMMM D, YYYY",
+          )}
+        </Text>
       </Flex>
       <Filter onChange={(e) => setTagFilter(e)} options={detailedResponse?.tags || []} />
 

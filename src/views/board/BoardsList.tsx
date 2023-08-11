@@ -41,7 +41,7 @@ const BoardsList = () => {
           {t("boards")}
         </Title>
 
-        <Button disabled={!!gettingBoards} onClick={() => setModalOpen(true)} size="xs">
+        <Button disabled={!!gettingBoards} onClick={() => setModalOpen(true)}>
           <IconPlus size={16} />
           {t("createBoard")}
         </Button>

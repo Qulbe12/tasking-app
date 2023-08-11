@@ -145,7 +145,6 @@ const TemplateModal = ({ onClose, opened, template }: ModalProps & TemplateModal
           <Group position="apart" mt="md">
             {template && !template.default && activeBoard?.owner.email === user?.user.email && (
               <Button
-                variant="light"
                 color="red"
                 loading={!!loading}
                 onClick={async () => {
@@ -158,7 +157,7 @@ const TemplateModal = ({ onClose, opened, template }: ModalProps & TemplateModal
               </Button>
             )}
             <Group position="right">
-              <Button variant="outline" onClick={onClose}>
+              <Button onClick={onClose}>
                 {activeBoard?.owner.email === user?.user.email ? "Cancel" : "Close"}
               </Button>
               {!template?.default && activeBoard?.owner.email === user?.user.email && (
@@ -243,9 +242,7 @@ const TemplateModal = ({ onClose, opened, template }: ModalProps & TemplateModal
           }}
         />
         <Group mt="xl" position="right">
-          <Button variant="outline" onClick={() => setNewFieldModal(false)}>
-            Cancel
-          </Button>
+          <Button onClick={() => setNewFieldModal(false)}>Cancel</Button>
           <Button
             loading={!!loading}
             onClick={async () => {

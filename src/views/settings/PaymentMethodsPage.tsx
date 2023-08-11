@@ -107,9 +107,7 @@ const PaymentMethodsPage = () => {
 
         {selectedCard && (
           <Group mt="md" position="right">
-            <Button variant="subtle" onClick={() => setSelectedCard(null)}>
-              {t("cancel")}
-            </Button>
+            <Button onClick={() => setSelectedCard(null)}>{t("cancel")}</Button>
             <Button loading={settingDefaultMethod} onClick={handleDefaultPaymentMethodClick}>
               {t("setAsDefaultPaymentMethod")}
             </Button>

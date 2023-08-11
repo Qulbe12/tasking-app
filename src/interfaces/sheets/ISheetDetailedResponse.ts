@@ -3,6 +3,7 @@ import { IEntityUser } from "../IEntityUser";
 interface IVersion {
   title: string;
   version: number;
+  date?: string;
 }
 
 export interface IRecord {

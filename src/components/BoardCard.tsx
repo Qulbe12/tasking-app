@@ -30,7 +30,7 @@ const BoardCard = ({ board, onEditClick, onDeleteClick, onClick, workspace }: Bo
                   e.stopPropagation();
                 }}
               >
-                <IconDots size={16} />
+                <IconDots size={14} />
               </ActionIcon>
             </Menu.Target>
 

@@ -284,7 +284,7 @@ const DocumentModal = ({ onClose, opened, title }: CommonModalProps) => {
             </Dropzone>
 
             <Group position="right" mt="md">
-              <Button disabled size="xs" loading={false}>
+              <Button disabled  loading={false}>
                 Comment
               </Button>
             </Group>

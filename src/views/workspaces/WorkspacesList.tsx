@@ -57,8 +57,7 @@ const WorkspacesList = () => {
           {t("workspaces")}
         </Title>
 
-        <Button onClick={() => setModalOpen(true)} size="xs">
-          <IconPlus size={16} />
+        <Button leftIcon={<IconPlus size={16} />} onClick={() => setModalOpen(true)}>
           {t("createWorkspace")}
         </Button>
       </div>
@@ -70,8 +69,6 @@ const WorkspacesList = () => {
             <Flex gap="md" align="center">
               <Text size="xl">{workspace.name}</Text>
               <Button
-                size="sm"
-                variant="subtle"
                 onClick={() => {
                   dispatch(setActiveWorkspace(workspace));
                   setSelectedBoard(undefined);
@@ -176,7 +173,7 @@ const WorkspacesList = () => {
         </Center>
       </Modal>
 
-      <BoardModal onClose={toggleBoardModal} opened={showBoardModal} />
+      <BoardModal title={t("createBoard")} onClose={toggleBoardModal} opened={showBoardModal} />
 
       <BoardModal
         title={!selectedBoard ? t("createBoard") : t("updateBoard")}
