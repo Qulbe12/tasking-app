@@ -8,10 +8,10 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "lint": "eslint \"./src/**/*.{ts,tsx}\"",
+    "lint": "eslint \"src/**/*.{ts,tsx}\"",
     "lint:scss": "npx stylelint '**/*.scss'",
-    "lint:fix": "eslint --fix 'src/**/*.{ts,tsx}'",
-    "format": "prettier --write 'src/**/*.{ts,tsx,css,md}' --config ./.prettierrc",
+    "lint:fix": "eslint --fix \"src/**/*.{ts,tsx}\"",
+    "format": "prettier --write \"src/**/*.{ts,tsx}\" --config ./.prettierrc",
     "deploy": "npm ci --legacy-peer-deps && npm run build",
     "sdk": "npm i hexa-sdk@latest --legacy-peer-deps",
     "prepare": "husky install"
