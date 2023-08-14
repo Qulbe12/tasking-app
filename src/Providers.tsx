@@ -7,6 +7,7 @@ import { useAppSelector } from "./redux/store";
 import useSockets from "./hooks/useSockets";
 import { NavigationProgress } from "@mantine/nprogress";
 import { ModalsProvider } from "@mantine/modals";
+import Version from "./components/Version";
 
 const myCache = createEmotionCache({ key: "mantine", prepend: false });
 
@@ -43,7 +44,7 @@ const Providers = () => {
       theme={{ colorScheme: mode, ...theme }}
     >
       <NavigationProgress size={8} autoReset />
-
+      <Version />
       <NotificationsProvider>
         {isConnected}
         <ModalsProvider>

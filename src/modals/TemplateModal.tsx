@@ -105,7 +105,7 @@ const TemplateModal = ({ onClose, opened, template }: ModalProps & TemplateModal
           <Stack>
             <TextInput label="Title" withAsterisk />
             <Textarea label="Description" withAsterisk />
-            <DatePicker aria-errormessage="Invalid Start Date" label="Start Date" withAsterisk />
+            <DatePicker label="Start Date" withAsterisk />
             <DatePicker label="Due Date" withAsterisk />
             <Select
               label="Priority"

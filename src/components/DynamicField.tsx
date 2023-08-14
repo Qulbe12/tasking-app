@@ -28,7 +28,7 @@ const DynamicField = ({ field, form, value, onChange }: DynamicFieldProps) => {
         <NumberInput
           withAsterisk={field.required}
           label={field.label}
-          value={parseInt(value || "")}
+          value={parseInt(value || "0")}
           onChange={(e) => onChange && onChange(`${e}`)}
           {...form?.getInputProps(field.key)}
         />
