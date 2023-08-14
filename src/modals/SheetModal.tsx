@@ -67,7 +67,10 @@ const SheetModal = ({ onClose, opened, title }: CommonModalProps) => {
   const [sheetRes, setSheetRes] = useState<ISheetProcessResponse[]>([]);
   const [newCodes, setNewCodes] = useState<string[]>([]);
 
-  const [tags, setTags] = useState<{ value: string; label: string; recordindex: number }[]>([]);
+  const [tagsData, setTagsData] = useState<{ value: string; label: string; recordindex: number }[]>(
+    [],
+  );
+  const [newTags, setNewTags] = useState<string[][]>([]);
 
   const handleSheetRemove = (sheetCode: string, index: number) => {
     const updatedSheets = sheetRes.filter((sr) => sr.code !== sheetCode);
@@ -86,7 +89,7 @@ const SheetModal = ({ onClose, opened, title }: CommonModalProps) => {
         setSheetRes([]);
         completeNavigationProgress();
         setSheetUploaded(false);
-        setTags([]);
+        setTagsData([]);
         form.reset();
         onClose();
       }}
@@ -100,12 +103,8 @@ const SheetModal = ({ onClose, opened, title }: CommonModalProps) => {
           const newRecords: ISheetProcessResponse[] = [];
           sheetRes.forEach((s, i) => {
             s.code = newCodes[i];
-            s.tags = [];
+            s.tags = newTags[i] || [];
             newRecords.push(s);
-          });
-
-          tags.forEach((t) => {
-            newRecords[t.recordindex].tags.push(t.label);
           });
 
           const preppedSheet: ISheetCreate = {
@@ -116,7 +115,6 @@ const SheetModal = ({ onClose, opened, title }: CommonModalProps) => {
           };
           await dispatch(createSheet({ boardId: activeBoard.id, sheet: preppedSheet }));
           onClose();
-          console.log(preppedSheet);
         })}
       >
         <Card>
@@ -194,14 +192,19 @@ const SheetModal = ({ onClose, opened, title }: CommonModalProps) => {
                               <MultiSelect
                                 // maxSelectedValues={1}
                                 label={t("tags")}
-                                data={tags}
+                                data={tagsData}
                                 placeholder={t("selectTags") || ""}
                                 searchable
                                 creatable
                                 getCreateLabel={(query) => `+ Create ${query}`}
+                                onChange={(e) => {
+                                  const nNewTags = [...newTags];
+                                  nNewTags[i] = e;
+                                  setNewTags(nNewTags);
+                                }}
                                 onCreate={(query) => {
                                   const item = { value: query, label: query, recordindex: i };
-                                  setTags((current) => [...current, item]);
+                                  setTagsData((current) => [...current, item]);
                                   return item;
                                 }}
                               />
