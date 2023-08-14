@@ -8,44 +8,35 @@ import {
   Flex,
   ActionIcon,
   Burger,
-  Tabs,
   Menu,
-  Breadcrumbs,
-  Anchor,
   Modal,
   Center,
   Progress,
-  Tooltip,
+  MediaQuery,
+  Box,
 } from "@mantine/core";
 
-import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import { MainLinks } from "./MainLinks";
 import { IconLanguage } from "@tabler/icons";
 import { useAppDispatch, useAppSelector } from "../redux/store";
 import { resetFilters, setSearch } from "../redux/slices/filterSlice";
 import { useDisclosure } from "@mantine/hooks";
-import { setBoardTab } from "../redux/slices/menuSlice";
 import { useTranslation } from "react-i18next";
 import useChangeWorkspace from "../hooks/useChangeWorkspace";
 import useChangeBoard from "../hooks/useChangeBoard";
+import NavBreadcrumbs from "./NavBreadcrumbs";
+import NavTabs from "./NavTabs";
 
 const DashboardLayout = () => {
   const { t, i18n } = useTranslation();
   const dispatch = useAppDispatch();
-  const navigate = useNavigate();
 
   const { loadingText, loadingValue } = useChangeWorkspace();
-  const {
-    handleBoardChange,
-    loadingText: boardLoadingText,
-    loadingValue: boardLoadingValue,
-  } = useChangeBoard();
+  const { loadingText: boardLoadingText, loadingValue: boardLoadingValue } = useChangeBoard();
 
   const location = useLocation();
   const { search } = useAppSelector((state) => state.filters);
-  const { activeWorkspace } = useAppSelector((state) => state.workspaces);
-  const { activeBoard, data: boards } = useAppSelector((state) => state.boards);
-  const { user } = useAppSelector((state) => state.auth);
 
   const changeLanguage = (lng: string) => {
     i18n.changeLanguage(lng);
@@ -72,87 +63,32 @@ const DashboardLayout = () => {
       asideOffsetBreakpoint="sm"
       navbar={
         opened ? (
-          <Navbar p="md" hiddenBreakpoint="sm" hidden={!opened} width={{ sm: 95, lg: 95 }}>
+          <Navbar p="md" hiddenBreakpoint="lg" hidden={!opened} width={{ lg: 95 }}>
             <MainLinks />
           </Navbar>
         ) : undefined
       }
       header={
-        <Header height={{ base: 50, md: 60 }} p="md">
+        <Header height={{ base: 60 }} p="md">
           <Group px={20} position="apart">
             {/* LEFT SIDE */}
             <Flex align={"center"} gap="lg">
               <Burger opened={opened} onClick={toggle} aria-label={"Toggle Sidenav"} size="sm" />
 
-              <Breadcrumbs ml="xl" separator="→">
-                {activeWorkspace && (
-                  <Tooltip label={t("workspace")}>
-                    <Anchor
-                      size="xl"
-                      variant="text"
-                      onClick={() => {
-                        navigate("/");
-                      }}
-                    >
-                      {activeWorkspace.name}
-                    </Anchor>
-                  </Tooltip>
-                )}
-
-                {activeBoard && (
-                  <Menu shadow="md" width={200}>
-                    <Menu.Target>
-                      <Tooltip label={t("board")}>
-                        <Anchor variant="text">{activeBoard.title}</Anchor>
-                      </Tooltip>
-                    </Menu.Target>
-
-                    <Menu.Dropdown>
-                      <Menu.Label>{t("boards")}</Menu.Label>
-                      {boards.map((b) => {
-                        return (
-                          <Menu.Item
-                            key={b.id}
-                            onClick={() => {
-                              const foundBoard = boards.find((board) => board.id === b.id);
-                              if (!foundBoard) return;
-                              handleBoardChange(foundBoard);
-                            }}
-                          >
-                            {b.title}
-                          </Menu.Item>
-                        );
-                      })}
-                    </Menu.Dropdown>
-                  </Menu>
-                )}
-              </Breadcrumbs>
+              <MediaQuery smallerThan="sm" styles={{ display: "none" }}>
+                <Box>
+                  <NavBreadcrumbs />
+                </Box>
+              </MediaQuery>
             </Flex>
 
             {/* Center */}
             {(isBoardsPage || isSettingsPage) && (
-              <Tabs
-                defaultValue="Work Items"
-                value={location.pathname}
-                onTabChange={(t) => dispatch(setBoardTab(t))}
-              >
-                <Tabs.List>
-                  <Tabs.Tab value="/board" onClick={() => navigate("/board")}>
-                    {t("workItems")}
-                  </Tabs.Tab>
-                  <Tabs.Tab value="/board/sheets" onClick={() => navigate("/board/sheets")}>
-                    {t("sheets")}
-                  </Tabs.Tab>
-                  <Tabs.Tab value="/board/analytics" onClick={() => navigate("/board/analytics")}>
-                    {t("analytics")}
-                  </Tabs.Tab>
-                  {activeBoard?.owner.email === user?.user.email && (
-                    <Tabs.Tab value="/board/teams" onClick={() => navigate("/board/teams")}>
-                      {t("teams")}
-                    </Tabs.Tab>
-                  )}
-                </Tabs.List>
-              </Tabs>
+              <MediaQuery smallerThan="lg" styles={{ display: "none" }}>
+                <Box>
+                  <NavTabs />
+                </Box>
+              </MediaQuery>
             )}
 
             {/* RIGHT SIDE */}
@@ -163,15 +99,17 @@ const DashboardLayout = () => {
               >
                 <IconFilter size={24} />
               </ActionIcon> */}
-              <TextInput
-                w="400px"
-                placeholder={`${t("search")}`}
-                variant="filled"
-                value={search}
-                onChange={(e) => {
-                  dispatch(setSearch(e.target.value));
-                }}
-              />
+              <MediaQuery smallerThan="lg" styles={{ width: "100%" }}>
+                <TextInput
+                  w="400px"
+                  placeholder={`${t("search")}`}
+                  variant="filled"
+                  value={search}
+                  onChange={(e) => {
+                    dispatch(setSearch(e.target.value));
+                  }}
+                />
+              </MediaQuery>
               <Menu shadow="md" width={200}>
                 <Menu.Target>
                   <ActionIcon>

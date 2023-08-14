@@ -1,10 +1,12 @@
 import React, { useMemo } from "react";
 import { IconArtboard, IconLayout, IconMail, IconNews } from "@tabler/icons";
-import { ThemeIcon, UnstyledButton, Group, Tooltip } from "@mantine/core";
+import { ThemeIcon, UnstyledButton, Group, Tooltip, MediaQuery, Text, Box } from "@mantine/core";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useAppSelector } from "../redux/store";
 import UserButton from "../components/UserButton";
+import NavBreadcrumbs from "./NavBreadcrumbs";
+import NavTabs from "./NavTabs";
 
 interface MainLinkProps {
   icon: React.ReactNode;
@@ -37,7 +39,9 @@ function MainLink({ icon, color, label, to }: MainLinkProps) {
             {icon}
           </ThemeIcon>
 
-          {/* <Text size="sm">{label}</Text> */}
+          <MediaQuery largerThan="lg" styles={{ display: "none" }}>
+            <Text size="sm">{label}</Text>
+          </MediaQuery>
         </Group>
       </UnstyledButton>
     </Tooltip>
@@ -69,9 +73,32 @@ export function MainLinks() {
 
   const links = mainLinks.map((link) => <MainLink {...link} key={link.label} />);
 
+  const isBoardsPage = useMemo(() => {
+    return location.pathname.split("/")[1] === "board";
+  }, [location.pathname]);
+
+  const isSettingsPage = useMemo(() => {
+    return location.pathname.includes("/account/settings");
+  }, [location.pathname]);
+
   return (
-    <div className="flex flex-col items-center justify-between h-full">
-      <div>{links}</div>
+    <div className="flex flex-col  justify-between h-full">
+      <div>
+        <MediaQuery largerThan="sm" styles={{ display: "none" }}>
+          <Box my="md">
+            <NavBreadcrumbs />
+          </Box>
+        </MediaQuery>
+
+        {(isBoardsPage || isSettingsPage) && (
+          <MediaQuery largerThan="lg" styles={{ display: "none" }}>
+            <Box my="md">
+              <NavTabs />
+            </Box>
+          </MediaQuery>
+        )}
+        {links}
+      </div>
       <UserButton />
     </div>
   );
