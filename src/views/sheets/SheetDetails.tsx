@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { IRecord, ISheetDetailedResponse } from "../../interfaces/sheets/ISheetDetailedResponse";
 import {
@@ -15,6 +15,7 @@ import {
   Stack,
   Text,
   Title,
+  useMantineTheme,
 } from "@mantine/core";
 import { showError } from "../../redux/commonSliceFunctions";
 import { axiosPrivate } from "../../config/axios";
@@ -31,6 +32,7 @@ import dayjs from "dayjs";
 const SheetDetails = () => {
   const { t } = useTranslation();
   const location = useLocation();
+  const theme = useMantineTheme();
 
   const [detailedResponse, setDetailedResponse] = useState<ISheetDetailedResponse | null>(null);
   const [selectedVersion, setSelectedVersion] = useState<number | null>(null);
@@ -44,20 +46,66 @@ const SheetDetails = () => {
     return location.pathname.split("/")[3];
   }, [location]);
 
-  const handlePageChange = (e: KeyboardEvent) => {
-    const { key } = e;
-    let selectedPageIndex = -1;
+  useEffect(() => {
+    if (!detailedResponse) return;
 
-    if (key === "ArrowRight" || key === "ArrowLeft") {
-      e.preventDefault();
-      selectedPageIndex =
-        detailedResponse?.records.findIndex((s) => s.id === selectedPage?.id) || -1;
+    if (detailedResponse.records.length > 0) {
+      setSelectedPage({
+        id: detailedResponse.records[0].id,
+        name: detailedResponse.records[0].code,
+        url: detailedResponse.records[0].file.url,
+      });
     }
+  }, [detailedResponse]);
 
-    if (selectedPageIndex > 0) {
-      console.log(selectedPageIndex);
-    }
-  };
+  const handlePageChange = useCallback(
+    (e: KeyboardEvent) => {
+      const { key } = e;
+      if (!detailedResponse) return;
+      if (!selectedPage) return;
+
+      const selectedPageIndex = detailedResponse.records.findIndex(
+        (s) => s.id === selectedPage?.id,
+      );
+      const keyRight = key === "ArrowRight";
+      const keyLeft = key === "ArrowLeft";
+
+      if (keyRight || keyLeft) {
+        e.preventDefault();
+
+        if (selectedPageIndex >= 0) {
+          if (selectedPageIndex <= detailedResponse.records.length - 2) {
+            if (keyRight) {
+              setSelectedPage({
+                id: detailedResponse.records[selectedPageIndex + 1].id,
+                name: detailedResponse.records[selectedPageIndex + 1].code,
+                url: detailedResponse.records[selectedPageIndex + 1].file.url,
+              });
+            }
+          }
+
+          if (selectedPageIndex > 0) {
+            if (keyLeft) {
+              setSelectedPage({
+                id: detailedResponse.records[selectedPageIndex - 1].id,
+                name: detailedResponse.records[selectedPageIndex - 1].code,
+                url: detailedResponse.records[selectedPageIndex - 1].file.url,
+              });
+            }
+          }
+        }
+      }
+    },
+    [selectedPage, detailedResponse],
+  );
+
+  useEffect(() => {
+    window.addEventListener("keydown", handlePageChange);
+
+    return () => {
+      window.removeEventListener("keydown", handlePageChange);
+    };
+  }, [selectedPage, detailedResponse]);
 
   const getDetailedSheet = async (latest?: boolean) => {
     if (!currentSheetId) return;
@@ -85,14 +133,6 @@ const SheetDetails = () => {
       setLoading(false);
     }
   };
-
-  useEffect(() => {
-    window.addEventListener("keydown", handlePageChange);
-
-    return () => {
-      window.removeEventListener("keydown", handlePageChange);
-    };
-  }, []);
 
   useEffect(() => {
     getDetailedSheet();
@@ -149,9 +189,20 @@ const SheetDetails = () => {
                     direction="column"
                     align="center"
                     justify="center"
-                    className="hover:scale-110 cursor-pointer"
+                    className={`hover:scale-110 cursor-pointer mx-2 my-2 ${
+                      selectedPage?.id === r.id ? "scale-110" : undefined
+                    }`}
                   >
-                    <Image src={r.thumbnail.url} maw={150} />
+                    <Image
+                      src={r.thumbnail.url}
+                      maw={150}
+                      style={{
+                        border:
+                          selectedPage?.id === r.id
+                            ? `2px solid ${theme.colors.indigo[6]}`
+                            : undefined,
+                      }}
+                    />
                     {r.code}
                   </Flex>
                 );
@@ -160,7 +211,9 @@ const SheetDetails = () => {
           </ScrollArea>
         </Grid.Col>
         <Grid.Col p="md" span={9}>
-          {detailedResponse && selectedPage && <SheetPdfViewer file={selectedPage} />}
+          {detailedResponse && selectedPage && (
+            <SheetPdfViewer handleKeyEvent={handlePageChange} file={selectedPage} />
+          )}
         </Grid.Col>
         <Grid.Col span={2}>
           <Paper h="100%">

@@ -15,11 +15,12 @@ import { useDisclosure } from "@mantine/hooks";
 
 type SheetPdfViewerProps = {
   file: ISubFile;
+  handleKeyEvent: (e: KeyboardEvent) => void;
 };
 
 const controller = new AbortController();
 
-export default function SheetPdfViewer({ file }: SheetPdfViewerProps) {
+export default function SheetPdfViewer({ file, handleKeyEvent }: SheetPdfViewerProps) {
   const containerRef = useRef<HTMLElement>();
 
   const { mode } = useAppSelector((state) => state.theme);
@@ -79,7 +80,6 @@ export default function SheetPdfViewer({ file }: SheetPdfViewerProps) {
       setLoadingAnnotations(true);
 
       const res = await axiosPrivate.get(`/annotations/${file.id}`);
-      console.log("ANNOTATIONS", res.data);
 
       setLoadingAnnotations(false);
 
@@ -139,6 +139,8 @@ export default function SheetPdfViewer({ file }: SheetPdfViewerProps) {
             clickCount = 0;
           }, 300);
         });
+
+        pspdfInstance.contentDocument.addEventListener("keydown", handleKeyEvent);
 
         const toolbarItems = pspdfInstance.toolbarItems;
         pspdfInstance.setToolbarItems(toolbarItems.filter((item) => item.type !== "export-pdf"));
