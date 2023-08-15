@@ -44,6 +44,21 @@ const SheetDetails = () => {
     return location.pathname.split("/")[3];
   }, [location]);
 
+  const handlePageChange = (e: KeyboardEvent) => {
+    const { key } = e;
+    let selectedPageIndex = -1;
+
+    if (key === "ArrowRight" || key === "ArrowLeft") {
+      e.preventDefault();
+      selectedPageIndex =
+        detailedResponse?.records.findIndex((s) => s.id === selectedPage?.id) || -1;
+    }
+
+    if (selectedPageIndex > 0) {
+      console.log(selectedPageIndex);
+    }
+  };
+
   const getDetailedSheet = async (latest?: boolean) => {
     if (!currentSheetId) return;
     setDetailedResponse(null);
@@ -70,6 +85,14 @@ const SheetDetails = () => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    window.addEventListener("keydown", handlePageChange);
+
+    return () => {
+      window.removeEventListener("keydown", handlePageChange);
+    };
+  }, []);
 
   useEffect(() => {
     getDetailedSheet();
