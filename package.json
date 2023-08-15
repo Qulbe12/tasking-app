@@ -1,7 +1,7 @@
 {
   "name": "hexa-react-fe",
   "private": true,
-  "version": "0.8.12",
+  "version": "0.8.13",
   "type": "module",
   "scripts": {
     "start": "vite --host",
@@ -68,6 +68,7 @@
     "jspdf-autotable": "^3.5.28",
     "jszip": "^3.10.1",
     "lodash": "^4.17.21",
+    "moment": "^2.29.4",
     "npm": "^9.6.6",
     "nylas": "^6.10.0",
     "pspdfkit": "^2023.1.0",

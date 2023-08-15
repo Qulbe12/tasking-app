@@ -2,22 +2,24 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import ReactDataGrid from "@inovua/reactdatagrid-enterprise";
 import { useAppSelector } from "../../redux/store";
-import "@inovua/reactdatagrid-enterprise/index.css";
-import "@inovua/reactdatagrid-enterprise/theme/default-dark.css";
-import "@inovua/reactdatagrid-enterprise/theme/default-light.css";
 import _ from "lodash";
 import Filter from "../../components/Filter";
 import { CSVLink } from "react-csv";
-import { IDocument } from "hexa-sdk";
+import { IDocument } from "hexa-sdk/dist/app.api";
 import { Button, Flex, Menu } from "@mantine/core";
 import { IconFileSpreadsheet, IconPackgeExport } from "@tabler/icons";
 import jsPDF from "jspdf";
 import dayjs from "dayjs";
 import JSZip from "jszip";
 import fileSaver from "file-saver";
-
-import "./AnalyticsPage.scss";
 import { useTranslation } from "react-i18next";
+import { TypeColumns } from "@inovua/reactdatagrid-community/types/TypeColumn";
+import { TypeFilterValue } from "@inovua/reactdatagrid-community/types";
+
+import "@inovua/reactdatagrid-enterprise/index.css";
+import "@inovua/reactdatagrid-enterprise/theme/default-dark.css";
+import "@inovua/reactdatagrid-enterprise/theme/default-light.css";
+import "./AnalyticsPage.scss";
 
 const AnalyticsPage = () => {
   const { t } = useTranslation();
@@ -38,12 +40,15 @@ const AnalyticsPage = () => {
     }
   }, [templates]);
 
-  const columns = useMemo(() => {
-    const baseCols = [
-      //   { name: "type", header: "Type", defaultFlex: 1 },
+  const columns: TypeColumns = useMemo(() => {
+    const baseCols: TypeColumns = [
       { name: "title", header: t("title"), defaultFlex: 1 },
       { name: "description", header: t("description"), defaultFlex: 1 },
-      { name: "status", header: t("status"), defaultFlex: 1 },
+      {
+        name: "status",
+        header: t("status"),
+        defaultFlex: 1,
+      },
       { name: "priority", header: t("priority"), defaultFlex: 1 },
       {
         name: "startDate",
@@ -74,10 +79,39 @@ const AnalyticsPage = () => {
     return baseCols;
   }, [selectedTemplate]);
 
+  const filterValue: TypeFilterValue = useMemo(() => {
+    const baseFilters: TypeFilterValue = [
+      { name: "title", operator: "contains", type: "string", value: "" },
+      { name: "description", operator: "contains", type: "string", value: "" },
+      { name: "status", operator: "contains", type: "string", value: "" },
+      { name: "priority", operator: "contains", type: "string", value: "" },
+      { name: "startDate", operator: "contains", type: "string", value: "" },
+      { name: "dueDate", operator: "contains", type: "string", value: "" },
+    ];
+
+    if (!selectedTemplate) {
+      baseFilters.splice(3, 0, { name: "type", operator: "contains", type: "string", value: "" });
+    }
+
+    const uniqueKeyValues = new Set();
+
+    templates.forEach((template) => {
+      template.fields.forEach((field) => {
+        uniqueKeyValues.add(field.key);
+      });
+    });
+
+    const uniqueKeysArray: string[] = Array.from(uniqueKeyValues) as string[];
+
+    uniqueKeysArray.forEach((key) => {
+      baseFilters.push({ name: key, operator: "contains", type: "string", value: "" });
+    });
+
+    return baseFilters;
+  }, [columns, selectedTemplate]);
+
   const total = useMemo(() => {
     let newTotal = 0;
-
-    // const documentIds = Object.keys(cellSelection)[0].split(",")[0];
     const documentIds = Object.keys(cellSelection).map((k) => {
       return k.split(",")[0];
     });
@@ -108,12 +142,6 @@ const AnalyticsPage = () => {
 
   const { search } = useAppSelector((state) => state.filters);
 
-  // const filteredDocuments = useMemo(() => {
-  //   return documents.filter((d) => {
-  //     return d.template.id === selectedTemplate;
-  //   });
-  // }, [selectedTemplate]);
-
   const filteredData: IDocument[] = useMemo<IDocument[]>(() => {
     if (search && filter.length) {
       return documents.filter((d) => {
@@ -137,13 +165,6 @@ const AnalyticsPage = () => {
     return documents;
   }, [filter, documents, search, statusFilter]);
 
-  // const datatoExport = [
-  //   ["firstname", "lastname", "email"],
-  //   ["Ahmed", "Tomi", "ah@smthing.co.com"],
-  //   ["Raed", "Labes", "rl@smthing.co.com"],
-  //   ["Yezzi", "Min l3b", "ymin@cocococo.com"],
-  // ];
-
   const dataToExport = useMemo(() => {
     const data: string[][] = [[]];
 
@@ -166,10 +187,6 @@ const AnalyticsPage = () => {
         tempVals.push(d[f.key]);
       });
 
-      // tempVals.push(d["endDate"]);
-      // Object.entries(d).forEach(([key]) => {
-
-      // });
       data.push(tempVals);
     });
 
@@ -251,6 +268,7 @@ const AnalyticsPage = () => {
 
       <div className="mt-4">
         <ReactDataGrid
+          defaultFilterValue={filterValue}
           theme={mode === "dark" ? "default-dark" : "default-light"}
           idProperty="id"
           cellSelection={cellSelection}
