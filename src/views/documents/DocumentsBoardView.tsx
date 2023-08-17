@@ -53,8 +53,8 @@ import { useTranslation } from "react-i18next";
 import AvatarGroup from "../../components/AvatarGroup";
 import { connectNylas } from "../../redux/api/nylasApi";
 import EmailModal from "../../modals/EmailModal";
-import EmailCard from "../../components/EmailCard";
-import { IEmailThreadResponse } from "../../interfaces/IEmailResponse";
+// import EmailCard from "../../components/EmailCard";
+// import { IEmailThreadResponse } from "../../interfaces/IEmailResponse";
 import useChangeLog from "../../hooks/useChangeLog";
 import CommentInput from "../../components/CommentInput";
 import CommentsList from "../../components/CommentsList";
@@ -77,7 +77,7 @@ const DocumentsBoardView = () => {
   const { user } = useAppSelector((state) => state.auth);
   const { search } = useAppSelector((state) => state.filters);
   const { activeBoard } = useAppSelector((state) => state.boards);
-  const { nylasToken, emails } = useAppSelector((state) => state.nylas);
+  const { nylasToken } = useAppSelector((state) => state.nylas);
 
   const [aUsers, setAUsers] = useState<{ value: string; label: string }[]>([]);
   const [userType, setUserType] = useState<"ccUsers" | "assignedUsers">("assignedUsers");
@@ -171,12 +171,12 @@ const DocumentsBoardView = () => {
     toggle();
   };
 
-  const filteredEmails: IEmailThreadResponse[] = useMemo(() => {
-    if (!selectedDocument) return [];
-    return emails.filter((e) => {
-      return e.subject.includes(selectedDocument.id);
-    });
-  }, [emails, selectedDocument]);
+  // const filteredEmails: IEmailThreadResponse[] = useMemo(() => {
+  //   if (!selectedDocument) return [];
+  //   return emails.filter((e) => {
+  //     return e.subject.includes(selectedDocument.id);
+  //   });
+  // }, [emails, selectedDocument]);
 
   const handleEscapePress = (e: KeyboardEvent) => {
     if (e.key === "Escape") {
@@ -515,13 +515,13 @@ const DocumentsBoardView = () => {
                       </Button>
                     </Flex>
                   )}
-                  {nylasToken && !filteredEmails.length && (
+                  {/* {nylasToken && !filteredEmails.length && (
                     <Text c="dimmed"> {t("relatedEmailsEmpty")}...</Text>
                   )}
                   {nylasToken &&
                     filteredEmails.map((e) => {
                       return <EmailCard key={e.id} email={e} />;
-                    })}
+                    })} */}
                 </Tabs.Panel>
 
                 <Tabs.Panel value="comments" className="h-full">

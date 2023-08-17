@@ -1,18 +1,24 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
-import { IEmailThreadResponse } from "../../interfaces/IEmailResponse";
-import { connectNylas, fetchEmails } from "../api/nylasApi";
-import { showError } from "../commonSliceFunctions";
+import { connectNylas, getAllMessages, getAllThreads } from "../api/nylasApi";
 import { NylasConnectedPayload } from "hexa-sdk";
+import { IThreadExpandedResponse, IThreadResponse } from "../../interfaces/nylas/IThreadResponse";
+import {
+  IMessageExpandedResponse,
+  IMessageResponse,
+} from "../../interfaces/nylas/IMessageResponse";
 
 export interface GroupsState {
   data: any;
   loading: number;
-  emails: IEmailThreadResponse[];
+  messages: IMessageResponse[] | IMessageExpandedResponse[];
+  threads: IThreadResponse[] | IThreadExpandedResponse[];
   status: "conencted" | null;
   nylasToken?: NylasConnectedPayload;
   loaders: {
     connecting: boolean;
-    fetchingEmails: boolean;
+
+    gettingThreads: boolean;
+    gettingMessages: boolean;
   };
 }
 
@@ -20,10 +26,12 @@ const initialState: GroupsState = {
   data: [],
   loading: 0,
   status: null,
-  emails: [],
+  messages: [],
+  threads: [],
   loaders: {
     connecting: false,
-    fetchingEmails: false,
+    gettingThreads: false,
+    gettingMessages: false,
   },
 };
 
@@ -50,21 +58,29 @@ export const nylasSlice = createSlice({
       .addCase(connectNylas.rejected, (state) => {
         state.loaders.connecting = false;
       })
-      .addCase(fetchEmails.pending, (state) => {
-        state.loaders.fetchingEmails = true;
-        state.emails = [];
+
+      // Get All Threads
+      .addCase(getAllThreads.pending, (state) => {
+        state.loaders.gettingThreads = true;
       })
-      .addCase(fetchEmails.fulfilled, (state, action) => {
-        state.loaders.fetchingEmails = false;
-        const filteredTrashEmails = action.payload.filter(
-          (e: any) => e.folders[0].name !== "permanent_trash",
-        );
-        state.emails = filteredTrashEmails;
+      .addCase(getAllThreads.fulfilled, (state, action) => {
+        state.threads = action.payload;
+        state.loaders.gettingThreads = false;
       })
-      .addCase(fetchEmails.rejected, (state, action) => {
-        state.loaders.fetchingEmails = false;
-        state.nylasToken = undefined;
-        showError(action.payload as string);
+      .addCase(getAllThreads.rejected, (state) => {
+        state.loaders.gettingThreads = false;
+      })
+
+      // Get All Messages
+      .addCase(getAllMessages.pending, (state) => {
+        state.loaders.gettingMessages = true;
+      })
+      .addCase(getAllMessages.fulfilled, (state, action) => {
+        state.messages = action.payload;
+        state.loaders.gettingMessages = false;
+      })
+      .addCase(getAllMessages.rejected, (state) => {
+        state.loaders.gettingMessages = false;
       }),
 });
 
