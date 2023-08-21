@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Stack,
   Card,
@@ -15,15 +15,22 @@ import { useAppDispatch, useAppSelector } from "../../../redux/store";
 import CustomTextEditor from "../../../components/CustomTextEditor";
 import { sendMessage } from "../../../redux/api/nylasApi";
 import { IMessageResponse } from "../../../interfaces/nylas/IMessageResponse";
+import DocumentCard from "../../../components/DocumentCard";
 
 type MessageDetailsProps = {
   selectedThreadId: string | null;
   onForwardClick: (e: IMessageResponse) => void;
+  selectedMessage?: IMessageResponse;
 };
 
-const MessageDetails = ({ selectedThreadId, onForwardClick }: MessageDetailsProps) => {
+const MessageDetails = ({
+  selectedThreadId,
+  onForwardClick,
+  selectedMessage,
+}: MessageDetailsProps) => {
   const dispatch = useAppDispatch();
   const { loaders, messages } = useAppSelector((state) => state.nylas);
+  const { data: documents } = useAppSelector((state) => state.documents);
 
   const [selectedMessageIds, setSelectedMessageIds] = useState<string[]>([]);
   const [emailContent, setEmailContent] = useState("");
@@ -58,8 +65,36 @@ const MessageDetails = ({ selectedThreadId, onForwardClick }: MessageDetailsProp
     setSelectedMessageIds([]);
   }, [selectedMessageIds, emailContent]);
 
+  const linkedDocuments = useMemo(() => {
+    return documents.filter((d) => selectedMessage?.subject.includes(d.id));
+  }, [selectedMessage, documents]);
+
   return (
     <Stack h="100%">
+      <button
+        onClick={() => {
+          messages.map((m) => {
+            const documentIdsInSubject = m.subject
+              .split(" - ")[1]
+              .replace("[", "")
+              .replace("]", "")
+              .split(", ");
+
+            const docTypes: string[] = [];
+            const docIds: string[] = [];
+
+            documentIdsInSubject.forEach((di) => {
+              const splitDi = di.split(": ");
+              docTypes.push(splitDi[0]);
+              docIds.push(splitDi[1]);
+            });
+
+            console.log(docTypes);
+          });
+        }}
+      >
+        asd
+      </button>
       <Card className="p-0" h="100%">
         {loaders.gettingMessages && !!selectedThreadId && (
           <Stack>
@@ -144,8 +179,10 @@ const MessageDetails = ({ selectedThreadId, onForwardClick }: MessageDetailsProp
           </Stack>
         </ScrollArea>
       </Card>
-      <Card bg="green" h="50%">
-        Links
+      <Card h="50%">
+        {linkedDocuments.map((d) => {
+          return <DocumentCard key={d.id} document={d} />;
+        })}
       </Card>
     </Stack>
   );

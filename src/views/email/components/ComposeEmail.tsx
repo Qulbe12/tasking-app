@@ -13,15 +13,15 @@ import {
   Card,
   TextInput,
   Flex,
+  TransferListItem,
 } from "@mantine/core";
-import { useEffect, useState } from "react";
+import { FormEvent, useCallback, useEffect, useState } from "react";
 
 import CustomTextEditor from "../../../components/CustomTextEditor";
-import { showError } from "../../../redux/commonSliceFunctions";
 import { generateDocumentColor } from "../../../utils/generateDocumentColor";
 import { IconSend, IconTrash } from "@tabler/icons";
 import { IMessageResponse } from "../../../interfaces/nylas/IMessageResponse";
-import { useAppDispatch } from "../../../redux/store";
+import { useAppDispatch, useAppSelector } from "../../../redux/store";
 import { sendMessage } from "../../../redux/api/nylasApi";
 import { ISendMessage } from "../../../interfaces/nylas/ISendMessage";
 
@@ -32,15 +32,13 @@ type ComposeEmailProps = {
 
 const ComposeEmail = ({ onCancelClick, selectedMessage }: ComposeEmailProps) => {
   const dispatch = useAppDispatch();
+
+  const { loaders } = useAppSelector((state) => state.nylas);
+  const { data } = useAppSelector((state) => state.documents);
+
   const [form, setForm] = useState<ISendMessage>({
     body: "",
     subject: "",
-    cc: [
-      {
-        email: "",
-        name: "",
-      },
-    ],
     to: [
       {
         email: "",
@@ -60,16 +58,85 @@ const ComposeEmail = ({ onCancelClick, selectedMessage }: ComposeEmailProps) => 
     setForm({ ...form, subject: newSubject, body: selectedMessage.body });
   }, [selectedMessage]);
 
-  const [loading, setLoading] = useState(false);
-
   const [documents, setDocuments] = useState<TransferListData>([[], []]);
+
+  useEffect(() => {
+    const newDocumentTransferListData: TransferListData = [[], []];
+    data.forEach((d) => {
+      newDocumentTransferListData[0].push({
+        value: d.id,
+        label: d.title,
+        ...d,
+      });
+    });
+
+    // if (selectedDocument) {
+    //   newDocumentTransferListData[1].push({
+    //     label: selectedDocument.title,
+    //     value: selectedDocument.id,
+    //     ...selectedDocument,
+    //   });
+    // }
+
+    setDocuments(newDocumentTransferListData);
+  }, [data]);
+
+  const handleSendEmail = useCallback(
+    async (e: FormEvent) => {
+      e.preventDefault();
+
+      let newSubject = form.subject;
+
+      let newBody: string = JSON.parse(JSON.stringify(form.body));
+
+      newBody += "<br />";
+
+      if (documents.length > 0) {
+        newSubject += " - [";
+        newBody += "<p>Linked Documents:</p>";
+      }
+
+      documents[1].forEach((d: TransferListItem, i: number) => {
+        if (i === documents[1].length - 1) {
+          newSubject += `${d.type}: ${d.id}`;
+        } else {
+          newSubject += `${d.type}: ${d.id}, `;
+        }
+
+        newBody += `<a href=${"https://hexadesk.ca/documents/" + d.value} type=${d.type}>${
+          d.label
+        }</a><br />`;
+      });
+
+      if (documents.length > 0) {
+        newSubject += "]";
+      }
+
+      await dispatch(sendMessage({ ...form, subject: newSubject, body: newBody }));
+      setForm({
+        body: "",
+        subject: "",
+        to: [{ email: "", name: "" }],
+        cc: [{ email: "", name: "" }],
+        bcc: [{ email: "", name: "" }],
+      });
+    },
+    [form, documents],
+  );
 
   const ItemComponent: TransferListItemComponent = ({
     data,
     selected,
   }: TransferListItemComponentProps) => (
     <Group noWrap>
-      <Checkbox checked={selected} tabIndex={-1} sx={{ pointerEvents: "none" }} />
+      <Checkbox
+        checked={selected}
+        tabIndex={-1}
+        sx={{ pointerEvents: "none" }}
+        onChange={() => {
+          //
+        }}
+      />
       <div style={{ flex: 1 }}>
         <Text size="sm" weight={500}>
           {data.label}
@@ -85,29 +152,7 @@ const ComposeEmail = ({ onCancelClick, selectedMessage }: ComposeEmailProps) => 
   );
 
   return (
-    <form
-      onSubmit={async (e) => {
-        e.preventDefault();
-        setLoading(true);
-
-        try {
-          await dispatch(sendMessage(form));
-          setForm({
-            body: "",
-            subject: "",
-            to: [{ email: "", name: "" }],
-            cc: [{ email: "", name: "" }],
-            bcc: [{ email: "", name: "" }],
-          });
-
-          onCancelClick();
-          setLoading(false);
-        } catch (err: any) {
-          setLoading(false);
-          showError(err.message);
-        }
-      }}
-    >
+    <form onSubmit={handleSendEmail}>
       <Stack spacing={"md"}>
         <TextInput
           label="To"
@@ -193,11 +238,11 @@ const ComposeEmail = ({ onCancelClick, selectedMessage }: ComposeEmailProps) => 
             onClick={onCancelClick}
             type="button"
             color="red"
-            loading={loading}
+            loading={loaders.sendingMessage}
           >
             Cancel
           </Button>
-          <Button leftIcon={<IconSend size="1em" />} type="submit" loading={loading}>
+          <Button leftIcon={<IconSend size="1em" />} type="submit" loading={loaders.sendingMessage}>
             Send
           </Button>
         </Group>

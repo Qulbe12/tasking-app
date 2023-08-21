@@ -39,9 +39,10 @@ const EmailList = ({ onActionButtonClick }: EmailListProps) => {
             onThreadClick={(t) => setSelectedThreadId(t.id)}
           />
         </Grid.Col>
-        <Grid.Col span={showEmailForm ? 7 : 10} h="100%">
+        <Grid.Col span={showEmailForm ? 6 : 10} h="100%">
           <MessageDetails
             selectedThreadId={selectedThreadId}
+            selectedMessage={selectedMessage}
             onForwardClick={(m) => {
               setShowEmailForm(false);
               setSelectedMessage(m);
@@ -50,7 +51,7 @@ const EmailList = ({ onActionButtonClick }: EmailListProps) => {
           />
         </Grid.Col>
         {showEmailForm && (
-          <Grid.Col span={3}>
+          <Grid.Col span={4}>
             <ComposeEmail
               selectedMessage={selectedMessage}
               onCancelClick={() => {
