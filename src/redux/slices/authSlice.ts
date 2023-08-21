@@ -110,7 +110,6 @@ export const authSlice = createSlice({
       })
       .addCase(acceptInvitation.fulfilled, (state, action) => {
         state.loading = false;
-        console.log(action.payload);
 
         state.user = action.payload;
         if (action.payload?.accessToken) {

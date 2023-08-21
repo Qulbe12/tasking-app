@@ -365,9 +365,7 @@ const DocumentsBoardView = () => {
                             </Text>
 
                             <Text
-                              onClick={() => {
-                                console.log(typeof v);
-                              }}
+                             
                               size="sm"
                             >
                               {value || "no value"}

@@ -1,5 +1,5 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
-import { connectNylas, getAllMessages, getAllThreads } from "../api/nylasApi";
+import { connectNylas, getAllMessages, getAllThreads, sendMessage } from "../api/nylasApi";
 import { NylasConnectedPayload } from "hexa-sdk";
 import { IThreadExpandedResponse, IThreadResponse } from "../../interfaces/nylas/IThreadResponse";
 import {
@@ -16,9 +16,9 @@ export interface GroupsState {
   nylasToken?: NylasConnectedPayload;
   loaders: {
     connecting: boolean;
-
     gettingThreads: boolean;
     gettingMessages: boolean;
+    sendingMessage: boolean;
   };
 }
 
@@ -32,6 +32,7 @@ const initialState: GroupsState = {
     connecting: false,
     gettingThreads: false,
     gettingMessages: false,
+    sendingMessage: false,
   },
 };
 
@@ -81,6 +82,19 @@ export const nylasSlice = createSlice({
       })
       .addCase(getAllMessages.rejected, (state) => {
         state.loaders.gettingMessages = false;
+      })
+
+      // Send Message
+      .addCase(sendMessage.pending, (state) => {
+        state.loaders.sendingMessage = true;
+      })
+      .addCase(sendMessage.fulfilled, (state, action) => {
+        console.log(action.payload);
+
+        state.loaders.sendingMessage = false;
+      })
+      .addCase(sendMessage.rejected, (state) => {
+        state.loaders.sendingMessage = false;
       }),
 });
 

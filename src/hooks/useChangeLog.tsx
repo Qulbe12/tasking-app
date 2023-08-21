@@ -12,7 +12,6 @@ const useChangeLog = () => {
     try {
       const res = await axiosPrivate.get<IChangelog[]>(`change-logs/${id}`);
       setChangeLog(res.data);
-      console.log(res.data);
 
       setLoading(false);
     } catch (err) {

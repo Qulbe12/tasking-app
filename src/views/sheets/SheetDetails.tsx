@@ -243,8 +243,6 @@ const SheetDetails = () => {
 
       <SheetVersionModal
         onComplete={() => {
-          console.log("COMPLETED");
-
           getDetailedSheet(true);
         }}
         sheet={detailedResponse}
