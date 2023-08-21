@@ -364,12 +364,7 @@ const DocumentsBoardView = () => {
                               {_.startCase(k)}:
                             </Text>
 
-                            <Text
-                             
-                              size="sm"
-                            >
-                              {value || "no value"}
-                            </Text>
+                            <Text size="sm">{value || "no value"}</Text>
                           </Flex>
                         ) : (
                           <Text>{k}:</Text>

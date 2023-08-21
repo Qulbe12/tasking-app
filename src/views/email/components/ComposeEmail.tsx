@@ -17,13 +17,13 @@ import {
 import { useEffect, useState } from "react";
 
 import CustomTextEditor from "../../../components/CustomTextEditor";
-import { ICreateEmail } from "../../../interfaces/ICreateEmail";
 import { showError } from "../../../redux/commonSliceFunctions";
 import { generateDocumentColor } from "../../../utils/generateDocumentColor";
 import { IconSend, IconTrash } from "@tabler/icons";
 import { IMessageResponse } from "../../../interfaces/nylas/IMessageResponse";
 import { useAppDispatch } from "../../../redux/store";
 import { sendMessage } from "../../../redux/api/nylasApi";
+import { ISendMessage } from "../../../interfaces/nylas/ISendMessage";
 
 type ComposeEmailProps = {
   onCancelClick: () => void;
@@ -32,9 +32,15 @@ type ComposeEmailProps = {
 
 const ComposeEmail = ({ onCancelClick, selectedMessage }: ComposeEmailProps) => {
   const dispatch = useAppDispatch();
-  const [form, setForm] = useState<ICreateEmail>({
+  const [form, setForm] = useState<ISendMessage>({
     body: "",
     subject: "",
+    cc: [
+      {
+        email: "",
+        name: "",
+      },
+    ],
     to: [
       {
         email: "",
@@ -85,9 +91,16 @@ const ComposeEmail = ({ onCancelClick, selectedMessage }: ComposeEmailProps) => 
         setLoading(true);
 
         try {
-          await dispatch(sendMessage({ ...form, body: form.body, subject: form.subject }));
-          setForm({ body: "", subject: "", to: [{ email: "", name: "" }] });
+          await dispatch(sendMessage(form));
+          setForm({
+            body: "",
+            subject: "",
+            to: [{ email: "", name: "" }],
+            cc: [{ email: "", name: "" }],
+            bcc: [{ email: "", name: "" }],
+          });
 
+          onCancelClick();
           setLoading(false);
         } catch (err: any) {
           setLoading(false);
@@ -110,6 +123,36 @@ const ComposeEmail = ({ onCancelClick, selectedMessage }: ComposeEmailProps) => 
             });
           }}
         />
+        <TextInput
+          label="CC"
+          width="100%"
+          value={form.cc ? form.cc[0].email : ""}
+          placeholder="To"
+          onChange={(e) => {
+            setForm((f) => {
+              return {
+                ...f,
+                cc: [{ name: e.target.value, email: e.target.value }],
+              };
+            });
+          }}
+        />
+
+        <TextInput
+          label="BCC"
+          width="100%"
+          value={form.bcc ? form.bcc[0].email : ""}
+          placeholder="To"
+          onChange={(e) => {
+            setForm((f) => {
+              return {
+                ...f,
+                bcc: [{ name: e.target.value, email: e.target.value }],
+              };
+            });
+          }}
+        />
+
         <TextInput
           label="Subject"
           placeholder="Subject"
