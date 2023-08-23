@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Calendar as CalendarComponent, dayjsLocalizer } from "react-big-calendar";
 import dayjs from "dayjs";
 
@@ -6,6 +6,8 @@ import "react-big-calendar/lib/css/react-big-calendar.css";
 // import { IEmailThreadResponse } from "../../interfaces/IEmailResponse";
 import { Button, Group } from "@mantine/core";
 import { IconList } from "@tabler/icons";
+import { useAppDispatch } from "../../redux/store";
+import { getAllCalendars } from "../../redux/api/nylasApi";
 
 const localizer = dayjsLocalizer(dayjs);
 
@@ -14,6 +16,12 @@ type EmailCalendarProps = {
 };
 
 const EmailCalendar = ({ onActionButtonClick }: EmailCalendarProps) => {
+  const dispatch = useAppDispatch();
+  // const { calendars } = useAppSelector((state) => state.nylas);
+  useEffect(() => {
+    dispatch(getAllCalendars);
+  }, []);
+
   return (
     <div>
       <Group position="right" my="md">
@@ -23,7 +31,7 @@ const EmailCalendar = ({ onActionButtonClick }: EmailCalendarProps) => {
       </Group>
       <CalendarComponent
         localizer={localizer}
-        // events={emails?.map((email) => {
+        // events={calendars?.map((e) => {
         //   return {
         //     start: new Date(),
         //     end: new Date(),
