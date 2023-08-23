@@ -110,7 +110,7 @@ const Login = () => {
 
               <Checkbox label={t("rememberMe")} />
 
-              <Button loading={!!loading} type="submit">
+              <Button loading={!!loading} type="submit" variant="filled">
                 {t("signIn")}
               </Button>
             </Stack>

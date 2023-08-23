@@ -10,8 +10,6 @@ export const createComment = createAsyncThunk(
     { rejectWithValue, dispatch },
   ) => {
     try {
-      console.log("SENDING COMMENT", { documentId, comment: comment.body });
-
       const res = await axiosPrivate.post<ICommentResponse>(`/documents/${documentId}/comments`, {
         body: comment.body,
       });

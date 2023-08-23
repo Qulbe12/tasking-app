@@ -125,7 +125,7 @@ const Register = () => {
                 checked={form.values.terms}
                 onChange={(event) => form.setFieldValue("terms", event.currentTarget.checked)}
               />
-              <Button loading={!!loading} type="submit">
+              <Button loading={!!loading} type="submit" variant="filled">
                 {t("signUp")}
               </Button>
             </Stack>

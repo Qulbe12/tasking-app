@@ -11,6 +11,7 @@ import {
   ICalendarDeleteResponse,
   ICalendarResponse,
 } from "../../interfaces/nylas/ICalendarResponse";
+import { showNotification } from "@mantine/notifications";
 
 const { nylasApi } = api;
 const { connect } = nylasApi;
@@ -89,6 +90,9 @@ export const sendMessage = createAsyncThunk(
   async (message: ISendMessage, { rejectWithValue }) => {
     try {
       const res = await nylasAxios.post<IMessageResponse>("/send", message);
+      showNotification({
+        message: "Email Sent",
+      });
       return res.data;
     } catch (err) {
       const error = err as unknown as IErrorResponse;
@@ -186,6 +190,21 @@ export const deleteCalendar = createAsyncThunk(
       return res.data;
     } catch (e) {
       const error = e as unknown as IErrorResponse;
+      return rejectWithValue(error.response?.data.message);
+    }
+  },
+);
+
+export const getCalendars = createAsyncThunk(
+  "nylas/getCalendars",
+  async (args, { rejectWithValue }) => {
+    try {
+      const res = await nylasAxios.get<ICalendarResponse[]>("/calendars");
+      console.log(res.data);
+
+      return res.data;
+    } catch (err) {
+      const error = err as unknown as IErrorResponse;
       return rejectWithValue(error.response?.data.message);
     }
   },

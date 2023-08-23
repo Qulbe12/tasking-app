@@ -4,7 +4,7 @@ interface IFromTo {
 }
 
 export interface ISendMessage {
-  subject: string;
+  subject?: string;
   body: string;
   to: IFromTo[];
   from?: IFromTo[];

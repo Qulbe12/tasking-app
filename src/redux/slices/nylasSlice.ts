@@ -8,6 +8,7 @@ import {
   getAllThreads,
   getOneCalendar,
   updateCalendar,
+    sendMessage
 } from "../api/nylasApi";
 import { NylasConnectedPayload } from "hexa-sdk";
 import { IThreadExpandedResponse, IThreadResponse } from "../../interfaces/nylas/IThreadResponse";
@@ -32,6 +33,7 @@ export interface GroupsState {
   nylasToken?: NylasConnectedPayload;
   loaders: {
     connecting: boolean;
+
     gettingThreads: boolean;
     gettingMessages: boolean;
     creatingCalendar: boolean;
@@ -39,6 +41,7 @@ export interface GroupsState {
     gettingOneCalendar: boolean;
     updatingCalendars: boolean;
     deletingCalendars: boolean;
+    sendingMessage: boolean;
   };
 }
 
@@ -61,6 +64,7 @@ const initialState: GroupsState = {
     updatingCalendars: false,
     deletingCalendars: false,
     gettingOneCalendar: false,
+    sendingMessage: false,
   },
 };
 
@@ -110,6 +114,19 @@ export const nylasSlice = createSlice({
       })
       .addCase(getAllMessages.rejected, (state) => {
         state.loaders.gettingMessages = false;
+      })
+
+      // Send Message
+      .addCase(sendMessage.pending, (state) => {
+        state.loaders.sendingMessage = true;
+      })
+      .addCase(sendMessage.fulfilled, (state, action) => {
+        console.log(action.payload);
+
+        state.loaders.sendingMessage = false;
+      })
+      .addCase(sendMessage.rejected, (state) => {
+        state.loaders.sendingMessage = false;
       })
       // create calendar
       .addCase(createCalendar.pending, (state) => {

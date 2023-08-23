@@ -111,8 +111,6 @@ export const documentsSlice = createSlice({
         state.loaders.linkingDocument = true;
       })
       .addCase(addLinkedDocsAction.fulfilled, (state, action) => {
-        console.log(action.payload);
-
         const foundIndex = state.data.findIndex((d) => d.id === action.payload.id);
         state.data[foundIndex] = action.payload;
         state.loaders.linkingDocument = null;
@@ -138,7 +136,6 @@ export const documentsSlice = createSlice({
       })
       .addCase(addDocumentUsers.fulfilled, (state, action) => {
         const foundIndex = state.data.findIndex((d) => d.id === action.payload.id);
-        console.log(foundIndex);
         if (foundIndex >= 0) {
           state.data[foundIndex] = action.payload;
         }

@@ -53,9 +53,6 @@ const UpdateDynamicField = ({ field, value, onChange }: UpdateDynamicFieldProps)
     case FieldType.Multiselect:
       return (
         <MultiSelect
-          onClick={() => {
-            console.log(value);
-          }}
           data={field.options}
           label={field.label}
           value={value?.split(",")}
