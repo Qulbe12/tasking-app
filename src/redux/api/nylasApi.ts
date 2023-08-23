@@ -7,6 +7,7 @@ import { ISendMessage } from "../../interfaces/nylas/ISendMessage";
 import generateQueryString from "../../utils/generateQueryString";
 import { IThreadExpandedResponse, IThreadResponse } from "../../interfaces/nylas/IThreadResponse";
 import { showNotification } from "@mantine/notifications";
+import { ICalendarResponse } from "../../interfaces/nylas/ICalendarResponse";
 
 const { nylasApi } = api;
 const { connect } = nylasApi;
@@ -117,6 +118,21 @@ export const getThreadById = createAsyncThunk(
       const res = await nylasAxios.get<IMessageResponse>(
         `/threads/${id}${generateQueryString({ view })}`,
       );
+      return res.data;
+    } catch (err) {
+      const error = err as unknown as IErrorResponse;
+      return rejectWithValue(error.response?.data.message);
+    }
+  },
+);
+
+export const getCalendars = createAsyncThunk(
+  "nylas/getCalendars",
+  async (args, { rejectWithValue }) => {
+    try {
+      const res = await nylasAxios.get<ICalendarResponse[]>("/calendars");
+      console.log(res.data);
+
       return res.data;
     } catch (err) {
       const error = err as unknown as IErrorResponse;

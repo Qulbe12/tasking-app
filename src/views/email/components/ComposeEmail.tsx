@@ -112,7 +112,13 @@ const ComposeEmail = ({ onCancelClick, selectedMessage }: ComposeEmailProps) => 
         newSubject += "]";
       }
 
-      await dispatch(sendMessage({ ...form, subject: newSubject, body: newBody }));
+      await dispatch(
+        sendMessage({
+          ...form,
+          subject: newSubject,
+          body: newBody,
+        }),
+      );
       setForm({
         body: "",
         subject: "",

@@ -9,6 +9,7 @@ import {
   ActionIcon,
   Text,
   Button,
+  SimpleGrid,
 } from "@mantine/core";
 import { IconCornerUpLeft, IconCornerUpRight, IconSend, IconTrash } from "@tabler/icons";
 import { useAppDispatch, useAppSelector } from "../../../redux/store";
@@ -16,6 +17,7 @@ import CustomTextEditor from "../../../components/CustomTextEditor";
 import { sendMessage } from "../../../redux/api/nylasApi";
 import { IMessageResponse } from "../../../interfaces/nylas/IMessageResponse";
 import DocumentCard from "../../../components/DocumentCard";
+import { IDocument } from "hexa-sdk";
 
 type MessageDetailsProps = {
   selectedThreadId: string | null;
@@ -66,35 +68,36 @@ const MessageDetails = ({
   }, [selectedMessageIds, emailContent]);
 
   const linkedDocuments = useMemo(() => {
-    return documents.filter((d) => selectedMessage?.subject.includes(d.id));
-  }, [selectedMessage, documents]);
+    let foundDocuments: IDocument[] = [];
+    messages.map((m) => {
+      const subject = m.subject;
+
+      let documentIdsInSubject: string[] = [];
+
+      if (subject.includes(" - ") && subject.includes("[") && subject.includes("]")) {
+        documentIdsInSubject = m.subject
+          .split(" - ")[1]
+          .replace("[", "")
+          .replace("]", "")
+          .split(", ");
+      }
+
+      const docTypes: string[] = [];
+      const docIds: string[] = [];
+
+      documentIdsInSubject.forEach((di) => {
+        const splitDi = di.split(": ");
+        docTypes.push(splitDi[0]);
+        docIds.push(splitDi[1]);
+      });
+
+      foundDocuments = documents.filter((d) => docIds.includes(d.id));
+    });
+    return foundDocuments;
+  }, [messages, documents]);
 
   return (
     <Stack h="100%">
-      <button
-        onClick={() => {
-          messages.map((m) => {
-            const documentIdsInSubject = m.subject
-              .split(" - ")[1]
-              .replace("[", "")
-              .replace("]", "")
-              .split(", ");
-
-            const docTypes: string[] = [];
-            const docIds: string[] = [];
-
-            documentIdsInSubject.forEach((di) => {
-              const splitDi = di.split(": ");
-              docTypes.push(splitDi[0]);
-              docIds.push(splitDi[1]);
-            });
-
-            console.log(docTypes);
-          });
-        }}
-      >
-        asd
-      </button>
       <Card className="p-0" h="100%">
         {loaders.gettingMessages && !!selectedThreadId && (
           <Stack>
@@ -112,7 +115,13 @@ const MessageDetails = ({
               !loaders.gettingMessages &&
               messages.map((m) => {
                 return (
-                  <Card withBorder key={m.id}>
+                  <Card
+                    withBorder
+                    key={m.id}
+                    onClick={() => {
+                      console.log(m);
+                    }}
+                  >
                     <Group position="apart">
                       <Text size="lg">
                         {m.from[0].name} {`<${m.from[0].email}>`}
@@ -180,9 +189,14 @@ const MessageDetails = ({
         </ScrollArea>
       </Card>
       <Card h="50%">
-        {linkedDocuments.map((d) => {
-          return <DocumentCard key={d.id} document={d} />;
-        })}
+        <Text mb="md">Linked Documents: </Text>
+        <ScrollArea h="100%">
+          <SimpleGrid cols={4}>
+            {linkedDocuments.map((d) => {
+              return <DocumentCard key={d.id} document={d} />;
+            })}
+          </SimpleGrid>
+        </ScrollArea>
       </Card>
     </Stack>
   );
