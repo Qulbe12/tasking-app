@@ -22,7 +22,7 @@ type EmailCalendarProps = {
 
 const EmailCalendar = ({onActionButtonClick}: EmailCalendarProps) => {
 
-    const {calendars, calendar, events} = useAppSelector((state) => state.nylas);
+    const {calendars, calendar} = useAppSelector((state) => state.nylas);
     useEffect(() => {
         dispatch(getAllCalendars());
         dispatch(getEvents())
@@ -41,10 +41,10 @@ const EmailCalendar = ({onActionButtonClick}: EmailCalendarProps) => {
         location: "",
         timezone: ""
     })
-    const [calendarId, setCalendarId] = useState("")
+    // const [calendarId, setCalendarId] = useState("")
     const [event, setEvent] = useState<IEventCreate>({
         title: "",
-        calendar_id: calendarId,
+        calendar_id: "",
         visibility: "",
         description: "",
         location: "",
@@ -101,7 +101,7 @@ const EmailCalendar = ({onActionButtonClick}: EmailCalendarProps) => {
                     startAccessor="start"
                     endAccessor="end"
                     style={{height: "82%", width: "84%"}}
-                   
+
                 />
                 <div style={{width: "15%"}}>
                     <DatePicker
@@ -110,7 +110,7 @@ const EmailCalendar = ({onActionButtonClick}: EmailCalendarProps) => {
                         onChange={(e) => {
                             if (!e) return;
                             setDate(e);
-                            console.log(e)
+                            console.log(date)
                         }}
                     />
                     <Button onClick={openCalendarModel} leftIcon={<IconCalendar/>} my="md">
