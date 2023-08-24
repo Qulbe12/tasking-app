@@ -1,22 +1,23 @@
 import axios from "axios";
 
 export const nylasAxios = axios.create({
-  baseURL: "https://api.nylas.com",
-  headers: {
-    Accept: "application/json",
-  },
+    baseURL: "https://api.nylas.com",
+    headers: {
+        Accept: "application/json",
+    },
 });
 
 nylasAxios.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem("nylasToken");
+    (config) => {
+        const token = localStorage.getItem("nylasToken");
 
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
-  },
+        if (token) {
+            config.headers.Authorization = `Bearer ${token}`;
+            console.log(token)
+        }
+        return config;
+    },
+    (error) => {
+        return Promise.reject(error);
+    },
 );
