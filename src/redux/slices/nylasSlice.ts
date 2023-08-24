@@ -8,7 +8,7 @@ import {
   getAllThreads,
   getOneCalendar,
   updateCalendar,
-    sendMessage
+  sendMessage,
 } from "../api/nylasApi";
 import { NylasConnectedPayload } from "hexa-sdk";
 import { IThreadExpandedResponse, IThreadResponse } from "../../interfaces/nylas/IThreadResponse";
