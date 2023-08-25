@@ -1,5 +1,4 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
-import { IDocument } from "hexa-sdk/dist/app.api";
 import {
   addDocumentFiles,
   addDocumentUsers,
@@ -11,9 +10,10 @@ import {
   removeLinkedDocsAction,
   updateDocument,
 } from "../api/documentApi";
+import { IDocumentResponse } from "../../interfaces/documents/IDocumentResponse";
 
 export interface DocumentState {
-  data: IDocument[];
+  data: IDocumentResponse[];
   loading: boolean;
   error?: string;
   loaders: {
@@ -41,7 +41,7 @@ export const documentsSlice = createSlice({
   name: "documents",
   initialState,
   reducers: {
-    setDocuments: (state, action: PayloadAction<IDocument[]>) => {
+    setDocuments: (state, action: PayloadAction<IDocumentResponse[]>) => {
       state.data = action.payload;
     },
   },

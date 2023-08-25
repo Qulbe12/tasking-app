@@ -21,12 +21,12 @@ import { showError } from "../redux/commonSliceFunctions";
 import { useAppSelector } from "../redux/store";
 import { generateDocumentColor } from "../utils/generateDocumentColor";
 import CommonModalProps from "./CommonModalProps";
-import { IDocument } from "hexa-sdk";
 import { showNotification } from "@mantine/notifications";
 import CustomTextEditor from "../components/CustomTextEditor";
+import { IDocumentResponse } from "../interfaces/documents/IDocumentResponse";
 
 type EmailModalProps = {
-  selectedDocument?: IDocument | null;
+  selectedDocument?: IDocumentResponse | null;
 };
 
 const EmailModal = ({ opened, onClose, selectedDocument }: CommonModalProps & EmailModalProps) => {

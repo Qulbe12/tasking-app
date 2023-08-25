@@ -8,6 +8,7 @@ import {
   Grid,
   Group,
   Loader,
+  LoadingOverlay,
   Modal,
   MultiSelect,
   Paper,
@@ -19,7 +20,7 @@ import {
   Title,
   Tooltip,
 } from "@mantine/core";
-import { FieldType, IAttachment, IDocument } from "hexa-sdk/dist/app.api";
+import { FieldType, IAttachment } from "hexa-sdk/dist/app.api";
 
 import React, { useEffect, useMemo, useState } from "react";
 import DocumentCard from "../../components/DocumentCard";
@@ -51,7 +52,7 @@ import DocumentUpdateModal from "../../modals/DocumentUpdateModal";
 import DocumentModal from "../../modals/DocumentModal";
 import { useTranslation } from "react-i18next";
 import AvatarGroup from "../../components/AvatarGroup";
-import { connectNylas } from "../../redux/api/nylasApi";
+import { connectNylas, getAllMessages, getAllThreads } from "../../redux/api/nylasApi";
 import EmailModal from "../../modals/EmailModal";
 // import EmailCard from "../../components/EmailCard";
 // import { IEmailThreadResponse } from "../../interfaces/IEmailResponse";
@@ -61,6 +62,8 @@ import CommentsList from "../../components/CommentsList";
 import { getDocumentComments } from "../../redux/api/commentsApi";
 import AddDocumentFilesModal from "../../modals/AddDocumentFilesModal";
 import { openConfirmModal } from "@mantine/modals";
+import { IDocumentResponse } from "../../interfaces/documents/IDocumentResponse";
+import ThreadCard from "../../components/ThreadCard";
 
 const DocumentsBoardView = () => {
   const { t } = useTranslation();
@@ -77,39 +80,17 @@ const DocumentsBoardView = () => {
   const { user } = useAppSelector((state) => state.auth);
   const { search } = useAppSelector((state) => state.filters);
   const { activeBoard } = useAppSelector((state) => state.boards);
-  const { nylasToken } = useAppSelector((state) => state.nylas);
+  const { nylasToken, threads, loaders } = useAppSelector((state) => state.nylas);
 
   const [aUsers, setAUsers] = useState<{ value: string; label: string }[]>([]);
   const [userType, setUserType] = useState<"ccUsers" | "assignedUsers">("assignedUsers");
 
-  useEffect(() => {
-    if (!activeBoard) return;
-    dispatch(getDocuments({ boardId: activeBoard.id, query: {} }));
-  }, []);
-
-  useEffect(() => {
-    if (!activeBoard) return;
-
-    if (userType === "assignedUsers") {
-      setAUsers(
-        activeBoard.members.map((m) => {
-          return {
-            label: m.email,
-            value: m.email,
-          };
-        }),
-      );
-    } else {
-      setAUsers([]);
-    }
-  }, [activeBoard, userType]);
-
   const [filter, setFilter] = useState<string[]>([]);
   const [statusFilter, setStatusFilter] = useState<string[]>([]);
 
-  const filteredData: IDocument[] = useMemo<IDocument[]>(() => {
+  const filteredData: IDocumentResponse[] = useMemo<IDocumentResponse[]>(() => {
     const lowerSearch = search.toLocaleLowerCase();
-    let emailsToFilter: IDocument[] = documents;
+    let emailsToFilter: IDocumentResponse[] = documents;
 
     if (search) {
       emailsToFilter = emailsToFilter.filter((d) => {
@@ -132,7 +113,7 @@ const DocumentsBoardView = () => {
     return emailsToFilter;
   }, [filter, documents, search, statusFilter]);
 
-  const [selectedDocument, setSelectedDocument] = React.useState<IDocument | null>(null);
+  const [selectedDocument, setSelectedDocument] = React.useState<IDocumentResponse | null>(null);
   const [selectedAttachment, setSelectedAttachment] = useState<IAttachment | null>(null);
   const [selectedDocumentToLink, setSelectedDocumentToLink] = useState<string[]>([]);
 
@@ -157,7 +138,7 @@ const DocumentsBoardView = () => {
     }
   }, [documents]);
 
-  const [newForm, setNewForm] = useState<IDocument>();
+  const [newForm, setNewForm] = useState<IDocumentResponse>();
 
   useEffect(() => {
     if (!selectedDocument) return;
@@ -170,13 +151,6 @@ const DocumentsBoardView = () => {
   const handleAddButtonClick = () => {
     toggle();
   };
-
-  // const filteredEmails: IEmailThreadResponse[] = useMemo(() => {
-  //   if (!selectedDocument) return [];
-  //   return emails.filter((e) => {
-  //     return e.subject.includes(selectedDocument.id);
-  //   });
-  // }, [emails, selectedDocument]);
 
   const handleEscapePress = (e: KeyboardEvent) => {
     if (e.key === "Escape") {
@@ -195,8 +169,44 @@ const DocumentsBoardView = () => {
     getChangeLog(selectedDocument.id);
   }, [selectedDocument]);
 
+  useEffect(() => {
+    if (!activeBoard) return;
+    dispatch(getDocuments({ boardId: activeBoard.id, query: {} }));
+
+    if (!nylasToken || threads.length > 0) return;
+    dispatch(getAllThreads({}));
+  }, []);
+
+  useEffect(() => {
+    if (!activeBoard) return;
+
+    if (userType === "assignedUsers") {
+      setAUsers(
+        activeBoard.members.map((m) => {
+          return {
+            label: m.email,
+            value: m.email,
+          };
+        }),
+      );
+    } else {
+      setAUsers([]);
+    }
+  }, [activeBoard, userType]);
+
   const [showAssignConfirmationModal, { toggle: toggleAssignConfirmationModal }] =
     useDisclosure(false);
+
+  const filteredThreads = useMemo(() => {
+    return threads.filter((t) => selectedDocument?.linkedEmailIds.includes(t.id));
+  }, [selectedDocument]);
+
+  const [selectedThreadId, setSelectedThreadId] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!selectedThreadId) return;
+    dispatch(getAllMessages({ thread_id: selectedThreadId }));
+  }, [selectedThreadId]);
 
   return (
     <Paper h="80vh">
@@ -250,7 +260,7 @@ const DocumentsBoardView = () => {
             <Card shadow="lg" className="h-full w-full">
               <Flex justify="space-between" mb="xl">
                 <Text size="lg">{selectedDocument?.title}</Text>
-                <Button leftIcon={<IconEdit size="1rem" />} onClick={() => toggleShowEditModal()}>
+                <Button leftIcon={<IconEdit size="1em" />} onClick={() => toggleShowEditModal()}>
                   {t("edit")}
                 </Button>
               </Flex>
@@ -437,9 +447,9 @@ const DocumentsBoardView = () => {
 
                 {gettingChangeLog && <Loader size="sm" />}
 
-                {changeLog.reverse().map((cl) => {
+                {changeLog.reverse().map((cl, clIndex) => {
                   return (
-                    <div key={cl.rid}>
+                    <div key={cl.rid + clIndex}>
                       {cl.change.reverse().map((ch, i) => {
                         if (typeof ch.oldVal !== "string" || typeof ch.val !== "string") {
                           return (
@@ -474,7 +484,8 @@ const DocumentsBoardView = () => {
 
           {/* Related Emails */}
           <Grid.Col span={2} className="h-full">
-            <Card shadow="md" className="h-full">
+            <Card shadow="md" className="h-full" pos="relative">
+              <LoadingOverlay visible={loaders.gettingThreads} overlayBlur={2} />
               <Tabs variant="outline" defaultValue="comments" className="h-full">
                 <Tabs.List mb="md">
                   <Tabs.Tab value="emails">Emails</Tabs.Tab>
@@ -482,10 +493,8 @@ const DocumentsBoardView = () => {
                 </Tabs.List>
 
                 <Tabs.Panel value="emails">
-                  <Stack justify="space-between" mb="xl">
-                    <Title order={4} mb="md">
-                      {t("relatedEmails")}
-                    </Title>
+                  <Group position="apart" mb="xl">
+                    <Title order={4}>{t("relatedEmails")}</Title>
                     <Button
                       disabled={!nylasToken ? true : false}
                       leftIcon={<IconLink size={14} />}
@@ -493,13 +502,18 @@ const DocumentsBoardView = () => {
                     >
                       {t("composeEmail")}
                     </Button>
-                  </Stack>
+                  </Group>
 
+                  {filteredThreads.map((t) => {
+                    return (
+                      <ThreadCard thread={t} onClick={() => setSelectedThreadId(t.id)} key={t.id} />
+                    );
+                  })}
                   {!nylasToken && (
                     <Flex direction="column" gap="md" style={{ height: "90%" }}>
                       <Text>{t("emailNotConnected")}</Text>
                       <Button
-                        leftIcon={<IconPlugConnected size={"1rem"} />}
+                        leftIcon={<IconPlugConnected size={"1em"} />}
                         onClick={() => {
                           dispatch(connectNylas());
                         }}
@@ -508,13 +522,6 @@ const DocumentsBoardView = () => {
                       </Button>
                     </Flex>
                   )}
-                  {/* {nylasToken && !filteredEmails.length && (
-                    <Text c="dimmed"> {t("relatedEmailsEmpty")}...</Text>
-                  )}
-                  {nylasToken &&
-                    filteredEmails.map((e) => {
-                      return <EmailCard key={e.id} email={e} />;
-                    })} */}
                 </Tabs.Panel>
 
                 <Tabs.Panel value="comments" className="h-full">

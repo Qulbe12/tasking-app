@@ -1,5 +1,4 @@
 import { Button, Flex, Input, Modal, SimpleGrid, Stack } from "@mantine/core";
-import { IDocument } from "hexa-sdk/dist/app.api";
 import { useMemo, useState } from "react";
 import DocumentCard from "../components/DocumentCard";
 import Filter from "../components/Filter";
@@ -7,14 +6,15 @@ import { useAppSelector } from "../redux/store";
 import CommonModalProps from "./CommonModalProps";
 import { IconSearch } from "@tabler/icons";
 import { useTranslation } from "react-i18next";
+import { IDocumentResponse } from "../interfaces/documents/IDocumentResponse";
 
 type DocumentsListModalProps = {
-  onDocumentClick?: (document: IDocument) => void;
+  onDocumentClick?: (document: IDocumentResponse) => void;
   selectedDocuments?: string[];
   okText?: string | null;
   onOk?: () => void;
   loading?: boolean;
-  selectedDocument?: IDocument | null;
+  selectedDocument?: IDocumentResponse | null;
 };
 
 const DocumentsListModal = ({
@@ -36,7 +36,7 @@ const DocumentsListModal = ({
 
   const [search, setSearch] = useState<string>("");
 
-  const filteredData: IDocument[] = useMemo<IDocument[]>(() => {
+  const filteredData: IDocumentResponse[] = useMemo<IDocumentResponse[]>(() => {
     if (search && filter.length) {
       return data.filter((d) => {
         return (

@@ -17,7 +17,7 @@ import {
 } from "@mantine/core";
 import { DatePicker } from "@mantine/dates";
 import dayjs from "dayjs";
-import { IAttachment, IDocument } from "hexa-sdk";
+import { IAttachment } from "hexa-sdk";
 import { DocumentPriority, DocumentStatus } from "hexa-sdk/dist/app.api";
 import _ from "lodash";
 
@@ -29,9 +29,10 @@ import CommonModalProps from "./CommonModalProps";
 import { useAppDispatch, useAppSelector } from "../redux/store";
 import { useForm } from "@mantine/form";
 import { IUpdateDocument } from "../interfaces/IUpdateDocument";
+import { IDocumentResponse } from "../interfaces/documents/IDocumentResponse";
 
 type DocumentUpdateModalProps = {
-  document?: IDocument | null;
+  document?: IDocumentResponse | null;
 } & CommonModalProps;
 
 const DocumentUpdateModal = ({ onClose, opened, document }: DocumentUpdateModalProps) => {
@@ -44,7 +45,7 @@ const DocumentUpdateModal = ({ onClose, opened, document }: DocumentUpdateModalP
   const [ccUsers, setCCUsers] = useState<TransferListData>([[], []]);
   const [assUsers, setAssUsers] = useState<TransferListData>([[], []]);
 
-  const [selectedDocument, setSelectedDocument] = useState<IDocument | null>();
+  const [selectedDocument, setSelectedDocument] = useState<IDocumentResponse | null>();
 
   const [notifySettings, setNotifySettings] = useState({
     notifyAssignedUsers: false,

@@ -8,6 +8,7 @@ import MessageDetails from "./components/MessageDetails";
 import EmailListHeader from "./components/EmailListHeader";
 import ComposeEmail from "./components/ComposeEmail";
 import { IMessageResponse } from "../../interfaces/nylas/IMessageResponse";
+import { useTranslation } from "react-i18next";
 
 type EmailListProps = {
   filter?: string[];
@@ -15,6 +16,7 @@ type EmailListProps = {
 };
 
 const EmailList = ({ onActionButtonClick }: EmailListProps) => {
+  const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const [showEmailForm, setShowEmailForm] = useState(false);
 
@@ -51,7 +53,7 @@ const EmailList = ({ onActionButtonClick }: EmailListProps) => {
           />
         </Grid.Col>
         {showEmailForm && (
-          <Grid.Col span={4}>
+          <Grid.Col span={4} h="100%">
             <ComposeEmail
               selectedMessage={selectedMessage}
               onCancelClick={() => {
@@ -72,7 +74,7 @@ const EmailList = ({ onActionButtonClick }: EmailListProps) => {
             uppercase
             onClick={() => setShowEmailForm(true)}
           >
-            Compose
+            {t("composeEmail")}
           </Button>
         </Affix>
       )}

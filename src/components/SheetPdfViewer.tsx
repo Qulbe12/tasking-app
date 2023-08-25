@@ -1,17 +1,9 @@
 /* eslint-disable */
-import { createElement, useEffect, useRef, useState } from "react";
-import PSPDFKit, { Instance, ToolbarItem } from "pspdfkit";
+import { useEffect, useRef, useState } from "react";
+import PSPDFKit, { Instance } from "pspdfkit";
 import { useAppSelector } from "../redux/store";
-import { ActionIcon, Button, Flex, Menu, Text, Tooltip } from "@mantine/core";
-import { IconFileExport, IconRectangle, IconZoomPan } from "@tabler/icons";
-import { IAttachment, IDocument } from "hexa-sdk";
 import { axiosPrivate } from "../config/axios";
-import { showError } from "../redux/commonSliceFunctions";
-import { IErrorResponse } from "../interfaces/IErrorResponse";
-import { showNotification } from "@mantine/notifications";
-import { ISheetResponse } from "../interfaces/sheets/ISheetResponse";
 import { ISubFile } from "../interfaces/sheets/common";
-import { useDisclosure } from "@mantine/hooks";
 
 type SheetPdfViewerProps = {
   file: ISubFile;
