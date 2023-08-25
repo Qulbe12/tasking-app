@@ -126,7 +126,7 @@ const DocumentsBoardView = () => {
   useEffect(() => {
     if (!selectedDocument) return;
     const documentCard = document.getElementById(selectedDocument.id);
-    documentCard?.scrollIntoView({ behavior: "smooth", block: "start" });
+    documentCard?.scrollIntoView({ behavior: "smooth", block: "center" });
     getChangeLog(selectedDocument.id);
   }, [selectedDocument]);
 
