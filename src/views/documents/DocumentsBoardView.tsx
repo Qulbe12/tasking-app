@@ -8,6 +8,7 @@ import {
   Grid,
   Group,
   Loader,
+  LoadingOverlay,
   Modal,
   MultiSelect,
   Paper,
@@ -19,7 +20,7 @@ import {
   Title,
   Tooltip,
 } from "@mantine/core";
-import { FieldType, IAttachment, IDocument } from "hexa-sdk/dist/app.api";
+import { FieldType, IAttachment } from "hexa-sdk/dist/app.api";
 
 import React, { useEffect, useMemo, useState } from "react";
 import DocumentCard from "../../components/DocumentCard";
@@ -51,21 +52,23 @@ import DocumentUpdateModal from "../../modals/DocumentUpdateModal";
 import DocumentModal from "../../modals/DocumentModal";
 import { useTranslation } from "react-i18next";
 import AvatarGroup from "../../components/AvatarGroup";
-import { connectNylas } from "../../redux/api/nylasApi";
+import { connectNylas, getAllMessages, getAllThreads } from "../../redux/api/nylasApi";
 import EmailModal from "../../modals/EmailModal";
-// import EmailCard from "../../components/EmailCard";
-// import { IEmailThreadResponse } from "../../interfaces/IEmailResponse";
 import useChangeLog from "../../hooks/useChangeLog";
 import CommentInput from "../../components/CommentInput";
 import CommentsList from "../../components/CommentsList";
 import { getDocumentComments } from "../../redux/api/commentsApi";
 import AddDocumentFilesModal from "../../modals/AddDocumentFilesModal";
 import { openConfirmModal } from "@mantine/modals";
+import { IDocumentResponse } from "../../interfaces/documents/IDocumentResponse";
+import ThreadCard from "../../components/ThreadCard";
+import MessageDetails from "../../components/MessageDetails";
+import { useLocation } from "react-router-dom";
 
 const DocumentsBoardView = () => {
   const { t } = useTranslation();
-
   const dispatch = useAppDispatch();
+  const { state } = useLocation();
   const { getChangeLog, gettingChangeLog, changeLog } = useChangeLog();
 
   const {
@@ -77,14 +80,62 @@ const DocumentsBoardView = () => {
   const { user } = useAppSelector((state) => state.auth);
   const { search } = useAppSelector((state) => state.filters);
   const { activeBoard } = useAppSelector((state) => state.boards);
-  const { nylasToken } = useAppSelector((state) => state.nylas);
+  const { nylasToken, threads, loaders } = useAppSelector((state) => state.nylas);
 
   const [aUsers, setAUsers] = useState<{ value: string; label: string }[]>([]);
   const [userType, setUserType] = useState<"ccUsers" | "assignedUsers">("assignedUsers");
+  const [filter, setFilter] = useState<string[]>([]);
+  const [statusFilter, setStatusFilter] = useState<string[]>([]);
+  const [selectedDocument, setSelectedDocument] = useState<IDocumentResponse | null>(null);
+  const [selectedAttachment, setSelectedAttachment] = useState<IAttachment | null>(null);
+  const [selectedDocumentToLink, setSelectedDocumentToLink] = useState<string[]>([]);
+  const [newForm, setNewForm] = useState<IDocumentResponse>();
+  const [selectedLinkedDocument, setSelectedLinkedDocument] = useState<string | undefined>();
+  const [showNewMemberModal, setShowMember] = useState(false);
+  const [selectedThreadId, setSelectedThreadId] = useState<string | null>(null);
+
+  const [showDocumentsModal, { toggle: toggleShowDocumentsModal }] = useDisclosure(false);
+  const [showConfirmationModal, { toggle: toggleShowConfirmationModal }] = useDisclosure(false);
+  const [showEditModal, { toggle: toggleShowEditModal }] = useDisclosure(false);
+  const [showEmailModal, { toggle: toggleShowEmailModal }] = useDisclosure(false);
+  const [showAttachmentsModal, { toggle: toggleAttachmentsModal }] = useDisclosure(false);
+  const [opened, { toggle }] = useDisclosure(false);
+  const [showAssignConfirmationModal, { toggle: toggleAssignConfirmationModal }] =
+    useDisclosure(false);
+
+  useEffect(() => {
+    if (selectedDocument) {
+      const foundDocument = documents.find((d) => d.id === selectedDocument.id);
+      if (foundDocument) {
+        setSelectedDocument(foundDocument);
+      }
+    }
+  }, [documents]);
+
+  useEffect(() => {
+    if (!selectedDocument) return;
+    setNewForm({ ...newForm, ...selectedDocument });
+    dispatch(getDocumentComments({ documentId: selectedDocument.id }));
+  }, [selectedDocument]);
+
+  useEffect(() => {
+    window.addEventListener("keydown", handleEscapePress, false);
+    return () => window.removeEventListener("keydown", handleEscapePress, false);
+  }, []);
+
+  useEffect(() => {
+    if (!selectedDocument) return;
+    const documentCard = document.getElementById(selectedDocument.id);
+    documentCard?.scrollIntoView({ behavior: "smooth", block: "center" });
+    getChangeLog(selectedDocument.id);
+  }, [selectedDocument]);
 
   useEffect(() => {
     if (!activeBoard) return;
     dispatch(getDocuments({ boardId: activeBoard.id, query: {} }));
+
+    if (!nylasToken || threads.length > 0) return;
+    dispatch(getAllThreads({}));
   }, []);
 
   useEffect(() => {
@@ -104,12 +155,26 @@ const DocumentsBoardView = () => {
     }
   }, [activeBoard, userType]);
 
-  const [filter, setFilter] = useState<string[]>([]);
-  const [statusFilter, setStatusFilter] = useState<string[]>([]);
+  const filteredThreads = useMemo(() => {
+    return threads.filter((t) => selectedDocument?.linkedEmailIds.includes(t.id));
+  }, [selectedDocument]);
 
-  const filteredData: IDocument[] = useMemo<IDocument[]>(() => {
+  useEffect(() => {
+    if (!selectedThreadId) return;
+    dispatch(getAllMessages({ thread_id: selectedThreadId }));
+  }, [selectedThreadId]);
+
+  useEffect(() => {
+    if (state) {
+      const { document } = state;
+
+      setSelectedDocument(document);
+    }
+  }, [state]);
+
+  const filteredData: IDocumentResponse[] = useMemo<IDocumentResponse[]>(() => {
     const lowerSearch = search.toLocaleLowerCase();
-    let emailsToFilter: IDocument[] = documents;
+    let emailsToFilter: IDocumentResponse[] = documents;
 
     if (search) {
       emailsToFilter = emailsToFilter.filter((d) => {
@@ -132,51 +197,9 @@ const DocumentsBoardView = () => {
     return emailsToFilter;
   }, [filter, documents, search, statusFilter]);
 
-  const [selectedDocument, setSelectedDocument] = React.useState<IDocument | null>(null);
-  const [selectedAttachment, setSelectedAttachment] = useState<IAttachment | null>(null);
-  const [selectedDocumentToLink, setSelectedDocumentToLink] = useState<string[]>([]);
-
-  const [showDocumentsModal, { toggle: toggleShowDocumentsModal }] = useDisclosure(false);
-  const [showConfirmationModal, { toggle: toggleShowConfirmationModal }] = useDisclosure(false);
-  const [showEditModal, { toggle: toggleShowEditModal }] = useDisclosure(false);
-
-  const [selectedLinkedDocument, setSelectedLinkedDocument] = useState<string | undefined>();
-
-  const [showNewMemberModal, setShowMember] = useState(false);
-
-  const [showEmailModal, { toggle: toggleShowEmailModal }] = useDisclosure(false);
-
-  const [showAttachmentsModal, { toggle: toggleAttachmentsModal }] = useDisclosure(false);
-
-  useEffect(() => {
-    if (selectedDocument) {
-      const foundDocument = documents.find((d) => d.id === selectedDocument.id);
-      if (foundDocument) {
-        setSelectedDocument(foundDocument);
-      }
-    }
-  }, [documents]);
-
-  const [newForm, setNewForm] = useState<IDocument>();
-
-  useEffect(() => {
-    if (!selectedDocument) return;
-    setNewForm({ ...newForm, ...selectedDocument });
-    dispatch(getDocumentComments({ documentId: selectedDocument.id }));
-  }, [selectedDocument]);
-
-  const [opened, { toggle }] = useDisclosure(false);
-
   const handleAddButtonClick = () => {
     toggle();
   };
-
-  // const filteredEmails: IEmailThreadResponse[] = useMemo(() => {
-  //   if (!selectedDocument) return [];
-  //   return emails.filter((e) => {
-  //     return e.subject.includes(selectedDocument.id);
-  //   });
-  // }, [emails, selectedDocument]);
 
   const handleEscapePress = (e: KeyboardEvent) => {
     if (e.key === "Escape") {
@@ -184,19 +207,6 @@ const DocumentsBoardView = () => {
       setSelectedDocument(null);
     }
   };
-
-  useEffect(() => {
-    window.addEventListener("keydown", handleEscapePress, false);
-    return () => window.removeEventListener("keydown", handleEscapePress, false);
-  }, []);
-
-  useEffect(() => {
-    if (!selectedDocument) return;
-    getChangeLog(selectedDocument.id);
-  }, [selectedDocument]);
-
-  const [showAssignConfirmationModal, { toggle: toggleAssignConfirmationModal }] =
-    useDisclosure(false);
 
   return (
     <Paper h="80vh">
@@ -227,15 +237,23 @@ const DocumentsBoardView = () => {
                   {t("newDocument")}
                 </Button>
               </Flex>
-              <ScrollArea style={{ height: "90%" }}>
-                {filteredData.map((document, i) => {
+              <ScrollArea style={{ height: "90%" }} pos="relative">
+                {filteredData.map((d, i) => {
                   return (
-                    <div key={i} className="mb-4">
+                    <div
+                      key={i}
+                      className="mb-4"
+                      id={d.id}
+                      onClick={() => {
+                        const element = document.getElementById(d.id);
+                        element?.scrollIntoView({ behavior: "smooth", block: "start" });
+                      }}
+                    >
                       <DocumentCard
                         selected={selectedDocument ? selectedDocument.id : undefined}
-                        document={document}
+                        document={d}
                         onClick={() => {
-                          setSelectedDocument(document);
+                          setSelectedDocument(d);
                         }}
                       />
                     </div>
@@ -250,7 +268,7 @@ const DocumentsBoardView = () => {
             <Card shadow="lg" className="h-full w-full">
               <Flex justify="space-between" mb="xl">
                 <Text size="lg">{selectedDocument?.title}</Text>
-                <Button leftIcon={<IconEdit size="1rem" />} onClick={() => toggleShowEditModal()}>
+                <Button leftIcon={<IconEdit size="1em" />} onClick={() => toggleShowEditModal()}>
                   {t("edit")}
                 </Button>
               </Flex>
@@ -437,9 +455,9 @@ const DocumentsBoardView = () => {
 
                 {gettingChangeLog && <Loader size="sm" />}
 
-                {changeLog.reverse().map((cl) => {
+                {changeLog.reverse().map((cl, clIndex) => {
                   return (
-                    <div key={cl.rid}>
+                    <div key={cl.rid + clIndex}>
                       {cl.change.reverse().map((ch, i) => {
                         if (typeof ch.oldVal !== "string" || typeof ch.val !== "string") {
                           return (
@@ -474,7 +492,8 @@ const DocumentsBoardView = () => {
 
           {/* Related Emails */}
           <Grid.Col span={2} className="h-full">
-            <Card shadow="md" className="h-full">
+            <Card shadow="md" className="h-full" pos="relative">
+              <LoadingOverlay visible={loaders.gettingThreads} overlayBlur={2} />
               <Tabs variant="outline" defaultValue="comments" className="h-full">
                 <Tabs.List mb="md">
                   <Tabs.Tab value="emails">Emails</Tabs.Tab>
@@ -482,10 +501,8 @@ const DocumentsBoardView = () => {
                 </Tabs.List>
 
                 <Tabs.Panel value="emails">
-                  <Stack justify="space-between" mb="xl">
-                    <Title order={4} mb="md">
-                      {t("relatedEmails")}
-                    </Title>
+                  <Group position="apart" mb="xl">
+                    <Title order={4}>{t("relatedEmails")}</Title>
                     <Button
                       disabled={!nylasToken ? true : false}
                       leftIcon={<IconLink size={14} />}
@@ -493,13 +510,18 @@ const DocumentsBoardView = () => {
                     >
                       {t("composeEmail")}
                     </Button>
-                  </Stack>
+                  </Group>
 
+                  {filteredThreads.map((t) => {
+                    return (
+                      <ThreadCard thread={t} onClick={() => setSelectedThreadId(t.id)} key={t.id} />
+                    );
+                  })}
                   {!nylasToken && (
                     <Flex direction="column" gap="md" style={{ height: "90%" }}>
                       <Text>{t("emailNotConnected")}</Text>
                       <Button
-                        leftIcon={<IconPlugConnected size={"1rem"} />}
+                        leftIcon={<IconPlugConnected size={"1em"} />}
                         onClick={() => {
                           dispatch(connectNylas());
                         }}
@@ -508,13 +530,6 @@ const DocumentsBoardView = () => {
                       </Button>
                     </Flex>
                   )}
-                  {/* {nylasToken && !filteredEmails.length && (
-                    <Text c="dimmed"> {t("relatedEmailsEmpty")}...</Text>
-                  )}
-                  {nylasToken &&
-                    filteredEmails.map((e) => {
-                      return <EmailCard key={e.id} email={e} />;
-                    })} */}
                 </Tabs.Panel>
 
                 <Tabs.Panel value="comments" className="h-full">
@@ -756,6 +771,19 @@ const DocumentsBoardView = () => {
         onClose={toggleAttachmentsModal}
         opened={showAttachmentsModal}
       />
+
+      <Modal size="2xl" opened={!!selectedThreadId} onClose={() => setSelectedThreadId(null)}>
+        <MessageDetails
+          onDocumentCardClick={(d) => {
+            setSelectedDocument(d);
+            setSelectedThreadId(null);
+          }}
+          selectedThreadId={selectedThreadId}
+          onForwardClick={() => {
+            //
+          }}
+        />
+      </Modal>
     </Paper>
   );
 };

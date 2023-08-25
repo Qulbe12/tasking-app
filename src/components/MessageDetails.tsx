@@ -11,31 +11,40 @@ import {
   Button,
   SimpleGrid,
 } from "@mantine/core";
-import { IconCornerUpLeft, IconCornerUpRight, IconSend, IconTrash } from "@tabler/icons";
-import { useAppDispatch, useAppSelector } from "../../../redux/store";
-import CustomTextEditor from "../../../components/CustomTextEditor";
-import { sendMessage } from "../../../redux/api/nylasApi";
-import { IMessageResponse } from "../../../interfaces/nylas/IMessageResponse";
-import DocumentCard from "../../../components/DocumentCard";
-import { IDocument } from "hexa-sdk";
+import { IconCornerUpLeft, IconCornerUpRight, IconLink, IconSend, IconTrash } from "@tabler/icons";
+import { useAppDispatch, useAppSelector } from "../redux/store";
+import CustomTextEditor from "./CustomTextEditor";
+import { sendMessage } from "../redux/api/nylasApi";
+import { IMessageResponse } from "../interfaces/nylas/IMessageResponse";
+import DocumentCard from "./DocumentCard";
+import DocumentsListModal from "../modals/DocumentsListModal";
+import { axiosPrivate } from "../config/axios";
+import { showError } from "../redux/commonSliceFunctions";
+import { IErrorResponse } from "../interfaces/IErrorResponse";
+import { getDocuments } from "../redux/api/documentApi";
+import { IDocumentResponse } from "../interfaces/documents/IDocumentResponse";
 
 type MessageDetailsProps = {
   selectedThreadId: string | null;
   onForwardClick: (e: IMessageResponse) => void;
   selectedMessage?: IMessageResponse;
+  onDocumentCardClick?: (d: IDocumentResponse) => void;
 };
 
 const MessageDetails = ({
   selectedThreadId,
   onForwardClick,
-  selectedMessage,
+  onDocumentCardClick,
 }: MessageDetailsProps) => {
   const dispatch = useAppDispatch();
   const { loaders, messages } = useAppSelector((state) => state.nylas);
   const { data: documents } = useAppSelector((state) => state.documents);
+  const { activeBoard } = useAppSelector((state) => state.boards);
 
   const [selectedMessageIds, setSelectedMessageIds] = useState<string[]>([]);
   const [emailContent, setEmailContent] = useState("");
+
+  const [selectedDocuments, setSelectedDocuments] = useState<string[]>([]);
 
   useEffect(() => {
     setEmailContent("");
@@ -68,33 +77,13 @@ const MessageDetails = ({
   }, [selectedMessageIds, emailContent]);
 
   const linkedDocuments = useMemo(() => {
-    let foundDocuments: IDocument[] = [];
-    messages.map((m) => {
-      const subject = m.subject;
+    if (!selectedThreadId) return [];
 
-      let documentIdsInSubject: string[] = [];
+    return documents.filter((d) => d.linkedEmailIds.includes(selectedThreadId));
+  }, [messages, selectedThreadId]);
 
-      if (subject.includes(" - ") && subject.includes("[") && subject.includes("]")) {
-        documentIdsInSubject = m.subject
-          .split(" - ")[1]
-          .replace("[", "")
-          .replace("]", "")
-          .split(", ");
-      }
-
-      const docTypes: string[] = [];
-      const docIds: string[] = [];
-
-      documentIdsInSubject.forEach((di) => {
-        const splitDi = di.split(": ");
-        docTypes.push(splitDi[0]);
-        docIds.push(splitDi[1]);
-      });
-
-      foundDocuments = documents.filter((d) => docIds.includes(d.id));
-    });
-    return foundDocuments;
-  }, [messages, documents]);
+  const [showDocumentsModal, setShowDocumentsModal] = useState(false);
+  const [linking, setLinking] = useState(false);
 
   return (
     <Stack h="100%">
@@ -137,15 +126,7 @@ const MessageDetails = ({
                             <IconCornerUpLeft />
                           </ActionIcon>
                         </Tooltip>
-                        {/* <Tooltip label="Reply All">
-                          <ActionIcon
-                            color="indigo"
-                            size="sm"
-                            onClick={() => setSelectedMessageIds([...messages.map((m) => m.id)])}
-                          >
-                            <IconCornerUpLeftDouble />
-                          </ActionIcon>
-                        </Tooltip> */}
+
                         <Tooltip label="Forward">
                           <ActionIcon color="indigo" size="sm" onClick={() => onForwardClick(m)}>
                             <IconCornerUpRight />
@@ -189,15 +170,67 @@ const MessageDetails = ({
         </ScrollArea>
       </Card>
       <Card h="50%">
-        <Text mb="md">Linked Documents: </Text>
+        <Group align="center" position="apart">
+          <Text mb="md">Linked Documents: </Text>
+          <Button size="xs" leftIcon={<IconLink />} onClick={() => setShowDocumentsModal(true)}>
+            Link
+          </Button>
+        </Group>
         <ScrollArea h="100%">
           <SimpleGrid cols={4}>
             {linkedDocuments.map((d) => {
-              return <DocumentCard key={d.id} document={d} />;
+              return (
+                <DocumentCard
+                  key={d.id}
+                  document={d}
+                  onClick={() => onDocumentCardClick && onDocumentCardClick(d)}
+                />
+              );
             })}
           </SimpleGrid>
         </ScrollArea>
       </Card>
+
+      <DocumentsListModal
+        onClose={() => {
+          setShowDocumentsModal(false);
+          setSelectedDocuments([]);
+        }}
+        opened={showDocumentsModal}
+        onDocumentClick={(d) => {
+          if (selectedDocuments.includes(d.id)) {
+            const fDocs = [...selectedDocuments];
+            const foundIndex = fDocs.findIndex((fd) => fd === d.id);
+            fDocs.splice(foundIndex, 1);
+            setSelectedDocuments(fDocs);
+          } else {
+            setSelectedDocuments((document) => [...document, d.id]);
+          }
+        }}
+        okText="Link Document"
+        selectedDocuments={selectedDocuments}
+        loading={linking}
+        onOk={async () => {
+          if (!selectedThreadId) return;
+          setLinking(true);
+          try {
+            await axiosPrivate.post(`/doc-email-links/${selectedThreadId}`, {
+              docIds: selectedDocuments,
+            });
+
+            setShowDocumentsModal(false);
+            setSelectedDocuments([]);
+            setLinking(false);
+            if (activeBoard) {
+              dispatch(getDocuments({ boardId: activeBoard.id, query: {} }));
+            }
+          } catch (err) {
+            const error = err as IErrorResponse;
+            showError(error.response?.data.message);
+            setLinking(false);
+          }
+        }}
+      />
     </Stack>
   );
 };

@@ -1,13 +1,14 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { IDocumentQuery, IDocument } from "hexa-sdk/dist/app.api";
 import api from "../../config/api";
 import { centralizedErrorHandler } from "../commonSliceFunctions";
 import { axiosPrivate } from "../../config/axios";
 import { IUpdateDocument } from "../../interfaces/IUpdateDocument";
+import { IDocumentQuery, IDocumentResponse } from "../../interfaces/documents/IDocumentResponse";
+import generateQueryString from "../../utils/generateQueryString";
 
 const { documentApi } = api;
 
-const { addUsers, get, getById, removeUser, addLinkedDocs, removeLinkedDocs } = documentApi;
+const { addUsers, getById, removeUser, addLinkedDocs, removeLinkedDocs } = documentApi;
 
 export const createDocument = createAsyncThunk(
   "documents/createDocument",
@@ -33,7 +34,9 @@ export const getDocuments = createAsyncThunk(
     { rejectWithValue, dispatch },
   ) => {
     try {
-      const res = await get(boardId, query);
+      const res = await axiosPrivate.get(
+        `/boards/${boardId}/documents${generateQueryString(query)}`,
+      );
       return res.data;
     } catch (err) {
       return centralizedErrorHandler(err, rejectWithValue, dispatch);
@@ -48,7 +51,7 @@ export const updateDocument = createAsyncThunk(
     { rejectWithValue, dispatch },
   ) => {
     try {
-      const res = await axiosPrivate.patch<IDocument>(`/documents/${documentId}`, document);
+      const res = await axiosPrivate.patch<IDocumentResponse>(`/documents/${documentId}`, document);
       return res.data;
     } catch (err) {
       return centralizedErrorHandler(err, rejectWithValue, dispatch);
@@ -63,7 +66,10 @@ export const addDocumentFiles = createAsyncThunk(
     { rejectWithValue, dispatch },
   ) => {
     try {
-      const res = await axiosPrivate.post<IDocument>(`/documents/${documentId}/files`, attachment);
+      const res = await axiosPrivate.post<IDocumentResponse>(
+        `/documents/${documentId}/files`,
+        attachment,
+      );
       return res.data;
     } catch (err) {
       centralizedErrorHandler(err, rejectWithValue, dispatch);

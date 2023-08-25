@@ -4,11 +4,12 @@ import PSPDFKit, { Instance } from "pspdfkit";
 import { useAppSelector } from "../redux/store";
 import { Button, Flex, Menu, Text } from "@mantine/core";
 import { IconFileExport, IconRectangle } from "@tabler/icons";
-import { IAttachment, IDocument } from "hexa-sdk";
+import { IAttachment } from "hexa-sdk";
 import { axiosPrivate } from "../config/axios";
+import { IDocumentResponse } from "../interfaces/documents/IDocumentResponse";
 
 type PdfViewerComponentProps = {
-  selectedDocument?: IDocument | null;
+  selectedDocument?: IDocumentResponse | null;
   attachment: IAttachment;
 };
 
