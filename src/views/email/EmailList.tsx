@@ -4,11 +4,12 @@ import { Button, Affix, Grid } from "@mantine/core";
 import { useAppDispatch } from "../../redux/store";
 import { getAllMessages } from "../../redux/api/nylasApi";
 import ThreadsList from "./components/ThreadsList";
-import MessageDetails from "./components/MessageDetails";
+import MessageDetails from "../../components/MessageDetails";
 import EmailListHeader from "./components/EmailListHeader";
 import ComposeEmail from "./components/ComposeEmail";
 import { IMessageResponse } from "../../interfaces/nylas/IMessageResponse";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 
 type EmailListProps = {
   filter?: string[];
@@ -18,6 +19,8 @@ type EmailListProps = {
 const EmailList = ({ onActionButtonClick }: EmailListProps) => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+
   const [showEmailForm, setShowEmailForm] = useState(false);
 
   const [selectedThreadId, setSelectedThreadId] = useState<string | null>(null);
@@ -50,6 +53,7 @@ const EmailList = ({ onActionButtonClick }: EmailListProps) => {
               setSelectedMessage(m);
               setShowEmailForm(true);
             }}
+            onDocumentCardClick={(d) => navigate("/board", { state: { document: d } })}
           />
         </Grid.Col>
         {showEmailForm && (

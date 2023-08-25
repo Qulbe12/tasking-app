@@ -54,8 +54,6 @@ import { useTranslation } from "react-i18next";
 import AvatarGroup from "../../components/AvatarGroup";
 import { connectNylas, getAllMessages, getAllThreads } from "../../redux/api/nylasApi";
 import EmailModal from "../../modals/EmailModal";
-// import EmailCard from "../../components/EmailCard";
-// import { IEmailThreadResponse } from "../../interfaces/IEmailResponse";
 import useChangeLog from "../../hooks/useChangeLog";
 import CommentInput from "../../components/CommentInput";
 import CommentsList from "../../components/CommentsList";
@@ -64,11 +62,13 @@ import AddDocumentFilesModal from "../../modals/AddDocumentFilesModal";
 import { openConfirmModal } from "@mantine/modals";
 import { IDocumentResponse } from "../../interfaces/documents/IDocumentResponse";
 import ThreadCard from "../../components/ThreadCard";
+import MessageDetails from "../../components/MessageDetails";
+import { useLocation } from "react-router-dom";
 
 const DocumentsBoardView = () => {
   const { t } = useTranslation();
-
   const dispatch = useAppDispatch();
+  const { state } = useLocation();
   const { getChangeLog, gettingChangeLog, changeLog } = useChangeLog();
 
   const {
@@ -84,50 +84,24 @@ const DocumentsBoardView = () => {
 
   const [aUsers, setAUsers] = useState<{ value: string; label: string }[]>([]);
   const [userType, setUserType] = useState<"ccUsers" | "assignedUsers">("assignedUsers");
-
   const [filter, setFilter] = useState<string[]>([]);
   const [statusFilter, setStatusFilter] = useState<string[]>([]);
-
-  const filteredData: IDocumentResponse[] = useMemo<IDocumentResponse[]>(() => {
-    const lowerSearch = search.toLocaleLowerCase();
-    let emailsToFilter: IDocumentResponse[] = documents;
-
-    if (search) {
-      emailsToFilter = emailsToFilter.filter((d) => {
-        return _.lowerCase(d.title + d.description + d.status + d.priority).includes(lowerSearch);
-      });
-    }
-
-    if (filter.length) {
-      emailsToFilter = emailsToFilter.filter((d) => {
-        return filter.includes(d.template.name);
-      });
-    }
-
-    if (statusFilter.length) {
-      emailsToFilter = emailsToFilter.filter((d) => {
-        return statusFilter.includes(d.status);
-      });
-    }
-
-    return emailsToFilter;
-  }, [filter, documents, search, statusFilter]);
-
-  const [selectedDocument, setSelectedDocument] = React.useState<IDocumentResponse | null>(null);
+  const [selectedDocument, setSelectedDocument] = useState<IDocumentResponse | null>(null);
   const [selectedAttachment, setSelectedAttachment] = useState<IAttachment | null>(null);
   const [selectedDocumentToLink, setSelectedDocumentToLink] = useState<string[]>([]);
+  const [newForm, setNewForm] = useState<IDocumentResponse>();
+  const [selectedLinkedDocument, setSelectedLinkedDocument] = useState<string | undefined>();
+  const [showNewMemberModal, setShowMember] = useState(false);
+  const [selectedThreadId, setSelectedThreadId] = useState<string | null>(null);
 
   const [showDocumentsModal, { toggle: toggleShowDocumentsModal }] = useDisclosure(false);
   const [showConfirmationModal, { toggle: toggleShowConfirmationModal }] = useDisclosure(false);
   const [showEditModal, { toggle: toggleShowEditModal }] = useDisclosure(false);
-
-  const [selectedLinkedDocument, setSelectedLinkedDocument] = useState<string | undefined>();
-
-  const [showNewMemberModal, setShowMember] = useState(false);
-
   const [showEmailModal, { toggle: toggleShowEmailModal }] = useDisclosure(false);
-
   const [showAttachmentsModal, { toggle: toggleAttachmentsModal }] = useDisclosure(false);
+  const [opened, { toggle }] = useDisclosure(false);
+  const [showAssignConfirmationModal, { toggle: toggleAssignConfirmationModal }] =
+    useDisclosure(false);
 
   useEffect(() => {
     if (selectedDocument) {
@@ -138,26 +112,11 @@ const DocumentsBoardView = () => {
     }
   }, [documents]);
 
-  const [newForm, setNewForm] = useState<IDocumentResponse>();
-
   useEffect(() => {
     if (!selectedDocument) return;
     setNewForm({ ...newForm, ...selectedDocument });
     dispatch(getDocumentComments({ documentId: selectedDocument.id }));
   }, [selectedDocument]);
-
-  const [opened, { toggle }] = useDisclosure(false);
-
-  const handleAddButtonClick = () => {
-    toggle();
-  };
-
-  const handleEscapePress = (e: KeyboardEvent) => {
-    if (e.key === "Escape") {
-      e.preventDefault();
-      setSelectedDocument(null);
-    }
-  };
 
   useEffect(() => {
     window.addEventListener("keydown", handleEscapePress, false);
@@ -166,6 +125,8 @@ const DocumentsBoardView = () => {
 
   useEffect(() => {
     if (!selectedDocument) return;
+    const documentCard = document.getElementById(selectedDocument.id);
+    documentCard?.scrollIntoView({ behavior: "smooth", block: "start" });
     getChangeLog(selectedDocument.id);
   }, [selectedDocument]);
 
@@ -194,19 +155,58 @@ const DocumentsBoardView = () => {
     }
   }, [activeBoard, userType]);
 
-  const [showAssignConfirmationModal, { toggle: toggleAssignConfirmationModal }] =
-    useDisclosure(false);
-
   const filteredThreads = useMemo(() => {
     return threads.filter((t) => selectedDocument?.linkedEmailIds.includes(t.id));
   }, [selectedDocument]);
-
-  const [selectedThreadId, setSelectedThreadId] = useState<string | null>(null);
 
   useEffect(() => {
     if (!selectedThreadId) return;
     dispatch(getAllMessages({ thread_id: selectedThreadId }));
   }, [selectedThreadId]);
+
+  useEffect(() => {
+    if (state) {
+      const { document } = state;
+
+      setSelectedDocument(document);
+    }
+  }, [state]);
+
+  const filteredData: IDocumentResponse[] = useMemo<IDocumentResponse[]>(() => {
+    const lowerSearch = search.toLocaleLowerCase();
+    let emailsToFilter: IDocumentResponse[] = documents;
+
+    if (search) {
+      emailsToFilter = emailsToFilter.filter((d) => {
+        return _.lowerCase(d.title + d.description + d.status + d.priority).includes(lowerSearch);
+      });
+    }
+
+    if (filter.length) {
+      emailsToFilter = emailsToFilter.filter((d) => {
+        return filter.includes(d.template.name);
+      });
+    }
+
+    if (statusFilter.length) {
+      emailsToFilter = emailsToFilter.filter((d) => {
+        return statusFilter.includes(d.status);
+      });
+    }
+
+    return emailsToFilter;
+  }, [filter, documents, search, statusFilter]);
+
+  const handleAddButtonClick = () => {
+    toggle();
+  };
+
+  const handleEscapePress = (e: KeyboardEvent) => {
+    if (e.key === "Escape") {
+      e.preventDefault();
+      setSelectedDocument(null);
+    }
+  };
 
   return (
     <Paper h="80vh">
@@ -237,15 +237,23 @@ const DocumentsBoardView = () => {
                   {t("newDocument")}
                 </Button>
               </Flex>
-              <ScrollArea style={{ height: "90%" }}>
-                {filteredData.map((document, i) => {
+              <ScrollArea style={{ height: "90%" }} pos="relative">
+                {filteredData.map((d, i) => {
                   return (
-                    <div key={i} className="mb-4">
+                    <div
+                      key={i}
+                      className="mb-4"
+                      id={d.id}
+                      onClick={() => {
+                        const element = document.getElementById(d.id);
+                        element?.scrollIntoView({ behavior: "smooth", block: "start" });
+                      }}
+                    >
                       <DocumentCard
                         selected={selectedDocument ? selectedDocument.id : undefined}
-                        document={document}
+                        document={d}
                         onClick={() => {
-                          setSelectedDocument(document);
+                          setSelectedDocument(d);
                         }}
                       />
                     </div>
@@ -763,6 +771,19 @@ const DocumentsBoardView = () => {
         onClose={toggleAttachmentsModal}
         opened={showAttachmentsModal}
       />
+
+      <Modal size="2xl" opened={!!selectedThreadId} onClose={() => setSelectedThreadId(null)}>
+        <MessageDetails
+          onDocumentCardClick={(d) => {
+            setSelectedDocument(d);
+            setSelectedThreadId(null);
+          }}
+          selectedThreadId={selectedThreadId}
+          onForwardClick={() => {
+            //
+          }}
+        />
+      </Modal>
     </Paper>
   );
 };
