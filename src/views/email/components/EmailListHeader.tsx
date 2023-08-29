@@ -1,47 +1,20 @@
+import React from "react";
 import { Group, Badge, Divider, Button } from "@mantine/core";
 import { IconCalendar } from "@tabler/icons";
-import React, { useEffect, useState } from "react";
-import { getAllThreads } from "../../../redux/api/nylasApi";
-import { useAppDispatch } from "../../../redux/store";
 
 type EmailListHeaderProps = {
   onActionButtonClick: () => void;
+  onTypeChange: (type: string) => void;
+  type: string;
 };
 
-const EmailListHeader = ({ onActionButtonClick }: EmailListHeaderProps) => {
-  const dispatch = useAppDispatch();
-  const [type, setType] = useState("inbox");
-
-  useEffect(() => {
-    switch (type) {
-      case "folder":
-        dispatch(getAllThreads({ view: "expanded", limit: 1000 }));
-        break;
-      case "inbox":
-        dispatch(getAllThreads({ view: "expanded", in: "Inbox", limit: 1000 }));
-        break;
-
-      case "sent":
-        dispatch(getAllThreads({ view: "expanded", in: "Sent", limit: 1000 }));
-        break;
-      case "spam":
-        dispatch(getAllThreads({ view: "expanded", in: "Spam", limit: 1000 }));
-        break;
-      case "trash":
-        dispatch(getAllThreads({ view: "expanded", in: "Trash", limit: 1000 }));
-        break;
-
-      default:
-        break;
-    }
-  }, [type]);
-
+const EmailListHeader = ({ onActionButtonClick, type, onTypeChange }: EmailListHeaderProps) => {
   return (
     <Group position="apart" my="md">
       <Group>
         <Badge
           variant={type === "folder" ? "filled" : "outline"}
-          onClick={() => setType("folder")}
+          onClick={() => onTypeChange("folder")}
           style={{ cursor: "pointer" }}
         >
           Folder
@@ -51,21 +24,21 @@ const EmailListHeader = ({ onActionButtonClick }: EmailListHeaderProps) => {
 
         <Badge
           variant={type === "pending" ? "filled" : "outline"}
-          onClick={() => setType("pending")}
+          onClick={() => onTypeChange("pending")}
           style={{ cursor: "pointer" }}
         >
           Pending
         </Badge>
         <Badge
           variant={type === "done" ? "filled" : "outline"}
-          onClick={() => setType("done")}
+          onClick={() => onTypeChange("done")}
           style={{ cursor: "pointer" }}
         >
           Done
         </Badge>
         <Badge
           variant={type === "all" ? "filled" : "outline"}
-          onClick={() => setType("all")}
+          onClick={() => onTypeChange("all")}
           style={{ cursor: "pointer" }}
         >
           All
@@ -75,28 +48,28 @@ const EmailListHeader = ({ onActionButtonClick }: EmailListHeaderProps) => {
 
         <Badge
           variant={type === "inbox" ? "filled" : "outline"}
-          onClick={() => setType("inbox")}
+          onClick={() => onTypeChange("inbox")}
           style={{ cursor: "pointer" }}
         >
           Inbox
         </Badge>
         <Badge
           variant={type === "sent" ? "filled" : "outline"}
-          onClick={() => setType("sent")}
+          onClick={() => onTypeChange("sent")}
           style={{ cursor: "pointer" }}
         >
           Sent
         </Badge>
         <Badge
           variant={type === "spam" ? "filled" : "outline"}
-          onClick={() => setType("spam")}
+          onClick={() => onTypeChange("spam")}
           style={{ cursor: "pointer" }}
         >
           Spam
         </Badge>
         <Badge
           variant={type === "trash" ? "filled" : "outline"}
-          onClick={() => setType("trash")}
+          onClick={() => onTypeChange("trash")}
           style={{ cursor: "pointer" }}
         >
           Trash

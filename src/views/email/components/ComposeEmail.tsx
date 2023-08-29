@@ -14,6 +14,7 @@ import {
   TextInput,
   Flex,
   TransferListItem,
+  ScrollArea,
 } from "@mantine/core";
 import { FormEvent, useCallback, useEffect, useState } from "react";
 
@@ -158,8 +159,8 @@ const ComposeEmail = ({ onCancelClick, selectedMessage }: ComposeEmailProps) => 
   );
 
   return (
-    <form onSubmit={handleSendEmail}>
-      <Stack spacing={"md"}>
+    <form onSubmit={handleSendEmail} style={{ height: "100%" }}>
+      <Stack spacing={"md"} h="100%">
         <TextInput
           label="To"
           width="100%"
@@ -222,22 +223,28 @@ const ComposeEmail = ({ onCancelClick, selectedMessage }: ComposeEmailProps) => 
           <Card>
             <Flex gap="md">
               <Divider orientation="vertical" size="xl" />
-              <div dangerouslySetInnerHTML={{ __html: selectedMessage.body }}></div>
+              <ScrollArea>
+                <div dangerouslySetInnerHTML={{ __html: selectedMessage.body }}></div>
+              </ScrollArea>
             </Flex>
           </Card>
         )}
-        <Divider label="Attach Documents" />
-        <TransferList
-          value={documents}
-          onChange={setDocuments}
-          itemComponent={ItemComponent}
-          searchPlaceholder="Search..."
-          nothingFound="Nothing here"
-          titles={["Available", "In-Email"]}
-          showTransferAll={false}
-          breakpoint="sm"
-          filter={(query, item) => JSON.stringify(item).includes(query.toLowerCase().trim())}
-        />
+        {!selectedMessage && (
+          <>
+            <Divider label="Attach Documents" />
+            <TransferList
+              value={documents}
+              onChange={setDocuments}
+              itemComponent={ItemComponent}
+              searchPlaceholder="Search..."
+              nothingFound="Nothing here"
+              titles={["Available", "In-Email"]}
+              showTransferAll={false}
+              breakpoint="sm"
+              filter={(query, item) => JSON.stringify(item).includes(query.toLowerCase().trim())}
+            />
+          </>
+        )}
         <Group position="right">
           <Button
             leftIcon={<IconTrash size="1em" />}

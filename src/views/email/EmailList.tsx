@@ -1,13 +1,23 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Button, Affix, Grid } from "@mantine/core";
 
-import { useAppDispatch } from "../../redux/store";
-import { getAllMessages } from "../../redux/api/nylasApi";
+import { useAppDispatch, useAppSelector } from "../../redux/store";
+import {
+  GetAllThreadsArgs,
+  getAllFolders,
+  getAllMessages,
+  getAllThreads,
+  getMoreThreads,
+} from "../../redux/api/nylasApi";
 import ThreadsList from "./components/ThreadsList";
-import MessageDetails from "./components/MessageDetails";
+import MessageDetails from "../../components/MessageDetails";
 import EmailListHeader from "./components/EmailListHeader";
 import ComposeEmail from "./components/ComposeEmail";
 import { IMessageResponse } from "../../interfaces/nylas/IMessageResponse";
+import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
+import _ from "lodash";
+import FoldersList from "./components/FoldersList";
 
 type EmailListProps = {
   filter?: string[];
@@ -15,10 +25,16 @@ type EmailListProps = {
 };
 
 const EmailList = ({ onActionButtonClick }: EmailListProps) => {
+  const { t } = useTranslation();
   const dispatch = useAppDispatch();
-  const [showEmailForm, setShowEmailForm] = useState(false);
+  const navigate = useNavigate();
 
+  const { threads } = useAppSelector((state) => state.nylas);
+
+  const [showEmailForm, setShowEmailForm] = useState(false);
   const [selectedThreadId, setSelectedThreadId] = useState<string | null>(null);
+  const [type, setType] = useState("inbox");
+  const [selectedMessage, setSelectedMessage] = useState<IMessageResponse | undefined>();
 
   useEffect(() => {
     if (!selectedThreadId) return;
@@ -26,20 +42,53 @@ const EmailList = ({ onActionButtonClick }: EmailListProps) => {
     dispatch(getAllMessages({ thread_id: selectedThreadId }));
   }, [selectedThreadId]);
 
-  const [selectedMessage, setSelectedMessage] = useState<IMessageResponse | undefined>();
+  const commonThreadQuery: GetAllThreadsArgs = { view: "expanded", limit: 20 };
+
+  const inFolder = useMemo(() => {
+    if (type === "inbox" || type === "sent" || type === "spam" || type === "trash") {
+      return _.startCase(type);
+    }
+  }, [type]);
+
+  useEffect(() => {
+    if (inFolder) {
+      dispatch(getAllThreads({ ...commonThreadQuery, in: inFolder }));
+    }
+
+    if (type === "folder") {
+      dispatch(getAllFolders());
+    }
+  }, [inFolder, type]);
 
   return (
     <div>
-      <EmailListHeader onActionButtonClick={onActionButtonClick} />
+      <EmailListHeader
+        onActionButtonClick={onActionButtonClick}
+        type={type}
+        onTypeChange={(t) => setType(t)}
+      />
 
       <Grid h="87vh">
-        <Grid.Col span={2} h="100%">
-          <ThreadsList
-            selectedThreadId={selectedThreadId}
-            onThreadClick={(t) => setSelectedThreadId(t.id)}
-          />
+        <Grid.Col span={3} h="100%">
+          {inFolder && (
+            <ThreadsList
+              selectedThreadId={selectedThreadId}
+              onThreadClick={(t) => setSelectedThreadId(t.id)}
+              afterScroll={() => {
+                dispatch(
+                  getMoreThreads({ ...commonThreadQuery, offset: threads.length, in: inFolder }),
+                );
+              }}
+            />
+          )}
+          {type === "folder" && (
+            <FoldersList
+              selectedThreadId={selectedThreadId}
+              onThreadClick={(t) => setSelectedThreadId(t.id)}
+            />
+          )}
         </Grid.Col>
-        <Grid.Col span={showEmailForm ? 6 : 10} h="100%">
+        <Grid.Col span={showEmailForm ? 5 : 9} h="100%">
           <MessageDetails
             selectedThreadId={selectedThreadId}
             selectedMessage={selectedMessage}
@@ -48,10 +97,11 @@ const EmailList = ({ onActionButtonClick }: EmailListProps) => {
               setSelectedMessage(m);
               setShowEmailForm(true);
             }}
+            onDocumentCardClick={(d) => navigate("/board", { state: { document: d } })}
           />
         </Grid.Col>
         {showEmailForm && (
-          <Grid.Col span={4}>
+          <Grid.Col span={4} h="100%">
             <ComposeEmail
               selectedMessage={selectedMessage}
               onCancelClick={() => {
@@ -72,7 +122,7 @@ const EmailList = ({ onActionButtonClick }: EmailListProps) => {
             uppercase
             onClick={() => setShowEmailForm(true)}
           >
-            Compose
+            {t("composeEmail")}
           </Button>
         </Affix>
       )}

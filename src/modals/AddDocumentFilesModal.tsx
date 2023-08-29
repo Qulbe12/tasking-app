@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import CommonModalProps from "./CommonModalProps";
-import { IDocument } from "hexa-sdk";
 import { ActionIcon, Button, Flex, Group, Modal, Paper, Text } from "@mantine/core";
 import CustomDropzone from "../components/CustomDropzone";
 import { FileWithPath } from "@mantine/dropzone";
@@ -8,9 +7,10 @@ import { showError } from "../redux/commonSliceFunctions";
 import { IconX } from "@tabler/icons";
 import { useAppDispatch, useAppSelector } from "../redux/store";
 import { addDocumentFiles } from "../redux/api/documentApi";
+import { IDocumentResponse } from "../interfaces/documents/IDocumentResponse";
 
 type AddDocumentFilesModalProps = {
-  document?: IDocument | null;
+  document?: IDocumentResponse | null;
 } & CommonModalProps;
 
 const AddDocumentFilesModal = ({ onClose, opened, document }: AddDocumentFilesModalProps) => {

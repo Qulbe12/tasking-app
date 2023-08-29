@@ -31,7 +31,7 @@ const CommentInput = ({ documentId }: CommentInput) => {
 
       <Group position="right">
         <Button
-          rightIcon={<IconSend size="1rem" />}
+          rightIcon={<IconSend size="1em" />}
           onClick={async () => {
             if (!documentId) return;
             await dispatch(createComment({ documentId, comment: { body: comment } }));

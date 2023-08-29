@@ -15,6 +15,8 @@ import { showNotification } from "@mantine/notifications";
 import { centralizedErrorHandler } from "../commonSliceFunctions";
 import { IEventResponse } from "../../interfaces/nylas/IEventResponse";
 import { IEventCreate } from "../../interfaces/nylas/IEventCreate";
+import { IContactResponse } from "../../interfaces/nylas/IContactResponse";
+import { IFolderResponse } from "../../interfaces/nylas/IFolderResponse";
 
 const { nylasApi } = api;
 const { connect } = nylasApi;
@@ -119,6 +121,21 @@ export const getAllThreads = createAsyncThunk(
   },
 );
 
+export const getMoreThreads = createAsyncThunk(
+  "nylas/getMoreThreads",
+  async (args: GetAllThreadsArgs, { rejectWithValue }) => {
+    try {
+      const res = await nylasAxios.get<IThreadResponse[] | IThreadExpandedResponse[]>(
+        `/threads${generateQueryString(args)}`,
+      );
+      return res.data;
+    } catch (err) {
+      const error = err as unknown as IErrorResponse;
+      return rejectWithValue(error.response?.data.message);
+    }
+  },
+);
+
 export const getThreadById = createAsyncThunk(
   "nylas/getMessageById",
   async ({ id, view }: { id: string; view: "id" | "count" | "expanded" }, { rejectWithValue }) => {
@@ -139,7 +156,6 @@ export const createCalendar = createAsyncThunk(
   async (calendar: ICreateMicrosoftCalendar, { rejectWithValue, dispatch }) => {
     try {
       const res = await nylasAxios.post<ICalendarResponse>("/calendars", calendar);
-      console.log(res.data);
       return res.data;
     } catch (err) {
       return centralizedErrorHandler(err, rejectWithValue, dispatch);
@@ -236,6 +252,7 @@ export const createEvent = createAsyncThunk(
     try {
       const res = await nylasAxios.post<IEventResponse>("/events", data);
       console.log(res.data);
+
       return res.data;
     } catch (err) {
       return centralizedErrorHandler(err, rejectWithValue, dispatch);
@@ -261,6 +278,36 @@ export const deleteEvent = createAsyncThunk(
       return res.data;
     } catch (err) {
       return centralizedErrorHandler(err, rejectWithValue, dispatch);
+    }
+  },
+);
+
+export const getContacts = createAsyncThunk(
+  "nylas/getContacts",
+  async (args, { rejectWithValue }) => {
+    try {
+      const res = await nylasAxios.get<IContactResponse[]>("/contacts");
+      console.log(res.data);
+
+      return res.data;
+    } catch (err) {
+      const error = err as unknown as IErrorResponse;
+      return rejectWithValue(error.response?.data.message);
+    }
+  },
+);
+
+export const getAllFolders = createAsyncThunk(
+  "nylas/getAllFolders",
+  async (args, { rejectWithValue }) => {
+    try {
+      const res = await nylasAxios.get<IFolderResponse[]>("/folders");
+      console.log(res.data);
+
+      return res.data;
+    } catch (err) {
+      const error = err as unknown as IErrorResponse;
+      return rejectWithValue(error.response?.data.message);
     }
   },
 );

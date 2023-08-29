@@ -5,7 +5,6 @@ import { useAppSelector } from "../../redux/store";
 import _ from "lodash";
 import Filter from "../../components/Filter";
 import { CSVLink } from "react-csv";
-import { IDocument } from "hexa-sdk/dist/app.api";
 import { Button, Flex, Menu } from "@mantine/core";
 import { IconFileSpreadsheet, IconPackgeExport } from "@tabler/icons";
 import jsPDF from "jspdf";
@@ -20,6 +19,7 @@ import "@inovua/reactdatagrid-enterprise/index.css";
 import "@inovua/reactdatagrid-enterprise/theme/default-dark.css";
 import "@inovua/reactdatagrid-enterprise/theme/default-light.css";
 import "./AnalyticsPage.scss";
+import { IDocumentResponse } from "../../interfaces/documents/IDocumentResponse";
 
 const AnalyticsPage = () => {
   const { t } = useTranslation();
@@ -142,7 +142,7 @@ const AnalyticsPage = () => {
 
   const { search } = useAppSelector((state) => state.filters);
 
-  const filteredData: IDocument[] = useMemo<IDocument[]>(() => {
+  const filteredData: IDocumentResponse[] = useMemo<IDocumentResponse[]>(() => {
     if (search && filter.length) {
       return documents.filter((d) => {
         return (
@@ -172,7 +172,7 @@ const AnalyticsPage = () => {
       data[0].push(c.header);
     });
 
-    filteredData.forEach((d: IDocument) => {
+    filteredData.forEach((d: IDocumentResponse) => {
       const tempVals: string[] = [];
 
       tempVals.push(d["title"]);

@@ -1,13 +1,14 @@
 import { ActionIcon, Avatar, Badge, Card, Divider, Flex, Text, Tooltip } from "@mantine/core";
 import { IconClock, IconPaperclip, IconUnlink } from "@tabler/icons";
 import dayjs from "dayjs";
-import { DocumentStatus, IDocument } from "hexa-sdk/dist/app.api";
+import { DocumentStatus } from "hexa-sdk/dist/app.api";
 import React from "react";
 import { generateDocumentColor } from "../utils/generateDocumentColor";
+import { IDocumentResponse } from "../interfaces/documents/IDocumentResponse";
 
 type DocumentCardProps = {
   addCard?: boolean;
-  document?: IDocument;
+  document?: IDocumentResponse;
   onClick?: () => void;
   selected?: string;
   linkedView?: boolean;

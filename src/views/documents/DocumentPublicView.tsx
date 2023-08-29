@@ -1,18 +1,19 @@
 import { Drawer, Flex, LoadingOverlay, Title } from "@mantine/core";
 import { IconFileText } from "@tabler/icons";
-import { IAttachment, IDocument } from "hexa-sdk";
+import { IAttachment } from "hexa-sdk";
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { axiosPrivate } from "../../config/axios";
 import { showError } from "../../redux/commonSliceFunctions";
 import PdfViewerComponentPublic from "../../components/PdfViewerComponentPublic";
+import { IDocumentResponse } from "../../interfaces/documents/IDocumentResponse";
 
 const DocumentPublicView = () => {
   const [loading, setLoading] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
 
-  const [document, setDocument] = useState<IDocument | null>(null);
+  const [document, setDocument] = useState<IDocumentResponse | null>(null);
 
   async function fetchDocumentById(documentId: string) {
     setDocument(null);
