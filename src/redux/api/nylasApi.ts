@@ -47,7 +47,7 @@ type GetAllMessagesArgs = {
   has_attachment?: boolean;
 } & BaseArgs;
 
-type GetAllThreadsArgs = {
+export type GetAllThreadsArgs = {
   last_message_before?: string;
   last_message_after?: string;
   started_before?: string;
@@ -67,8 +67,6 @@ export const getAllMessages = createAsyncThunk(
   async (args: GetAllMessagesArgs, { rejectWithValue }) => {
     try {
       const res = await nylasAxios.get<IMessageResponse[]>(`/messages${generateQueryString(args)}`);
-      console.log(res.data);
-
       return res.data;
     } catch (err) {
       const error = err as unknown as IErrorResponse;
@@ -178,7 +176,6 @@ export const getAllCalendars = createAsyncThunk(
   async (arg, { rejectWithValue, dispatch }) => {
     try {
       const res = await nylasAxios.get<ICalendarResponse[]>("/calendars");
-      console.log(res.data);
       return res.data;
     } catch (err) {
       return centralizedErrorHandler(err, rejectWithValue, dispatch);
@@ -228,14 +225,13 @@ export const getEvents = createAsyncThunk(
   async (id: string, { rejectWithValue, dispatch }) => {
     try {
       const res = await nylasAxios.get<IEventResponse[]>(`/events?calendar_id=${id}`);
-      console.log(res.data);
       return res.data;
     } catch (err) {
       return centralizedErrorHandler(err, rejectWithValue, dispatch);
     }
   },
 );
-export const getOneEvent = createAsyncThunk(
+export const getEventById = createAsyncThunk(
   "nylas/getOneEvent",
   async ({ id }: { id: string }, { rejectWithValue, dispatch }) => {
     try {
@@ -251,8 +247,6 @@ export const createEvent = createAsyncThunk(
   async (data: IEventCreate, { rejectWithValue, dispatch }) => {
     try {
       const res = await nylasAxios.post<IEventResponse>("/events", data);
-      console.log(res.data);
-
       return res.data;
     } catch (err) {
       return centralizedErrorHandler(err, rejectWithValue, dispatch);
@@ -272,7 +266,7 @@ export const updateEvent = createAsyncThunk(
 );
 export const deleteEvent = createAsyncThunk(
   "nylas/deleteEvent",
-  async ({ id }: { id: string }, { rejectWithValue, dispatch }) => {
+  async (id: string, { rejectWithValue, dispatch }) => {
     try {
       const res = await nylasAxios.delete(`/events${id}`);
       return res.data;
@@ -287,8 +281,6 @@ export const getContacts = createAsyncThunk(
   async (args, { rejectWithValue }) => {
     try {
       const res = await nylasAxios.get<IContactResponse[]>("/contacts");
-      console.log(res.data);
-
       return res.data;
     } catch (err) {
       const error = err as unknown as IErrorResponse;
@@ -302,8 +294,6 @@ export const getAllFolders = createAsyncThunk(
   async (args, { rejectWithValue }) => {
     try {
       const res = await nylasAxios.get<IFolderResponse[]>("/folders");
-      console.log(res.data);
-
       return res.data;
     } catch (err) {
       const error = err as unknown as IErrorResponse;

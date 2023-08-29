@@ -5,17 +5,17 @@ import {
   deleteCalendar,
   deleteEvent,
   getAllCalendars,
+  getAllFolders,
   getAllMessages,
   getAllThreads,
+  getContacts,
+  getEventById,
   getEvents,
+  getMoreThreads,
   getOneCalendar,
-  getOneEvent,
   sendMessage,
   updateCalendar,
   updateEvent,
-  getMoreThreads,
-  getContacts,
-  getAllFolders,
 } from "../api/nylasApi";
 import { NylasConnectedPayload } from "hexa-sdk";
 import { IThreadExpandedResponse, IThreadResponse } from "../../interfaces/nylas/IThreadResponse";
@@ -245,17 +245,17 @@ export const nylasSlice = createSlice({
         state.loaders.gettingEvents = false;
       })
       // get one event
-      .addCase(getOneEvent.pending, (state) => {
+      .addCase(getEventById.pending, (state) => {
         state.loaders.gettingEvents = true;
       })
       .addCase(
-        getOneEvent.fulfilled,
+        getEventById.fulfilled,
         (state, { payload: event }: PayloadAction<IEventResponse>) => {
           state.event = event;
           state.loaders.gettingEvents = false;
         },
       )
-      .addCase(getOneEvent.rejected, (state) => {
+      .addCase(getEventById.rejected, (state) => {
         state.loaders.gettingEvents = false;
       })
       // update calendar
@@ -277,7 +277,6 @@ export const nylasSlice = createSlice({
         state.loaders.gettingEvents = true;
       })
       .addCase(deleteEvent.fulfilled, (state, { payload }) => {
-        console.log("nylus slice delete event", payload);
         state.loaders.gettingEvents = false;
       })
       .addCase(deleteEvent.rejected, (state) => {

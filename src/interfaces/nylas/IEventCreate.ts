@@ -1,20 +1,3 @@
-// interface ITime {
-//   time: number | null;
-//   timezone: string;
-// }
-//
-// interface ITimespan {
-//   start_time: number;
-//   end_time: number;
-//   start_timezone: string | null;
-//   end_timezone: string | null;
-// }
-//
-// interface IDatespan {
-//   start_date: string;
-//   end_date: string;
-// }
-
 interface IWhen {
   time: number | null;
   timezone: string;
@@ -50,7 +33,7 @@ interface IRecurrence {
 export interface IEventCreate {
   title: string | null;
   busy: boolean;
-  visibility?: string;
+  visibility?: "private" | "public" | "normal";
   description: string;
   when?: IWhen;
   location: string;

@@ -3,7 +3,6 @@ import { Calendar as CalendarComponent, dayjsLocalizer } from "react-big-calenda
 import dayjs from "dayjs";
 
 import "react-big-calendar/lib/css/react-big-calendar.css";
-// import { IEmailThreadResponse } from "../../interfaces/IEmailResponse";
 import {
   Accordion,
   Button,
@@ -32,7 +31,7 @@ type EmailCalendarProps = {
 };
 
 const EmailCalendar = ({ onActionButtonClick }: EmailCalendarProps) => {
-  const { calendars, calendar, events } = useAppSelector((state) => state.nylas);
+  const { calendars } = useAppSelector((state) => state.nylas);
 
   const dispatch = useAppDispatch();
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
@@ -51,7 +50,7 @@ const EmailCalendar = ({ onActionButtonClick }: EmailCalendarProps) => {
   const [event, setEvent] = useState<IEventCreate>({
     title: "",
     calendar_id: "",
-    // visibility: "private",
+    visibility: "normal",
     description: "",
     location: "",
     busy: false,
@@ -64,35 +63,23 @@ const EmailCalendar = ({ onActionButtonClick }: EmailCalendarProps) => {
   const addCalendar = () => {
     dispatch(createCalendar(newCalendar));
     closeCalendarModel();
-    console.log(calendar);
   };
   const addEvent = () => {
     if (event.calendar_id != null) {
       dispatch(createEvent(event));
       closeEventModel();
     }
-    console.log(event);
   };
 
   const onChangeAccordion = (value: string) => {
     setEvent({ ...event, calendar_id: value });
     dispatch(getEvents(value));
     setCalendarId(value);
-    console.log(value);
   };
 
   useEffect(() => {
     dispatch(getAllCalendars());
-    dispatch(getEvents(calendarId));
-    console.log(calendars);
     setCalendarId("");
-    console.log("events", events);
-    const getTimezone = () => {
-      const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-      console.log(timeZone);
-    };
-
-    getTimezone();
   }, []);
 
   return (
@@ -104,29 +91,19 @@ const EmailCalendar = ({ onActionButtonClick }: EmailCalendarProps) => {
         </Button>
       </Group>
       <Flex justify="space-between" h="100vh">
-        {/* <Button*/}
-        {/*  onClick={() => {*/}
-        {/*    dispatch(getCalendars());*/}
-        {/*  }}*/}
-        {/* >*/}
-        {/*  Get Cals*/}
-        {/* </Button>*/}
         <CalendarComponent
           localizer={localizer}
           onSelectSlot={(e) => {
             setSelectedDate(e.start);
             if (e.action === "doubleClick") {
-              console.log(e.start);
               if (calendarId !== null && calendarId !== "") {
                 openEventModel();
-                console.log(calendarId);
               }
               if (calendarId == null || calendarId == "") {
                 showNotification({
                   title: "Select Calendar",
                   message: "Please select the calendar to add event",
                 });
-                console.log(calendarId);
               }
             }
           }}
@@ -138,11 +115,10 @@ const EmailCalendar = ({ onActionButtonClick }: EmailCalendarProps) => {
         <div style={{ width: "15%" }}>
           <DatePicker
             label="Calendar"
-            // value={new Date()}
+            value={date}
             onChange={(e) => {
               if (!e) return;
               setDate(e);
-              console.log(date);
             }}
           />
           <Button onClick={openCalendarModel} leftIcon={<IconCalendar />} my="md">
@@ -157,7 +133,6 @@ const EmailCalendar = ({ onActionButtonClick }: EmailCalendarProps) => {
                   >
                     {c.name}
                   </Accordion.Control>
-                  {/* <Accordion.Panel>{c.description}</Accordion.Panel>*/}
                 </Accordion.Item>
               );
             })}
@@ -212,14 +187,6 @@ const EmailCalendar = ({ onActionButtonClick }: EmailCalendarProps) => {
               setEvent({ ...event, title: e.target.value });
             }}
           />
-          {/* <TextInput*/}
-          {/*  withAsterisk*/}
-          {/*  label="Visibility"*/}
-          {/*  value={event.visibility}*/}
-          {/*  onChange={(e) => {*/}
-          {/*    setEvent({ ...event, visibility: e.target.value });*/}
-          {/*  }}*/}
-          {/* />*/}
           <TextInput
             withAsterisk
             label="Description"
@@ -235,18 +202,8 @@ const EmailCalendar = ({ onActionButtonClick }: EmailCalendarProps) => {
             }}
           />
           <Flex justify="space-between">
-            <DatePicker
-              w="45%"
-              label="Event start date"
-              // value={date}
-              // onChange={setValue}
-            />
-            <DatePicker
-              w="45%"
-              label="Event end date"
-              // value={date}
-              // onChange={setValue}
-            />
+            <DatePicker w="45%" label="Event start date" />
+            <DatePicker w="45%" label="Event end date" />
           </Flex>
           <Flex justify="space-between">
             <TimeInput
@@ -256,14 +213,7 @@ const EmailCalendar = ({ onActionButtonClick }: EmailCalendarProps) => {
                 const unixTimestamp = Math.floor(date.getTime() / 1000);
                 const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
                 setEvent({ ...event, when: { time: unixTimestamp, timezone: timeZone } });
-                console.log(unixTimestamp);
               }}
-              // ref={ref}
-              // rightSection={
-              //   <ActionIcon>
-              //     <IconClock size="1rem" stroke={1.5} />
-              //   </ActionIcon>
-              // }
               w="20%"
               maw={400}
             />
@@ -275,17 +225,7 @@ const EmailCalendar = ({ onActionButtonClick }: EmailCalendarProps) => {
               ]}
               label="AM/PM"
             />
-            <TimeInput
-              w="20%"
-              label="To"
-              // ref={ref}
-              // rightSection={
-              //   <ActionIcon>
-              //     <IconClock size="1rem" stroke={1.5} />
-              //   </ActionIcon>
-              // }
-              maw={400}
-            />
+            <TimeInput w="20%" label="To" maw={400} />
             <Select
               w="20%"
               data={[
