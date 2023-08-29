@@ -2,5 +2,6 @@
 . "$(dirname -- "$0")/_/husky.sh"
 
 # npm test
+npm run lint
 npm run format
 npm --no-git-tag-version version patch && git add .
