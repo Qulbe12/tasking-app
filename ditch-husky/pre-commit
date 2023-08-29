@@ -1,9 +1,0 @@
-#!/usr/bin/env sh
-. "$(dirname -- "$0")/_/husky.sh"
-
-# npm test
-npm --no-git-tag-version version patch && git add .
-npm run format
-npm run lint
-# npm run lint:scss
-npm run build
