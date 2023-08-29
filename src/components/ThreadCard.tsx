@@ -1,7 +1,8 @@
-import { Badge, Box, DefaultMantineColor, Flex, Text } from "@mantine/core";
+import { Box, Flex, Text } from "@mantine/core";
 import dayjs from "dayjs";
-import React from "react";
-import { IThreadExpandedResponse, IThreadResponse } from "../interfaces/nylas/IThreadResponse";
+import React, { useMemo } from "react";
+import { IThreadResponse } from "../interfaces/nylas/IThreadResponse";
+import { useAppSelector } from "../redux/store";
 
 type ThreadCardProps = {
   thread: IThreadResponse;
@@ -9,36 +10,18 @@ type ThreadCardProps = {
   selectedThreadId?: string | null;
 };
 
-function FolderBadge({ email }: { email: IThreadExpandedResponse | IThreadResponse }) {
-  let color: DefaultMantineColor = "blue";
-  const folderName = email.folders[0].name;
-
-  if (folderName === "sent") {
-    color = "green";
-  }
-
-  switch (folderName) {
-    case "inbox":
-      color = "blue";
-      break;
-    case "trash":
-      color = "red";
-      break;
-    case "permanent_trash":
-      color = "red";
-      break;
-    case "sent":
-      color = "green";
-      break;
-    default:
-      color = "blue";
-      break;
-  }
-
-  return <Badge color={color}>{folderName}</Badge>;
-}
-
 const ThreadCard = ({ thread, onClick, selectedThreadId }: ThreadCardProps) => {
+  const { contacts } = useAppSelector((state) => state.nylas);
+
+  const fullName = useMemo(() => {
+    if (thread.participants.length <= 0) return "";
+    const foundContact = contacts.find((c) => c.emails[0].email === thread.participants[0].email);
+
+    if (!foundContact) return thread.participants[0].email;
+
+    return `${foundContact.given_name} ${foundContact.surname}`;
+  }, [thread, contacts]);
+
   return (
     <Box key={thread.id}>
       <Flex
@@ -56,8 +39,7 @@ const ThreadCard = ({ thread, onClick, selectedThreadId }: ThreadCardProps) => {
         onClick={() => onClick(thread)}
       >
         <Flex justify="space-between">
-          <Text>{thread.participants[0].name || thread.participants[0].email}</Text>
-          <FolderBadge email={thread} />
+          <Text>{fullName}</Text>
         </Flex>
         <Flex align="center" justify="space-between">
           <Text lineClamp={1} size="sm">

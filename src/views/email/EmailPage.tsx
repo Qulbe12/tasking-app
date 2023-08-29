@@ -2,7 +2,7 @@ import { Button } from "@mantine/core";
 
 import { useEffect, useState } from "react";
 
-import { connectNylas } from "../../redux/api/nylasApi";
+import { connectNylas, getContacts } from "../../redux/api/nylasApi";
 import { useAppDispatch, useAppSelector } from "../../redux/store";
 import EmailList from "./EmailList";
 import EmailCalendar from "./EmailCalendar";
@@ -15,8 +15,9 @@ const EmailPage = () => {
   const [selectedMode, setSelectedMode] = useState(true);
 
   useEffect(() => {
-    // if (nylasToken?.access_token) {
-    // }
+    if (nylasToken?.access_token) {
+      dispatch(getContacts());
+    }
   }, []);
 
   // const filteredEmails = useMemo<IEmailThreadResponse[]>(() => {

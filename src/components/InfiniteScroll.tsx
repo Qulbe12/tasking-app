@@ -13,6 +13,7 @@ const InfiniteScroll = ({ children, loading, onScrollEnd }: InfiniteScrollProps)
 
   const isAtScrollEnd = useMemo(() => {
     if (!viewport.current) return false;
+
     return scrollPosition.y >= viewport.current.scrollHeight - viewport.current.clientHeight;
   }, [scrollPosition, viewport.current]);
 
@@ -22,11 +23,20 @@ const InfiniteScroll = ({ children, loading, onScrollEnd }: InfiniteScrollProps)
   }, [isAtScrollEnd]);
 
   return (
-    <ScrollArea viewportRef={viewport} h="100%" onScrollPositionChange={onScrollPositionChange}>
-      {children}
-
-      <Group position="center">{loading && <Loader my="md" variant="dots" size="lg" />}</Group>
-    </ScrollArea>
+    <div
+      style={{
+        height: "100%",
+      }}
+    >
+      <ScrollArea
+        viewportRef={viewport}
+        h={loading ? "95%" : "100%"}
+        onScrollPositionChange={onScrollPositionChange}
+      >
+        {children}
+      </ScrollArea>
+      <Group position="center">{loading && <Loader my="md" variant="dots" size="xl" />}</Group>
+    </div>
   );
 };
 

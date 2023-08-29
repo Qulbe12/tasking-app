@@ -1,5 +1,5 @@
 import { Card, Skeleton, Stack } from "@mantine/core";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useAppSelector } from "../../../redux/store";
 import {
   IThreadExpandedResponse,
@@ -11,17 +11,25 @@ import InfiniteScroll from "../../../components/InfiniteScroll";
 type ThreadsListProps = {
   onThreadClick: (thread: IThreadExpandedResponse | IThreadResponse) => void;
   selectedThreadId: string | null;
+  afterScroll: () => void;
 };
 
-const ThreadsList = ({ onThreadClick, selectedThreadId }: ThreadsListProps) => {
+const ThreadsList = ({ onThreadClick, selectedThreadId, afterScroll }: ThreadsListProps) => {
   const { loaders, threads } = useAppSelector((state) => state.nylas);
+  const [currentOffset, setCurrentOffset] = useState(0);
+
+  useEffect(() => {
+    if (currentOffset > 0) {
+      afterScroll();
+    }
+  }, [currentOffset]);
 
   return (
     <Card withBorder shadow="sm" h="100%">
       <InfiniteScroll
-        loading
+        loading={loaders.gettingMoreThreads}
         onScrollEnd={() => {
-          console.log("Hello");
+          setCurrentOffset((co) => co + 10);
         }}
       >
         <Stack>
@@ -34,13 +42,13 @@ const ThreadsList = ({ onThreadClick, selectedThreadId }: ThreadsListProps) => {
         </Stack>
         <>
           {!loaders.gettingThreads &&
-            threads?.map((t) => {
+            threads?.map((t, i) => {
               if (t.participants.length <= 0) return;
               return (
                 <ThreadCard
                   onClick={() => onThreadClick(t)}
                   thread={t}
-                  key={t.id}
+                  key={t.id + i + "thread"}
                   selectedThreadId={selectedThreadId}
                 />
               );
