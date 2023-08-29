@@ -276,7 +276,7 @@ export const nylasSlice = createSlice({
       .addCase(deleteEvent.pending, (state) => {
         state.loaders.gettingEvents = true;
       })
-      .addCase(deleteEvent.fulfilled, (state, { payload }) => {
+      .addCase(deleteEvent.fulfilled, (state) => {
         state.loaders.gettingEvents = false;
       })
       .addCase(deleteEvent.rejected, (state) => {
