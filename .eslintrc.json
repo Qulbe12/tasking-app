@@ -38,6 +38,7 @@
     "no-unused-vars": ["error", { "args": "none" }],
     "react/require-default-props": "off",
     "react/no-unescaped-entities": "off",
-    "@typescript-eslint/no-explicit-any": "off"
+    "@typescript-eslint/no-explicit-any": "off",
+    "indent": ["error", 2, { "SwitchCase": 1 }]
   }
 }
