@@ -12,6 +12,8 @@ import {
   ICalendarResponse,
 } from "../../interfaces/nylas/ICalendarResponse";
 import { showNotification } from "@mantine/notifications";
+import { IContactResponse } from "../../interfaces/nylas/IContactResponse";
+import { IFolderResponse } from "../../interfaces/nylas/IFolderResponse";
 
 const { nylasApi } = api;
 const { connect } = nylasApi;
@@ -42,7 +44,7 @@ type GetAllMessagesArgs = {
   has_attachment?: boolean;
 } & BaseArgs;
 
-type GetAllThreadsArgs = {
+export type GetAllThreadsArgs = {
   last_message_before?: string;
   last_message_after?: string;
   started_before?: string;
@@ -103,6 +105,21 @@ export const sendMessage = createAsyncThunk(
 
 export const getAllThreads = createAsyncThunk(
   "nylas/getAllThreads",
+  async (args: GetAllThreadsArgs, { rejectWithValue }) => {
+    try {
+      const res = await nylasAxios.get<IThreadResponse[] | IThreadExpandedResponse[]>(
+        `/threads${generateQueryString(args)}`,
+      );
+      return res.data;
+    } catch (err) {
+      const error = err as unknown as IErrorResponse;
+      return rejectWithValue(error.response?.data.message);
+    }
+  },
+);
+
+export const getMoreThreads = createAsyncThunk(
+  "nylas/getMoreThreads",
   async (args: GetAllThreadsArgs, { rejectWithValue }) => {
     try {
       const res = await nylasAxios.get<IThreadResponse[] | IThreadExpandedResponse[]>(
@@ -200,6 +217,36 @@ export const getCalendars = createAsyncThunk(
   async (args, { rejectWithValue }) => {
     try {
       const res = await nylasAxios.get<ICalendarResponse[]>("/calendars");
+      console.log(res.data);
+
+      return res.data;
+    } catch (err) {
+      const error = err as unknown as IErrorResponse;
+      return rejectWithValue(error.response?.data.message);
+    }
+  },
+);
+
+export const getContacts = createAsyncThunk(
+  "nylas/getContacts",
+  async (args, { rejectWithValue }) => {
+    try {
+      const res = await nylasAxios.get<IContactResponse[]>("/contacts");
+      console.log(res.data);
+
+      return res.data;
+    } catch (err) {
+      const error = err as unknown as IErrorResponse;
+      return rejectWithValue(error.response?.data.message);
+    }
+  },
+);
+
+export const getAllFolders = createAsyncThunk(
+  "nylas/getAllFolders",
+  async (args, { rejectWithValue }) => {
+    try {
+      const res = await nylasAxios.get<IFolderResponse[]>("/folders");
       console.log(res.data);
 
       return res.data;

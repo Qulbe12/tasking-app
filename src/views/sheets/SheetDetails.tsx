@@ -250,16 +250,6 @@ const SheetDetails = () => {
         opened={showSheetVersionModal}
         title={t("createNewVersion")}
       />
-      {/* <Drawer
-        title={selectedPage?.name}
-        padding="md"
-        size={"100%"}
-        position="right"
-        opened={!!selectedPage}
-        onClose={() => setSelectedPage(null)}
-      >
-        {detailedResponse && selectedPage && <SheetPdfViewer file={selectedPage} />}
-      </Drawer> */}
     </Paper>
   );
 };

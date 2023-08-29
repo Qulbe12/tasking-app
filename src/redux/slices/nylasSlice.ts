@@ -9,6 +9,9 @@ import {
   getOneCalendar,
   updateCalendar,
   sendMessage,
+  getMoreThreads,
+  getContacts,
+  getAllFolders,
 } from "../api/nylasApi";
 import { NylasConnectedPayload } from "hexa-sdk";
 import { IThreadExpandedResponse, IThreadResponse } from "../../interfaces/nylas/IThreadResponse";
@@ -20,6 +23,8 @@ import {
   ICalendarDeleteResponse,
   ICalendarResponse,
 } from "../../interfaces/nylas/ICalendarResponse";
+import { IContactResponse } from "../../interfaces/nylas/IContactResponse";
+import { IFolderResponse } from "../../interfaces/nylas/IFolderResponse";
 
 export interface GroupsState {
   data: any;
@@ -28,13 +33,15 @@ export interface GroupsState {
   threads: IThreadResponse[] | IThreadExpandedResponse[];
   calendars: ICalendarResponse[];
   calendar?: ICalendarResponse;
+  folders: IFolderResponse[];
   deleteCalendarResponseMessage: ICalendarDeleteResponse;
   status: "conencted" | null;
   nylasToken?: NylasConnectedPayload;
+  contacts: IContactResponse[];
   loaders: {
     connecting: boolean;
-
     gettingThreads: boolean;
+    gettingMoreThreads: boolean;
     gettingMessages: boolean;
     creatingCalendar: boolean;
     gettingCalendars: boolean;
@@ -50,14 +57,17 @@ const initialState: GroupsState = {
   loading: 0,
   status: null,
   messages: [],
+  contacts: [],
   threads: [],
   calendars: [],
+  folders: [],
   deleteCalendarResponseMessage: {
     job_status_id: "",
   },
   loaders: {
     connecting: false,
     gettingThreads: false,
+    gettingMoreThreads: false,
     gettingMessages: false,
     creatingCalendar: false,
     gettingCalendars: false,
@@ -102,6 +112,18 @@ export const nylasSlice = createSlice({
       })
       .addCase(getAllThreads.rejected, (state) => {
         state.loaders.gettingThreads = false;
+      })
+
+      // Get More Threads
+      .addCase(getMoreThreads.pending, (state) => {
+        state.loaders.gettingMoreThreads = true;
+      })
+      .addCase(getMoreThreads.fulfilled, (state, action) => {
+        state.threads = [...state.threads, ...action.payload];
+        state.loaders.gettingMoreThreads = false;
+      })
+      .addCase(getMoreThreads.rejected, (state) => {
+        state.loaders.gettingMoreThreads = false;
       })
 
       // Get All Messages
@@ -197,6 +219,30 @@ export const nylasSlice = createSlice({
       )
       .addCase(deleteCalendar.rejected, (state) => {
         state.loaders.deletingCalendars = false;
+      })
+
+      // Get All Contacts
+      .addCase(getContacts.pending, (state) => {
+        state.loaders.gettingThreads = true;
+      })
+      .addCase(getContacts.fulfilled, (state, action: PayloadAction<IContactResponse[]>) => {
+        state.contacts = action.payload.filter((c) => c.given_name != null);
+        state.loaders.gettingThreads = false;
+      })
+      .addCase(getContacts.rejected, (state) => {
+        state.loaders.gettingThreads = false;
+      })
+
+      // Get All Folders
+      .addCase(getAllFolders.pending, (state) => {
+        state.loaders.gettingThreads = true;
+      })
+      .addCase(getAllFolders.fulfilled, (state, action: PayloadAction<IFolderResponse[]>) => {
+        state.folders = action.payload;
+        state.loaders.gettingThreads = false;
+      })
+      .addCase(getAllFolders.rejected, (state) => {
+        state.loaders.gettingThreads = false;
       }),
 });
 
