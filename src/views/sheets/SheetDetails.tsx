@@ -36,6 +36,7 @@ import { useAppDispatch } from "../../redux/store";
 import { updateSheet } from "../../redux/api/sheetsApi";
 import { ISheetUpdate } from "../../interfaces/sheets/ISheetUpdate";
 import { IErrorResponse } from "../../interfaces/IErrorResponse";
+import { DatePicker } from "@mantine/dates";
 
 const SheetDetails = () => {
   const { t } = useTranslation();
@@ -341,13 +342,27 @@ const SheetDetails = () => {
 
                 <div>
                   <Text size="sm">{t("emissionDate")}:</Text>
-                  <Text>{dayjs(selectedSheet?.startDate).format("MMMM D, YYYY")}</Text>
+
+                  {editMode ? (
+                    <DatePicker
+                      defaultValue={new Date(selectedSheet?.startDate || "")}
+                      onChange={(e) => {
+                        updateSheetInfo({
+                          startDate: e?.toISOString() || new Date().toISOString(),
+                        });
+                      }}
+                    />
+                  ) : (
+                    <Text>{dayjs(selectedSheet?.startDate).format("MMMM D, YYYY")}</Text>
+                  )}
                 </div>
 
-                <div>
-                  <Text size="sm">{t("versionDate")}:</Text>
-                  <Text>{dayjs(selectedSheet?.currentVerion.date).format("MMMM D, YYYY")}</Text>
-                </div>
+                {!editMode && (
+                  <div>
+                    <Text size="sm">{t("versionDate")}:</Text>
+                    <Text>{dayjs(selectedSheet?.currentVerion.date).format("MMMM D, YYYY")}</Text>
+                  </div>
+                )}
 
                 <div>
                   <Text size="sm">{t("tags")}:</Text>
