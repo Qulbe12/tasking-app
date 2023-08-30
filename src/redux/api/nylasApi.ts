@@ -247,6 +247,11 @@ export const createEvent = createAsyncThunk(
   async (data: IEventCreate, { rejectWithValue, dispatch }) => {
     try {
       const res = await nylasAxios.post<IEventResponse>("/events", data);
+      console.log(res.data);
+      showNotification({
+        title: res.data.title,
+        message: `${res.data.title} has ben created`,
+      });
       return res.data;
     } catch (err) {
       return centralizedErrorHandler(err, rejectWithValue, dispatch);
