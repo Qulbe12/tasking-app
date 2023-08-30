@@ -4,6 +4,7 @@ import { axiosPrivate } from "../../config/axios";
 import { ISheetResponse } from "../../interfaces/sheets/ISheetResponse";
 import { ISheetCreate } from "../../interfaces/sheets/ISheetCreate";
 import ISheetCreateVersion from "../../interfaces/sheets/ISheetCreateVersion";
+import { ISheetUpdate } from "../../interfaces/sheets/ISheetUpdate";
 
 export const createSheet = createAsyncThunk(
   "sheets/createSheet",
@@ -61,9 +62,9 @@ export const getSheetById = createAsyncThunk(
 
 export const updateSheet = createAsyncThunk(
   "sheets/updateSheet",
-  async ({ id }: { id: string }, { rejectWithValue, dispatch }) => {
+  async ({ id, data }: { id: string; data: ISheetUpdate }, { rejectWithValue, dispatch }) => {
     try {
-      const res = await axiosPrivate.patch<ISheetResponse>(`/sheets/${id}`);
+      const res = await axiosPrivate.patch<ISheetResponse>(`/sheets/${id}`, data);
       return res.data;
     } catch (err) {
       return centralizedErrorHandler(err, rejectWithValue, dispatch);
@@ -109,3 +110,30 @@ export const addUsersToFile = createAsyncThunk(
     }
   },
 );
+
+export const updateSheetTags = createAsyncThunk(
+  "sheets/updateSheetTags",
+  async (
+    {
+      sheetId,
+      code,
+      version,
+      newTags,
+    }: { sheetId: string; code: string; version: number; newTags: string[] },
+    { rejectWithValue, dispatch },
+  ) => {
+    try {
+      const res = await axiosPrivate.patch(
+        `/sheets/${sheetId}/records/${code}/tags/version/${version}`,
+        newTags,
+      );
+      console.log(res.data);
+
+      return res.data;
+    } catch (err) {
+      return centralizedErrorHandler(err, rejectWithValue, dispatch);
+    }
+  },
+);
+
+// /sheets/{id}/records/{code}/tags/version/{version}

@@ -109,6 +109,7 @@ const en = {
     createVersion: "Create Version",
     versionTitle: "Version Title",
     versionDate: "Version Date",
+    sheetInfo: "Sheet Information",
 
     // Analytics Page
     export: "Export",
