@@ -110,6 +110,7 @@ const fr = {
     createVersion: "Créer une version",
     versionTitle: "Titre de la version",
     versionDate: "Date de version",
+    sheetInfo: "Informations sur la feuille",
 
     // Analytics Page
     export: "Exporter",
