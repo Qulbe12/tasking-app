@@ -18,7 +18,6 @@ import {
   Stack,
   Text,
   TextInput,
-  Title,
   useMantineTheme,
 } from "@mantine/core";
 import { showError } from "../../redux/commonSliceFunctions";
@@ -165,12 +164,6 @@ const SheetDetails = () => {
     });
   }, [selectedSheet, tagFilter]);
 
-  const pageTitle: string = useMemo<string>(() => {
-    if (!selectedSheet) return "";
-
-    return `${selectedSheet?.title} (${selectedSheet?.currentVerion.title} - ${selectedSheet?.currentVerion.version})`;
-  }, [selectedSheet]);
-
   const foundRecordIndex = useMemo<number>(() => {
     if (!selectedPage || !selectedSheet) return -1;
 
@@ -212,18 +205,9 @@ const SheetDetails = () => {
     <Paper>
       <LoadingOverlay visible={loading} />
 
-      <Flex gap="md" align={"end"} direction="row">
-        <Title order={4}>{pageTitle}</Title>
-        <Text> {selectedPage?.name}</Text>
-        <Text size="xs">
-          {dayjs(selectedSheet?.currentVerion.date ?? selectedSheet?.startDate).format(
-            "MMMM D, YYYY",
-          )}
-        </Text>
-      </Flex>
       <Filter onChange={(e) => setTagFilter(e)} options={selectedSheet?.tags || []} />
 
-      <Grid mt="sm" h="75vh">
+      <Grid mt="sm" h="80vh">
         <Grid.Col span={1} h="100%">
           <ScrollArea h="100%" offsetScrollbars>
             <Stack>
@@ -283,142 +267,144 @@ const SheetDetails = () => {
                 </ActionIcon>
               </Group>
 
-              <Stack>
-                <div>
-                  <Text size="sm">Sheet:</Text>
-                  {editMode ? (
-                    <TextInput
-                      defaultValue={selectedSheet?.title}
-                      onBlur={async (e) => {
-                        if (!e.target.value) return;
-                        updateSheetInfo({ title: e.target.value });
-                      }}
-                    />
-                  ) : (
-                    <Text>{selectedSheet?.title}</Text>
-                  )}
-                </div>
-
-                <div>
-                  <Text size="sm">{t("description")}:</Text>
-                  {editMode ? (
-                    <TextInput
-                      defaultValue={selectedSheet?.description}
-                      onBlur={async (e) => {
-                        if (!e.target.value) return;
-                        updateSheetInfo({ description: e.target.value });
-                      }}
-                    />
-                  ) : (
-                    <Text>{selectedSheet?.description}</Text>
-                  )}
-                </div>
-
-                <div>
-                  <Text size="sm">Page:</Text>
-                  {editMode ? (
-                    <TextInput
-                      defaultValue={selectedPage?.name}
-                      onBlur={async (e) => {
-                        if (!e.target.value) return;
-
-                        const sheet = _.cloneDeep(selectedSheet);
-
-                        if (!sheet) return;
-                        if (!selectedPage) return;
-
-                        if (foundRecordIndex < 0) return;
-
-                        sheet.records[foundRecordIndex].code = e.target.value;
-
-                        updateSheetInfo(sheet);
-                        // updateSheetInfo({ description: e.target.value });
-                      }}
-                    />
-                  ) : (
-                    <Text>{selectedPage?.name}</Text>
-                  )}
-                </div>
-
-                <div>
-                  <Text size="sm">{t("emissionDate")}:</Text>
-
-                  {editMode ? (
-                    <DatePicker
-                      defaultValue={new Date(selectedSheet?.startDate || "")}
-                      onChange={(e) => {
-                        updateSheetInfo({
-                          startDate: e?.toISOString() || new Date().toISOString(),
-                        });
-                      }}
-                    />
-                  ) : (
-                    <Text>{dayjs(selectedSheet?.startDate).format("MMMM D, YYYY")}</Text>
-                  )}
-                </div>
-
-                {!editMode && (
+              <ScrollArea h="90%" offsetScrollbars>
+                <Stack>
                   <div>
-                    <Text size="sm">{t("versionDate")}:</Text>
-                    <Text>{dayjs(selectedSheet?.currentVerion.date).format("MMMM D, YYYY")}</Text>
-                  </div>
-                )}
-
-                <div>
-                  <Text size="sm">{t("tags")}:</Text>
-                  {!editMode && (
-                    <Grid>
-                      {selectedSheet?.records
-                        .find((r) => r.code === selectedPage?.name)
-                        ?.tags.map((t) => {
-                          return (
-                            <Grid.Col key={t} span="content">
-                              <Badge>{t}</Badge>
-                            </Grid.Col>
-                          );
-                        })}
-                    </Grid>
-                  )}
-                  {editMode && (
-                    <Stack>
-                      <MultiSelect
-                        defaultValue={
-                          selectedSheet?.records.find((r) => r.code === selectedPage?.name)?.tags
-                        }
-                        data={selectedSheet?.tags ?? []}
-                        placeholder="Select items"
-                        searchable
-                        creatable
-                        onChange={setNewTags}
-                        getCreateLabel={(query) => `+ Create ${query}`}
-                        onCreate={(query) => {
-                          const item = query;
-                          console.log(query);
-
-                          setNewTags((current) => [...current, item]);
-                          return item;
+                    <Text size="sm">Sheet:</Text>
+                    {editMode ? (
+                      <TextInput
+                        defaultValue={selectedSheet?.title}
+                        onBlur={async (e) => {
+                          if (!e.target.value) return;
+                          updateSheetInfo({ title: e.target.value });
                         }}
                       />
-                      <Button
-                        variant="outline"
-                        onClick={async () => {
-                          console.log(selectedPage, selectedSheet, selectedVersion);
-                          if (!selectedSheet || !selectedPage || !selectedVersion) return;
+                    ) : (
+                      <Text>{selectedSheet?.title}</Text>
+                    )}
+                  </div>
 
-                          const res = await axiosPrivate.patch(
-                            `/sheets/${selectedSheet.id}/records/${selectedPage.name}/tags/version/${selectedVersion}`,
-                            newTags,
-                          );
-
-                          setSelectedSheet(res.data);
+                  <div>
+                    <Text size="sm">{t("description")}:</Text>
+                    {editMode ? (
+                      <TextInput
+                        defaultValue={selectedSheet?.description}
+                        onBlur={async (e) => {
+                          if (!e.target.value) return;
+                          updateSheetInfo({ description: e.target.value });
                         }}
-                      >
-                        Update Tags
-                      </Button>
-                    </Stack>
+                      />
+                    ) : (
+                      <Text>{selectedSheet?.description}</Text>
+                    )}
+                  </div>
+
+                  <div>
+                    <Text size="sm">Page:</Text>
+                    {editMode ? (
+                      <TextInput
+                        defaultValue={selectedPage?.name}
+                        onBlur={async (e) => {
+                          if (!e.target.value) return;
+
+                          const sheet = _.cloneDeep(selectedSheet);
+
+                          if (!sheet) return;
+                          if (!selectedPage) return;
+
+                          if (foundRecordIndex < 0) return;
+
+                          sheet.records[foundRecordIndex].code = e.target.value;
+
+                          updateSheetInfo(sheet);
+                          // updateSheetInfo({ description: e.target.value });
+                        }}
+                      />
+                    ) : (
+                      <Text>{selectedPage?.name}</Text>
+                    )}
+                  </div>
+
+                  <div>
+                    <Text size="sm">{t("emissionDate")}:</Text>
+
+                    {editMode ? (
+                      <DatePicker
+                        defaultValue={new Date(selectedSheet?.startDate || "")}
+                        onChange={(e) => {
+                          updateSheetInfo({
+                            startDate: e?.toISOString() || new Date().toISOString(),
+                          });
+                        }}
+                      />
+                    ) : (
+                      <Text>{dayjs(selectedSheet?.startDate).format("MMMM D, YYYY")}</Text>
+                    )}
+                  </div>
+
+                  {!editMode && (
+                    <div>
+                      <Text size="sm">{t("versionDate")}:</Text>
+                      <Text>{dayjs(selectedSheet?.currentVerion.date).format("MMMM D, YYYY")}</Text>
+                    </div>
                   )}
-                </div>
-              </Stack>
+
+                  <div>
+                    <Text size="sm">{t("tags")}:</Text>
+                    {!editMode && (
+                      <Grid>
+                        {selectedSheet?.records
+                          .find((r) => r.code === selectedPage?.name)
+                          ?.tags.map((t) => {
+                            return (
+                              <Grid.Col key={t} span="content">
+                                <Badge>{t}</Badge>
+                              </Grid.Col>
+                            );
+                          })}
+                      </Grid>
+                    )}
+                    {editMode && (
+                      <Stack>
+                        <MultiSelect
+                          defaultValue={
+                            selectedSheet?.records.find((r) => r.code === selectedPage?.name)?.tags
+                          }
+                          data={selectedSheet?.tags ?? []}
+                          placeholder="Select items"
+                          searchable
+                          creatable
+                          onChange={setNewTags}
+                          getCreateLabel={(query) => `+ Create ${query}`}
+                          onCreate={(query) => {
+                            const item = query;
+                            console.log(query);
+
+                            setNewTags((current) => [...current, item]);
+                            return item;
+                          }}
+                        />
+                        <Button
+                          variant="outline"
+                          onClick={async () => {
+                            console.log(selectedPage, selectedSheet, selectedVersion);
+                            if (!selectedSheet || !selectedPage || !selectedVersion) return;
+
+                            const res = await axiosPrivate.patch(
+                              `/sheets/${selectedSheet.id}/records/${selectedPage.name}/tags/version/${selectedVersion}`,
+                              newTags,
+                            );
+
+                            setSelectedSheet(res.data);
+                          }}
+                        >
+                          Update Tags
+                        </Button>
+                      </Stack>
+                    )}
+                  </div>
+                </Stack>
+              </ScrollArea>
             </Card>
             <Card h="50%">
               <Group position="apart" mb="xs">
