@@ -378,8 +378,6 @@ const SheetDetails = () => {
                           getCreateLabel={(query) => `+ Create ${query}`}
                           onCreate={(query) => {
                             const item = query;
-                            console.log(query);
-
                             setNewTags((current) => [...current, item]);
                             return item;
                           }}
@@ -387,7 +385,6 @@ const SheetDetails = () => {
                         <Button
                           variant="outline"
                           onClick={async () => {
-                            console.log(selectedPage, selectedSheet, selectedVersion);
                             if (!selectedSheet || !selectedPage || !selectedVersion) return;
 
                             const res = await axiosPrivate.patch(

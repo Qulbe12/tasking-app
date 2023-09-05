@@ -142,9 +142,7 @@ export const nylasSlice = createSlice({
       .addCase(sendMessage.pending, (state) => {
         state.loaders.sendingMessage = true;
       })
-      .addCase(sendMessage.fulfilled, (state, action) => {
-        console.log(action.payload);
-
+      .addCase(sendMessage.fulfilled, (state) => {
         state.loaders.sendingMessage = false;
       })
       .addCase(sendMessage.rejected, (state) => {

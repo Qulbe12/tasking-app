@@ -429,7 +429,6 @@ const DocumentsBoardView = () => {
                                 </Text>
                               ),
                               labels: { confirm: "Confirm", cancel: "Cancel" },
-                              onCancel: () => console.log("Cancel"),
                               onConfirm: async () => {
                                 await dispatch(
                                   removeDocumentFiles({

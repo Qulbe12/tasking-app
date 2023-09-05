@@ -64,7 +64,6 @@ export const getAllMessages = createAsyncThunk(
   async (args: GetAllMessagesArgs, { rejectWithValue }) => {
     try {
       const res = await nylasAxios.get<IMessageResponse[]>(`/messages${generateQueryString(args)}`);
-      console.log(res.data);
 
       return res.data;
     } catch (err) {
@@ -217,7 +216,6 @@ export const getCalendars = createAsyncThunk(
   async (args, { rejectWithValue }) => {
     try {
       const res = await nylasAxios.get<ICalendarResponse[]>("/calendars");
-      console.log(res.data);
 
       return res.data;
     } catch (err) {
@@ -232,7 +230,6 @@ export const getContacts = createAsyncThunk(
   async (args, { rejectWithValue }) => {
     try {
       const res = await nylasAxios.get<IContactResponse[]>("/contacts");
-      console.log(res.data);
 
       return res.data;
     } catch (err) {
@@ -247,7 +244,10 @@ export const getAllFolders = createAsyncThunk(
   async (args, { rejectWithValue }) => {
     try {
       const res = await nylasAxios.get<IFolderResponse[]>("/folders");
-      console.log(res.data);
+
+      res.data.forEach((f) => {
+        console.log(f);
+      });
 
       return res.data;
     } catch (err) {

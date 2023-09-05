@@ -127,7 +127,6 @@ export const updateSheetTags = createAsyncThunk(
         `/sheets/${sheetId}/records/${code}/tags/version/${version}`,
         newTags,
       );
-      console.log(res.data);
 
       return res.data;
     } catch (err) {

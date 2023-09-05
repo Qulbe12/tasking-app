@@ -103,13 +103,7 @@ const MessageDetails = ({
             !loaders.gettingMessages &&
             messages.map((m) => {
               return (
-                <Card
-                  withBorder
-                  key={m.id}
-                  onClick={() => {
-                    console.log(m);
-                  }}
-                >
+                <Card withBorder key={m.id}>
                   <Group position="apart">
                     <Text size="lg">
                       {m.from[0].name} {`<${m.from[0].email}>`}
