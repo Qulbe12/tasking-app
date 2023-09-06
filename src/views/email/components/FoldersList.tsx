@@ -1,16 +1,21 @@
 import { useEffect, useMemo, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../../redux/store";
-import { Accordion, ScrollArea } from "@mantine/core";
+import { Accordion, Loader, ScrollArea } from "@mantine/core";
 import { getAllThreads } from "../../../redux/api/nylasApi";
+import ThreadCard from "../../../components/ThreadCard";
+import {
+  IThreadExpandedResponse,
+  IThreadResponse,
+} from "../../../interfaces/nylas/IThreadResponse";
 
-// type FoldersListProps = {
-//   onThreadClick: (thread: IThreadExpandedResponse | IThreadResponse) => void;
-//   selectedThreadId: string | null;
-// };
+type FoldersListProps = {
+  onThreadClick: (thread: IThreadExpandedResponse | IThreadResponse) => void;
+  selectedThreadId: string | null;
+};
 
-const FoldersList = () => {
+const FoldersList = ({ onThreadClick, selectedThreadId }: FoldersListProps) => {
   const dispatch = useAppDispatch();
-  const { folders } = useAppSelector((state) => state.nylas);
+  const { folders, loaders, threads } = useAppSelector((state) => state.nylas);
 
   const [value, setValue] = useState<string | null>(null);
 
@@ -40,7 +45,6 @@ const FoldersList = () => {
         chevronPosition="left"
         variant="contained"
         defaultValue="inbox"
-        chevron={""}
         value={value}
         onChange={setValue}
       >
@@ -48,7 +52,7 @@ const FoldersList = () => {
           return (
             <Accordion.Item key={f.id} value={f.name ?? f.object}>
               <Accordion.Control>{f.display_name}</Accordion.Control>
-              {/* <Accordion.Panel>
+              <Accordion.Panel>
                 {loaders.gettingThreads ? (
                   <Loader />
                 ) : (
@@ -63,7 +67,7 @@ const FoldersList = () => {
                     );
                   })
                 )}
-              </Accordion.Panel> */}
+              </Accordion.Panel>
             </Accordion.Item>
           );
         })}

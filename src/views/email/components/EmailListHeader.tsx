@@ -1,5 +1,5 @@
 import React from "react";
-import { Group, Button } from "@mantine/core";
+import { Group, Badge, Divider, Button } from "@mantine/core";
 import { IconCalendar } from "@tabler/icons";
 
 type EmailListHeaderProps = {
@@ -8,10 +8,10 @@ type EmailListHeaderProps = {
   type: string;
 };
 
-const EmailListHeader = ({ onActionButtonClick }: EmailListHeaderProps) => {
+const EmailListHeader = ({ onActionButtonClick, type, onTypeChange }: EmailListHeaderProps) => {
   return (
-    <Group position="right" my="md">
-      {/* <Group>
+    <Group position="apart" my="md">
+      <Group>
         <Badge
           variant={type === "folder" ? "filled" : "outline"}
           onClick={() => onTypeChange("folder")}
@@ -74,7 +74,7 @@ const EmailListHeader = ({ onActionButtonClick }: EmailListHeaderProps) => {
         >
           Trash
         </Badge>
-      </Group> */}
+      </Group>
       <Button onClick={onActionButtonClick} leftIcon={<IconCalendar />}>
         Calendar
       </Button>
