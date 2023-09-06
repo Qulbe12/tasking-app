@@ -1,8 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../../redux/store";
-import { Accordion, Loader, ScrollArea } from "@mantine/core";
+import { Accordion, ScrollArea } from "@mantine/core";
 import { getAllThreads } from "../../../redux/api/nylasApi";
-import ThreadCard from "../../../components/ThreadCard";
 import {
   IThreadExpandedResponse,
   IThreadResponse,
@@ -15,7 +14,7 @@ type FoldersListProps = {
 
 const FoldersList = ({ onThreadClick, selectedThreadId }: FoldersListProps) => {
   const dispatch = useAppDispatch();
-  const { folders, loaders, threads } = useAppSelector((state) => state.nylas);
+  const { folders } = useAppSelector((state) => state.nylas);
 
   const [value, setValue] = useState<string | null>(null);
 
@@ -45,6 +44,7 @@ const FoldersList = ({ onThreadClick, selectedThreadId }: FoldersListProps) => {
         chevronPosition="left"
         variant="contained"
         defaultValue="inbox"
+        chevron={""}
         value={value}
         onChange={setValue}
       >
@@ -52,22 +52,22 @@ const FoldersList = ({ onThreadClick, selectedThreadId }: FoldersListProps) => {
           return (
             <Accordion.Item key={f.id} value={f.name ?? f.object}>
               <Accordion.Control>{f.display_name}</Accordion.Control>
-              <Accordion.Panel>
-                {loaders.gettingThreads ? (
-                  <Loader />
-                ) : (
-                  threads.map((t) => {
-                    return (
-                      <ThreadCard
-                        thread={t}
-                        key={t.id}
-                        selectedThreadId={selectedThreadId}
-                        onClick={() => onThreadClick(t)}
-                      />
-                    );
-                  })
-                )}
-              </Accordion.Panel>
+              {/* <Accordion.Panel> */}
+              {/*   {loaders.gettingThreads ? ( */}
+              {/*     <Loader /> */}
+              {/*   ) : ( */}
+              {/*     threads.map((t) => { */}
+              {/*       return ( */}
+              {/*         <ThreadCard */}
+              {/*           thread={t} */}
+              {/*           key={t.id} */}
+              {/*           selectedThreadId={selectedThreadId} */}
+              {/*           onClick={() => onThreadClick(t)} */}
+              {/*         /> */}
+              {/*       ); */}
+              {/*     }) */}
+              {/*   )} */}
+              {/* </Accordion.Panel> */}
             </Accordion.Item>
           );
         })}
