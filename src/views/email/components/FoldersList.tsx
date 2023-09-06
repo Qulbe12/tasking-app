@@ -1,21 +1,16 @@
 import { useEffect, useMemo, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../../redux/store";
-import { Accordion, Loader, ScrollArea } from "@mantine/core";
+import { Accordion, ScrollArea } from "@mantine/core";
 import { getAllThreads } from "../../../redux/api/nylasApi";
-import ThreadCard from "../../../components/ThreadCard";
-import {
-  IThreadExpandedResponse,
-  IThreadResponse,
-} from "../../../interfaces/nylas/IThreadResponse";
 
-type FoldersListProps = {
-  onThreadClick: (thread: IThreadExpandedResponse | IThreadResponse) => void;
-  selectedThreadId: string | null;
-};
+// type FoldersListProps = {
+//   onThreadClick: (thread: IThreadExpandedResponse | IThreadResponse) => void;
+//   selectedThreadId: string | null;
+// };
 
-const FoldersList = ({ onThreadClick, selectedThreadId }: FoldersListProps) => {
+const FoldersList = () => {
   const dispatch = useAppDispatch();
-  const { folders, loaders, threads } = useAppSelector((state) => state.nylas);
+  const { folders } = useAppSelector((state) => state.nylas);
 
   const [value, setValue] = useState<string | null>(null);
 
@@ -45,6 +40,7 @@ const FoldersList = ({ onThreadClick, selectedThreadId }: FoldersListProps) => {
         chevronPosition="left"
         variant="contained"
         defaultValue="inbox"
+        chevron={""}
         value={value}
         onChange={setValue}
       >
@@ -52,7 +48,7 @@ const FoldersList = ({ onThreadClick, selectedThreadId }: FoldersListProps) => {
           return (
             <Accordion.Item key={f.id} value={f.name ?? f.object}>
               <Accordion.Control>{f.display_name}</Accordion.Control>
-              <Accordion.Panel>
+              {/* <Accordion.Panel>
                 {loaders.gettingThreads ? (
                   <Loader />
                 ) : (
@@ -67,7 +63,7 @@ const FoldersList = ({ onThreadClick, selectedThreadId }: FoldersListProps) => {
                     );
                   })
                 )}
-              </Accordion.Panel>
+              </Accordion.Panel> */}
             </Accordion.Item>
           );
         })}

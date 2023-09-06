@@ -69,6 +69,12 @@ const EmailList = ({ onActionButtonClick }: EmailListProps) => {
       />
 
       <Grid h="87vh">
+        <Grid.Col span={2} h="100%">
+          <FoldersList
+            selectedThreadId={selectedThreadId}
+            onThreadClick={(t) => setSelectedThreadId(t.id)}
+          />
+        </Grid.Col>
         <Grid.Col span={3} h="100%">
           {inFolder && (
             <ThreadsList
@@ -88,7 +94,7 @@ const EmailList = ({ onActionButtonClick }: EmailListProps) => {
             />
           )}
         </Grid.Col>
-        <Grid.Col span={showEmailForm ? 5 : 9} h="100%">
+        <Grid.Col span={showEmailForm ? 3 : 7} h="100%">
           <MessageDetails
             selectedThreadId={selectedThreadId}
             selectedMessage={selectedMessage}
