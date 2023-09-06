@@ -10,7 +10,7 @@ type EmailListHeaderProps = {
 
 const EmailListHeader = ({ onActionButtonClick, type, onTypeChange }: EmailListHeaderProps) => {
   return (
-    <Group position="apart" my="md">
+    <Group position="right" my="md">
       {/* <Group> */}
       {/*   <Badge */}
       {/*     variant={type === "folder" ? "filled" : "outline"} */}
