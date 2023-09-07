@@ -54,11 +54,11 @@ const EmailList = ({ onActionButtonClick }: EmailListProps) => {
     if (inFolder) {
       dispatch(getAllThreads({ ...commonThreadQuery, in: inFolder }));
     }
-
-    if (type === "folder") {
-      dispatch(getAllFolders());
-    }
   }, [inFolder, type]);
+
+  useEffect(() => {
+    dispatch(getAllFolders());
+  }, []);
 
   return (
     <div>
@@ -67,7 +67,6 @@ const EmailList = ({ onActionButtonClick }: EmailListProps) => {
         type={type}
         onTypeChange={(t) => setType(t)}
       />
-
       <Grid h="87vh">
         <Grid.Col span={2} h="100%">
           <FoldersList
