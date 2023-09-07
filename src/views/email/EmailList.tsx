@@ -85,20 +85,22 @@ const EmailList = ({ onActionButtonClick }: EmailListProps) => {
             }}
           />
         </Grid.Col>
-        <Grid.Col span={showEmailForm ? 3 : 7} h="100%">
-          <MessageDetails
-            selectedThreadId={selectedThreadId}
-            selectedMessage={selectedMessage}
-            onForwardClick={(m) => {
-              setShowEmailForm(false);
-              setSelectedMessage(m);
-              setShowEmailForm(true);
-            }}
-            onDocumentCardClick={(d) => navigate("/board", { state: { document: d } })}
-          />
-        </Grid.Col>
+        {!showEmailForm && (
+          <Grid.Col span={7} h="100%">
+            <MessageDetails
+              selectedThreadId={selectedThreadId}
+              selectedMessage={selectedMessage}
+              onForwardClick={(m) => {
+                setShowEmailForm(false);
+                setSelectedMessage(m);
+                setShowEmailForm(true);
+              }}
+              onDocumentCardClick={(d) => navigate("/board", { state: { document: d } })}
+            />
+          </Grid.Col>
+        )}
         {showEmailForm && (
-          <Grid.Col span={4} h="100%">
+          <Grid.Col span={7} h="100%">
             <ComposeEmail
               selectedMessage={selectedMessage}
               onCancelClick={() => {
