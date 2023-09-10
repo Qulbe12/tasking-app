@@ -77,7 +77,10 @@ const EmailList = ({ onActionButtonClick }: EmailListProps) => {
         <Grid.Col span={3} h="100%">
           <ThreadsList
             selectedThreadId={selectedThreadId}
-            onThreadClick={(t) => setSelectedThreadId(t.id)}
+            onThreadClick={(t) => {
+              setSelectedThreadId(t.id);
+              setShowEmailForm(false);
+            }}
             afterScroll={() => {
               dispatch(
                 getMoreThreads({ ...commonThreadQuery, offset: threads.length, in: inFolder }),
