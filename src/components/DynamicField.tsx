@@ -19,6 +19,7 @@ const DynamicField = ({ field, form, value, onChange }: DynamicFieldProps) => {
           withAsterisk={field.required}
           label={field.label}
           value={value}
+          w="100%"
           onChange={(e) => onChange && onChange(e.target.value)}
           {...form?.getInputProps(field.key)}
         />
@@ -28,6 +29,7 @@ const DynamicField = ({ field, form, value, onChange }: DynamicFieldProps) => {
         <NumberInput
           withAsterisk={field.required}
           label={field.label}
+          w="100%"
           value={parseInt(value || "0")}
           onChange={(e) => onChange && onChange(`${e}`)}
           {...form?.getInputProps(field.key)}
@@ -38,6 +40,7 @@ const DynamicField = ({ field, form, value, onChange }: DynamicFieldProps) => {
         <Checkbox
           label={field.label}
           value={value}
+          w="100%"
           checked={value}
           onChange={(e) => onChange && onChange(e.target.checked)}
           {...form?.getInputProps(field.key, { type: "checkbox" })}
@@ -48,6 +51,7 @@ const DynamicField = ({ field, form, value, onChange }: DynamicFieldProps) => {
         <DatePicker
           withAsterisk={field.required}
           placeholder="Pick date"
+          w="100%"
           label={field.label}
           onChange={(e) => {
             if (!e) return;
@@ -61,6 +65,7 @@ const DynamicField = ({ field, form, value, onChange }: DynamicFieldProps) => {
         <MultiSelect
           data={field.options}
           label={field.label}
+          w="100%"
           placeholder="Pick values"
           withAsterisk={field.required}
           onChange={(e) => onChange && onChange(e)}
@@ -73,6 +78,7 @@ const DynamicField = ({ field, form, value, onChange }: DynamicFieldProps) => {
         <Radio.Group
           name={field.key}
           label={field.label}
+          w="100%"
           withAsterisk={field.required}
           {...form?.getInputProps(field.key)}
         >
@@ -86,12 +92,13 @@ const DynamicField = ({ field, form, value, onChange }: DynamicFieldProps) => {
         <Select
           label={field.label}
           placeholder="Pick one"
+          w="100%"
           data={field.options}
           {...form?.getInputProps(field.key)}
         />
       );
     default:
-      return <TextInput withAsterisk={field.required} label={field.label} />;
+      return <TextInput withAsterisk={field.required} label={field.label} w="100%" />;
   }
 };
 

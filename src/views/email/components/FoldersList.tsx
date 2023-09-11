@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../../redux/store";
 import { Accordion, ScrollArea } from "@mantine/core";
 import { getAllThreads } from "../../../redux/api/nylasApi";
@@ -6,6 +6,12 @@ import {
   IThreadExpandedResponse,
   IThreadResponse,
 } from "../../../interfaces/nylas/IThreadResponse";
+
+interface NestedFolder {
+  id: string;
+  display_name: string;
+  children?: NestedFolder[] | undefined;
+}
 
 type FoldersListProps = {
   onThreadClick: (thread: IThreadExpandedResponse | IThreadResponse) => void;
@@ -31,18 +37,78 @@ const FoldersList = ({ onThreadClick, selectedThreadId }: FoldersListProps) => {
   //   return modifiedData;
   // }, [folders]);
 
+  const preppedFolders = useMemo<NestedFolder[]>(() => {
+    const nestedArray: NestedFolder[] = [];
+
+    folders.forEach((item) => {
+      const folders = item.display_name.split("\\");
+      let currentLevel: NestedFolder[] | undefined = nestedArray;
+
+      folders.forEach((folder, index) => {
+        const existingFolder = currentLevel?.find((obj) => obj.display_name === folder);
+
+        if (existingFolder) {
+          currentLevel = existingFolder.children || (existingFolder.children = []);
+        } else {
+          const newFolder: NestedFolder = { id: item.id, display_name: folder };
+          if (index === folders.length - 1) {
+            newFolder.children = [];
+          }
+          currentLevel?.push(newFolder);
+          currentLevel = newFolder.children;
+        }
+      });
+    });
+    console.log("nested array", nestedArray);
+    return nestedArray;
+  }, [folders]);
+
   useEffect(() => {
     if (!value) return;
     dispatch(getAllThreads({ in: value }));
   }, [value]);
 
-  useEffect(() => {
-    console.log("folders", folders);
-  }, []);
-
   return (
     <ScrollArea h="100%">
-      <FolderList folders={folders} />
+      <Accordion
+        defaultValue="inbox"
+        disableChevronRotation
+        chevronPosition="left"
+        variant="contained"
+        onChange={(value) => {
+          setValue(value);
+          console.log(value);
+        }}
+        value={value}
+      >
+        {preppedFolders.map((f) => {
+          return (
+            <Accordion.Item value={f.display_name} key={f.id}>
+              <Accordion.Control>{f.display_name}</Accordion.Control>
+              {value && (
+                <Accordion
+                  onChange={setValue}
+                  value={value}
+                  disableChevronRotation
+                  chevronPosition="left"
+                  variant="contained"
+                >
+                  {f.children &&
+                    f.children?.map((c) => {
+                      return (
+                        <Accordion.Item key={c.id} value={c.display_name}>
+                          <Accordion.Control style={{ marginLeft: "16px" }}>
+                            {c.display_name}
+                          </Accordion.Control>
+                        </Accordion.Item>
+                      );
+                    })}
+                </Accordion>
+              )}
+            </Accordion.Item>
+          );
+        })}
+      </Accordion>
       {/* <Accordion */}
       {/*   chevronPosition="left" */}
       {/*   variant="contained" */}
@@ -61,42 +127,6 @@ const FoldersList = ({ onThreadClick, selectedThreadId }: FoldersListProps) => {
       {/* </Accordion> */}
     </ScrollArea>
   );
-
-  function FolderList({ folders }: any) {
-    return (
-      <Accordion
-        chevronPosition="left"
-        variant="contained"
-        defaultValue="inbox"
-        value={value}
-        onChange={setValue}
-      >
-        {folders.map((folder: any, index: any) => {
-          const nestedFolders = folder.display_name.split("\\");
-          console.log(nestedFolders);
-          if (nestedFolders.length > 1) {
-            // This folder has nested folders
-            const parentFolder = nestedFolders[0];
-            const nestedFolder = nestedFolders.slice(1).join("\\");
-
-            return (
-              <Accordion.Item key={index} value={folder.display_name}>
-                <Accordion.Control>{parentFolder}</Accordion.Control>
-                <FolderList folders={[{ display_name: nestedFolder }]} />
-              </Accordion.Item>
-            );
-          } else {
-            // This folder does not have nested folders
-            return (
-              <Accordion.Item value={folder.display_name} key={index}>
-                <Accordion.Control>{folder.display_name}</Accordion.Control>
-              </Accordion.Item>
-            );
-          }
-        })}
-      </Accordion>
-    );
-  }
 };
 
 export default FoldersList;
