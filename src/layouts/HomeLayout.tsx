@@ -6,12 +6,12 @@ import "./DashboardLayout.scss";
 
 const HomeLayout = () => {
   return (
-    <div className={"dashboard_layout p-4"}>
-      <div className="dashboard_layout-topnav">
+    <div className={"p-4 w-screen"}>
+      <div>
         <Header />
       </div>
 
-      <Paper className="dashboard_layout-main">
+      <Paper p={0} m={0}>
         <Outlet />
       </Paper>
     </div>

@@ -1,4 +1,4 @@
-import { Box, Flex, MediaQuery, Select, Title } from "@mantine/core";
+import { Box, Flex, MediaQuery, Select, Title, useMantineTheme } from "@mantine/core";
 import React from "react";
 import { Navigate, Outlet } from "react-router-dom";
 import { useAppSelector } from "../redux/store";
@@ -8,6 +8,7 @@ import { IconLanguage } from "@tabler/icons";
 const AuthLayout = () => {
   const { i18n } = useTranslation();
   const { token } = useAppSelector((state) => state.auth);
+  const theme = useMantineTheme();
 
   const changeLanguage = (lng: string) => {
     i18n.changeLanguage(lng);
@@ -29,7 +30,17 @@ const AuthLayout = () => {
           <Title color="white">Hexadesk</Title>
         </div>
       </MediaQuery>
-      <div className="absolute top-0 right-0 p-4">
+      <Box
+        className="absolute top-0 right-0 p-4"
+        sx={{
+          [theme.fn.smallerThan("sm")]: {
+            padding: 6,
+            position: "absolute",
+            top: 25,
+            width: "35%",
+          },
+        }}
+      >
         <Select
           icon={<IconLanguage />}
           onChange={changeLanguage}
@@ -41,7 +52,7 @@ const AuthLayout = () => {
             { value: "fr", label: "Français" },
           ]}
         />
-      </div>
+      </Box>
     </Flex>
   );
 };
