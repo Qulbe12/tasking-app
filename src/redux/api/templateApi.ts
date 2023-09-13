@@ -2,6 +2,11 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import { ICreateField, ICreateTemplate, IUpdateTemplate } from "hexa-sdk/dist/app.api";
 import api from "../../config/api";
 import { centralizedErrorHandler } from "../commonSliceFunctions";
+import { axiosPrivate } from "../../config/axios";
+import {
+  IUpdateField,
+  IUpdateFieldResponse,
+} from "../../interfaces/templates/IUpdateTemplatesFields";
 
 const { templateApi } = api;
 const { addField, create, get, remove, removeField, update } = templateApi;
@@ -77,6 +82,39 @@ export const removeTemplateField = createAsyncThunk(
   async (data: { templateId: string; fieldId: string }, { rejectWithValue, dispatch }) => {
     try {
       const res = await removeField(data.templateId, data.fieldId);
+      return res.data;
+    } catch (err) {
+      return centralizedErrorHandler(err, rejectWithValue, dispatch);
+    }
+  },
+);
+
+export const updateTemplateFields = createAsyncThunk(
+  "templates/updateTemplateFields",
+  async (
+    data: { fieldId: string; field: string; updatedField: IUpdateField },
+    { rejectWithValue, dispatch },
+  ) => {
+    try {
+      const res = await axiosPrivate.patch<IUpdateFieldResponse>(
+        `templates/${data.fieldId}/fields/${data.field}`,
+        data.updatedField,
+      );
+      console.log(res.data);
+      return res.data;
+    } catch (err) {
+      return centralizedErrorHandler(err, rejectWithValue, dispatch);
+    }
+  },
+);
+export const deleteTemplateFields = createAsyncThunk(
+  "templates/deleteTemplateFields",
+  async (data: { fieldId: string; field: string }, { rejectWithValue, dispatch }) => {
+    try {
+      const res = await axiosPrivate.delete<IUpdateFieldResponse>(
+        `templates/${data.fieldId}/fields/${data.field}`,
+      );
+      console.log(res.data);
       return res.data;
     } catch (err) {
       return centralizedErrorHandler(err, rejectWithValue, dispatch);

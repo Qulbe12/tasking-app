@@ -1,4 +1,5 @@
 import {
+  Box,
   Button,
   Center,
   Divider,
@@ -50,7 +51,7 @@ const WorkspacesList = () => {
   }, []);
 
   return (
-    <div>
+    <Box>
       <div className="flex justify-between items-center mb-4 mt-4">
         <Title className="flex items-center gap-4" order={2}>
           <IconDeviceLaptop size={32} />
@@ -65,7 +66,7 @@ const WorkspacesList = () => {
       {workspaces?.map((workspace) => {
         if (!workspace.iAmOwner) return;
         return (
-          <div key={workspace.id}>
+          <Box key={workspace.id}>
             <Flex gap="md" align="center">
               <Text size="xl">{workspace.name}</Text>
               <Button
@@ -98,7 +99,7 @@ const WorkspacesList = () => {
                 );
               })}
             </SimpleGrid>
-          </div>
+          </Box>
         );
       })}
 
@@ -185,7 +186,7 @@ const WorkspacesList = () => {
         }}
         board={selectedBoard}
       />
-    </div>
+    </Box>
   );
 };
 
