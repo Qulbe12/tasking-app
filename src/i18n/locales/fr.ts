@@ -33,6 +33,15 @@ const fr = {
       "Saisissez l'adresse e-mail associée à votre compte",
     resetPassword: "Réinitialiser le mot de passe",
     "Remembered your details? Sign In": "Vous vous souvenez de vos coordonnées ? S'identifier",
+    loginType: "Type de connexion",
+    root: "Racine",
+    business: "Entreprise",
+    emailRequired: "L'e-mail est requis",
+    invalidEmail: "Email invalide",
+    passwordLength: "Le mot de passe doit contenir au moins 8 caractères",
+    businessRequired: "Le code d'entreprise est requis",
+    businessLength: "Le code d'entreprise doit comporter au moins 4 caractères",
+    yourPassword: "Votre mot de passe",
 
     // Workspaces Page
     workspace: "Espace de travail",

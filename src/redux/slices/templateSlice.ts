@@ -1,23 +1,35 @@
-import { PayloadAction, createSlice } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { ITemplate } from "hexa-sdk/dist/app.api";
 import {
   addTemplate,
   addTemplateField,
   deleteTemplate,
+  deleteTemplateFields,
   getAllTemplates,
   removeTemplateField,
   updateTemplate,
+  updateTemplateFields,
 } from "../api/templateApi";
 import { showError } from "../commonSliceFunctions";
+import { IUpdateFieldResponse } from "../../interfaces/templates/IUpdateTemplatesFields";
 
 export interface TemplatesState {
   data: ITemplate[];
+  updatedField?: IUpdateFieldResponse;
   loading: number;
+  loaders: {
+    updatingField: boolean;
+    deletingField: boolean;
+  };
   error?: string;
 }
 
 const initialState: TemplatesState = {
   loading: 0,
+  loaders: {
+    updatingField: false,
+    deletingField: false,
+  },
   data: [],
 };
 
@@ -105,6 +117,36 @@ export const templateSlice = createSlice({
         state.loading--;
       })
       .addCase(removeTemplateField.rejected, (state, action) => {
+        state.loading--;
+        showError(action.error.message);
+      })
+      // update template fields
+      .addCase(updateTemplateFields.pending, (state) => {
+        state.loading++;
+      })
+      .addCase(
+        updateTemplateFields.fulfilled,
+        (state, { payload }: PayloadAction<IUpdateFieldResponse>) => {
+          state.loading--;
+          state.updatedField = payload;
+        },
+      )
+      .addCase(updateTemplateFields.rejected, (state, action) => {
+        state.loading--;
+        showError(action.error.message);
+      })
+      // delete templates field
+      .addCase(deleteTemplateFields.pending, (state) => {
+        state.loading++;
+      })
+      .addCase(
+        deleteTemplateFields.fulfilled,
+        (state, { payload }: PayloadAction<IUpdateFieldResponse>) => {
+          state.loading--;
+          state.updatedField = payload;
+        },
+      )
+      .addCase(deleteTemplateFields.rejected, (state, action) => {
         state.loading--;
         showError(action.error.message);
       });

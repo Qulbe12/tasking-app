@@ -1,4 +1,4 @@
-import { Select, Title } from "@mantine/core";
+import { Box, Flex, MediaQuery, Select, Title } from "@mantine/core";
 import React from "react";
 import { Navigate, Outlet } from "react-router-dom";
 import { useAppSelector } from "../redux/store";
@@ -18,13 +18,17 @@ const AuthLayout = () => {
   }
 
   return (
-    <div className="grid grid-cols-12 h-screen">
-      <div className="col-span-4">
-        <Outlet />
-      </div>
-      <div className="bg-indigo-600 col-span-8 flex items-center justify-center">
-        <Title color="white">Hexadesk</Title>
-      </div>
+    <Flex>
+      <MediaQuery smallerThan="md" styles={{ width: "100vw" }}>
+        <Box w={"34%"}>
+          <Outlet />
+        </Box>
+      </MediaQuery>
+      <MediaQuery smallerThan="md" styles={{ display: "none" }}>
+        <div className="bg-indigo-600 w-2/3 flex items-center justify-center">
+          <Title color="white">Hexadesk</Title>
+        </div>
+      </MediaQuery>
       <div className="absolute top-0 right-0 p-4">
         <Select
           icon={<IconLanguage />}
@@ -38,7 +42,7 @@ const AuthLayout = () => {
           ]}
         />
       </div>
-    </div>
+    </Flex>
   );
 };
 
