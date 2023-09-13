@@ -1,4 +1,13 @@
-import { ActionIcon, Card, Group, LoadingOverlay, Menu, Text, Title } from "@mantine/core";
+import {
+  ActionIcon,
+  Card,
+  Group,
+  LoadingOverlay,
+  Menu,
+  Text,
+  Title,
+  useMantineTheme,
+} from "@mantine/core";
 import { IconDots, IconEdit, IconTrash } from "@tabler/icons";
 import { IBoard } from "hexa-sdk/dist/app.api";
 import { useAppSelector } from "../redux/store";
@@ -16,9 +25,19 @@ type BoardCardProps = {
 
 const BoardCard = ({ board, onEditClick, onDeleteClick, onClick, workspace }: BoardCardProps) => {
   const { loaders } = useAppSelector((state) => state.boards);
-
+  const theme = useMantineTheme();
   return (
-    <Card onClick={onClick} shadow="sm" withBorder className="hover:cursor-pointer h-full">
+    <Card
+      onClick={onClick}
+      shadow="sm"
+      withBorder
+      className="hover:cursor-pointer h-full"
+      sx={{
+        [theme.fn.smallerThan("sm")]: {
+          width: "100%",
+        },
+      }}
+    >
       <LoadingOverlay visible={loaders.deleting === board.id} />
       <Card.Section inheritPadding py="xs">
         <Group position="apart">

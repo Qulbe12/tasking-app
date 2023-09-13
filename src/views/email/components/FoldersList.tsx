@@ -10,7 +10,7 @@ import {
 interface NestedFolder {
   id: string;
   display_name: string;
-  children?: NestedFolder[] | undefined;
+  child?: NestedFolder[] | undefined;
 }
 
 type FoldersListProps = {
@@ -48,18 +48,17 @@ const FoldersList = ({ onThreadClick, selectedThreadId }: FoldersListProps) => {
         const existingFolder = currentLevel?.find((obj) => obj.display_name === folder);
 
         if (existingFolder) {
-          currentLevel = existingFolder.children || (existingFolder.children = []);
+          currentLevel = existingFolder.child || (existingFolder.child = []);
         } else {
           const newFolder: NestedFolder = { id: item.id, display_name: folder };
           if (index === folders.length - 1) {
-            newFolder.children = [];
+            newFolder.child = [];
           }
           currentLevel?.push(newFolder);
-          currentLevel = newFolder.children;
+          currentLevel = newFolder.child;
         }
       });
     });
-    console.log("nested array", nestedArray);
     return nestedArray;
   }, [folders]);
 
@@ -70,63 +69,53 @@ const FoldersList = ({ onThreadClick, selectedThreadId }: FoldersListProps) => {
 
   return (
     <ScrollArea h="100%">
+      {preppedFolders.map((value) => {
+        return (
+          <RecursiveAcord
+            key={value.id}
+            id={value.id}
+            display_name={value.display_name}
+            child={value.child}
+          />
+        );
+      })}
+    </ScrollArea>
+  );
+
+  function RecursiveAcord({ id, display_name, child }: NestedFolder) {
+    console.log("display name", display_name);
+    console.log(Object.getOwnPropertyNames(child));
+
+    return (
       <Accordion
+        chevron={" "}
         defaultValue="inbox"
         disableChevronRotation
         chevronPosition="left"
         variant="contained"
         onChange={(value) => {
           setValue(value);
-          console.log(value);
         }}
         value={value}
       >
-        {preppedFolders.map((f) => {
-          return (
-            <Accordion.Item value={f.display_name} key={f.id}>
-              <Accordion.Control>{f.display_name}</Accordion.Control>
-              {value && (
-                <Accordion
-                  onChange={setValue}
-                  value={value}
-                  disableChevronRotation
-                  chevronPosition="left"
-                  variant="contained"
-                >
-                  {f.children &&
-                    f.children?.map((c) => {
-                      return (
-                        <Accordion.Item key={c.id} value={c.display_name}>
-                          <Accordion.Control style={{ marginLeft: "16px" }}>
-                            {c.display_name}
-                          </Accordion.Control>
-                        </Accordion.Item>
-                      );
-                    })}
-                </Accordion>
-              )}
-            </Accordion.Item>
-          );
-        })}
+        <Accordion.Item mx={7} value={display_name} key={id}>
+          <Accordion.Control>{display_name}</Accordion.Control>
+          {child &&
+            child?.length > 0 &&
+            child.map((v) => {
+              return (
+                <RecursiveAcord
+                  key={v.id}
+                  id={v.id}
+                  display_name={v.display_name}
+                  child={v.child}
+                />
+              );
+            })}
+        </Accordion.Item>
       </Accordion>
-      {/* <Accordion */}
-      {/*   chevronPosition="left" */}
-      {/*   variant="contained" */}
-      {/*   defaultValue="inbox" */}
-      {/*   value={value} */}
-      {/*   onChange={setValue} */}
-      {/* > */}
-
-      {/* {folders.map((f) => { */}
-      {/*   return ( */}
-      {/*     <Accordion.Item key={f.id} value={f.display_name}> */}
-      {/*       <Accordion.Control>{f.display_name}</Accordion.Control> */}
-      {/*     </Accordion.Item> */}
-      {/*   ); */}
-      {/* })} */}
-      {/* </Accordion> */}
-    </ScrollArea>
-  );
+    );
+  }
 };
 
 export default FoldersList;
