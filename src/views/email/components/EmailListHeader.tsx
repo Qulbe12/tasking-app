@@ -8,7 +8,7 @@ type EmailListHeaderProps = {
   type: string;
 };
 
-const EmailListHeader = ({ onActionButtonClick, type, onTypeChange }: EmailListHeaderProps) => {
+const EmailListHeader = ({ onActionButtonClick }: EmailListHeaderProps) => {
   return (
     <Group position="right" my="md">
       {/* <Group> */}

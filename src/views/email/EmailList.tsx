@@ -71,8 +71,8 @@ const EmailList = ({ onActionButtonClick }: EmailListProps) => {
         <Grid h="87vh" miw="90%">
           <Grid.Col span={2} h="100%">
             <FoldersList
-              selectedThreadId={selectedThreadId}
-              onThreadClick={(t) => setSelectedThreadId(t.id)}
+            // selectedThreadId={selectedThreadId}
+            // onThreadClick={(t) => setSelectedThreadId(t.id)}
             />
           </Grid.Col>
           <Grid.Col span={3} h="100%">

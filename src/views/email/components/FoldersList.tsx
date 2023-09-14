@@ -2,10 +2,10 @@ import { useEffect, useMemo, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../../redux/store";
 import { Accordion, ScrollArea } from "@mantine/core";
 import { getAllThreads } from "../../../redux/api/nylasApi";
-import {
-  IThreadExpandedResponse,
-  IThreadResponse,
-} from "../../../interfaces/nylas/IThreadResponse";
+// import {
+//   IThreadExpandedResponse,
+//   IThreadResponse,
+// } from "../../../interfaces/nylas/IThreadResponse";
 
 interface NestedFolder {
   id: string;
@@ -13,12 +13,12 @@ interface NestedFolder {
   child?: NestedFolder[] | undefined;
 }
 
-type FoldersListProps = {
-  onThreadClick: (thread: IThreadExpandedResponse | IThreadResponse) => void;
-  selectedThreadId: string | null;
-};
+// type FoldersListProps = {
+//   onThreadClick: (thread: IThreadExpandedResponse | IThreadResponse) => void;
+//   selectedThreadId: string | null;
+// };
 
-const FoldersList = ({ onThreadClick, selectedThreadId }: FoldersListProps) => {
+const FoldersList = (/* { onThreadClick, selectedThreadId }: FoldersListProps*/) => {
   const dispatch = useAppDispatch();
   const { folders } = useAppSelector((state) => state.nylas);
 
