@@ -91,6 +91,7 @@ export const authSlice = createSlice({
       .addCase(registerUser.rejected, (state) => {
         state.loading = false;
       })
+
       // Subscribe to Plan
       .addCase(subscribeToPlan.pending, (state) => {
         state.loading = true;
