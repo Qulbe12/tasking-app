@@ -1,5 +1,10 @@
 const fr = {
   translations: {
+    // Errors
+    error: "Erreur",
+    unauthorized: "Vous n'êtes pas autorisé à effectuer cette action. Veuillez vous reconnecter.",
+    noResponse: "Aucune réponse reçue du serveur. Veuillez réessayer plus tard.",
+
     // Header
     lightMode: "Mode lumière",
     darkMode: "Mode sombre",
@@ -42,6 +47,12 @@ const fr = {
     businessRequired: "Le code d'entreprise est requis",
     businessLength: "Le code d'entreprise doit comporter au moins 4 caractères",
     yourPassword: "Votre mot de passe",
+    businessNameRequired: "Le nom de l'entreprise est requis",
+    nameRequired: "Le nom est requis",
+    passwordRequired: "Mot de passe requis",
+    matchPassword: "Les mots de passe doivent correspondre",
+    businessName: "Nom de l'entreprise",
+    acceptTerms: "Veuillez accepter les termes et conditions pour continuer",
 
     // Workspaces Page
     workspace: "Espace de travail",

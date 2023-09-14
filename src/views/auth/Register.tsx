@@ -18,19 +18,10 @@ import GoogleButton from "../../components/GoogleButton";
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../redux/store";
 
-import { showNotification } from "@mantine/notifications";
 import * as Yup from "yup";
 import { useTranslation } from "react-i18next";
 import { registerUser } from "../../redux/api/authApi";
-
-const schema = Yup.object().shape({
-  businessName: Yup.string().required(),
-  name: Yup.string().required(),
-  email: Yup.string().email("Invalid email").required("Email is required"),
-  password: Yup.string()
-    .min(8, "Your password should be atleast 8 characters long")
-    .required("required"),
-});
+import { showError } from "../../redux/commonSliceFunctions";
 
 const Register = () => {
   const { t } = useTranslation();
@@ -39,6 +30,20 @@ const Register = () => {
   const dispatch = useAppDispatch();
 
   const { loading } = useAppSelector((state) => state.auth);
+
+  const schema = Yup.object().shape({
+    businessName: Yup.string().required(t("businessNameRequired") ?? ""),
+    name: Yup.string().required(t("nameRequired") ?? ""),
+    email: Yup.string()
+      .email(t("invalidEmail") ?? "")
+      .required(t("emailRequired") ?? ""),
+    password: Yup.string()
+      .min(8, t("passwordLength") ?? "")
+      .required(t("passwordRequired") ?? ""),
+    confirmPassword: Yup.string()
+      .required(t("passwordRequired") ?? "")
+      .oneOf([Yup.ref("password"), null], t("matchPassword") ?? ""),
+  });
 
   const form = useForm({
     initialValues: {
@@ -54,15 +59,8 @@ const Register = () => {
   });
 
   const handleSubmit = (values: typeof form.values) => {
-    if (values.password !== values.confirmPassword) {
-      return showNotification({
-        message: "Passwords do not match",
-      });
-    }
     if (!form.values.terms) {
-      return showNotification({
-        message: "You have to accept terms and conditions to continue",
-      });
+      return showError(t("acceptTerms") ?? "");
     }
     dispatch(registerUser(values));
   };
@@ -77,53 +75,40 @@ const Register = () => {
           <form onSubmit={form.onSubmit(handleSubmit)}>
             <Stack>
               <TextInput
-                label="Business Name"
+                label={t("businessName")}
                 withAsterisk
-                placeholder="Business name"
-                value={form.values.businessName}
-                onChange={(event) => form.setFieldValue("businessName", event.currentTarget.value)}
-                error={form.errors.name && form.errors.name}
+                placeholder={t("businessName")}
+                {...form.getInputProps("businessName")}
               />
               <TextInput
                 label={t("name")}
                 withAsterisk
-                placeholder="Your name"
-                value={form.values.name}
-                onChange={(event) => form.setFieldValue("name", event.currentTarget.value)}
-                error={form.errors.name && form.errors.name}
+                placeholder="Jon Doe"
+                {...form.getInputProps("name")}
               />
               <TextInput
                 label="Email"
                 withAsterisk
                 placeholder="john@email.com"
-                value={form.values.email}
-                onChange={(event) => form.setFieldValue("email", event.currentTarget.value)}
-                error={form.errors.email && "Invalid email"}
+                {...form.getInputProps("email")}
               />
               <PasswordInput
                 label={t("password")}
                 withAsterisk
                 placeholder="********"
-                value={form.values.password}
-                onChange={(event) => form.setFieldValue("password", event.currentTarget.value)}
-                error={form.errors.password && "Password should include at least 8 characters"}
+                {...form.getInputProps("password")}
               />
 
               <PasswordInput
                 label={t("confirmPassword")}
                 withAsterisk
                 placeholder="********"
-                value={form.values.confirmPassword}
-                onChange={(event) =>
-                  form.setFieldValue("confirmPassword", event.currentTarget.value)
-                }
-                error={form.errors.conformPassword && "Passwords should match"}
+                {...form.getInputProps("confirmPassword")}
               />
 
               <Checkbox
                 label={t("confirmTermsAndConditions")}
-                checked={form.values.terms}
-                onChange={(event) => form.setFieldValue("terms", event.currentTarget.checked)}
+                {...form.getInputProps("terms", { type: "checkbox" })}
               />
               <Button loading={!!loading} type="submit" variant="filled">
                 {t("signUp")}

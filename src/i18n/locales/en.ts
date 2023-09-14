@@ -1,5 +1,10 @@
 const en = {
   translations: {
+    // Errors
+    error: "Error",
+    unauthorized: "You are not authorized to perform this action. Please login again.",
+    noResponse: "No response received from server. Please try again later.",
+
     // Header
     lightMode: "Light Mode",
     darkMode: "Dark Mode",
@@ -42,6 +47,12 @@ const en = {
     businessRequired: "Business code is required",
     businessLength: "Business code must at least be 4 characters",
     yourPassword: "Your Password",
+    businessNameRequired: "Business name is required",
+    nameRequired: "Name is required",
+    passwordRequired: "Password is required",
+    matchPassword: "Passwords must match",
+    businessName: "Business Name",
+    acceptTerms: "Please accept the terms and conditions to continue",
 
     // Workspaces Page
     workspace: "Workspace",

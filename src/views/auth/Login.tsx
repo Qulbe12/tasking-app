@@ -39,7 +39,9 @@ const Login = () => {
       email: Yup.string()
         .required(t("emailRequired") ?? "")
         .email(t("invalidEmail") ?? ""),
-      password: Yup.string().length(8, t("passwordLength") ?? ""),
+      password: Yup.string()
+        .required(t("passwordRequired") ?? "")
+        .length(8, t("passwordLength") ?? ""),
     };
 
     const businessShape = {
