@@ -1,5 +1,5 @@
-import React, { useCallback, useState } from "react";
-import { useForm } from "@mantine/form";
+import React, { useCallback, useMemo, useState } from "react";
+import { useForm, yupResolver } from "@mantine/form";
 import {
   Anchor,
   Button,
@@ -21,6 +21,7 @@ import { useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../redux/store";
 import { useTranslation } from "react-i18next";
 import { businessLogin, loginUser } from "../../redux/api/authApi";
+import * as Yup from "yup";
 
 const Login = () => {
   const { t } = useTranslation();
@@ -31,19 +32,38 @@ const Login = () => {
 
   const { loading } = useAppSelector((state) => state.auth);
 
+  const [userType, setUserType] = useState("root");
+
+  const schema = useMemo(() => {
+    const rootShape = {
+      email: Yup.string()
+        .required(t("emailRequired") ?? "")
+        .email(t("invalidEmail") ?? ""),
+      password: Yup.string().length(8, t("passwordLength") ?? ""),
+    };
+
+    const businessShape = {
+      ...rootShape,
+      businessCode: Yup.string()
+        .required(t("businessRequired") ?? "")
+        .length(4, t("businessLength") ?? ""),
+    };
+
+    if (userType === "business") {
+      return Yup.object().shape(businessShape);
+    } else {
+      return Yup.object().shape(rootShape);
+    }
+  }, [userType, t]);
+
   const form = useForm({
     initialValues: {
       email: "",
       password: "",
       businessCode: "",
     },
-    validate: {
-      email: (val) => (/^\S+@\S+$/.test(val) ? null : "Invalid email"),
-      password: (val) => (val.length <= 6 ? "Password should include at least 6 characters" : null),
-    },
+    validate: yupResolver(schema),
   });
-
-  const [userType, setUserType] = useState("root");
 
   const handleSubmit = useCallback(() => {
     const { businessCode, email, password } = form.values;
@@ -70,44 +90,34 @@ const Login = () => {
                   value={userType}
                   onChange={(e) => setUserType(e)}
                   name="loginType"
-                  label="Login Type"
+                  label={t("loginType")}
                   withAsterisk
                 >
                   <Group mt="xs">
-                    <Radio value="root" label="Root" />
-                    <Radio value="business" label="Business" />
+                    <Radio value="root" label={t("root")} />
+                    <Radio value="business" label={t("business")} />
                   </Group>
                 </Radio.Group>
 
                 {userType === "business" && (
                   <TextInput
-                    required
                     label="Business Code"
                     placeholder="1000"
-                    value={form.values.businessCode}
-                    onChange={(event) =>
-                      form.setFieldValue("businessCode", event.currentTarget.value)
-                    }
-                    error={form.errors.businessCode && "Invalid Code"}
+                    {...form.getInputProps("businessCode")}
                   />
                 )}
 
                 <TextInput
-                  required
                   label="Email"
                   placeholder="john@email.com"
-                  value={form.values.email}
-                  onChange={(event) => form.setFieldValue("email", event.currentTarget.value)}
                   error={form.errors.email && "Invalid email"}
+                  {...form.getInputProps("email")}
                 />
 
                 <PasswordInput
-                  required
                   label={t("password")}
-                  placeholder="Your password"
-                  value={form.values.password}
-                  onChange={(event) => form.setFieldValue("password", event.currentTarget.value)}
-                  error={form.errors.password && "Password should include at least 6 characters"}
+                  placeholder={t("yourPassword")}
+                  {...form.getInputProps("password")}
                 />
 
                 <Checkbox label={t("rememberMe")} />

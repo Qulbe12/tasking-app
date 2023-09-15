@@ -28,7 +28,7 @@ import { ISendMessage } from "../../../interfaces/nylas/ISendMessage";
 
 type ComposeEmailProps = {
   onCancelClick: () => void;
-  selectedMessage?: IMessageResponse;
+  selectedMessage?: IMessageResponse | null;
 };
 
 const ComposeEmail = ({ onCancelClick, selectedMessage }: ComposeEmailProps) => {
