@@ -33,6 +33,7 @@ const DocumentCard = ({
 
   return (
     <Card
+      w="100%"
       onClick={onClick}
       withBorder={selected !== document?.id}
       shadow="sm"
