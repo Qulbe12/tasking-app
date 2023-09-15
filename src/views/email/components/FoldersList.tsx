@@ -59,9 +59,6 @@ const FoldersList = ({ selectedThreadId }: FoldersListProps) => {
 
   return (
     <ScrollArea h="100%">
-      <button onClick={() => console.log(preppedFolders)}>folders</button>
-
-      <NavLink title="With icon" />
       {preppedFolders.map((folder) => (
         <RecursiveNavLink
           key={folder.id}
@@ -96,10 +93,11 @@ function RecursiveNavLink({
 
   return (
     <NavLink
+      variant="filled"
       key={id}
       label={display_name}
       childrenOffset={hasNested ? 28 : undefined}
-      color={isActive ? "blue" : undefined} // Adjust styling as needed for active state
+      color={isActive ? "blue" : undefined}
       onClick={handleFolderClick}
     >
       {hasNested &&
