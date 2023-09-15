@@ -26,18 +26,9 @@ type BoardCardProps = {
 const BoardCard = ({ board, onEditClick, onDeleteClick, onClick, workspace }: BoardCardProps) => {
   const { loaders } = useAppSelector((state) => state.boards);
   const theme = useMantineTheme();
+
   return (
-    <Card
-      onClick={onClick}
-      shadow="sm"
-      withBorder
-      className="hover:cursor-pointer h-full"
-      sx={{
-        [theme.fn.smallerThan("sm")]: {
-          width: "100%",
-        },
-      }}
-    >
+    <Card onClick={onClick} shadow="sm" withBorder className="hover:cursor-pointer h-full" w="100%">
       <LoadingOverlay visible={loaders.deleting === board.id} />
       <Card.Section inheritPadding py="xs">
         <Group position="apart">
@@ -45,6 +36,11 @@ const BoardCard = ({ board, onEditClick, onDeleteClick, onClick, workspace }: Bo
           <Menu withinPortal position="bottom-end" shadow="sm">
             <Menu.Target>
               <ActionIcon
+                sx={{
+                  [theme.fn.smallerThan("sm")]: {
+                    size: 20,
+                  },
+                }}
                 onClick={(e) => {
                   e.stopPropagation();
                 }}
