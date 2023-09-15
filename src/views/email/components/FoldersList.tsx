@@ -1,121 +1,118 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useCallback } from "react";
 import { useAppDispatch, useAppSelector } from "../../../redux/store";
-import { Accordion, ScrollArea } from "@mantine/core";
+import { NavLink, ScrollArea } from "@mantine/core";
 import { getAllThreads } from "../../../redux/api/nylasApi";
-import {
-  IThreadExpandedResponse,
-  IThreadResponse,
-} from "../../../interfaces/nylas/IThreadResponse";
 
 interface NestedFolder {
   id: string;
   display_name: string;
-  child?: NestedFolder[] | undefined;
+  nestedChildren?: NestedFolder[];
 }
 
 type FoldersListProps = {
-  onThreadClick: (thread: IThreadExpandedResponse | IThreadResponse) => void;
   selectedThreadId: string | null;
 };
 
-const FoldersList = ({ onThreadClick, selectedThreadId }: FoldersListProps) => {
+const FoldersList = ({ selectedThreadId }: FoldersListProps) => {
   const dispatch = useAppDispatch();
   const { folders } = useAppSelector((state) => state.nylas);
-
   const [value, setValue] = useState<string | null>(null);
 
-  // const filteredFolders = useMemo(() => {
-  //   const modifiedData = folders.map((item) => {
-  //     if (item.display_name && item.display_name.includes("\\")) {
-  //       return {
-  //         ...item,
-  //         display_name: item.display_name.split("\\").map((value) => value.trim()),
-  //       };
-  //     }
-  //     return item;
-  //   });
-  //   return modifiedData;
-  // }, [folders]);
-
-  const preppedFolders = useMemo<NestedFolder[]>(() => {
+  const preppedFolders = useMemo(() => {
     const nestedArray: NestedFolder[] = [];
 
     folders.forEach((item) => {
-      const folders = item.display_name.split("\\");
-      let currentLevel: NestedFolder[] | undefined = nestedArray;
+      const displayNames = item.display_name.split("/");
+      let currentLevel = nestedArray;
 
-      folders.forEach((folder, index) => {
-        const existingFolder = currentLevel?.find((obj) => obj.display_name === folder);
+      displayNames.forEach((name) => {
+        const existingItem = currentLevel.find((obj) => obj.display_name === name);
 
-        if (existingFolder) {
-          currentLevel = existingFolder.child || (existingFolder.child = []);
+        if (existingItem) {
+          currentLevel = existingItem.nestedChildren || (existingItem.nestedChildren = []);
         } else {
-          const newFolder: NestedFolder = { id: item.id, display_name: folder };
-          if (index === folders.length - 1) {
-            newFolder.child = [];
-          }
-          currentLevel?.push(newFolder);
-          currentLevel = newFolder.child;
+          const newItem: NestedFolder = { id: item.id, display_name: name };
+          currentLevel.push(newItem);
+          currentLevel = newItem.nestedChildren || (newItem.nestedChildren = []);
         }
       });
     });
+
+    nestedArray.forEach((folder) => {
+      if (folder.id === folder.display_name) {
+        delete folder.nestedChildren;
+      }
+    });
+
     return nestedArray;
   }, [folders]);
 
+  const handleFolderSelect = useCallback((value: string) => {
+    setValue(value);
+  }, []);
+
   useEffect(() => {
-    if (!value) return;
-    dispatch(getAllThreads({ in: value }));
+    if (value) {
+      dispatch(getAllThreads({ in: value }));
+    }
   }, [value]);
 
   return (
     <ScrollArea h="100%">
-      {preppedFolders.map((value) => {
-        return (
-          <RecursiveAcord
-            key={value.id}
-            id={value.id}
-            display_name={value.display_name}
-            child={value.child}
-          />
-        );
-      })}
+      {preppedFolders.map((folder) => (
+        <RecursiveNavLink
+          key={folder.id}
+          id={folder.id}
+          display_name={folder.display_name}
+          nestedChildren={folder.nestedChildren}
+          selectedId={selectedThreadId}
+          onFolderSelect={handleFolderSelect}
+        />
+      ))}
     </ScrollArea>
   );
-
-  function RecursiveAcord({ id, display_name, child }: NestedFolder) {
-    console.log("display name", display_name);
-    console.log(Object.getOwnPropertyNames(child));
-
-    return (
-      <Accordion
-        chevron={" "}
-        defaultValue="inbox"
-        disableChevronRotation
-        chevronPosition="left"
-        variant="contained"
-        onChange={(value) => {
-          setValue(value);
-        }}
-        value={value}
-      >
-        <Accordion.Item mx={7} value={display_name} key={id}>
-          <Accordion.Control>{display_name}</Accordion.Control>
-          {child &&
-            child?.length > 0 &&
-            child.map((v) => {
-              return (
-                <RecursiveAcord
-                  key={v.id}
-                  id={v.id}
-                  display_name={v.display_name}
-                  child={v.child}
-                />
-              );
-            })}
-        </Accordion.Item>
-      </Accordion>
-    );
-  }
 };
+
+function RecursiveNavLink({
+  id,
+  display_name,
+  nestedChildren,
+  selectedId,
+  onFolderSelect,
+}: NestedFolder & {
+  selectedId: string | null;
+  onFolderSelect: (id: string) => void;
+}) {
+  const handleFolderClick = () => {
+    onFolderSelect(id);
+  };
+
+  const isActive = id === selectedId;
+
+  const hasNested = nestedChildren && nestedChildren.length > 0;
+
+  return (
+    <NavLink
+      variant="filled"
+      key={id}
+      label={display_name}
+      childrenOffset={hasNested ? 28 : undefined}
+      color={isActive ? "blue" : undefined}
+      onClick={handleFolderClick}
+    >
+      {hasNested &&
+        nestedChildren?.map((child) => (
+          <RecursiveNavLink
+            key={child.id}
+            id={child.id}
+            display_name={child.display_name}
+            nestedChildren={child.nestedChildren || []}
+            selectedId={selectedId}
+            onFolderSelect={onFolderSelect}
+          />
+        ))}
+    </NavLink>
+  );
+}
 
 export default FoldersList;
