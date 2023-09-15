@@ -25,7 +25,7 @@ const FoldersList = ({ selectedThreadId }: FoldersListProps) => {
       const displayNames = item.display_name.split("/");
       let currentLevel = nestedArray;
 
-      displayNames.forEach((name, index) => {
+      displayNames.forEach((name) => {
         const existingItem = currentLevel.find((obj) => obj.display_name === name);
 
         if (existingItem) {
