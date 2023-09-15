@@ -33,6 +33,15 @@ const en = {
       "Enter the email address associated with your account",
     resetPassword: "Reset Password",
     "Remembered your details? Sign In": "Remembered your details? Sign In",
+    loginType: "Login Type",
+    root: "Root",
+    business: "Business",
+    emailRequired: "Email is required",
+    invalidEmail: "Invalid email",
+    passwordLength: "Password must at least be 8 characters",
+    businessRequired: "Business code is required",
+    businessLength: "Business code must at least be 4 characters",
+    yourPassword: "Your Password",
 
     // Workspaces Page
     workspace: "Workspace",
