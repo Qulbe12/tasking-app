@@ -23,7 +23,7 @@ import axios from "axios";
 import { SHEETS_URL } from "../constants/URLS";
 import { ISheetProcessResponse } from "../interfaces/sheets/ISheetProcessResponse";
 import { showError } from "../redux/commonSliceFunctions";
-import { startNavigationProgress, completeNavigationProgress } from "@mantine/nprogress";
+import { completeNavigationProgress, startNavigationProgress } from "@mantine/nprogress";
 import { IconTrash } from "@tabler/icons";
 import ISheetCreateVersion from "../interfaces/sheets/ISheetCreateVersion";
 import { createSheetVersion } from "../redux/api/sheetsApi";
@@ -130,7 +130,7 @@ const SheetVersionModal = ({
       >
         <Card>
           <Grid>
-            <Grid.Col span={2}>
+            <Grid.Col md={10} lg={2}>
               <Stack>
                 <TextInput
                   label={t("versionTitle")}
@@ -149,7 +149,7 @@ const SheetVersionModal = ({
                 />
               </Stack>
             </Grid.Col>
-            <Grid.Col span={10}>
+            <Grid.Col md={4} lg={10}>
               {!sheetUploaded && (
                 <SheetDropzone
                   onDrop={async (file) => {

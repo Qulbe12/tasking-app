@@ -1,19 +1,20 @@
 import { useEffect, useMemo } from "react";
 import {
-  AppShell,
-  Navbar,
-  Header,
-  Group,
-  TextInput,
-  Flex,
   ActionIcon,
+  AppShell,
+  Box,
   Burger,
+  Center,
+  Flex,
+  Group,
+  Header,
+  MediaQuery,
   Menu,
   Modal,
-  Center,
+  Navbar,
   Progress,
-  MediaQuery,
-  Box,
+  TextInput,
+  useMantineTheme,
 } from "@mantine/core";
 
 import { Outlet, useLocation } from "react-router-dom";
@@ -48,6 +49,7 @@ const DashboardLayout = () => {
   }, [window.location.href]);
 
   const [opened, { toggle }] = useDisclosure(false);
+  const theme = useMantineTheme();
 
   const isBoardsPage = useMemo(() => {
     return location.pathname.split("/")[1] === "board";
@@ -63,7 +65,7 @@ const DashboardLayout = () => {
       asideOffsetBreakpoint="sm"
       navbar={
         opened ? (
-          <Navbar p="md" hiddenBreakpoint="lg" hidden={!opened} width={{ lg: 95 }}>
+          <Navbar p="md" hiddenBreakpoint="lg" hidden={!opened} width={{ lg: 95, sm: "30%" }}>
             <MainLinks />
           </Navbar>
         ) : undefined
@@ -110,7 +112,15 @@ const DashboardLayout = () => {
                   }}
                 />
               </MediaQuery>
-              <Menu shadow="md" width={200}>
+              <Menu
+                styles={{
+                  [theme.fn.smallerThan("md")]: {
+                    width: "50%",
+                  },
+                }}
+                shadow="md"
+                width={200}
+              >
                 <Menu.Target>
                   <ActionIcon>
                     <IconLanguage size={48} />
