@@ -91,18 +91,18 @@ const WorkspacesList = () => {
               </Button>
             </Flex>
             <Flex
-              direction="column"
-              gap={4}
-              w={"40%"}
+              gap="md"
+              wrap="wrap"
+              w={"100%"}
               mt="md"
               mb="xl"
               sx={{
                 [theme.fn.smallerThan("md")]: {
-                  width: "50%",
-                  flexDirection: "column",
+                  wrap: "wrap",
+                  gap: 8,
                 },
                 [theme.fn.smallerThan("sm")]: {
-                  width: "100%",
+                  gap: 8,
                 },
               }}
             >

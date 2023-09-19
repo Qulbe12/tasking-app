@@ -101,17 +101,23 @@ const DashboardLayout = () => {
               >
                 <IconFilter size={24} />
               </ActionIcon> */}
-              <MediaQuery smallerThan="lg" styles={{ width: "100%" }}>
-                <TextInput
-                  w="400px"
-                  placeholder={`${t("search")}`}
-                  variant="filled"
-                  value={search}
-                  onChange={(e) => {
-                    dispatch(setSearch(e.target.value));
-                  }}
-                />
-              </MediaQuery>
+              <TextInput
+                sx={{
+                  [theme.fn.smallerThan("sm")]: {
+                    width: "150px",
+                  },
+                  [theme.fn.smallerThan("md")]: {
+                    width: "150px",
+                  },
+                }}
+                w="400px"
+                placeholder={`${t("search")}`}
+                variant="filled"
+                value={search}
+                onChange={(e) => {
+                  dispatch(setSearch(e.target.value));
+                }}
+              />
               <Menu
                 styles={{
                   [theme.fn.smallerThan("md")]: {
