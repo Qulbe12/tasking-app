@@ -631,7 +631,11 @@ const DocumentsBoardView = () => {
         ) : (
           <Flex
             w="20%"
+            wrap="wrap"
             sx={{
+              // [theme.fn.smallerThan("md")]: {
+              //   width: "600px",
+              // },
               [theme.fn.smallerThan("sm")]: {
                 width: "300px",
               },

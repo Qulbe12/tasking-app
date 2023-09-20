@@ -208,7 +208,7 @@ const SheetDetails = () => {
       <Filter onChange={(e) => setTagFilter(e)} options={selectedSheet?.tags || []} />
 
       <Grid mt="sm" h="80vh">
-        <Grid.Col span={1} h="100%">
+        <Grid.Col span="auto" h="100%">
           <ScrollArea h="100%" offsetScrollbars>
             <Stack>
               {filteredRecords.map((r) => {
@@ -251,7 +251,7 @@ const SheetDetails = () => {
             <SheetPdfViewer handleKeyEvent={handlePageChange} file={selectedPage} />
           )}
         </Grid.Col>
-        <Grid.Col span={2}>
+        <Grid.Col span="auto">
           <Stack h="100%">
             <Card h="50%" pos="relative">
               <LoadingOverlay visible={sheetUpdating} />

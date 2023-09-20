@@ -28,7 +28,21 @@ const BoardCard = ({ board, onEditClick, onDeleteClick, onClick, workspace }: Bo
   const theme = useMantineTheme();
 
   return (
-    <Card onClick={onClick} shadow="sm" withBorder className="hover:cursor-pointer h-full" w="100%">
+    <Card
+      onClick={onClick}
+      shadow="sm"
+      withBorder
+      className="hover:cursor-pointer h-full"
+      w="30%"
+      sx={{
+        [theme.fn.smallerThan("md")]: {
+          width: "49%",
+        },
+        [theme.fn.smallerThan("sm")]: {
+          width: "100%",
+        },
+      }}
+    >
       <LoadingOverlay visible={loaders.deleting === board.id} />
       <Card.Section inheritPadding py="xs">
         <Group position="apart">

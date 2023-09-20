@@ -10,8 +10,8 @@ import {
   MultiSelect,
   Paper,
   Stack,
-  TextInput,
   Textarea,
+  TextInput,
 } from "@mantine/core";
 import { useAppDispatch, useAppSelector } from "../redux/store";
 import CommonModalProps from "./CommonModalProps";
@@ -24,7 +24,7 @@ import axios from "axios";
 import { SHEETS_URL } from "../constants/URLS";
 import { ISheetProcessResponse } from "../interfaces/sheets/ISheetProcessResponse";
 import { showError } from "../redux/commonSliceFunctions";
-import { startNavigationProgress, completeNavigationProgress } from "@mantine/nprogress";
+import { completeNavigationProgress, startNavigationProgress } from "@mantine/nprogress";
 import { IconTrash } from "@tabler/icons";
 import { DatePicker } from "@mantine/dates";
 import { ISheetCreate } from "../interfaces/sheets/ISheetCreate";
@@ -119,7 +119,7 @@ const SheetModal = ({ onClose, opened, title }: CommonModalProps) => {
       >
         <Card>
           <Grid>
-            <Grid.Col span={2}>
+            <Grid.Col md={10} lg={2}>
               <Stack>
                 <TextInput label={t("title")} withAsterisk {...form.getInputProps("title")} />
                 <Textarea label={t("description")} {...form.getInputProps("description")} />
@@ -136,7 +136,7 @@ const SheetModal = ({ onClose, opened, title }: CommonModalProps) => {
                 />
               </Stack>
             </Grid.Col>
-            <Grid.Col span={10}>
+            <Grid.Col md={4} lg={10}>
               {!sheetUploaded && (
                 <SheetDropzone
                   onDrop={async (file) => {

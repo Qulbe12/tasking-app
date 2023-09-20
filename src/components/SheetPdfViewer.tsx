@@ -148,12 +148,12 @@ export default function SheetPdfViewer({ file, handleKeyEvent }: SheetPdfViewerP
   }, [file]);
 
   return (
-    <div style={{ height: "100%" }}>
+    <div style={{ height: "100%", width: "100%" }}>
       {/* <Flex justify="flex-end">
         {annotsChanged && (
           <Button
             leftIcon={<IconRectangle size={14} />}
-           
+
             onClick={async () => {
               try {
                 const annots = await instance?.exportInstantJSON();
