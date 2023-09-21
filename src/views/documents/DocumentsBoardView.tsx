@@ -231,7 +231,7 @@ const DocumentsBoardView = () => {
               className="h-full"
               w="20%"
               sx={{
-                [theme.fn.smallerThan("sm")]: {
+                [theme.fn.smallerThan("md")]: {
                   width: "300px",
                   marginRight: "4px",
                 },
@@ -277,7 +277,7 @@ const DocumentsBoardView = () => {
               w="30%"
               className="h-full"
               sx={{
-                [theme.fn.smallerThan("sm")]: {
+                [theme.fn.smallerThan("md")]: {
                   width: "300px",
                   marginRight: "4px",
                 },
@@ -514,7 +514,7 @@ const DocumentsBoardView = () => {
               w="20%"
               className="h-full"
               sx={{
-                [theme.fn.smallerThan("sm")]: {
+                [theme.fn.smallerThan("md")]: {
                   width: "300px",
                   marginRight: "4px",
                 },
@@ -585,7 +585,7 @@ const DocumentsBoardView = () => {
             <Flex
               w="25%"
               sx={{
-                [theme.fn.smallerThan("sm")]: {
+                [theme.fn.smallerThan("md")]: {
                   width: "300px",
                   marginRight: "4px",
                 },
@@ -636,7 +636,7 @@ const DocumentsBoardView = () => {
               // [theme.fn.smallerThan("md")]: {
               //   width: "600px",
               // },
-              [theme.fn.smallerThan("sm")]: {
+              [theme.fn.smallerThan("md")]: {
                 width: "300px",
               },
             }}

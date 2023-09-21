@@ -11,6 +11,7 @@ import {
   Group,
   Image,
   LoadingOverlay,
+  MediaQuery,
   MultiSelect,
   NavLink,
   Paper,
@@ -209,233 +210,241 @@ const SheetDetails = () => {
 
       <Grid mt="sm" h="80vh">
         <Grid.Col span="auto" h="100%">
-          <ScrollArea h="100%" offsetScrollbars>
-            <Stack>
-              {filteredRecords.map((r) => {
-                return (
-                  <Flex
-                    key={r.id}
-                    onClick={() => {
-                      setSelectedPage({
-                        id: r.id,
-                        name: r.code,
-                        url: r.file.url,
-                      });
-                    }}
-                    direction="column"
-                    align="center"
-                    justify="center"
-                    className={`hover:scale-110 cursor-pointer mx-2 my-2 ${
-                      selectedPage?.id === r.id ? "scale-110" : undefined
-                    }`}
-                  >
-                    <Image
-                      src={r.thumbnail.url}
-                      maw={150}
-                      style={{
-                        border:
-                          selectedPage?.id === r.id
-                            ? `2px solid ${theme.colors.indigo[6]}`
-                            : undefined,
+          <MediaQuery smallerThan="md" styles={{ width: 100 }}>
+            <ScrollArea h="100%" offsetScrollbars>
+              <Stack>
+                {filteredRecords.map((r) => {
+                  return (
+                    <Flex
+                      key={r.id}
+                      onClick={() => {
+                        setSelectedPage({
+                          id: r.id,
+                          name: r.code,
+                          url: r.file.url,
+                        });
                       }}
-                    />
-                    {r.code}
-                  </Flex>
-                );
-              })}
-            </Stack>
-          </ScrollArea>
+                      direction="column"
+                      align="center"
+                      justify="center"
+                      className={`hover:scale-110 cursor-pointer mx-2 my-2 ${
+                        selectedPage?.id === r.id ? "scale-110" : undefined
+                      }`}
+                    >
+                      <Image
+                        src={r.thumbnail.url}
+                        maw={150}
+                        style={{
+                          border:
+                            selectedPage?.id === r.id
+                              ? `2px solid ${theme.colors.indigo[6]}`
+                              : undefined,
+                        }}
+                      />
+                      {r.code}
+                    </Flex>
+                  );
+                })}
+              </Stack>
+            </ScrollArea>
+          </MediaQuery>
         </Grid.Col>
         <Grid.Col p="md" span={9}>
           {selectedSheet && selectedPage && (
             <SheetPdfViewer handleKeyEvent={handlePageChange} file={selectedPage} />
           )}
         </Grid.Col>
-        <Grid.Col span="auto">
-          <Stack h="100%">
-            <Card h="50%" pos="relative">
-              <LoadingOverlay visible={sheetUpdating} />
-              <Group position="apart" mb="xs">
-                <Text>{t("sheetInfo")}:</Text>
-                <ActionIcon
-                  variant={editMode ? "filled" : "subtle"}
-                  color="indigo"
-                  size="sm"
-                  onClick={() => setEditMode((o) => !o)}
-                >
-                  <IconEdit />
-                </ActionIcon>
-              </Group>
+        <MediaQuery smallerThan="md" styles={{ display: "none" }}>
+          <Grid.Col span="auto">
+            <Stack h="100%">
+              <Card h="50%" pos="relative">
+                <LoadingOverlay visible={sheetUpdating} />
+                <Group position="apart" mb="xs">
+                  <Text>{t("sheetInfo")}:</Text>
+                  <ActionIcon
+                    variant={editMode ? "filled" : "subtle"}
+                    color="indigo"
+                    size="sm"
+                    onClick={() => setEditMode((o) => !o)}
+                  >
+                    <IconEdit />
+                  </ActionIcon>
+                </Group>
 
-              <ScrollArea h="90%" offsetScrollbars>
-                <Stack>
-                  <div>
-                    <Text size="sm">Sheet:</Text>
-                    {editMode ? (
-                      <TextInput
-                        defaultValue={selectedSheet?.title}
-                        onBlur={async (e) => {
-                          if (!e.target.value) return;
-                          updateSheetInfo({ title: e.target.value });
-                        }}
-                      />
-                    ) : (
-                      <Text>{selectedSheet?.title}</Text>
-                    )}
-                  </div>
-
-                  <div>
-                    <Text size="sm">{t("description")}:</Text>
-                    {editMode ? (
-                      <TextInput
-                        defaultValue={selectedSheet?.description}
-                        onBlur={async (e) => {
-                          if (!e.target.value) return;
-                          updateSheetInfo({ description: e.target.value });
-                        }}
-                      />
-                    ) : (
-                      <Text>{selectedSheet?.description}</Text>
-                    )}
-                  </div>
-
-                  <div>
-                    <Text size="sm">Page:</Text>
-                    {editMode ? (
-                      <TextInput
-                        defaultValue={selectedPage?.name}
-                        onBlur={async (e) => {
-                          if (!e.target.value) return;
-
-                          const sheet = _.cloneDeep(selectedSheet);
-
-                          if (!sheet) return;
-                          if (!selectedPage) return;
-
-                          if (foundRecordIndex < 0) return;
-
-                          sheet.records[foundRecordIndex].code = e.target.value;
-
-                          updateSheetInfo(sheet);
-                          // updateSheetInfo({ description: e.target.value });
-                        }}
-                      />
-                    ) : (
-                      <Text>{selectedPage?.name}</Text>
-                    )}
-                  </div>
-
-                  <div>
-                    <Text size="sm">{t("emissionDate")}:</Text>
-
-                    {editMode ? (
-                      <DatePicker
-                        defaultValue={new Date(selectedSheet?.startDate || "")}
-                        onChange={(e) => {
-                          updateSheetInfo({
-                            startDate: e?.toISOString() || new Date().toISOString(),
-                          });
-                        }}
-                      />
-                    ) : (
-                      <Text>{dayjs(selectedSheet?.startDate).format("MMMM D, YYYY")}</Text>
-                    )}
-                  </div>
-
-                  {!editMode && (
+                <ScrollArea h="90%" offsetScrollbars>
+                  <Stack>
                     <div>
-                      <Text size="sm">{t("versionDate")}:</Text>
-                      <Text>{dayjs(selectedSheet?.currentVerion.date).format("MMMM D, YYYY")}</Text>
-                    </div>
-                  )}
-
-                  <div>
-                    <Text size="sm">{t("tags")}:</Text>
-                    {!editMode && (
-                      <Grid>
-                        {selectedSheet?.records
-                          .find((r) => r.code === selectedPage?.name)
-                          ?.tags.map((t) => {
-                            return (
-                              <Grid.Col key={t} span="content">
-                                <Badge>{t}</Badge>
-                              </Grid.Col>
-                            );
-                          })}
-                      </Grid>
-                    )}
-                    {editMode && (
-                      <Stack>
-                        <MultiSelect
-                          defaultValue={
-                            selectedSheet?.records.find((r) => r.code === selectedPage?.name)?.tags
-                          }
-                          data={selectedSheet?.tags ?? []}
-                          placeholder="Select items"
-                          searchable
-                          creatable
-                          onChange={setNewTags}
-                          getCreateLabel={(query) => `+ Create ${query}`}
-                          onCreate={(query) => {
-                            const item = query;
-                            setNewTags((current) => [...current, item]);
-                            return item;
+                      <Text size="sm">Sheet:</Text>
+                      {editMode ? (
+                        <TextInput
+                          defaultValue={selectedSheet?.title}
+                          onBlur={async (e) => {
+                            if (!e.target.value) return;
+                            updateSheetInfo({ title: e.target.value });
                           }}
                         />
-                        <Button
-                          variant="outline"
-                          onClick={async () => {
-                            if (!selectedSheet || !selectedPage || !selectedVersion) return;
+                      ) : (
+                        <Text>{selectedSheet?.title}</Text>
+                      )}
+                    </div>
 
-                            const res = await axiosPrivate.patch(
-                              `/sheets/${selectedSheet.id}/records/${selectedPage.name}/tags/version/${selectedVersion}`,
-                              newTags,
-                            );
-
-                            setSelectedSheet(res.data);
+                    <div>
+                      <Text size="sm">{t("description")}:</Text>
+                      {editMode ? (
+                        <TextInput
+                          defaultValue={selectedSheet?.description}
+                          onBlur={async (e) => {
+                            if (!e.target.value) return;
+                            updateSheetInfo({ description: e.target.value });
                           }}
-                        >
-                          Update Tags
-                        </Button>
-                      </Stack>
-                    )}
-                  </div>
-                </Stack>
-              </ScrollArea>
-            </Card>
-            <Card h="50%">
-              <Group position="apart" mb="xs">
-                <Text>{t("versions")}:</Text>
-                <ActionIcon size="sm" onClick={toggleSheetVersionModal}>
-                  <IconPlus />
-                </ActionIcon>
-              </Group>
-              {selectedSheet?.versions.map((v, i) => {
-                return (
-                  <NavLink
-                    key={v.title + i}
-                    label={v.title}
-                    active={selectedSheet.currentVerion.version === v.version}
-                    onClick={async () => {
-                      setSelectedVersion(v.version);
-                    }}
-                  />
-                );
-              })}
-            </Card>
-          </Stack>
-        </Grid.Col>
-      </Grid>
+                        />
+                      ) : (
+                        <Text>{selectedSheet?.description}</Text>
+                      )}
+                    </div>
 
-      <SheetVersionModal
-        onComplete={() => {
-          getDetailedSheet(true);
-        }}
-        sheet={selectedSheet}
-        onClose={toggleSheetVersionModal}
-        opened={showSheetVersionModal}
-        title={t("createNewVersion")}
-      />
+                    <div>
+                      <Text size="sm">Page:</Text>
+                      {editMode ? (
+                        <TextInput
+                          defaultValue={selectedPage?.name}
+                          onBlur={async (e) => {
+                            if (!e.target.value) return;
+
+                            const sheet = _.cloneDeep(selectedSheet);
+
+                            if (!sheet) return;
+                            if (!selectedPage) return;
+
+                            if (foundRecordIndex < 0) return;
+
+                            sheet.records[foundRecordIndex].code = e.target.value;
+
+                            updateSheetInfo(sheet);
+                            // updateSheetInfo({ description: e.target.value });
+                          }}
+                        />
+                      ) : (
+                        <Text>{selectedPage?.name}</Text>
+                      )}
+                    </div>
+
+                    <div>
+                      <Text size="sm">{t("emissionDate")}:</Text>
+
+                      {editMode ? (
+                        <DatePicker
+                          defaultValue={new Date(selectedSheet?.startDate || "")}
+                          onChange={(e) => {
+                            updateSheetInfo({
+                              startDate: e?.toISOString() || new Date().toISOString(),
+                            });
+                          }}
+                        />
+                      ) : (
+                        <Text>{dayjs(selectedSheet?.startDate).format("MMMM D, YYYY")}</Text>
+                      )}
+                    </div>
+
+                    {!editMode && (
+                      <div>
+                        <Text size="sm">{t("versionDate")}:</Text>
+                        <Text>
+                          {dayjs(selectedSheet?.currentVerion.date).format("MMMM D, YYYY")}
+                        </Text>
+                      </div>
+                    )}
+
+                    <div>
+                      <Text size="sm">{t("tags")}:</Text>
+                      {!editMode && (
+                        <Grid>
+                          {selectedSheet?.records
+                            .find((r) => r.code === selectedPage?.name)
+                            ?.tags.map((t) => {
+                              return (
+                                <Grid.Col key={t} span="content">
+                                  <Badge>{t}</Badge>
+                                </Grid.Col>
+                              );
+                            })}
+                        </Grid>
+                      )}
+                      {editMode && (
+                        <Stack>
+                          <MultiSelect
+                            defaultValue={
+                              selectedSheet?.records.find((r) => r.code === selectedPage?.name)
+                                ?.tags
+                            }
+                            data={selectedSheet?.tags ?? []}
+                            placeholder="Select items"
+                            searchable
+                            creatable
+                            onChange={setNewTags}
+                            getCreateLabel={(query) => `+ Create ${query}`}
+                            onCreate={(query) => {
+                              const item = query;
+                              setNewTags((current) => [...current, item]);
+                              return item;
+                            }}
+                          />
+                          <Button
+                            variant="outline"
+                            onClick={async () => {
+                              if (!selectedSheet || !selectedPage || !selectedVersion) return;
+
+                              const res = await axiosPrivate.patch(
+                                `/sheets/${selectedSheet.id}/records/${selectedPage.name}/tags/version/${selectedVersion}`,
+                                newTags,
+                              );
+
+                              setSelectedSheet(res.data);
+                            }}
+                          >
+                            Update Tags
+                          </Button>
+                        </Stack>
+                      )}
+                    </div>
+                  </Stack>
+                </ScrollArea>
+              </Card>
+              <Card h="50%">
+                <Group position="apart" mb="xs">
+                  <Text>{t("versions")}:</Text>
+                  <ActionIcon size="sm" onClick={toggleSheetVersionModal}>
+                    <IconPlus />
+                  </ActionIcon>
+                </Group>
+                {selectedSheet?.versions.map((v, i) => {
+                  return (
+                    <NavLink
+                      key={v.title + i}
+                      label={v.title}
+                      active={selectedSheet.currentVerion.version === v.version}
+                      onClick={async () => {
+                        setSelectedVersion(v.version);
+                      }}
+                    />
+                  );
+                })}
+              </Card>
+            </Stack>
+          </Grid.Col>
+        </MediaQuery>
+      </Grid>
+      <MediaQuery smallerThan="md" styles={{ display: "none" }}>
+        <SheetVersionModal
+          onComplete={() => {
+            getDetailedSheet(true);
+          }}
+          sheet={selectedSheet}
+          onClose={toggleSheetVersionModal}
+          opened={showSheetVersionModal}
+          title={t("createNewVersion")}
+        />
+      </MediaQuery>
     </Paper>
   );
 };
