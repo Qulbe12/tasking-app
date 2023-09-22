@@ -103,10 +103,10 @@ const DashboardLayout = () => {
               </ActionIcon> */}
               <TextInput
                 sx={{
-                  [theme.fn.smallerThan("sm")]: {
-                    width: "150px",
-                  },
                   [theme.fn.smallerThan("md")]: {
+                    width: "300px",
+                  },
+                  [theme.fn.smallerThan("sm")]: {
                     width: "150px",
                   },
                 }}
