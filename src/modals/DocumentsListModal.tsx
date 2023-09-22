@@ -70,7 +70,14 @@ const DocumentsListModal = ({
         />
         <Filter options={templates.map((t) => t.name)} onChange={setFilter} />
 
-        <SimpleGrid cols={4}>
+        <SimpleGrid
+          breakpoints={[
+            { maxWidth: "md", cols: 3, spacing: "md" },
+            { maxWidth: "sm", cols: 2, spacing: "sm" },
+            { maxWidth: "xs", cols: 1, spacing: "sm" },
+          ]}
+          cols={4}
+        >
           {!documentsLoading &&
             filteredData.map((d) => {
               if (!d) return "NO D";
