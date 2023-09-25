@@ -74,6 +74,8 @@ const en = {
     boardName: "Board Name",
     boardDescription: "Board Description",
     templates: "Templates",
+    commentPlaceholder: "Comment...",
+    commentRequired: "Comment cannot be empty",
 
     // Documents Page
     documents: "Documents",

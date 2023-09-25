@@ -138,7 +138,6 @@ const WorkspacesList = () => {
           return workspace.boards.map((board) => {
             return (
               <BoardCard
-                workspace={workspace}
                 key={board.id + workspace.id}
                 board={board}
                 onClick={() => handleBoardChange(board, workspace.id)}

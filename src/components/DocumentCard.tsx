@@ -1,8 +1,8 @@
+import React from "react";
 import { ActionIcon, Avatar, Badge, Card, Divider, Flex, Text, Tooltip } from "@mantine/core";
 import { IconClock, IconPaperclip, IconUnlink } from "@tabler/icons";
 import dayjs from "dayjs";
 import { DocumentStatus } from "hexa-sdk/dist/app.api";
-import React from "react";
 import { generateDocumentColor } from "../utils/generateDocumentColor";
 import { IDocumentResponse } from "../interfaces/documents/IDocumentResponse";
 
@@ -15,50 +15,62 @@ type DocumentCardProps = {
   onUnlinkIconClick?: () => void;
 };
 
-const DocumentCard = ({
-  addCard,
+const DocumentCard: React.FC<DocumentCardProps> = ({
   document,
   onClick,
   selected,
   linkedView,
   onUnlinkIconClick,
-}: DocumentCardProps) => {
-  if (addCard) {
-    return (
-      <Card shadow="sm" withBorder className="cursor-pointer">
-        Add Card
-      </Card>
-    );
-  }
+}) => {
+  const documentId = document?.id;
+
+  const renderUnlinkIcon = () => (
+    <Tooltip label="Unlink Document">
+      <ActionIcon
+        color="red"
+        size="sm"
+        onClick={(e) => {
+          e.stopPropagation();
+          onUnlinkIconClick && onUnlinkIconClick();
+        }}
+      >
+        <IconUnlink />
+      </ActionIcon>
+    </Tooltip>
+  );
+
+  const renderAttachmentsIcon = () =>
+    document?.attachments.length ? (
+      <Tooltip label="Has attachments">
+        <div>
+          <IconPaperclip size="1.2em" />
+        </div>
+      </Tooltip>
+    ) : null;
+
+  const renderDueDate = () => (
+    <Tooltip label="Due Date">
+      <div>
+        <IconClock size="1.2em" />
+      </div>
+    </Tooltip>
+  );
 
   return (
     <Card
       w="100%"
       mb="md"
       onClick={onClick}
-      withBorder={selected !== document?.id}
+      withBorder={selected !== documentId}
       shadow="sm"
-      style={{
-        border: selected === document?.id ? "1px solid cyan" : undefined,
-      }}
       className="cursor-pointer"
+      style={{
+        border: selected === documentId ? "1px solid cyan" : undefined,
+      }}
     >
       <Flex align="center" justify="space-between">
         <Flex gap="md">
-          {linkedView && (
-            <Tooltip label="Unlink Document">
-              <ActionIcon
-                color="red"
-                size="sm"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onUnlinkIconClick && onUnlinkIconClick();
-                }}
-              >
-                <IconUnlink />
-              </ActionIcon>
-            </Tooltip>
-          )}
+          {linkedView && renderUnlinkIcon()}
           <Text weight="bold">{document?.title}</Text>
         </Flex>
       </Flex>
@@ -86,20 +98,8 @@ const DocumentCard = ({
 
       <Flex align="center" justify="space-between">
         <Flex gap="md" align={"center"}>
-          {document?.attachments.length ? (
-            <Tooltip label="Has attachments">
-              <div>
-                <IconPaperclip size="1.2em" />
-              </div>
-            </Tooltip>
-          ) : (
-            ""
-          )}
-          <Tooltip label="Due Date">
-            <div>
-              <IconClock size="1.2em" />
-            </div>
-          </Tooltip>
+          {renderAttachmentsIcon()}
+          {renderDueDate()}
           <Text>{dayjs(document?.dueDate).format("MMM DD")}</Text>
         </Flex>
 

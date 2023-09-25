@@ -74,6 +74,8 @@ const fr = {
     boardName: "Nom du conseil",
     boardDescription: "Description du conseil",
     templates: "Modèles",
+    commentPlaceholder: "Commentaire...",
+    commentRequired: "Le commentaire ne peut pas être vide",
 
     // Documents Page
     documents: "Documents",

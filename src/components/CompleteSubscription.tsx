@@ -42,7 +42,7 @@ const CompleteSubscription = () => {
         setPlansLoading(false);
       } catch (err) {
         setPlansLoading(false);
-        showError("Somthing went wrong please refresh the page and try again");
+        showError("Something went wrong please refresh the page and try again");
       }
     };
 
@@ -75,9 +75,6 @@ const CompleteSubscription = () => {
                 </Stack>
               </Card>
             )}
-            {/* <Card className="cursor-not-allowed" opacity={0.5}>
-              Yearly
-            </Card> */}
           </SimpleGrid>
 
           <Title mb="md" order={2} my="md">

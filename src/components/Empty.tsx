@@ -6,7 +6,7 @@ type EmptyProps = {
   label: string;
 };
 
-const Empty = ({ label }: EmptyProps) => {
+const Empty: React.FC<EmptyProps> = ({ label }) => {
   return (
     <Center>
       <Flex direction="column">
