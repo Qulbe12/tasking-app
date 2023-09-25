@@ -12,6 +12,7 @@ import {
   MultiSelect,
   Paper,
   ScrollArea,
+  SimpleGrid,
   Stack,
   Tabs,
   Text,
@@ -231,7 +232,7 @@ const DocumentsBoardView = () => {
               className="h-full"
               w="20%"
               sx={{
-                [theme.fn.smallerThan("sm")]: {
+                [theme.fn.smallerThan("md")]: {
                   width: "300px",
                   marginRight: "4px",
                 },
@@ -246,7 +247,7 @@ const DocumentsBoardView = () => {
                     {t("newDocument")}
                   </Button>
                 </Flex>
-                <ScrollArea style={{ height: "90%" }} pos="relative">
+                <ScrollArea h="70vh">
                   {filteredData.map((d, i) => {
                     return (
                       <div
@@ -277,20 +278,24 @@ const DocumentsBoardView = () => {
               w="30%"
               className="h-full"
               sx={{
-                [theme.fn.smallerThan("sm")]: {
+                [theme.fn.smallerThan("md")]: {
                   width: "300px",
                   marginRight: "4px",
                 },
               }}
             >
               <Card w="100%" shadow="lg" className="h-full w-full">
-                <Flex justify="space-between" mb="xl">
-                  <Text size="lg">{selectedDocument?.title}</Text>
-                  <Button leftIcon={<IconEdit size="1em" />} onClick={() => toggleShowEditModal()}>
-                    {t("edit")}
-                  </Button>
-                </Flex>
-                <ScrollArea offsetScrollbars style={{ height: "90%" }}>
+                <ScrollArea h="75vh">
+                  <Flex justify="space-between" mb="xl">
+                    <Text size="lg">{selectedDocument?.title}</Text>
+                    <Button
+                      leftIcon={<IconEdit size="1em" />}
+                      onClick={() => toggleShowEditModal()}
+                    >
+                      {t("edit")}
+                    </Button>
+                  </Flex>
+
                   <Stack>
                     <Flex direction="column">
                       <Text weight="bolder" size="sm">
@@ -513,8 +518,9 @@ const DocumentsBoardView = () => {
             <Flex
               w="20%"
               className="h-full"
+              wrap="wrap"
               sx={{
-                [theme.fn.smallerThan("sm")]: {
+                [theme.fn.smallerThan("md")]: {
                   width: "300px",
                   marginRight: "4px",
                 },
@@ -585,7 +591,7 @@ const DocumentsBoardView = () => {
             <Flex
               w="25%"
               sx={{
-                [theme.fn.smallerThan("sm")]: {
+                [theme.fn.smallerThan("md")]: {
                   width: "300px",
                   marginRight: "4px",
                 },
@@ -605,7 +611,7 @@ const DocumentsBoardView = () => {
                     <IconPlus size={24} />
                   </ActionIcon>
                 </Flex>
-                <ScrollArea>
+                <ScrollArea h="70vh">
                   {selectedDocument?.linkedDocs.map((d) => {
                     const foundDocument = documents.find((doc) => doc.id === d);
                     return (
@@ -629,17 +635,13 @@ const DocumentsBoardView = () => {
             </Flex>
           </Flex>
         ) : (
-          <Flex
-            w="20%"
-            wrap="wrap"
-            sx={{
-              // [theme.fn.smallerThan("md")]: {
-              //   width: "600px",
-              // },
-              [theme.fn.smallerThan("sm")]: {
-                width: "300px",
-              },
-            }}
+          <SimpleGrid
+            cols={4}
+            breakpoints={[
+              { maxWidth: "md", cols: 3, spacing: "md" },
+              { maxWidth: "sm", cols: 2, spacing: "sm" },
+              { maxWidth: "xs", cols: 1, spacing: "sm" },
+            ]}
           >
             {filteredData.map((document) => {
               return (
@@ -650,7 +652,7 @@ const DocumentsBoardView = () => {
                 />
               );
             })}
-          </Flex>
+          </SimpleGrid>
         )}
 
         <Drawer

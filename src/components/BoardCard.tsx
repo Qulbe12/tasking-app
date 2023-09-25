@@ -34,6 +34,7 @@ const BoardCard = ({ board, onEditClick, onDeleteClick, onClick, workspace }: Bo
       withBorder
       className="hover:cursor-pointer h-full"
       w="30%"
+      h="100px"
       sx={{
         [theme.fn.smallerThan("md")]: {
           width: "49%",
