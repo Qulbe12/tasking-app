@@ -7,6 +7,7 @@ import {
 } from "../../../interfaces/nylas/IThreadResponse";
 import ThreadCard from "../../../components/ThreadCard";
 import InfiniteScroll from "../../../components/InfiniteScroll";
+import Empty from "../../../components/Empty";
 
 type ThreadsListProps = {
   onThreadClick: (thread: IThreadExpandedResponse | IThreadResponse) => void;
@@ -41,6 +42,7 @@ const ThreadsList = ({ onThreadClick, selectedThreadId, afterScroll }: ThreadsLi
               })}
         </Stack>
         <>
+          {!loaders.gettingThreads && threads.length <= 0 && <Empty label="Folder is empty" />}
           {!loaders.gettingThreads &&
             threads?.map((t, i) => {
               if (t.participants.length <= 0) return;

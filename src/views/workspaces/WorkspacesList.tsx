@@ -9,6 +9,7 @@ import {
   SimpleGrid,
   Text,
   Title,
+  useMantineTheme,
 } from "@mantine/core";
 import { IconDeviceLaptop, IconPlus } from "@tabler/icons";
 import { IWorkspace } from "hexa-sdk/dist/app.api";
@@ -45,6 +46,7 @@ const WorkspacesList = () => {
 
   const [selectedBoard, setSelectedBoard] = useState<IEntityBoard | undefined>();
   const [boardEditModalOpen, setBoardEditModalOpen] = useState(false);
+  const theme = useMantineTheme();
 
   useEffect(() => {
     dispatch(getAllWorkSpaces());
@@ -52,7 +54,15 @@ const WorkspacesList = () => {
 
   return (
     <Box>
-      <div className="flex justify-between items-center mb-4 mt-4">
+      <Box
+        className="flex justify-between items-center mb-4 mt-4"
+        sx={{
+          [theme.fn.smallerThan("sm")]: {
+            display: "flex",
+            flexDirection: "column",
+          },
+        }}
+      >
         <Title className="flex items-center gap-4" order={2}>
           <IconDeviceLaptop size={32} />
           {t("workspaces")}
@@ -61,12 +71,12 @@ const WorkspacesList = () => {
         <Button leftIcon={<IconPlus size={16} />} onClick={() => setModalOpen(true)}>
           {t("createWorkspace")}
         </Button>
-      </div>
+      </Box>
 
       {workspaces?.map((workspace) => {
         if (!workspace.iAmOwner) return;
         return (
-          <Box key={workspace.id}>
+          <Box key={workspace.id} w="100%">
             <Flex gap="md" align="center">
               <Text size="xl">{workspace.name}</Text>
               <Button
@@ -80,8 +90,22 @@ const WorkspacesList = () => {
                 {t("addBoard")}
               </Button>
             </Flex>
-
-            <SimpleGrid cols={4} mt="md" mb="xl" spacing="xl">
+            <Flex
+              gap="md"
+              wrap="wrap"
+              w={"100%"}
+              mt="md"
+              mb="xl"
+              sx={{
+                [theme.fn.smallerThan("md")]: {
+                  wrap: "wrap",
+                  gap: 8,
+                },
+                [theme.fn.smallerThan("sm")]: {
+                  gap: 8,
+                },
+              }}
+            >
               {workspace.boards?.map((board) => {
                 return (
                   <BoardCard
@@ -98,7 +122,7 @@ const WorkspacesList = () => {
                   />
                 );
               })}
-            </SimpleGrid>
+            </Flex>
           </Box>
         );
       })}

@@ -31,6 +31,7 @@ const SheetCard = ({
 
   return (
     <Card
+      w="100%"
       onClick={onClick}
       withBorder={selected !== sheet?.id}
       shadow="sm"

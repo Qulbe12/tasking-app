@@ -5,7 +5,6 @@ import {
   Divider,
   Drawer,
   Flex,
-  Grid,
   Group,
   Loader,
   LoadingOverlay,
@@ -19,6 +18,7 @@ import {
   Text,
   Title,
   Tooltip,
+  useMantineTheme,
 } from "@mantine/core";
 import { FieldType, IAttachment } from "hexa-sdk/dist/app.api";
 
@@ -102,6 +102,7 @@ const DocumentsBoardView = () => {
   const [opened, { toggle }] = useDisclosure(false);
   const [showAssignConfirmationModal, { toggle: toggleAssignConfirmationModal }] =
     useDisclosure(false);
+  const theme = useMantineTheme();
 
   useEffect(() => {
     if (selectedDocument) {
@@ -210,26 +211,34 @@ const DocumentsBoardView = () => {
 
   return (
     <Paper h="80vh">
-      <ScrollArea>
-        <div className="mb-2">
-          <Filter options={templates.map((t) => t.name)} onChange={setFilter} />
-          <Filter options={["Complete", "In Progress", "Todo"]} onChange={setStatusFilter} />
+      <div className="mb-2">
+        <Filter options={templates.map((t) => t.name)} onChange={setFilter} />
+        <Filter options={["Complete", "In Progress", "Todo"]} onChange={setStatusFilter} />
+      </div>
+
+      {!selectedDocument && (
+        <div className="flex justify-between items-center mb-4">
+          {documentsLoading ? <Loader size="xs" /> : <div />}
+          <Button onClick={handleAddButtonClick}>
+            <IconPlus size={16} />
+            {t("newDocument")}
+          </Button>
         </div>
-
-        {!selectedDocument && (
-          <div className="flex justify-between items-center mb-4">
-            {documentsLoading ? <Loader size="xs" /> : <div />}
-            <Button onClick={handleAddButtonClick}>
-              <IconPlus size={16} />
-              {t("newDocument")}
-            </Button>
-          </div>
-        )}
-
+      )}
+      <ScrollArea>
         {selectedDocument ? (
-          <Grid className="h-full">
-            <Grid.Col className="h-full" span={3}>
-              <Card shadow="lg" className="h-full">
+          <Flex w="100%" justify="space-between" className="h-full">
+            <Flex
+              className="h-full"
+              w="20%"
+              sx={{
+                [theme.fn.smallerThan("md")]: {
+                  width: "300px",
+                  marginRight: "4px",
+                },
+              }}
+            >
+              <Card shadow="lg" w="100%" className="h-full">
                 <Flex justify="space-between">
                   <Title order={4} mb="md">
                     {t("documents")}
@@ -238,7 +247,7 @@ const DocumentsBoardView = () => {
                     {t("newDocument")}
                   </Button>
                 </Flex>
-                <ScrollArea style={{ height: "90%" }} pos="relative">
+                <ScrollArea h="70vh">
                   {filteredData.map((d, i) => {
                     return (
                       <div
@@ -262,18 +271,31 @@ const DocumentsBoardView = () => {
                   })}
                 </ScrollArea>
               </Card>
-            </Grid.Col>
+            </Flex>
 
             {/* Document Details */}
-            <Grid.Col className="h-full" span={5}>
-              <Card shadow="lg" className="h-full w-full">
-                <Flex justify="space-between" mb="xl">
-                  <Text size="lg">{selectedDocument?.title}</Text>
-                  <Button leftIcon={<IconEdit size="1em" />} onClick={() => toggleShowEditModal()}>
-                    {t("edit")}
-                  </Button>
-                </Flex>
-                <ScrollArea offsetScrollbars style={{ height: "90%" }}>
+            <Flex
+              w="30%"
+              className="h-full"
+              sx={{
+                [theme.fn.smallerThan("md")]: {
+                  width: "300px",
+                  marginRight: "4px",
+                },
+              }}
+            >
+              <Card w="100%" shadow="lg" className="h-full w-full">
+                <ScrollArea h="75vh">
+                  <Flex justify="space-between" mb="xl">
+                    <Text size="lg">{selectedDocument?.title}</Text>
+                    <Button
+                      leftIcon={<IconEdit size="1em" />}
+                      onClick={() => toggleShowEditModal()}
+                    >
+                      {t("edit")}
+                    </Button>
+                  </Flex>
+
                   <Stack>
                     <Flex direction="column">
                       <Text weight="bolder" size="sm">
@@ -490,11 +512,21 @@ const DocumentsBoardView = () => {
                   })}
                 </ScrollArea>
               </Card>
-            </Grid.Col>
+            </Flex>
 
             {/* Related Emails */}
-            <Grid.Col span={2} className="h-full">
-              <Card shadow="md" className="h-full" pos="relative">
+            <Flex
+              w="20%"
+              className="h-full"
+              wrap="wrap"
+              sx={{
+                [theme.fn.smallerThan("md")]: {
+                  width: "300px",
+                  marginRight: "4px",
+                },
+              }}
+            >
+              <Card w="100%" shadow="md" className="h-full" pos="relative">
                 <LoadingOverlay visible={loaders.gettingThreads} overlayBlur={2} />
                 <Tabs variant="outline" defaultValue="comments" className="h-full">
                   <Tabs.List mb="md">
@@ -554,10 +586,18 @@ const DocumentsBoardView = () => {
                   </Tabs.Panel>
                 </Tabs>
               </Card>
-            </Grid.Col>
+            </Flex>
 
-            <Grid.Col span={2}>
-              <Card shadow="md" className="h-full">
+            <Flex
+              w="25%"
+              sx={{
+                [theme.fn.smallerThan("md")]: {
+                  width: "300px",
+                  marginRight: "4px",
+                },
+              }}
+            >
+              <Card w="100%" shadow="md" className="h-full">
                 <Flex justify="space-between">
                   <Title order={4} mb="md">
                     {t("linkedDocuments")}
@@ -571,7 +611,7 @@ const DocumentsBoardView = () => {
                     <IconPlus size={24} />
                   </ActionIcon>
                 </Flex>
-                <ScrollArea>
+                <ScrollArea h="70vh">
                   {selectedDocument?.linkedDocs.map((d) => {
                     const foundDocument = documents.find((doc) => doc.id === d);
                     return (
@@ -592,10 +632,17 @@ const DocumentsBoardView = () => {
                   })}
                 </ScrollArea>
               </Card>
-            </Grid.Col>
-          </Grid>
+            </Flex>
+          </Flex>
         ) : (
-          <SimpleGrid cols={4}>
+          <SimpleGrid
+            cols={4}
+            breakpoints={[
+              { maxWidth: "md", cols: 3, spacing: "md" },
+              { maxWidth: "sm", cols: 2, spacing: "sm" },
+              { maxWidth: "xs", cols: 1, spacing: "sm" },
+            ]}
+          >
             {filteredData.map((document) => {
               return (
                 <DocumentCard
