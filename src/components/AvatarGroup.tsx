@@ -14,9 +14,10 @@ const AvatarGroup = ({ users, ccUsers }: AvatarGroupProps) => {
       <Menu trigger="click" position="top-start" shadow="md" width={200}>
         <Menu.Target>
           <Avatar.Group className="hover:cursor-pointer" spacing="sm">
-            {users?.map((u) => {
+            {users?.map((u, i) => {
+              if (i >= 5) return;
               return (
-                <Tooltip key={u.id} label={u.email} withArrow>
+                <Tooltip key={u.id + "assUsersAvatars"} label={u.email} withArrow>
                   <Avatar src={u.avatar} radius="xl" />
                 </Tooltip>
               );
@@ -30,22 +31,25 @@ const AvatarGroup = ({ users, ccUsers }: AvatarGroupProps) => {
               );
             })}
 
-            {/* <Tooltip
-          withArrow
-          label={
-            <>
-              <div>John Outcast</div>
-              <div>Levi Capitan</div>
-            </>
-          }
-        >
-          <Avatar radius="xl">+2</Avatar>
-        </Tooltip> */}
+            {users?.length && users.length > 5 && (
+              <Tooltip
+                withArrow
+                label={
+                  <>
+                    {users.map((u, i) => {
+                      if (i < 5) return;
+                      return <div key={u.id + "extra users"}>{u.email}</div>;
+                    })}
+                  </>
+                }
+              >
+                <Avatar radius="xl">{users.length - 5}</Avatar>
+              </Tooltip>
+            )}
           </Avatar.Group>
         </Menu.Target>
 
         <Menu.Dropdown className="w-fit">
-          {/* <Menu.Item icon={<IconTrash size={14} />}>Settings</Menu.Item> */}
           {users?.map((u) => {
             return (
               <Menu.Item icon={<IconTrash color="red" size={14} />} key={u.id}>
