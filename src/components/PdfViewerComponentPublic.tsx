@@ -63,6 +63,8 @@ export default function PdfViewerComponentPublic({
   const [loadingAnnotations, setLoadingAnnotations] = useState(false);
 
   useEffect(() => {
+    console.log("PdfViewerComponentPublic Mounted");
+
     if (!containerRef.current) return;
     const container = containerRef.current;
     PSPDFKit.unload(container);
@@ -95,6 +97,8 @@ export default function PdfViewerComponentPublic({
     })();
 
     return () => {
+      console.log("PdfViewerComponentPublic Unmounted");
+
       PSPDFKit && PSPDFKit.unload(container);
     };
   }, []);
