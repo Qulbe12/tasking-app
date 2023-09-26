@@ -1,7 +1,8 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { useAppDispatch, useAppSelector } from "../../../redux/store";
-import { NavLink, ScrollArea } from "@mantine/core";
-import { getAllThreads, getFolderById } from "../../../redux/api/nylasApi";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { useAppDispatch, useAppSelector } from "../redux/store";
+import { Button, Flex, Modal, NavLink, ScrollArea } from "@mantine/core";
+import CommonModalProps from "./CommonModalProps";
+import { getAllThreads, updateThread } from "../redux/api/nylasApi";
 
 interface NestedFolder {
   id: string;
@@ -10,13 +11,19 @@ interface NestedFolder {
 }
 
 type FoldersListProps = {
-  selectedThreadId: string | null;
+  selectedThreadId?: string | null | undefined;
 };
 
-const FoldersList = ({ selectedThreadId }: FoldersListProps) => {
-  const dispatch = useAppDispatch();
+const FoldersListModal = ({
+  selectedThreadId,
+  opened,
+  onClose,
+}: FoldersListProps & CommonModalProps) => {
   const { folders } = useAppSelector((state) => state.nylas);
-  const [value, setValue] = useState<string | null>(null);
+  const [folderId, setFolderId] = useState("");
+  const dispatch = useAppDispatch();
+
+  // const [value, setValue] = useState<string | null>(null);
 
   const preppedFolders = useMemo(() => {
     const nestedArray: NestedFolder[] = [];
@@ -48,29 +55,44 @@ const FoldersList = ({ selectedThreadId }: FoldersListProps) => {
   }, [folders]);
 
   const handleFolderSelect = useCallback((value: string) => {
-    setValue(value);
+    setFolderId(value);
+    console.log("folder selected", value);
   }, []);
 
   useEffect(() => {
-    if (value) {
-      dispatch(getAllThreads({ in: value }));
-      dispatch(getFolderById({ id: value }));
+    if (selectedThreadId) {
+      console.log(selectedThreadId);
     }
-  }, [value]);
+  }, [selectedThreadId]);
 
   return (
-    <ScrollArea h="100%">
-      {preppedFolders.map((folder) => (
-        <RecursiveNavLink
-          key={folder.id}
-          id={folder.id}
-          display_name={folder.display_name}
-          nestedChildren={folder.nestedChildren}
-          selectedId={selectedThreadId}
-          onFolderSelect={handleFolderSelect}
-        />
-      ))}
-    </ScrollArea>
+    <Modal opened={opened} onClose={onClose}>
+      <ScrollArea h="100%">
+        {preppedFolders.map((folder) => (
+          <RecursiveNavLink
+            key={folder.id}
+            id={folder.id}
+            display_name={folder.display_name}
+            nestedChildren={folder.nestedChildren}
+            selectedId={selectedThreadId}
+            onFolderSelect={handleFolderSelect}
+            active={folder.id === folderId}
+            folderId={folderId}
+          />
+        ))}
+      </ScrollArea>
+      <Flex w="100%" justify="flex-end">
+        <Button
+          onClick={() => {
+            dispatch(updateThread({ id: selectedThreadId, starred: false, folder_id: folderId }));
+            dispatch(getAllThreads({ in: folderId }));
+            onClose();
+          }}
+        >
+          Move to folder
+        </Button>
+      </Flex>
+    </Modal>
   );
 };
 
@@ -80,9 +102,14 @@ function RecursiveNavLink({
   nestedChildren,
   selectedId,
   onFolderSelect,
-}: NestedFolder & {
-  selectedId: string | null;
+  active,
+  folderId,
+}: // onFolderSelect,
+NestedFolder & {
+  selectedId: string | null | undefined;
   onFolderSelect: (id: string) => void;
+  active: boolean;
+  folderId: string;
 }) {
   const handleFolderClick = () => {
     onFolderSelect(id);
@@ -100,6 +127,7 @@ function RecursiveNavLink({
       childrenOffset={hasNested ? 28 : undefined}
       color={isActive ? "blue" : undefined}
       onClick={handleFolderClick}
+      active={active}
     >
       {hasNested &&
         nestedChildren?.map((child) => (
@@ -110,10 +138,12 @@ function RecursiveNavLink({
             nestedChildren={child.nestedChildren || []}
             selectedId={selectedId}
             onFolderSelect={onFolderSelect}
+            active={child.id === folderId}
+            folderId={child.id}
           />
         ))}
     </NavLink>
   );
 }
 
-export default FoldersList;
+export default FoldersListModal;
