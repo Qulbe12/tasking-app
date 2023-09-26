@@ -9,7 +9,7 @@ type UpdateDynamicFieldProps = {
   onChange?: (e: string | boolean | Date | string[]) => void;
 };
 
-const UpdateDynamicField = ({ field, value, onChange }: UpdateDynamicFieldProps) => {
+const UpdateDynamicField: React.FC<UpdateDynamicFieldProps> = ({ field, value, onChange }) => {
   switch (field.type) {
     case FieldType.Text:
       return (

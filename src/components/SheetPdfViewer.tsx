@@ -8,7 +8,7 @@ type SheetPdfViewerProps = {
   handleKeyEvent: (e: KeyboardEvent) => void;
 };
 
-export default function SheetPdfViewer({ file, handleKeyEvent }: SheetPdfViewerProps) {
+export default function SheetPdfViewer({ file }: SheetPdfViewerProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
 
   const { mode } = useAppSelector((state) => state.theme);
