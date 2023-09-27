@@ -67,8 +67,6 @@ export default function PdfViewerComponent({
   const [annotsChanged, setAnnotsChanged] = useState(false);
 
   useEffect(() => {
-    console.log("PdfViewerComponent Mounted");
-
     if (!containerRef.current) return;
     const container = containerRef.current;
     PSPDFKit.unload(container);
@@ -105,8 +103,6 @@ export default function PdfViewerComponent({
     })();
 
     return () => {
-      console.log("PdfViewerComponent Unmounted");
-
       PSPDFKit && PSPDFKit.unload(container);
     };
   }, []);

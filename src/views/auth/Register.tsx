@@ -107,7 +107,18 @@ const Register = () => {
               />
 
               <Checkbox
-                label={t("confirmTermsAndConditions")}
+                label={
+                  <>
+                    {t("I have read and accept")}{" "}
+                    <Anchor href="/terms-and-conditions" target="_blank" inherit>
+                      {t("terms and conditions")}
+                    </Anchor>{" "}
+                    {t(" and ")}
+                    <Anchor href="/privacy" target="_blank" inherit>
+                      {t("privacy policy")}
+                    </Anchor>
+                  </>
+                }
                 {...form.getInputProps("terms", { type: "checkbox" })}
               />
               <Button loading={!!loading} type="submit" variant="filled">

@@ -101,7 +101,6 @@ const MessageDetails = ({
 
   const linkedDocuments = useMemo(() => {
     if (!selectedThreadId) return [];
-
     return documents.filter((d) => d.linkedEmailIds.includes(selectedThreadId));
   }, [messages, selectedThreadId]);
 
@@ -253,7 +252,9 @@ const MessageDetails = ({
             setSelectedDocuments([]);
             setLinking(false);
             if (activeBoard) {
-              dispatch(getDocuments({ boardId: activeBoard.id, query: {} }));
+              dispatch(
+                getDocuments({ boardId: activeBoard.id, query: { emailId: selectedThreadId } }),
+              );
             }
           } catch (err) {
             const error = err as IErrorResponse;

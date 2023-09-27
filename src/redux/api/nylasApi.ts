@@ -245,10 +245,6 @@ export const getAllFolders = createAsyncThunk(
     try {
       const res = await nylasAxios.get<IFolderResponse[]>("/folders");
 
-      res.data.forEach((f) => {
-        console.log(f);
-      });
-
       return res.data;
     } catch (err) {
       const error = err as unknown as IErrorResponse;
