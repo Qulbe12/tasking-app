@@ -168,7 +168,13 @@ const MessageDetails = ({
                   <Text size="sm" opacity={0.7} mb="md">
                     To: {m.to[0].name} {`<${m.to[0].email}>`}
                   </Text>
-                  <div dangerouslySetInnerHTML={{ __html: m.body }} className="" style={{}}></div>
+                  <iframe
+                    srcDoc={m.body}
+                    width="100%"
+                    height="500px"
+                    title={`email-${m.id}`}
+                    style={{ borderRadius: "5px" }}
+                  ></iframe>
 
                   {selectedMessageIds.length === 1 && selectedMessageIds.includes(m.id) && (
                     <Stack my="md" id="reply-container">
