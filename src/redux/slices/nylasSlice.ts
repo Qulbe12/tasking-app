@@ -1,17 +1,19 @@
-import { PayloadAction, createSlice } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import {
   connectNylas,
   createCalendar,
   deleteCalendar,
   getAllCalendars,
+  getAllFolders,
   getAllMessages,
   getAllThreads,
-  getOneCalendar,
-  updateCalendar,
-  sendMessage,
-  getMoreThreads,
   getContacts,
-  getAllFolders,
+  getFolderById,
+  getMoreThreads,
+  getOneCalendar,
+  sendMessage,
+  updateCalendar,
+  updateThread,
 } from "../api/nylasApi";
 import { NylasConnectedPayload } from "hexa-sdk";
 import { IThreadExpandedResponse, IThreadResponse } from "../../interfaces/nylas/IThreadResponse";
@@ -32,9 +34,13 @@ export interface GroupsState {
   loading: number;
   messages: IMessageResponse[] | IMessageExpandedResponse[];
   threads: IThreadResponse[] | IThreadExpandedResponse[];
+  thread?: IThreadResponse;
   calendars: ICalendarResponse[];
   calendar?: ICalendarResponse;
   folders: IFolderResponse[];
+  folder?: IFolderResponse;
+  folderTitle: string;
+  folderId: string;
   deleteCalendarResponseMessage: ICalendarDeleteResponse;
   status: "conencted" | null;
   nylasToken?: NylasConnectedPayload;
@@ -51,6 +57,8 @@ export interface GroupsState {
     deletingCalendars: boolean;
     sendingMessage: boolean;
     gettingContacts: boolean;
+    updatingThread: boolean;
+    gettingFolder: boolean;
   };
 }
 
@@ -63,6 +71,8 @@ const initialState: GroupsState = {
   threads: [],
   calendars: [],
   folders: [],
+  folderId: "",
+  folderTitle: "",
   deleteCalendarResponseMessage: {
     job_status_id: "",
   },
@@ -78,6 +88,8 @@ const initialState: GroupsState = {
     gettingOneCalendar: false,
     sendingMessage: false,
     gettingContacts: false,
+    updatingThread: false,
+    gettingFolder: false,
   },
 };
 
@@ -89,6 +101,17 @@ export const nylasSlice = createSlice({
       state.nylasToken = action.payload;
       if (action.payload) {
         localStorage.setItem("nylasToken", action.payload?.access_token);
+      }
+    },
+    setFolderId: (state, action) => {
+      state.folderId = action.payload;
+    },
+    setUpdatedThread: (state, action: PayloadAction<IThreadResponse>) => {
+      const index = state.threads.findIndex((obj) => obj.id === action.payload.id);
+      console.log("set updated thread", action.payload);
+      if (index !== -1) {
+        // Update the object with the specified id using spread syntax
+        state.threads[index] = { ...state.threads[index], ...action.payload };
       }
     },
   },
@@ -242,7 +265,6 @@ export const nylasSlice = createSlice({
       .addCase(getContacts.rejected, (state) => {
         state.loaders.gettingContacts = false;
       })
-
       // Get All Folders
       .addCase(getAllFolders.pending, (state) => {
         state.loaders.gettingThreads = true;
@@ -253,10 +275,38 @@ export const nylasSlice = createSlice({
       })
       .addCase(getAllFolders.rejected, (state) => {
         state.loaders.gettingThreads = false;
+      })
+      // get one folder
+      .addCase(getFolderById.pending, (state) => {
+        state.loaders.gettingFolder = true;
+      })
+      .addCase(getFolderById.fulfilled, (state, action: PayloadAction<IFolderResponse>) => {
+        state.folder = action.payload;
+        if (action.payload?.display_name.includes("/")) {
+          const parts = action.payload?.display_name.split("/");
+          state.folderTitle = parts[parts.length - 1];
+        } else {
+          state.folderTitle = action.payload.display_name;
+        }
+        state.loaders.gettingFolder = false;
+      })
+      .addCase(getFolderById.rejected, (state) => {
+        state.loaders.gettingFolder = false;
+      })
+      // update threads
+      .addCase(updateThread.pending, (state) => {
+        state.loaders.updatingThread = true;
+      })
+      .addCase(updateThread.fulfilled, (state, action: PayloadAction<IThreadResponse>) => {
+        state.thread = action.payload;
+        state.loaders.updatingThread = false;
+      })
+      .addCase(updateThread.rejected, (state) => {
+        state.loaders.updatingThread = false;
       }),
 });
 
 const nylasReducer = nylasSlice.reducer;
-export const { setNylasToken } = nylasSlice.actions;
+export const { setNylasToken, setFolderId, setUpdatedThread } = nylasSlice.actions;
 
 export default nylasReducer;
