@@ -15,6 +15,7 @@ import {
   Flex,
   TransferListItem,
   ScrollArea,
+  MultiSelect,
 } from "@mantine/core";
 import { FormEvent, useCallback, useEffect, useState } from "react";
 
@@ -34,7 +35,7 @@ type ComposeEmailProps = {
 const ComposeEmail = ({ onCancelClick, selectedMessage }: ComposeEmailProps) => {
   const dispatch = useAppDispatch();
 
-  const { loaders } = useAppSelector((state) => state.nylas);
+  const { loaders, contacts } = useAppSelector((state) => state.nylas);
   const { data } = useAppSelector((state) => state.documents);
 
   const [form, setForm] = useState<ISendMessage>({
@@ -47,6 +48,14 @@ const ComposeEmail = ({ onCancelClick, selectedMessage }: ComposeEmailProps) => 
       },
     ],
   });
+
+  const [filteredContacts, setFilteredContacts] = useState<string[]>([]);
+  const [selectedEmails, setSelectedEmails] = useState<string[]>([]);
+  const [selectSearch, setSelectSearch] = useState<string>("");
+
+  useEffect(() => {
+    setFilteredContacts(contacts.map((c) => c.email));
+  }, [contacts, form.to]);
 
   useEffect(() => {
     if (!selectedMessage) return;
@@ -113,9 +122,18 @@ const ComposeEmail = ({ onCancelClick, selectedMessage }: ComposeEmailProps) => 
         newSubject += "]";
       }
 
+      const finalTo = selectedEmails.map((e) => {
+        const foundContact = contacts.find((c) => c.email === e);
+        return {
+          email: foundContact?.email || e,
+          name: foundContact?.name || e,
+        };
+      });
+
       await dispatch(
         sendMessage({
           ...form,
+          to: finalTo,
           subject: newSubject,
           body: newBody,
         }),
@@ -124,8 +142,6 @@ const ComposeEmail = ({ onCancelClick, selectedMessage }: ComposeEmailProps) => 
         body: "",
         subject: "",
         to: [{ email: "", name: "" }],
-        cc: [{ email: "", name: "" }],
-        bcc: [{ email: "", name: "" }],
       });
     },
     [form, documents],
@@ -161,45 +177,40 @@ const ComposeEmail = ({ onCancelClick, selectedMessage }: ComposeEmailProps) => 
   return (
     <form onSubmit={handleSendEmail} style={{ height: "100%" }}>
       <Stack spacing={"md"} h="100%">
-        <TextInput
+        <MultiSelect
           label="To"
-          width="100%"
-          value={form.to[0].email}
+          limit={5}
           placeholder="To"
-          onChange={(e) => {
-            setForm((f) => {
-              return {
-                ...f,
-                to: [{ name: e.target.value, email: e.target.value }],
-              };
-            });
+          searchValue={selectSearch}
+          onSearchChange={setSelectSearch}
+          data={filteredContacts}
+          itemID="id"
+          onBlur={(e) => {
+            if (!e.target.value) return;
+            if (!filteredContacts.includes(e.target.value)) {
+              setFilteredContacts([...filteredContacts, e.target.value]);
+            }
+            if (!selectedEmails.includes(e.target.value)) {
+              setSelectedEmails([...selectedEmails, e.target.value]);
+            }
+
+            setSelectSearch("");
           }}
+          searchable
+          onChange={setSelectedEmails}
+          value={selectedEmails}
         />
+
         <TextInput
           label="CC"
           width="100%"
           value={form.cc ? form.cc[0].email : ""}
-          placeholder="To"
+          placeholder="CC"
           onChange={(e) => {
             setForm((f) => {
               return {
                 ...f,
                 cc: [{ name: e.target.value, email: e.target.value }],
-              };
-            });
-          }}
-        />
-
-        <TextInput
-          label="BCC"
-          width="100%"
-          value={form.bcc ? form.bcc[0].email : ""}
-          placeholder="To"
-          onChange={(e) => {
-            setForm((f) => {
-              return {
-                ...f,
-                bcc: [{ name: e.target.value, email: e.target.value }],
               };
             });
           }}

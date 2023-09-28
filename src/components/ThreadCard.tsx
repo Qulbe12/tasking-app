@@ -17,8 +17,8 @@ const ThreadCard: React.FC<ThreadCardProps> = ({ thread, onClick, selectedThread
     const participant = thread.participants[0];
     if (!participant) return "";
 
-    const foundContact = contacts.find((c) => c.emails[0].email === participant.email);
-    return foundContact ? `${foundContact.given_name} ${foundContact.surname}` : participant.email;
+    const foundContact = contacts.find((c) => c.email === participant.email);
+    return foundContact ? foundContact.name : participant.email;
   }, [thread, contacts]);
 
   return (
