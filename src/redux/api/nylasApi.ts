@@ -14,6 +14,7 @@ import {
 import { showNotification } from "@mantine/notifications";
 import { IContactResponse } from "../../interfaces/nylas/IContactResponse";
 import { IFolderResponse } from "../../interfaces/nylas/IFolderResponse";
+import { setUpdatedThread } from "../slices/nylasSlice";
 
 const { nylasApi } = api;
 const { connect } = nylasApi;
@@ -146,6 +147,34 @@ export const getThreadById = createAsyncThunk(
     }
   },
 );
+export const updateThread = createAsyncThunk(
+  "nylas/updateThread",
+  async (
+    {
+      starred,
+      folder_id,
+      id,
+    }: {
+      unread?: boolean;
+      starred: boolean;
+      label_ids?: [string];
+      folder_id: string;
+    } & { id: string | null | undefined },
+    { rejectWithValue, dispatch },
+  ) => {
+    try {
+      const res = await nylasAxios.put<IThreadResponse>(`/threads/${id}`, {
+        starred: starred,
+        folder_id: folder_id,
+      });
+      dispatch(setUpdatedThread(res.data));
+      return res.data;
+    } catch (err) {
+      const error = err as unknown as IErrorResponse;
+      return rejectWithValue(error.response?.data.message);
+    }
+  },
+);
 
 export const createCalendar = createAsyncThunk(
   "nylas/createCalendar",
@@ -249,6 +278,18 @@ export const getAllFolders = createAsyncThunk(
         console.log(f);
       });
 
+      return res.data;
+    } catch (err) {
+      const error = err as unknown as IErrorResponse;
+      return rejectWithValue(error.response?.data.message);
+    }
+  },
+);
+export const getFolderById = createAsyncThunk(
+  "nylas/getFolderById",
+  async ({ id }: { id: string }, { rejectWithValue }) => {
+    try {
+      const res = await nylasAxios.get<IFolderResponse>(`/folders/${id}`);
       return res.data;
     } catch (err) {
       const error = err as unknown as IErrorResponse;

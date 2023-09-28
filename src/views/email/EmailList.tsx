@@ -54,7 +54,7 @@ const EmailList = ({ onActionButtonClick }: EmailListProps) => {
   }, []);
 
   return (
-    <div>
+    <>
       <ScrollArea>
         <EmailListHeader
           onActionButtonClick={onActionButtonClick}
@@ -120,7 +120,7 @@ const EmailList = ({ onActionButtonClick }: EmailListProps) => {
           </Affix>
         )}
       </ScrollArea>
-    </div>
+    </>
   );
 };
 
