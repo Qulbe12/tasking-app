@@ -1,6 +1,6 @@
 interface IWhen {
-  time: number | null;
-  timezone: string;
+  start_time: number;
+  end_time: number;
 }
 
 interface IEmail {

@@ -2,6 +2,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import {
   connectNylas,
   createCalendar,
+  createEvent,
   deleteCalendar,
   deleteEvent,
   getAllCalendars,
@@ -30,6 +31,7 @@ import {
 import { IContactResponse } from "../../interfaces/nylas/IContactResponse";
 import { IFolderResponse } from "../../interfaces/nylas/IFolderResponse";
 import { IEventResponse } from "../../interfaces/nylas/IEventResponse";
+import { Event } from "react-big-calendar";
 
 export interface GroupsState {
   data: any;
@@ -41,6 +43,7 @@ export interface GroupsState {
   folders: IFolderResponse[];
   deleteCalendarResponseMessage: ICalendarDeleteResponse;
   events: IEventResponse[];
+  calendarEvents: Event[];
   event?: IEventResponse;
   status: "conencted" | null;
   nylasToken?: NylasConnectedPayload;
@@ -57,6 +60,7 @@ export interface GroupsState {
     deletingCalendars: boolean;
     sendingMessage: boolean;
     gettingEvents: boolean;
+    creatingEvent: boolean;
   };
 }
 
@@ -70,6 +74,7 @@ const initialState: GroupsState = {
   calendars: [],
   folders: [],
   events: [],
+  calendarEvents: [],
   deleteCalendarResponseMessage: {
     job_status_id: "",
   },
@@ -85,6 +90,7 @@ const initialState: GroupsState = {
     gettingOneCalendar: false,
     sendingMessage: false,
     gettingEvents: false,
+    creatingEvent: false,
   },
 };
 
@@ -153,8 +159,6 @@ export const nylasSlice = createSlice({
         state.loaders.sendingMessage = true;
       })
       .addCase(sendMessage.fulfilled, (state, action) => {
-        console.log(action.payload);
-
         state.loaders.sendingMessage = false;
       })
       .addCase(sendMessage.rejected, (state) => {
@@ -238,6 +242,18 @@ export const nylasSlice = createSlice({
         getEvents.fulfilled,
         (state, { payload: events }: PayloadAction<IEventResponse[]>) => {
           state.events = events;
+          state.calendarEvents = events.map((e) => {
+            const unixStartTimestamp = parseInt(e.when.start_time.toString(), 10);
+            const startDate = new Date(unixStartTimestamp * 1000);
+            const unixEndTimestamp = parseInt(e.when.end_time.toString(), 10);
+            const endDate = new Date(unixEndTimestamp * 1000);
+            const event: Event = {
+              start: startDate,
+              end: endDate,
+              title: e.title,
+            };
+            return event;
+          });
           state.loaders.gettingEvents = false;
         },
       )
@@ -257,6 +273,20 @@ export const nylasSlice = createSlice({
       )
       .addCase(getEventById.rejected, (state) => {
         state.loaders.gettingEvents = false;
+      })
+      // create event
+      .addCase(createEvent.pending, (state) => {
+        state.loaders.creatingEvent = true;
+      })
+      .addCase(
+        createEvent.fulfilled,
+        (state, { payload: event }: PayloadAction<IEventResponse>) => {
+          state.events.push(event);
+          state.loaders.creatingEvent = false;
+        },
+      )
+      .addCase(createEvent.rejected, (state) => {
+        state.loaders.creatingEvent = false;
       })
       // update calendar
       .addCase(updateEvent.pending, (state) => {

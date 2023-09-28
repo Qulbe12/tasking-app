@@ -198,7 +198,7 @@ export const updateCalendar = createAsyncThunk(
 );
 export const deleteCalendar = createAsyncThunk(
   "nylas/deleteCalendar",
-  async ({ calendarId }: { calendarId: string }, { rejectWithValue, dispatch }) => {
+  async ({ calendarId }: { calendarId: string | undefined }, { rejectWithValue, dispatch }) => {
     try {
       const res = await nylasAxios.delete<ICalendarDeleteResponse>(`/calendars/${calendarId}`);
       return res.data;
@@ -247,7 +247,6 @@ export const createEvent = createAsyncThunk(
   async (data: IEventCreate, { rejectWithValue, dispatch }) => {
     try {
       const res = await nylasAxios.post<IEventResponse>("/events", data);
-      console.log(res.data);
       showNotification({
         title: res.data.title,
         message: `${res.data.title} has ben created`,
