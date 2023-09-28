@@ -77,7 +77,6 @@ const DocumentsBoardView = () => {
     loading: documentsLoading,
   } = useAppSelector((state) => state.documents);
   const { data: templates } = useAppSelector((state) => state.templates);
-  const { user } = useAppSelector((state) => state.auth);
   const { search } = useAppSelector((state) => state.filters);
   const { activeBoard } = useAppSelector((state) => state.boards);
   const { nylasToken, threads, loaders } = useAppSelector((state) => state.nylas);
@@ -225,6 +224,7 @@ const DocumentsBoardView = () => {
           </Button>
         </div>
       )}
+
       <ScrollArea>
         {selectedDocument ? (
           <Flex w="100%" justify="space-between" className="h-full">
@@ -297,55 +297,36 @@ const DocumentsBoardView = () => {
                   </Flex>
 
                   <Stack>
-                    <Flex direction="column">
-                      <Text weight="bolder" size="sm">
-                        Created By:
-                      </Text>
-                      <Text size="sm">
-                        {selectedDocument.createdBy.name}
-                        {user?.user.id === selectedDocument.createdBy.id && " (me)"}
-                      </Text>
-                    </Flex>
-                    <Flex direction="column">
-                      <Text weight="bolder" size="sm">
-                        {t("title")}:
-                      </Text>
-                      <Text size="sm">{selectedDocument.title}</Text>
-                    </Flex>
-                    <Flex direction="column">
-                      <Text weight="bolder" size="sm">
-                        {t("description")}:
-                      </Text>
-                      <Text size="sm">{selectedDocument.description}</Text>
-                    </Flex>
-                    <Flex direction="column">
-                      <Text weight="bolder" size="sm">
-                        {t("startDate")}:
-                      </Text>
-                      <Text size="sm">
-                        {dayjs(selectedDocument.startDate).format("MMMM DD, YYYY")}
-                      </Text>
-                    </Flex>
-                    <Flex direction="column">
-                      <Text weight="bolder" size="sm">
-                        {t("dueDate")}:
-                      </Text>
-                      <Text size="sm">
-                        {dayjs(selectedDocument.dueDate).format("MMMM DD, YYYY")}
-                      </Text>
-                    </Flex>
-                    <Flex direction="column">
-                      <Text weight="bolder" size="sm">
-                        {t("priority")}:
-                      </Text>
-                      <Text size="sm">{selectedDocument.priority}</Text>
-                    </Flex>
-                    <Flex direction="column">
-                      <Text weight="bolder" size="sm">
-                        {t("status")}:
-                      </Text>
-                      <Text size="sm">{selectedDocument.status}</Text>
-                    </Flex>
+                    {Object.entries(selectedDocument).map(([k, v], i) => {
+                      const inputIndex = selectedDocument.template.fields.findIndex(
+                        (f) => f.key === k,
+                      );
+
+                      if (k === "template") return;
+                      if (inputIndex < 0) return;
+
+                      let value = v;
+
+                      if (selectedDocument.template.fields[inputIndex].type === FieldType.Date) {
+                        value = dayjs(v).format("MMMM D, YYYY");
+                      }
+
+                      return (
+                        <div key={i + "document" + k + v}>
+                          {inputIndex >= 0 ? (
+                            <Flex direction="column">
+                              <Text weight="bolder" size="sm">
+                                {_.startCase(k)}:
+                              </Text>
+
+                              <Text size="sm">{value || "no value"}</Text>
+                            </Flex>
+                          ) : (
+                            <Text>{k}:</Text>
+                          )}
+                        </div>
+                      );
+                    })}
 
                     <Flex direction="column">
                       <Flex direction="row" align="center" justify="space-between">
@@ -384,37 +365,6 @@ const DocumentsBoardView = () => {
                       </Flex>
                       <AvatarGroup ccUsers={selectedDocument.ccUsers} />
                     </Flex>
-
-                    {Object.entries(selectedDocument).map(([k, v], i) => {
-                      const inputIndex = selectedDocument.template.fields.findIndex(
-                        (f) => f.key === k,
-                      );
-
-                      if (k === "template") return;
-                      if (inputIndex < 0) return;
-
-                      let value = v;
-
-                      if (selectedDocument.template.fields[inputIndex].type === FieldType.Date) {
-                        value = dayjs(v).format("MMMM D, YYYY");
-                      }
-
-                      return (
-                        <div key={i + "document" + k + v}>
-                          {inputIndex >= 0 ? (
-                            <Flex direction="column">
-                              <Text weight="bolder" size="sm">
-                                {_.startCase(k)}:
-                              </Text>
-
-                              <Text size="sm">{value || "no value"}</Text>
-                            </Flex>
-                          ) : (
-                            <Text>{k}:</Text>
-                          )}
-                        </div>
-                      );
-                    })}
 
                     <Group position="apart" align="center">
                       <Text>{t("attachments")}:</Text>

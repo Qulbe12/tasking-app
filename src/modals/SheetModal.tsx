@@ -20,8 +20,7 @@ import { useForm, yupResolver } from "@mantine/form";
 import * as yup from "yup";
 import { DocumentPriority, DocumentStatus } from "hexa-sdk/dist/app.api";
 import { useState } from "react";
-import axios from "axios";
-import { SHEETS_URL } from "../constants/URLS";
+
 import { ISheetProcessResponse } from "../interfaces/sheets/ISheetProcessResponse";
 import { showError } from "../redux/commonSliceFunctions";
 import { completeNavigationProgress, startNavigationProgress } from "@mantine/nprogress";
@@ -30,6 +29,7 @@ import { DatePicker } from "@mantine/dates";
 import { ISheetCreate } from "../interfaces/sheets/ISheetCreate";
 import { createSheet } from "../redux/api/sheetsApi";
 import { useTranslation } from "react-i18next";
+import { axiosSheets } from "../config/axiosSheets";
 
 const SheetModal = ({ onClose, opened, title }: CommonModalProps) => {
   const { t } = useTranslation();
@@ -145,11 +145,7 @@ const SheetModal = ({ onClose, opened, title }: CommonModalProps) => {
                     try {
                       const formData = new FormData();
                       formData.append("file", file[0]);
-                      const res = await axios.post<ISheetProcessResponse[]>(SHEETS_URL, formData, {
-                        headers: {
-                          "Content-Type": "multipart/form-data",
-                        },
-                      });
+                      const res = await axiosSheets.post<ISheetProcessResponse[]>("", formData);
 
                       setNewCodes(res.data.map((d) => d.code));
 

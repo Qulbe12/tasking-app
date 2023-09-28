@@ -72,9 +72,7 @@ export default function PdfViewerComponentPublic({
 
       setLoadingAnnotations(true);
 
-      const res = await axiosPrivate.get(
-        `/documents/${selectedDocument.id}/annotations/${attachment.id}`,
-      );
+      const res = await axiosPrivate.get(`/annotations/${selectedDocument.id}/`);
 
       setLoadingAnnotations(false);
 

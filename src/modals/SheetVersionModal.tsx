@@ -19,8 +19,7 @@ import SheetDropzone from "../components/SheetDropzone";
 import { useForm, yupResolver } from "@mantine/form";
 import * as yup from "yup";
 import { useEffect, useState } from "react";
-import axios from "axios";
-import { SHEETS_URL } from "../constants/URLS";
+
 import { ISheetProcessResponse } from "../interfaces/sheets/ISheetProcessResponse";
 import { showError } from "../redux/commonSliceFunctions";
 import { completeNavigationProgress, startNavigationProgress } from "@mantine/nprogress";
@@ -30,6 +29,8 @@ import { createSheetVersion } from "../redux/api/sheetsApi";
 import { ISheetDetailedResponse } from "../interfaces/sheets/ISheetDetailedResponse";
 import { t } from "i18next";
 import { DatePicker } from "@mantine/dates";
+
+import { axiosSheets } from "../config/axiosSheets";
 
 type SheetVersionModalProps = {
   sheet?: ISheetDetailedResponse | null;
@@ -158,7 +159,7 @@ const SheetVersionModal = ({
                     try {
                       const formData = new FormData();
                       formData.append("file", file[0]);
-                      const res = await axios.post<ISheetProcessResponse[]>(SHEETS_URL, formData, {
+                      const res = await axiosSheets.post<ISheetProcessResponse[]>("", formData, {
                         headers: {
                           "Content-Type": "multipart/form-data",
                         },
