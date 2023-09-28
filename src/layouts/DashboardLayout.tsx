@@ -1,19 +1,20 @@
 import { useEffect, useMemo } from "react";
 import {
-  AppShell,
-  Navbar,
-  Header,
-  Group,
-  TextInput,
-  Flex,
   ActionIcon,
+  AppShell,
+  Box,
   Burger,
+  Center,
+  Flex,
+  Group,
+  Header,
+  MediaQuery,
   Menu,
   Modal,
-  Center,
+  Navbar,
   Progress,
-  MediaQuery,
-  Box,
+  TextInput,
+  useMantineTheme,
 } from "@mantine/core";
 
 import { Outlet, useLocation } from "react-router-dom";
@@ -48,6 +49,7 @@ const DashboardLayout = () => {
   }, [window.location.href]);
 
   const [opened, { toggle }] = useDisclosure(false);
+  const theme = useMantineTheme();
 
   const isBoardsPage = useMemo(() => {
     return location.pathname.split("/")[1] === "board";
@@ -63,7 +65,7 @@ const DashboardLayout = () => {
       asideOffsetBreakpoint="sm"
       navbar={
         opened ? (
-          <Navbar p="md" hiddenBreakpoint="lg" hidden={!opened} width={{ lg: 95 }}>
+          <Navbar p="md" hiddenBreakpoint="lg" hidden={!opened} width={{ lg: 95, sm: "30%" }}>
             <MainLinks />
           </Navbar>
         ) : undefined
@@ -99,18 +101,32 @@ const DashboardLayout = () => {
               >
                 <IconFilter size={24} />
               </ActionIcon> */}
-              <MediaQuery smallerThan="lg" styles={{ width: "100%" }}>
-                <TextInput
-                  w="400px"
-                  placeholder={`${t("search")}`}
-                  variant="filled"
-                  value={search}
-                  onChange={(e) => {
-                    dispatch(setSearch(e.target.value));
-                  }}
-                />
-              </MediaQuery>
-              <Menu shadow="md" width={200}>
+              <TextInput
+                sx={{
+                  [theme.fn.smallerThan("md")]: {
+                    width: "300px",
+                  },
+                  [theme.fn.smallerThan("sm")]: {
+                    width: "150px",
+                  },
+                }}
+                w="400px"
+                placeholder={`${t("search")}`}
+                variant="filled"
+                value={search}
+                onChange={(e) => {
+                  dispatch(setSearch(e.target.value));
+                }}
+              />
+              <Menu
+                styles={{
+                  [theme.fn.smallerThan("md")]: {
+                    width: "50%",
+                  },
+                }}
+                shadow="md"
+                width={200}
+              >
                 <Menu.Target>
                   <ActionIcon>
                     <IconLanguage size={48} />

@@ -35,7 +35,9 @@ const TemplateList = () => {
                   setSelectedTemplate(t.id);
                   toggleOpen();
                 }}
-                span={2}
+                lg={2}
+                md={6}
+                sm={12}
                 key={t.id}
               >
                 <TemplateCard template={t} />
@@ -57,7 +59,9 @@ const TemplateList = () => {
                       setSelectedTemplate(t.id);
                       toggleOpen();
                     }}
-                    span={2}
+                    lg={2}
+                    md={6}
+                    sm={12}
                     key={t.id}
                   >
                     <TemplateCard template={t} />

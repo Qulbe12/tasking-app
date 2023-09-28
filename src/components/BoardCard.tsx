@@ -26,13 +26,19 @@ type BoardCardProps = {
 const BoardCard = ({ board, onEditClick, onDeleteClick, onClick, workspace }: BoardCardProps) => {
   const { loaders } = useAppSelector((state) => state.boards);
   const theme = useMantineTheme();
+
   return (
     <Card
       onClick={onClick}
       shadow="sm"
       withBorder
       className="hover:cursor-pointer h-full"
+      w="30%"
+      h="100px"
       sx={{
+        [theme.fn.smallerThan("md")]: {
+          width: "49%",
+        },
         [theme.fn.smallerThan("sm")]: {
           width: "100%",
         },
@@ -45,6 +51,11 @@ const BoardCard = ({ board, onEditClick, onDeleteClick, onClick, workspace }: Bo
           <Menu withinPortal position="bottom-end" shadow="sm">
             <Menu.Target>
               <ActionIcon
+                sx={{
+                  [theme.fn.smallerThan("sm")]: {
+                    size: 20,
+                  },
+                }}
                 onClick={(e) => {
                   e.stopPropagation();
                 }}
