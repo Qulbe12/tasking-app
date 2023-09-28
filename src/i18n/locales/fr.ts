@@ -29,7 +29,10 @@ const fr = {
     confirmPassword: "Confirmez le mot de passe",
     name: "Nom",
     rememberMe: "Souviens-toi de moi",
-    confirmTermsAndConditions: "J'accepte les termes et conditions",
+    "I have read and accept": "J'ai lu et j'accepte les",
+    "terms and conditions": "conditions générales",
+    and: "et la",
+    "privacy policy": "politique de confidentialité",
     continueWithGoogle: "Ou continuez avec Google",
     forgotPassword: "Mot de passe oublié",
     "Don't have an account? Register": "Vous n'avez pas de compte ? Enregistrer",
@@ -74,6 +77,8 @@ const fr = {
     boardName: "Nom du conseil",
     boardDescription: "Description du conseil",
     templates: "Modèles",
+    commentPlaceholder: "Commentaire...",
+    commentRequired: "Le commentaire ne peut pas être vide",
 
     // Documents Page
     documents: "Documents",

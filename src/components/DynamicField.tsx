@@ -1,7 +1,7 @@
+import React from "react";
 import { Checkbox, MultiSelect, NumberInput, Radio, Select, TextInput } from "@mantine/core";
 import { FieldType, IField } from "hexa-sdk/dist/app.api";
 import { DatePicker } from "@mantine/dates";
-import React from "react";
 import { UseFormReturnType } from "@mantine/form";
 
 type DynamicFieldProps = {
@@ -11,7 +11,7 @@ type DynamicFieldProps = {
   onChange?: (e: string | boolean | Date | string[]) => void;
 };
 
-const DynamicField = ({ field, form, value, onChange }: DynamicFieldProps) => {
+const DynamicField: React.FC<DynamicFieldProps> = ({ field, form, value, onChange }) => {
   switch (field.type) {
     case FieldType.Text:
       return (

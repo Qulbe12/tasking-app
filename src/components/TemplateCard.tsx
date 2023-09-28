@@ -6,7 +6,7 @@ type TemplateCardProps = {
   template: ITemplate;
 };
 
-const TemplateCard = ({ template }: TemplateCardProps) => {
+const TemplateCard: React.FC<TemplateCardProps> = ({ template }) => {
   return (
     <Card shadow="md" className="cursor-pointer hover:-translate-y-1 relative">
       <Card.Section>

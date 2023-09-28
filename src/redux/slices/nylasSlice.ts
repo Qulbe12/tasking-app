@@ -25,8 +25,9 @@ import {
   ICalendarDeleteResponse,
   ICalendarResponse,
 } from "../../interfaces/nylas/ICalendarResponse";
-import { IContactResponse } from "../../interfaces/nylas/IContactResponse";
+import { IContactRemapped, IContactResponse } from "../../interfaces/nylas/IContactResponse";
 import { IFolderResponse } from "../../interfaces/nylas/IFolderResponse";
+import _ from "lodash";
 
 export interface GroupsState {
   data: any;
@@ -43,7 +44,7 @@ export interface GroupsState {
   deleteCalendarResponseMessage: ICalendarDeleteResponse;
   status: "conencted" | null;
   nylasToken?: NylasConnectedPayload;
-  contacts: IContactResponse[];
+  contacts: IContactRemapped[];
   loaders: {
     connecting: boolean;
     gettingThreads: boolean;
@@ -55,6 +56,7 @@ export interface GroupsState {
     updatingCalendars: boolean;
     deletingCalendars: boolean;
     sendingMessage: boolean;
+    gettingContacts: boolean;
     updatingThread: boolean;
     gettingFolder: boolean;
   };
@@ -85,6 +87,7 @@ const initialState: GroupsState = {
     deletingCalendars: false,
     gettingOneCalendar: false,
     sendingMessage: false,
+    gettingContacts: false,
     updatingThread: false,
     gettingFolder: false,
   },
@@ -244,14 +247,23 @@ export const nylasSlice = createSlice({
 
       // Get All Contacts
       .addCase(getContacts.pending, (state) => {
-        state.loaders.gettingThreads = true;
+        state.loaders.gettingContacts = true;
       })
       .addCase(getContacts.fulfilled, (state, action: PayloadAction<IContactResponse[]>) => {
-        state.contacts = action.payload.filter((c) => c.given_name != null);
-        state.loaders.gettingThreads = false;
+        const contacts = action.payload.filter((c) => c.given_name != null);
+        const mappedContacts: IContactRemapped[] = contacts.map((c) => {
+          return {
+            id: c.id,
+            email: c.emails[0].email,
+            name: _.startCase(`${c.given_name} ${c.surname}`),
+          };
+        });
+
+        state.contacts = mappedContacts;
+        state.loaders.gettingContacts = false;
       })
       .addCase(getContacts.rejected, (state) => {
-        state.loaders.gettingThreads = false;
+        state.loaders.gettingContacts = false;
       })
       // Get All Folders
       .addCase(getAllFolders.pending, (state) => {

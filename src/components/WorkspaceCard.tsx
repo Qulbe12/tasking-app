@@ -4,6 +4,8 @@ import { IWorkspace } from "hexa-sdk/dist/app.api";
 import { useAppSelector } from "../redux/store";
 import { useTranslation } from "react-i18next";
 
+const ICON_SIZE = 14;
+
 type WorkspaceCardProps = {
   workspace: IWorkspace;
   onEditClick: () => void;
@@ -13,17 +15,26 @@ type WorkspaceCardProps = {
 
 const WorkspaceCard = ({ workspace, onEditClick, onDeleteClick, onClick }: WorkspaceCardProps) => {
   const { t } = useTranslation();
-
   const { loaders } = useAppSelector((state) => state.workspaces);
+  const { deleting, updating } = loaders;
+  const { id, name } = workspace;
+
+  const handleEditClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onEditClick();
+  };
+
+  const handleDeleteClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onDeleteClick();
+  };
 
   return (
     <Card onClick={onClick} shadow="sm" withBorder className="hover:cursor-pointer h-full">
-      <LoadingOverlay
-        visible={loaders.deleting === workspace.id || loaders.updating === workspace.id}
-      />
+      <LoadingOverlay visible={deleting === id || updating === id} />
       <Card.Section inheritPadding py="xs">
         <Group position="apart">
-          <Title order={5}>{workspace.name}</Title>
+          <Title order={5}>{name}</Title>
           <Menu withinPortal position="bottom-end" shadow="sm">
             <Menu.Target>
               <ActionIcon
@@ -31,27 +42,18 @@ const WorkspaceCard = ({ workspace, onEditClick, onDeleteClick, onClick }: Works
                   e.stopPropagation();
                 }}
               >
-                <IconDots size={16} />
+                <IconDots size={ICON_SIZE} />
               </ActionIcon>
             </Menu.Target>
 
             <Menu.Dropdown>
-              <Menu.Item
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onEditClick();
-                }}
-                icon={<IconEdit size={14} />}
-              >
+              <Menu.Item onClick={handleEditClick} icon={<IconEdit size={ICON_SIZE} />}>
                 {t("edit")}
               </Menu.Item>
               <Menu.Item
-                icon={<IconTrash size={14} />}
+                icon={<IconTrash size={ICON_SIZE} />}
                 color="red"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onDeleteClick();
-                }}
+                onClick={handleDeleteClick}
               >
                 {t("delete")}
               </Menu.Item>

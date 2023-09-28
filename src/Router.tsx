@@ -24,11 +24,21 @@ import ManageSeats from "./views/settings/ManageSeats";
 import InvitationDetailsPage from "./views/invitation/InvitationDetailsPage";
 import SecurityManagementPage from "./views/settings/SecurityManagementPage";
 import ProfileManagementPage from "./views/settings/ProfileManagementPage";
+import PrivacyPolicy from "./views/legal/PrivacyPolicy";
+import TermsAndConditions from "./views/legal/TermsAndConditions";
 
 const router = createBrowserRouter([
   {
     path: "accept/:invitationId/:token/:businessName/:ownerName",
     element: <InvitationDetailsPage />,
+  },
+  {
+    path: "privacy",
+    element: <PrivacyPolicy />,
+  },
+  {
+    path: "terms-and-conditions",
+    element: <TermsAndConditions />,
   },
   {
     path: "/documents/:documentId",

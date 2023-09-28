@@ -13,18 +13,17 @@ type ThreadCardProps = {
   selectedThreadId?: string | null;
 };
 
-const ThreadCard = ({ thread, onClick, selectedThreadId }: ThreadCardProps) => {
+const ThreadCard: React.FC<ThreadCardProps> = ({ thread, onClick, selectedThreadId }) => {
   const { contacts } = useAppSelector((state) => state.nylas);
   const [threadId, setThreadId] = useState("");
   const [opened, { open, close }] = useDisclosure(false);
 
   const fullName = useMemo(() => {
-    if (thread.participants.length <= 0) return "";
-    const foundContact = contacts.find((c) => c.emails[0].email === thread.participants[0].email);
+    const participant = thread.participants[0];
+    if (!participant) return "";
 
-    if (!foundContact) return thread.participants[0].email;
-
-    return `${foundContact.given_name} ${foundContact.surname}`;
+    const foundContact = contacts.find((c) => c.email === participant.email);
+    return foundContact ? foundContact.name : participant.email;
   }, [thread, contacts]);
 
   return (

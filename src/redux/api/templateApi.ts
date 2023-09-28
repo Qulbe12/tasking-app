@@ -100,7 +100,6 @@ export const updateTemplateFields = createAsyncThunk(
         `templates/${data.fieldId}/fields/${data.field}`,
         data.updatedField,
       );
-      console.log(res.data);
       return res.data;
     } catch (err) {
       return centralizedErrorHandler(err, rejectWithValue, dispatch);
@@ -114,7 +113,6 @@ export const deleteTemplateFields = createAsyncThunk(
       const res = await axiosPrivate.delete<IUpdateFieldResponse>(
         `templates/${data.fieldId}/fields/${data.field}`,
       );
-      console.log(res.data);
       return res.data;
     } catch (err) {
       return centralizedErrorHandler(err, rejectWithValue, dispatch);

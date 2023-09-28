@@ -1,15 +1,15 @@
-import { Group, Loader, ScrollArea } from "@mantine/core";
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import { ScrollArea, Loader, Group } from "@mantine/core";
 
 type InfiniteScrollProps = {
-  children: React.ReactElement[] | React.ReactElement | boolean;
+  children: React.ReactNode;
   loading: boolean;
   onScrollEnd: () => void;
 };
 
-const InfiniteScroll = ({ children, loading, onScrollEnd }: InfiniteScrollProps) => {
+const InfiniteScroll: React.FC<InfiniteScrollProps> = ({ children, loading, onScrollEnd }) => {
   const viewport = useRef<HTMLDivElement>(null);
-  const [scrollPosition, onScrollPositionChange] = useState({ x: 0, y: 0 });
+  const [scrollPosition, setScrollPosition] = useState({ x: 0, y: 0 });
 
   const isAtScrollEnd = useMemo(() => {
     if (!viewport.current) return false;
@@ -31,7 +31,7 @@ const InfiniteScroll = ({ children, loading, onScrollEnd }: InfiniteScrollProps)
       <ScrollArea
         viewportRef={viewport}
         h={loading ? "95%" : "100%"}
-        onScrollPositionChange={onScrollPositionChange}
+        onScrollPositionChange={setScrollPosition}
       >
         {children}
       </ScrollArea>

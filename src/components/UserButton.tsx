@@ -11,26 +11,25 @@ type UserButtonProps = {
   isUnsubscribed?: boolean;
 };
 
-const UserButton = ({ isUnsubscribed }: UserButtonProps) => {
+const UserButton: React.FC<UserButtonProps> = ({ isUnsubscribed }) => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
   const { user } = useAppSelector((state) => state.auth);
-
   const { mode } = useAppSelector((state) => state.theme);
+  const { name, avatar, email } = user?.user || {};
 
   return (
     <Menu shadow="md" width={200}>
       <Menu.Target>
-        <Tooltip label={user?.user.name}>
-          <Avatar className="cursor-pointer" src={user?.user.avatar} radius="md" size="md" />
+        <Tooltip label={name}>
+          <Avatar className="cursor-pointer" src={avatar} radius="md" size="md" />
         </Tooltip>
       </Menu.Target>
 
       <Menu.Dropdown>
-        <Menu.Label>{user?.user.email}</Menu.Label>
-        {/* <Menu.Item icon={<IconUser size={14} />}>Profile</Menu.Item> */}
+        <Menu.Label>{email}</Menu.Label>
 
         <Menu.Item
           onClick={() => dispatch(toggleTheme())}
