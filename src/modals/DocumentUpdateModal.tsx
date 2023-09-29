@@ -2,9 +2,6 @@ import React, { useEffect, useState } from "react";
 import {
   Modal,
   Stack,
-  TextInput,
-  Textarea,
-  Select,
   Flex,
   Button,
   Drawer,
@@ -15,10 +12,8 @@ import {
   TransferList,
   TransferListData,
 } from "@mantine/core";
-import { DatePicker } from "@mantine/dates";
 import dayjs from "dayjs";
 import { IAttachment } from "hexa-sdk";
-import { DocumentPriority, DocumentStatus } from "hexa-sdk/dist/app.api";
 import _ from "lodash";
 
 import PdfViewerComponent from "../components/PdfViewerComponent";
@@ -101,60 +96,6 @@ const DocumentUpdateModal = ({ onClose, opened, document }: DocumentUpdateModalP
           })}
         >
           <Stack>
-            <TextInput
-              value={newForm?.title}
-              onChange={(e) => setNewForm({ ...newForm, title: e.target.value })}
-              label="Title"
-              withAsterisk
-            />
-            <Textarea
-              label="Description"
-              withAsterisk
-              value={newForm?.description}
-              onChange={(e) => setNewForm({ ...newForm, description: e.target.value })}
-            />
-            <DatePicker
-              label="Start Date"
-              value={new Date(newForm?.startDate || "")}
-              onChange={(e) => {
-                if (!e) return;
-                setNewForm({ ...newForm, startDate: e });
-              }}
-            />
-            <DatePicker
-              label="Due Date"
-              withAsterisk
-              value={new Date(newForm?.dueDate || "")}
-              onChange={(e) => {
-                if (!e) return;
-                setNewForm({ ...newForm, dueDate: e });
-              }}
-            />
-            <Select
-              label="Priority"
-              placeholder="Pick one"
-              withAsterisk
-              data={[
-                { value: DocumentPriority.Low, label: "Low" },
-                { value: DocumentPriority.High, label: "High" },
-                { value: DocumentPriority.Urgent, label: "Urgent" },
-              ]}
-              value={newForm?.priority}
-              onChange={(e: DocumentPriority) => setNewForm({ ...newForm, priority: e })}
-            />
-            <Select
-              label="Status"
-              placeholder="Pick one"
-              withAsterisk
-              data={[
-                { value: DocumentStatus.Todo, label: "Todo" },
-                { value: DocumentStatus.InProgresss, label: "In Progress" },
-                { value: DocumentStatus.Complete, label: "Complete" },
-              ]}
-              value={newForm?.status}
-              onChange={(e: DocumentStatus) => setNewForm({ ...newForm, status: e })}
-            />
-
             {selectedDocument &&
               Object.entries(selectedDocument).map(([k], i) => {
                 const inputIndex = selectedDocument.template.fields.findIndex((f) => f.key === k);

@@ -76,9 +76,7 @@ export default function PdfViewerComponent({
 
       setLoadingAnnotations(true);
 
-      const res = await axiosPrivate.get(
-        `/documents/${selectedDocument.id}/annotations/${attachment.id}`,
-      );
+      const res = await axiosPrivate.get(`/annotations/${attachment.id}`);
 
       setLoadingAnnotations(false);
 
@@ -119,8 +117,8 @@ export default function PdfViewerComponent({
                 const annots = await instance?.exportInstantJSON();
 
                 const res = await axiosPrivate.put(
-                  `/documents/${selectedDocument.id}/annotations/${attachment.id}`,
-                  { annotation: annots?.annotations },
+                  `/annotations/${attachment.id}`,
+                  annots?.annotations,
                 );
                 showNotification({
                   message: "Annotation changes have been saved",

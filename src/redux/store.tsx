@@ -40,7 +40,7 @@ const reducers = combineReducers({
   menus: menuReducer,
   sheets: sheetsReducer,
   comments: commentsReducer,
-  business: businessReducer,
+  business: persistReducer({ key: "business", storage, blacklist: [] }, businessReducer),
 });
 
 const persistedReducer = persistReducer(

@@ -32,7 +32,7 @@ const useChangeBoard = () => {
     setLoadingText(t("gatheringResources"));
 
     try {
-      const res = await axiosPrivate.get<IBoardResourceResponse>(`/resources/boards/${board.id}`);
+      const res = await axiosPrivate.get<IBoardResourceResponse>(`/boards/${board.id}/resources`);
       const { data } = res;
       const { documents, templates, groups, sheets } = data;
 

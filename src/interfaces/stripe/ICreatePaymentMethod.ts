@@ -1,7 +1,7 @@
 interface ICreatePaymentMethod {
   number: string;
-  exp_month: number;
-  exp_year: number;
+  expiryMonth: number;
+  expiryYear: number;
   cvc: string;
 }
 
