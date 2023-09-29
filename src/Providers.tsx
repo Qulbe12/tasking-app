@@ -45,7 +45,7 @@ const Providers = () => {
       theme={{ colorScheme: mode, ...theme }}
     >
       <NavigationProgress size={8} autoReset />
-      {isConnected ? "Connected" : "Not Connected"}
+      {isConnected}
       <Version connected />
       <NotificationsProvider>
         <ModalsProvider>

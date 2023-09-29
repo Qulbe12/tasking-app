@@ -202,6 +202,9 @@ const en = {
     inviteUserTo: "Invite User to",
     userEmail: "User Email",
     invite: "Invite",
+    businessProfile: "Business Profile",
+    updateBusinessProfile: "Update Business Profile",
+    jobTitle: "Job Title",
   },
 };
 

@@ -61,6 +61,13 @@ const SettingsLayout = () => {
                   onLinkClick("manage-seats");
                 }}
               />
+              <NavLink
+                active={location.pathname === "/account/settings/business-profile"}
+                label={t("businessProfile")}
+                onClick={() => {
+                  onLinkClick("business-profile");
+                }}
+              />
             </NavLink>
           )}
         </Grid.Col>

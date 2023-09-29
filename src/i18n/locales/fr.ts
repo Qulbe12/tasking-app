@@ -203,6 +203,9 @@ const fr = {
     inviteUserTo: "Inviter l'utilisateur à",
     userEmail: "Courriel de l'utilisateur",
     invite: "Inviter",
+    businessProfile: "Profil d'entreprise",
+    updateBusinessProfile: "Mettre à jour le profil de l'entreprise",
+    jobTitle: "Titre d'emploi",
   },
 };
 
