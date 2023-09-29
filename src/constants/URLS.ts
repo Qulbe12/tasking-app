@@ -1,10 +1,7 @@
-// export const BASE_URL = "https://api.hexadesk.ca/api";
-// export const SOCKET_URL = "https://api.hexadesk.ca";
+const API_URL = "https://api.hexadesk.ca";
 
-export const BASE_URL =
-  "http://hexa-be-refactored-env.eba-hy3mqtku.us-east-1.elasticbeanstalk.com/api";
-export const SOCKET_URL =
-  "http://hexa-be-refactored-env.eba-hy3mqtku.us-east-1.elasticbeanstalk.com";
+export const BASE_URL = `${API_URL}/api`;
+export const SOCKET_URL = API_URL;
 
 export const SHEETS_URL =
   "http://hexasheetprocessorserver-dev.eba-bfpbzp3a.us-east-1.elasticbeanstalk.com/";

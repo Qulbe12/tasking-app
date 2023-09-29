@@ -1,4 +1,4 @@
-import { Center, Flex, Text } from "@mantine/core";
+import { Center, Stack, Text } from "@mantine/core";
 import { IconFolder } from "@tabler/icons";
 import React from "react";
 
@@ -9,10 +9,10 @@ type EmptyProps = {
 const Empty: React.FC<EmptyProps> = ({ label }) => {
   return (
     <Center>
-      <Flex direction="column">
-        <IconFolder size="xl" />
+      <Stack>
+        <IconFolder size="xs" />
         <Text>{label}</Text>
-      </Flex>
+      </Stack>
     </Center>
   );
 };

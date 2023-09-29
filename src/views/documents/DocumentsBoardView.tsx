@@ -1,5 +1,6 @@
 import {
   ActionIcon,
+  Anchor,
   Button,
   Card,
   Divider,
@@ -64,6 +65,8 @@ import { IDocumentResponse } from "../../interfaces/documents/IDocumentResponse"
 import ThreadCard from "../../components/ThreadCard";
 import MessageDetails from "../../components/MessageDetails";
 import { useLocation } from "react-router-dom";
+import DynamicField from "../../components/DynamicField";
+import { IField } from "../../interfaces/documents/IField";
 
 const DocumentsBoardView = () => {
   const { t } = useTranslation();
@@ -71,11 +74,7 @@ const DocumentsBoardView = () => {
   const { state } = useLocation();
   const { getChangeLog, gettingChangeLog, changeLog } = useChangeLog();
 
-  const {
-    data: documents,
-    loaders: documentLoaders,
-    loading: documentsLoading,
-  } = useAppSelector((state) => state.documents);
+  const { data: documents, loaders: documentLoaders } = useAppSelector((state) => state.documents);
   const { data: templates } = useAppSelector((state) => state.templates);
   const { search } = useAppSelector((state) => state.filters);
   const { activeBoard } = useAppSelector((state) => state.boards);
@@ -84,7 +83,7 @@ const DocumentsBoardView = () => {
   const [aUsers, setAUsers] = useState<{ value: string; label: string }[]>([]);
   const [userType, setUserType] = useState<"ccUsers" | "assignedUsers">("assignedUsers");
   const [filter, setFilter] = useState<string[]>([]);
-  const [statusFilter, setStatusFilter] = useState<string[]>([]);
+
   const [selectedDocument, setSelectedDocument] = useState<IDocumentResponse | null>(null);
   const [selectedAttachment, setSelectedAttachment] = useState<IAttachment | null>(null);
   const [selectedDocumentToLink, setSelectedDocumentToLink] = useState<string[]>([]);
@@ -171,6 +170,21 @@ const DocumentsBoardView = () => {
       setSelectedDocument(document);
     }
   }, [state]);
+  const allFields = useMemo<IField[]>(() => {
+    const seenKeys = new Set<string>();
+    const uniqueFields: IField[] = [];
+
+    documents
+      .flatMap((d) => d.template.fields)
+      .forEach((field) => {
+        if (!seenKeys.has(field.key) && field.key !== "title" && field.key !== "description") {
+          seenKeys.add(field.key);
+          uniqueFields.push(field);
+        }
+      });
+
+    return uniqueFields;
+  }, [documents]);
 
   const filteredData: IDocumentResponse[] = useMemo<IDocumentResponse[]>(() => {
     const lowerSearch = search.toLocaleLowerCase();
@@ -188,14 +202,8 @@ const DocumentsBoardView = () => {
       });
     }
 
-    if (statusFilter.length) {
-      emailsToFilter = emailsToFilter.filter((d) => {
-        return statusFilter.includes(d.status);
-      });
-    }
-
     return emailsToFilter;
-  }, [filter, documents, search, statusFilter]);
+  }, [filter, documents, search]);
 
   const handleAddButtonClick = () => {
     toggle();
@@ -212,17 +220,29 @@ const DocumentsBoardView = () => {
     <Paper h="80vh">
       <div className="mb-2">
         <Filter options={templates.map((t) => t.name)} onChange={setFilter} />
-        <Filter options={["Complete", "In Progress", "Todo"]} onChange={setStatusFilter} />
       </div>
-
+      <Group>
+        {allFields.map((f) => {
+          return <DynamicField field={f} key={f.id} width={10} />;
+        })}
+      </Group>
       {!selectedDocument && (
-        <div className="flex justify-between items-center mb-4">
-          {documentsLoading ? <Loader size="xs" /> : <div />}
+        <Group position="right">
           <Button onClick={handleAddButtonClick}>
             <IconPlus size={16} />
             {t("newDocument")}
           </Button>
-        </div>
+        </Group>
+      )}
+
+      <Group></Group>
+      {documents.length < 0 && (
+        <Text>
+          You do not have any boards created, please{" "}
+          <Anchor component="button" onClick={handleAddButtonClick}>
+            Create a Document!
+          </Anchor>
+        </Text>
       )}
 
       <ScrollArea>

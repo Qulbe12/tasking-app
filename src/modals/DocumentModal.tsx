@@ -24,6 +24,7 @@ import { showError } from "../redux/commonSliceFunctions";
 import { IconX } from "@tabler/icons";
 import * as yup from "yup";
 import { useTranslation } from "react-i18next";
+import { isValidDate } from "../utils/isValidDate";
 
 const DocumentModal = ({ onClose, opened, title }: CommonModalProps) => {
   const { t } = useTranslation();
@@ -66,39 +67,35 @@ const DocumentModal = ({ onClose, opened, title }: CommonModalProps) => {
 
   const [attachments, setAttachments] = useState<FileWithPath[]>([]);
 
-  // const [commentFiles, setCommentFiles] = useState<FileWithPath[]>([]);
+  const handleSubmit = async (values: any) => {
+    if (!activeBoard?.id) return;
+
+    const formData = new FormData();
+    formData.append("templateId", data.find((t) => t.name === selectedTemplate)?.id || "");
+    attachments.forEach((a) => {
+      formData.append("files", a);
+    });
+
+    Object.keys(values).map((k) => {
+      let value = values[k];
+
+      if (isValidDate(value)) {
+        value = new Date(value).toISOString();
+      }
+      formData.append(k, value);
+    });
+
+    await dispatch(createDocument({ boardId: activeBoard.id, document: formData }));
+
+    form.reset();
+    setAttachments([]);
+    onClose();
+  };
 
   return (
     <Modal opened={opened} onClose={onClose} title={title}>
       <LoadingOverlay visible={!!loaders.adding} />
-      <form
-        onSubmit={form.onSubmit(async (values: any) => {
-          if (!activeBoard?.id) return;
-
-          const formData = new FormData();
-          formData.append("templateId", data.find((t) => t.name === selectedTemplate)?.id || "");
-          attachments.forEach((a) => {
-            formData.append("files", a);
-          });
-
-          Object.keys(values).map((k, i) => {
-            let value = values[k];
-
-            if (fields) {
-              if (fields[i].type === "Date") {
-                value = value.toISOString();
-              }
-            }
-            formData.append(k, value);
-          });
-
-          await dispatch(createDocument({ boardId: activeBoard.id, document: formData }));
-
-          form.reset();
-          setAttachments([]);
-          onClose();
-        })}
-      >
+      <form onSubmit={form.onSubmit(handleSubmit)}>
         <Stack>
           <Select
             value={selectedTemplate}

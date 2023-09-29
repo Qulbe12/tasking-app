@@ -1,19 +1,22 @@
 import {
+  Anchor,
   Box,
   Button,
   Center,
   Divider,
   Flex,
+  Group,
   Modal,
+  Paper,
   Progress,
   SimpleGrid,
   Text,
   Title,
   useMantineTheme,
 } from "@mantine/core";
-import { IconDeviceLaptop, IconPlus } from "@tabler/icons";
+import { IconDeviceLaptop, IconHammer, IconPlus } from "@tabler/icons";
 import { IWorkspace } from "hexa-sdk/dist/app.api";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import WorkspaceModal from "../../modals/WorkspaceModal";
 import { getAllWorkSpaces } from "../../redux/api/workspacesApi";
 import { useAppDispatch, useAppSelector } from "../../redux/store";
@@ -26,10 +29,12 @@ import { useDisclosure } from "@mantine/hooks";
 import { setActiveWorkspace } from "../../redux/slices/workspacesSlice";
 import { deleteBoard } from "../../redux/api/boardsApi";
 import { IEntityBoard } from "../../interfaces/IEntityBoard";
+import useDebouncedValue from "../../hooks/useDebounedValue";
 
 const WorkspacesList = () => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
+  const theme = useMantineTheme();
 
   const {
     handleBoardChange,
@@ -38,15 +43,29 @@ const WorkspacesList = () => {
   } = useChangeBoard();
 
   const { data: workspaces, loading } = useAppSelector((state) => state.workspaces);
+  const { search } = useAppSelector((state) => state.filters);
+
+  const searchTerm = useDebouncedValue(search, 500);
 
   const [selectedWorkspace, setSelectedWorkspace] = useState<IWorkspace | undefined>();
   const [modalOpen, setModalOpen] = useState(false);
 
-  const [showBoardModal, { toggle: toggleBoardModal }] = useDisclosure(false);
-
   const [selectedBoard, setSelectedBoard] = useState<IEntityBoard | undefined>();
   const [boardEditModalOpen, setBoardEditModalOpen] = useState(false);
-  const theme = useMantineTheme();
+
+  const [showBoardModal, { toggle: toggleBoardModal }] = useDisclosure(false);
+
+  const filteredWorkspaces = useMemo(() => {
+    if (!searchTerm) return workspaces;
+    return workspaces
+      .map((workspace) => ({
+        ...workspace,
+        boards: workspace.boards.filter((board) =>
+          board.title.toLowerCase().includes(searchTerm.toLowerCase()),
+        ),
+      }))
+      .filter((workspace) => workspace.boards.length > 0);
+  }, [searchTerm, workspaces]);
 
   useEffect(() => {
     dispatch(getAllWorkSpaces());
@@ -72,13 +91,29 @@ const WorkspacesList = () => {
           {t("createWorkspace")}
         </Button>
       </Box>
+      {searchTerm}
+      {workspaces.length <= 0 && !loading && (
+        <Text>
+          You do not have any workspaces created, please{" "}
+          <Anchor
+            component="button"
+            onClick={() => {
+              setModalOpen(true);
+            }}
+          >
+            Create a workspace!
+          </Anchor>
+        </Text>
+      )}
 
-      {workspaces?.map((workspace) => {
+      {filteredWorkspaces.map((workspace) => {
         if (!workspace.iAmOwner) return;
         return (
-          <Box key={workspace.id} w="100%">
+          <Paper key={workspace.id} w="100%" mb="md" shadow="md" p="md" withBorder>
             <Flex gap="md" align="center">
-              <Text size="xl">{workspace.name}</Text>
+              <Group>
+                <IconHammer /> <Text size="xl">{workspace.name}</Text>
+              </Group>
               <Button
                 onClick={() => {
                   dispatch(setActiveWorkspace(workspace));
@@ -123,7 +158,7 @@ const WorkspacesList = () => {
                 );
               })}
             </Flex>
-          </Box>
+          </Paper>
         );
       })}
 

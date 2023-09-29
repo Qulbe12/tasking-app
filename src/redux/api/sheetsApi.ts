@@ -141,11 +141,7 @@ export const updateSheetTags = createAsyncThunk(
 export const processSheet = createAsyncThunk(
   "sheets/processSheet",
   async (
-    {
-      file,
-      activeWorkspace,
-      activeBoard,
-    }: { file: FileWithPath[]; activeWorkspace: string; activeBoard: string },
+    { file }: { file: FileWithPath[]; activeWorkspace: string; activeBoard: string },
     { rejectWithValue, dispatch },
   ) => {
     try {

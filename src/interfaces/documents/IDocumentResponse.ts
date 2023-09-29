@@ -50,5 +50,6 @@ export interface IDocumentResponse extends Record<string, any> {
   template: ITemplate;
   linkedDocs: string[];
   createdBy: IUser;
+
   linkedEmailIds: string[];
 }

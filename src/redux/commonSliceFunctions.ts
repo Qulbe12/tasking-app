@@ -12,14 +12,14 @@ export interface PayloadError {
 export const showError = (err?: string) => {
   showNotification({
     title: t("error"),
-    message: err,
+    message: err ?? "",
     color: "red",
   });
 };
 
 export const centralizedErrorHandler = (error: unknown, rejectWithValue: any, dispatch: any) => {
-  const err = error as IErrorResponse;
-  const errMessage = err.response?.data.message;
+  const err = error as Partial<IErrorResponse>;
+  const errMessage = err.response?.data.message ?? "";
 
   if (err.response?.status === 401) {
     showError(t("unauthorized") ?? "");
@@ -27,13 +27,19 @@ export const centralizedErrorHandler = (error: unknown, rejectWithValue: any, di
     return rejectWithValue(errMessage);
   }
 
-  if (err.response) {
-    const errorMessage = err.response.data.message;
-    showError(errorMessage);
-  } else if (err.request) {
-    showError(t("noResponse") ?? "");
-  } else {
-    showError(err.message);
+  const errors: string[] = [];
+
+  if (err.response?.data.errors) {
+    for (const k in err.response.data.errors) {
+      errors.push(err.response.data.errors[k] ?? "");
+    }
   }
+
+  if (errors.length === 0) {
+    showError(errMessage);
+  } else {
+    errors.forEach(showError);
+  }
+
   return rejectWithValue(errMessage);
 };
