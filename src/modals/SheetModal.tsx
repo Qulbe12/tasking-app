@@ -159,6 +159,8 @@ const SheetModal = ({ onClose, opened, title }: CommonModalProps) => {
                       showError(
                         "Something went wrong while uploading the sheet, please try again.",
                       );
+                    } finally {
+                      completeNavigationProgress();
                     }
                   }}
                 />
@@ -172,7 +174,7 @@ const SheetModal = ({ onClose, opened, title }: CommonModalProps) => {
                         <Group position="apart">
                           <Group>
                             <Image height={150} width={150} src={s.thumbnail.url} />
-                            <Image maw={240} src={s.codeMeta.url} />
+                            <Image maw={240} src={s.meta.url} />
                             <Stack>
                               <TextInput
                                 label={t("sheetCode")}

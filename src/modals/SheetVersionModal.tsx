@@ -190,7 +190,7 @@ const SheetVersionModal = ({
                         <Group position="apart">
                           <Group>
                             <Image maw={240} src={s.thumbnail.url} />
-                            <Image maw={240} src={s.codeMeta.url} />
+                            <Image maw={240} src={s.meta.url} />
                             <Stack>
                               <TextInput
                                 label={t("sheetCode")}

@@ -1,15 +1,13 @@
 export interface ISheetProcessResponse {
+  title: string;
   code: string;
   tags: string[];
-  codeMeta: {
+
+  meta: {
     key: string;
     url: string;
   };
-  pageMeta: {
-    key: string;
-    url: string;
-  };
-  pdfFile: {
+  file: {
     key: string;
     url: string;
   };
