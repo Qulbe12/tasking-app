@@ -5,6 +5,9 @@ import { ISheetResponse } from "../../interfaces/sheets/ISheetResponse";
 import { ISheetCreate } from "../../interfaces/sheets/ISheetCreate";
 import ISheetCreateVersion from "../../interfaces/sheets/ISheetCreateVersion";
 import { ISheetUpdate } from "../../interfaces/sheets/ISheetUpdate";
+import { axiosSheets } from "../../config/axiosSheets";
+import { ISheetProcessResponse } from "../../interfaces/sheets/ISheetProcessResponse";
+import { FileWithPath } from "@mantine/dropzone";
 
 export const createSheet = createAsyncThunk(
   "sheets/createSheet",
@@ -135,4 +138,23 @@ export const updateSheetTags = createAsyncThunk(
   },
 );
 
-// /sheets/{id}/records/{code}/tags/version/{version}
+export const processSheet = createAsyncThunk(
+  "sheets/processSheet",
+  async (
+    {
+      file,
+      activeWorkspace,
+      activeBoard,
+    }: { file: FileWithPath[]; activeWorkspace: string; activeBoard: string },
+    { rejectWithValue, dispatch },
+  ) => {
+    try {
+      const formData = new FormData();
+      formData.append("file", file[0]);
+      const res = await axiosSheets.post<ISheetProcessResponse[]>("", formData);
+      return res.data;
+    } catch (err) {
+      return centralizedErrorHandler(err, rejectWithValue, dispatch);
+    }
+  },
+);
