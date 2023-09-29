@@ -65,8 +65,6 @@ import { IDocumentResponse } from "../../interfaces/documents/IDocumentResponse"
 import ThreadCard from "../../components/ThreadCard";
 import MessageDetails from "../../components/MessageDetails";
 import { useLocation } from "react-router-dom";
-import DynamicField from "../../components/DynamicField";
-import { IField } from "../../interfaces/documents/IField";
 
 const DocumentsBoardView = () => {
   const { t } = useTranslation();
@@ -170,21 +168,6 @@ const DocumentsBoardView = () => {
       setSelectedDocument(document);
     }
   }, [state]);
-  const allFields = useMemo<IField[]>(() => {
-    const seenKeys = new Set<string>();
-    const uniqueFields: IField[] = [];
-
-    documents
-      .flatMap((d) => d.template.fields)
-      .forEach((field) => {
-        if (!seenKeys.has(field.key) && field.key !== "title" && field.key !== "description") {
-          seenKeys.add(field.key);
-          uniqueFields.push(field);
-        }
-      });
-
-    return uniqueFields;
-  }, [documents]);
 
   const filteredData: IDocumentResponse[] = useMemo<IDocumentResponse[]>(() => {
     const lowerSearch = search.toLocaleLowerCase();
@@ -221,11 +204,7 @@ const DocumentsBoardView = () => {
       <div className="mb-2">
         <Filter options={templates.map((t) => t.name)} onChange={setFilter} />
       </div>
-      <Group>
-        {allFields.map((f) => {
-          return <DynamicField field={f} key={f.id} width={10} />;
-        })}
-      </Group>
+
       {!selectedDocument && (
         <Group position="right">
           <Button onClick={handleAddButtonClick}>
