@@ -1,6 +1,9 @@
 import { showNotification } from "@mantine/notifications";
 import { IErrorResponse } from "../interfaces/IErrorResponse";
 import { logout } from "./slices/authSlice";
+import i18n from "../i18n/i18n";
+
+const { t } = i18n;
 
 export interface PayloadError {
   error: Error;
@@ -8,29 +11,35 @@ export interface PayloadError {
 
 export const showError = (err?: string) => {
   showNotification({
-    title: "Error",
-    message: err,
+    title: t("error"),
+    message: err ?? "",
     color: "red",
   });
 };
 
 export const centralizedErrorHandler = (error: unknown, rejectWithValue: any, dispatch: any) => {
-  const err = error as IErrorResponse;
-  const errMessage = err.response?.data.message;
+  const err = error as Partial<IErrorResponse>;
+  const errMessage = err.response?.data.message ?? "";
 
   if (err.response?.status === 401) {
-    showError("You are not authorized to perform this action. Please login again.");
+    showError(t("unauthorized") ?? "");
     dispatch(logout());
     return rejectWithValue(errMessage);
   }
 
-  if (err.response) {
-    const errorMessage = err.response.data.message;
-    showError(errorMessage);
-  } else if (err.request) {
-    showError("No response received from server. Please try again later.");
-  } else {
-    showError(err.message);
+  const errors: string[] = [];
+
+  if (err.response?.data.errors) {
+    for (const k in err.response.data.errors) {
+      errors.push(err.response.data.errors[k] ?? "");
+    }
   }
+
+  if (errors.length === 0) {
+    showError(errMessage);
+  } else {
+    errors.forEach(showError);
+  }
+
   return rejectWithValue(errMessage);
 };

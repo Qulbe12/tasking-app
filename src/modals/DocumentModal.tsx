@@ -9,25 +9,22 @@ import {
   Select,
   Stack,
   Text,
-  Textarea,
-  TextInput,
 } from "@mantine/core";
 import { useForm, yupResolver } from "@mantine/form";
-import { DocumentPriority, DocumentStatus, FieldType, IField } from "hexa-sdk/dist/app.api";
+import { FieldType, IField } from "hexa-sdk/dist/app.api";
 import { useMemo, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../redux/store";
 import CommonModalProps from "./CommonModalProps";
 import DynamicField from "../components/DynamicField";
 import CustomDropzone from "../components/CustomDropzone";
 import { createDocument } from "../redux/api/documentApi";
-import { DatePicker } from "@mantine/dates";
 import TemplateModal from "./TemplateModal";
 import { FileWithPath } from "@mantine/dropzone";
 import { showError } from "../redux/commonSliceFunctions";
 import { IconX } from "@tabler/icons";
 import * as yup from "yup";
-import { defaultDocumentFields } from "../constants/defaultDocumentFields";
 import { useTranslation } from "react-i18next";
+import { isValidDate } from "../utils/isValidDate";
 
 const DocumentModal = ({ onClose, opened, title }: CommonModalProps) => {
   const { t } = useTranslation();
@@ -65,55 +62,40 @@ const DocumentModal = ({ onClose, opened, title }: CommonModalProps) => {
   }, [fields]);
 
   const form = useForm({
-    initialValues: {
-      title: "",
-      description: "",
-      startDate: new Date(),
-      dueDate: new Date(),
-      priority: DocumentPriority.Low,
-      status: DocumentStatus.Todo,
-    },
     validate: yupResolver(formSchema),
   });
 
   const [attachments, setAttachments] = useState<FileWithPath[]>([]);
 
-  // const [commentFiles, setCommentFiles] = useState<FileWithPath[]>([]);
+  const handleSubmit = async (values: any) => {
+    if (!activeBoard?.id) return;
+
+    const formData = new FormData();
+    formData.append("templateId", data.find((t) => t.name === selectedTemplate)?.id || "");
+    attachments.forEach((a) => {
+      formData.append("files", a);
+    });
+
+    Object.keys(values).map((k) => {
+      let value = values[k];
+
+      if (isValidDate(value)) {
+        value = new Date(value).toISOString();
+      }
+      formData.append(k, value);
+    });
+
+    await dispatch(createDocument({ boardId: activeBoard.id, document: formData }));
+
+    form.reset();
+    setAttachments([]);
+    onClose();
+  };
 
   return (
     <Modal opened={opened} onClose={onClose} title={title}>
       <LoadingOverlay visible={!!loaders.adding} />
-      <form
-        onSubmit={form.onSubmit(async (values: any) => {
-          if (!activeBoard?.id) return;
-
-          const { title, description, startDate, dueDate, priority, status } = form.values;
-
-          const formData = new FormData();
-          formData.append("title", title);
-          formData.append("description", description);
-          formData.append("startDate", startDate.toISOString());
-          formData.append("dueDate", dueDate.toISOString());
-          formData.append("priority", priority);
-          formData.append("status", status);
-          formData.append("templateId", data.find((t) => t.name === selectedTemplate)?.id || "");
-          attachments.forEach((a) => {
-            formData.append("files", a);
-          });
-
-          Object.keys(values).map((k) => {
-            if (!defaultDocumentFields.includes(k)) {
-              formData.append(k, values[k]);
-            }
-          });
-
-          await dispatch(createDocument({ boardId: activeBoard.id, document: formData }));
-
-          form.reset();
-          setAttachments([]);
-          onClose();
-        })}
-      >
+      <form onSubmit={form.onSubmit(handleSubmit)}>
         <Stack>
           <Select
             value={selectedTemplate}
@@ -123,8 +105,8 @@ const DocumentModal = ({ onClose, opened, title }: CommonModalProps) => {
             disabled={!!loading || data.length <= 0}
             onChange={(e) => {
               setSelectedTemplate(e);
-              const foundFrields = data.find((d) => d.name === e)?.fields;
-              setFields(foundFrields);
+              const foundFields = data.find((d) => d.name === e)?.fields;
+              setFields(foundFields);
             }}
             data={data.map((d) => {
               return { value: d.name, label: d.name };
@@ -146,46 +128,6 @@ const DocumentModal = ({ onClose, opened, title }: CommonModalProps) => {
                 create a template
               </Text>
             </Flex>
-          )}
-
-          {selectedTemplate && (
-            <Stack>
-              <TextInput label={t("title")} withAsterisk {...form.getInputProps("title")} />
-              <Textarea
-                label={t("description")}
-                withAsterisk
-                {...form.getInputProps("description")}
-              />
-              <DatePicker
-                aria-errormessage="Invalid Start Date"
-                label={t("startDate")}
-                withAsterisk
-                {...form.getInputProps("startDate")}
-              />
-              <DatePicker label={t("dueDate")} withAsterisk {...form.getInputProps("dueDate")} />
-              <Select
-                {...form.getInputProps("priority")}
-                label={t("priority")}
-                placeholder="Pick one"
-                withAsterisk
-                data={[
-                  { value: DocumentPriority.Low, label: "Low" },
-                  { value: DocumentPriority.High, label: "High" },
-                  { value: DocumentPriority.Urgent, label: "Urgent" },
-                ]}
-              />
-              <Select
-                {...form.getInputProps("status")}
-                label={t("status")}
-                placeholder="Pick one"
-                withAsterisk
-                data={[
-                  { value: DocumentStatus.Todo, label: "Todo" },
-                  { value: DocumentStatus.InProgresss, label: "In Progress" },
-                  { value: DocumentStatus.Complete, label: "Complete" },
-                ]}
-              />
-            </Stack>
           )}
 
           {fields?.map((f) => {

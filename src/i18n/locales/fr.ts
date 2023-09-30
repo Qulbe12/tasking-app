@@ -1,5 +1,10 @@
 const fr = {
   translations: {
+    // Errors
+    error: "Erreur",
+    unauthorized: "Vous n'êtes pas autorisé à effectuer cette action. Veuillez vous reconnecter.",
+    noResponse: "Aucune réponse reçue du serveur. Veuillez réessayer plus tard.",
+
     // Header
     lightMode: "Mode lumière",
     darkMode: "Mode sombre",
@@ -24,7 +29,10 @@ const fr = {
     confirmPassword: "Confirmez le mot de passe",
     name: "Nom",
     rememberMe: "Souviens-toi de moi",
-    confirmTermsAndConditions: "J'accepte les termes et conditions",
+    "I have read and accept": "J'ai lu et j'accepte les",
+    "terms and conditions": "conditions générales",
+    and: "et la",
+    "privacy policy": "politique de confidentialité",
     continueWithGoogle: "Ou continuez avec Google",
     forgotPassword: "Mot de passe oublié",
     "Don't have an account? Register": "Vous n'avez pas de compte ? Enregistrer",
@@ -33,6 +41,21 @@ const fr = {
       "Saisissez l'adresse e-mail associée à votre compte",
     resetPassword: "Réinitialiser le mot de passe",
     "Remembered your details? Sign In": "Vous vous souvenez de vos coordonnées ? S'identifier",
+    loginType: "Type de connexion",
+    root: "Racine",
+    business: "Entreprise",
+    emailRequired: "L'e-mail est requis",
+    invalidEmail: "Email invalide",
+    passwordLength: "Le mot de passe doit contenir au moins 8 caractères",
+    businessRequired: "Le code d'entreprise est requis",
+    businessLength: "Le code d'entreprise doit comporter au moins 4 caractères",
+    yourPassword: "Votre mot de passe",
+    businessNameRequired: "Le nom de l'entreprise est requis",
+    nameRequired: "Le nom est requis",
+    passwordRequired: "Mot de passe requis",
+    matchPassword: "Les mots de passe doivent correspondre",
+    businessName: "Nom de l'entreprise",
+    acceptTerms: "Veuillez accepter les termes et conditions pour continuer",
 
     // Workspaces Page
     workspace: "Espace de travail",
@@ -54,6 +77,8 @@ const fr = {
     boardName: "Nom du conseil",
     boardDescription: "Description du conseil",
     templates: "Modèles",
+    commentPlaceholder: "Commentaire...",
+    commentRequired: "Le commentaire ne peut pas être vide",
 
     // Documents Page
     documents: "Documents",
@@ -110,6 +135,7 @@ const fr = {
     createVersion: "Créer une version",
     versionTitle: "Titre de la version",
     versionDate: "Date de version",
+    sheetInfo: "Informations sur la feuille",
 
     // Analytics Page
     export: "Exporter",
@@ -177,6 +203,9 @@ const fr = {
     inviteUserTo: "Inviter l'utilisateur à",
     userEmail: "Courriel de l'utilisateur",
     invite: "Inviter",
+    businessProfile: "Profil d'entreprise",
+    updateBusinessProfile: "Mettre à jour le profil de l'entreprise",
+    jobTitle: "Titre d'emploi",
   },
 };
 

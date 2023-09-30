@@ -1,12 +1,12 @@
 import { useAppSelector } from "../../redux/store";
-import { Button, Group, Paper, SimpleGrid } from "@mantine/core";
+import { Button, Flex, Group, Paper, useMantineTheme } from "@mantine/core";
 import { IconPlus } from "@tabler/icons";
-import SheetModal from "../../modals/SheetModal";
 import { useDisclosure } from "@mantine/hooks";
 import { pdfjs } from "react-pdf";
 import SheetCard from "../../components/SheetCard";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import SheetProcessModal from "../../modals/SheetProcessModal";
 
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
   "pdfjs-dist/build/pdf.worker.min.js",
@@ -19,6 +19,7 @@ const SheetsPage = () => {
   const { data: sheets } = useAppSelector((state) => state.sheets);
 
   const [showSheetModal, { toggle: toggleSheetModal }] = useDisclosure(false);
+  const theme = useMantineTheme();
 
   const handleAddButtonClick = () => {
     toggleSheetModal();
@@ -32,21 +33,30 @@ const SheetsPage = () => {
           {t("addSheet")}
         </Button>
       </Group>
-      <SimpleGrid cols={4}>
+      <Flex wrap="wrap" gap={6}>
         {sheets.map((s) => {
           return (
-            <SheetCard
-              key={s.id}
-              sheet={s}
-              onClick={() => {
-                navigate(`/board/sheets/${s.id}`);
+            <Flex
+              sx={{
+                [theme.fn.smallerThan("sm")]: {
+                  width: "100%",
+                },
               }}
-            />
+              w="20%"
+              key={s.id}
+            >
+              <SheetCard
+                sheet={s}
+                onClick={() => {
+                  navigate(`/board/sheets/${s.id}`);
+                }}
+              />
+            </Flex>
           );
         })}
-      </SimpleGrid>
+      </Flex>
 
-      <SheetModal onClose={toggleSheetModal} opened={showSheetModal} title={t("createNewSheet")} />
+      <SheetProcessModal onClose={toggleSheetModal} opened={showSheetModal} />
     </Paper>
   );
 };

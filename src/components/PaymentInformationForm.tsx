@@ -27,8 +27,8 @@ const PaymentInformationForm = ({ onCancelClick, afterComplete }: PaymentInforma
   const handleFormSubmit = async () => {
     const preppedForm: ICreatePaymentMethod = {
       cvc: form.cvc,
-      exp_month: parseInt(form.expDate.split("/")[0]),
-      exp_year: parseInt(form.expDate.split("/")[1]),
+      expiryMonth: parseInt(form.expDate.split("/")[0]),
+      expiryYear: parseInt(form.expDate.split("/")[1]),
       number: form.number.replace(/[^0-9]+/gi, ""),
     };
 

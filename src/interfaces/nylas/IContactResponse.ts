@@ -54,3 +54,9 @@ export interface IContactResponse {
   groups: IGroup[];
   source: string;
 }
+
+export interface IContactRemapped {
+  id: string;
+  email: string;
+  name: string;
+}

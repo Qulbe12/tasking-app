@@ -11,7 +11,14 @@ import {
   Button,
   SimpleGrid,
 } from "@mantine/core";
-import { IconCornerUpLeft, IconCornerUpRight, IconLink, IconSend, IconTrash } from "@tabler/icons";
+import {
+  IconCornerUpLeft,
+  IconCornerUpLeftDouble,
+  IconCornerUpRight,
+  IconLink,
+  IconSend,
+  IconTrash,
+} from "@tabler/icons";
 import { useAppDispatch, useAppSelector } from "../redux/store";
 import CustomTextEditor from "./CustomTextEditor";
 import { sendMessage } from "../redux/api/nylasApi";
@@ -23,11 +30,12 @@ import { showError } from "../redux/commonSliceFunctions";
 import { IErrorResponse } from "../interfaces/IErrorResponse";
 import { getDocuments } from "../redux/api/documentApi";
 import { IDocumentResponse } from "../interfaces/documents/IDocumentResponse";
+import { ISendMessage } from "../interfaces/nylas/ISendMessage";
 
 type MessageDetailsProps = {
   selectedThreadId: string | null;
   onForwardClick: (e: IMessageResponse) => void;
-  selectedMessage?: IMessageResponse;
+  selectedMessage?: IMessageResponse | null;
   onDocumentCardClick?: (d: IDocumentResponse) => void;
 };
 
@@ -37,48 +45,62 @@ const MessageDetails = ({
   onDocumentCardClick,
 }: MessageDetailsProps) => {
   const dispatch = useAppDispatch();
-  const { loaders, messages } = useAppSelector((state) => state.nylas);
+  const { loaders, messages, threads, nylasToken } = useAppSelector((state) => state.nylas);
   const { data: documents } = useAppSelector((state) => state.documents);
   const { activeBoard } = useAppSelector((state) => state.boards);
 
   const [selectedMessageIds, setSelectedMessageIds] = useState<string[]>([]);
   const [emailContent, setEmailContent] = useState("");
+  const [replyType, setReplyType] = useState<"all" | "solo">("solo");
 
   const [selectedDocuments, setSelectedDocuments] = useState<string[]>([]);
 
   useEffect(() => {
     setEmailContent("");
+
+    const replyElement = document.getElementById("reply-container");
+    replyElement?.scrollIntoView({ behavior: "smooth" });
   }, [selectedMessageIds]);
 
   const handleReply = useCallback(async () => {
     if (selectedMessageIds.length <= 0) return;
 
+    const to: ISendMessage["to"] = [
+      {
+        name: messages.find((m) => m.id === selectedMessageIds[0])?.from[0].name || "",
+        email: messages.find((m) => m.id === selectedMessageIds[0])?.from[0].email || "",
+      },
+    ];
+
+    let cc: ISendMessage["to"] | undefined = [];
+
+    if (replyType === "all") {
+      const foundThread = threads.find((t) => t.id === selectedThreadId);
+      if (!foundThread) return;
+      foundThread.participants.forEach((p) => {
+        if (p.email === nylasToken?.email_address) return;
+        cc?.push(p);
+      });
+    } else {
+      cc = undefined;
+    }
+
     await dispatch(
       sendMessage({
         reply_to_message_id: selectedMessageIds[0],
         body: emailContent,
-        to: [
-          {
-            name: messages.find((m) => m.id === selectedMessageIds[0])?.from[0].name || "",
-            email: messages.find((m) => m.id === selectedMessageIds[0])?.from[0].email || "",
-          },
-        ],
-        reply_to: [
-          {
-            name: messages.find((m) => m.id === selectedMessageIds[0])?.from[0].name || "",
-            email: messages.find((m) => m.id === selectedMessageIds[0])?.from[0].email || "",
-          },
-        ],
+        to: to,
+        reply_to: to,
+        cc: cc,
       }),
     );
 
     setEmailContent("");
     setSelectedMessageIds([]);
-  }, [selectedMessageIds, emailContent]);
+  }, [selectedMessageIds, emailContent, replyType]);
 
   const linkedDocuments = useMemo(() => {
     if (!selectedThreadId) return [];
-
     return documents.filter((d) => d.linkedEmailIds.includes(selectedThreadId));
   }, [messages, selectedThreadId]);
 
@@ -103,13 +125,7 @@ const MessageDetails = ({
             !loaders.gettingMessages &&
             messages.map((m) => {
               return (
-                <Card
-                  withBorder
-                  key={m.id}
-                  onClick={() => {
-                    console.log(m);
-                  }}
-                >
+                <Card withBorder key={m.id}>
                   <Group position="apart">
                     <Text size="lg">
                       {m.from[0].name} {`<${m.from[0].email}>`}
@@ -120,9 +136,25 @@ const MessageDetails = ({
                         <ActionIcon
                           color="indigo"
                           size="sm"
-                          onClick={() => setSelectedMessageIds([m.id])}
+                          onClick={() => {
+                            setReplyType("solo");
+                            setSelectedMessageIds([m.id]);
+                          }}
                         >
                           <IconCornerUpLeft />
+                        </ActionIcon>
+                      </Tooltip>
+
+                      <Tooltip label="Reply All">
+                        <ActionIcon
+                          color="indigo"
+                          size="sm"
+                          onClick={() => {
+                            setReplyType("all");
+                            setSelectedMessageIds([m.id]);
+                          }}
+                        >
+                          <IconCornerUpLeftDouble />
                         </ActionIcon>
                       </Tooltip>
 
@@ -136,10 +168,16 @@ const MessageDetails = ({
                   <Text size="sm" opacity={0.7} mb="md">
                     To: {m.to[0].name} {`<${m.to[0].email}>`}
                   </Text>
-                  <div dangerouslySetInnerHTML={{ __html: m.body }} className="" style={{}}></div>
+                  <iframe
+                    srcDoc={m.body}
+                    width="100%"
+                    height="500px"
+                    title={`email-${m.id}`}
+                    style={{ borderRadius: "5px" }}
+                  ></iframe>
 
                   {selectedMessageIds.length === 1 && selectedMessageIds.includes(m.id) && (
-                    <Stack my="md">
+                    <Stack my="md" id="reply-container">
                       <CustomTextEditor content={emailContent} onUpdate={setEmailContent} />
                       <Group position="right">
                         <Button
@@ -220,7 +258,9 @@ const MessageDetails = ({
             setSelectedDocuments([]);
             setLinking(false);
             if (activeBoard) {
-              dispatch(getDocuments({ boardId: activeBoard.id, query: {} }));
+              dispatch(
+                getDocuments({ boardId: activeBoard.id, query: { emailId: selectedThreadId } }),
+              );
             }
           } catch (err) {
             const error = err as IErrorResponse;

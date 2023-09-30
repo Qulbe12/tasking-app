@@ -1,7 +1,7 @@
+import React from "react";
 import { Checkbox, MultiSelect, NumberInput, Radio, Select, TextInput } from "@mantine/core";
 import { FieldType, IField } from "hexa-sdk/dist/app.api";
 import { DatePicker } from "@mantine/dates";
-import React from "react";
 import { UseFormReturnType } from "@mantine/form";
 
 type DynamicFieldProps = {
@@ -9,9 +9,10 @@ type DynamicFieldProps = {
   form?: UseFormReturnType<any>;
   value?: string;
   onChange?: (e: string | boolean | Date | string[]) => void;
+  width?: number;
 };
 
-const DynamicField = ({ field, form, value, onChange }: DynamicFieldProps) => {
+const DynamicField: React.FC<DynamicFieldProps> = ({ field, form, value, onChange, width }) => {
   switch (field.type) {
     case FieldType.Text:
       return (
@@ -19,6 +20,7 @@ const DynamicField = ({ field, form, value, onChange }: DynamicFieldProps) => {
           withAsterisk={field.required}
           label={field.label}
           value={value}
+          w={width ? `${width}%` : "100%"}
           onChange={(e) => onChange && onChange(e.target.value)}
           {...form?.getInputProps(field.key)}
         />
@@ -28,6 +30,7 @@ const DynamicField = ({ field, form, value, onChange }: DynamicFieldProps) => {
         <NumberInput
           withAsterisk={field.required}
           label={field.label}
+          w={width ? `${width}%` : "100%"}
           value={parseInt(value || "0")}
           onChange={(e) => onChange && onChange(`${e}`)}
           {...form?.getInputProps(field.key)}
@@ -38,6 +41,7 @@ const DynamicField = ({ field, form, value, onChange }: DynamicFieldProps) => {
         <Checkbox
           label={field.label}
           value={value}
+          w={width ? `${width}%` : "100%"}
           checked={value}
           onChange={(e) => onChange && onChange(e.target.checked)}
           {...form?.getInputProps(field.key, { type: "checkbox" })}
@@ -48,6 +52,7 @@ const DynamicField = ({ field, form, value, onChange }: DynamicFieldProps) => {
         <DatePicker
           withAsterisk={field.required}
           placeholder="Pick date"
+          w={width ? `${width}%` : "100%"}
           label={field.label}
           onChange={(e) => {
             if (!e) return;
@@ -61,6 +66,7 @@ const DynamicField = ({ field, form, value, onChange }: DynamicFieldProps) => {
         <MultiSelect
           data={field.options}
           label={field.label}
+          w={width ? `${width}%` : "100%"}
           placeholder="Pick values"
           withAsterisk={field.required}
           onChange={(e) => onChange && onChange(e)}
@@ -73,6 +79,7 @@ const DynamicField = ({ field, form, value, onChange }: DynamicFieldProps) => {
         <Radio.Group
           name={field.key}
           label={field.label}
+          w={width ? `${width}%` : "100%"}
           withAsterisk={field.required}
           {...form?.getInputProps(field.key)}
         >
@@ -86,12 +93,19 @@ const DynamicField = ({ field, form, value, onChange }: DynamicFieldProps) => {
         <Select
           label={field.label}
           placeholder="Pick one"
+          w={width ? `${width}%` : "100%"}
           data={field.options}
           {...form?.getInputProps(field.key)}
         />
       );
     default:
-      return <TextInput withAsterisk={field.required} label={field.label} />;
+      return (
+        <TextInput
+          withAsterisk={field.required}
+          label={field.label}
+          w={width ? `${width}%` : "100%"}
+        />
+      );
   }
 };
 

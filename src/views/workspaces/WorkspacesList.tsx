@@ -1,17 +1,22 @@
 import {
+  Anchor,
+  Box,
   Button,
   Center,
   Divider,
   Flex,
+  Group,
   Modal,
+  Paper,
   Progress,
   SimpleGrid,
   Text,
   Title,
+  useMantineTheme,
 } from "@mantine/core";
-import { IconDeviceLaptop, IconPlus } from "@tabler/icons";
+import { IconDeviceLaptop, IconHammer, IconPlus } from "@tabler/icons";
 import { IWorkspace } from "hexa-sdk/dist/app.api";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import WorkspaceModal from "../../modals/WorkspaceModal";
 import { getAllWorkSpaces } from "../../redux/api/workspacesApi";
 import { useAppDispatch, useAppSelector } from "../../redux/store";
@@ -24,10 +29,12 @@ import { useDisclosure } from "@mantine/hooks";
 import { setActiveWorkspace } from "../../redux/slices/workspacesSlice";
 import { deleteBoard } from "../../redux/api/boardsApi";
 import { IEntityBoard } from "../../interfaces/IEntityBoard";
+import useDebouncedValue from "../../hooks/useDebounedValue";
 
 const WorkspacesList = () => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
+  const theme = useMantineTheme();
 
   const {
     handleBoardChange,
@@ -36,22 +43,45 @@ const WorkspacesList = () => {
   } = useChangeBoard();
 
   const { data: workspaces, loading } = useAppSelector((state) => state.workspaces);
+  const { search } = useAppSelector((state) => state.filters);
+
+  const searchTerm = useDebouncedValue(search, 500);
 
   const [selectedWorkspace, setSelectedWorkspace] = useState<IWorkspace | undefined>();
   const [modalOpen, setModalOpen] = useState(false);
 
-  const [showBoardModal, { toggle: toggleBoardModal }] = useDisclosure(false);
-
   const [selectedBoard, setSelectedBoard] = useState<IEntityBoard | undefined>();
   const [boardEditModalOpen, setBoardEditModalOpen] = useState(false);
+
+  const [showBoardModal, { toggle: toggleBoardModal }] = useDisclosure(false);
+
+  const filteredWorkspaces = useMemo(() => {
+    if (!searchTerm) return workspaces;
+    return workspaces
+      .map((workspace) => ({
+        ...workspace,
+        boards: workspace.boards.filter((board) =>
+          board.title.toLowerCase().includes(searchTerm.toLowerCase()),
+        ),
+      }))
+      .filter((workspace) => workspace.boards.length > 0);
+  }, [searchTerm, workspaces]);
 
   useEffect(() => {
     dispatch(getAllWorkSpaces());
   }, []);
 
   return (
-    <div>
-      <div className="flex justify-between items-center mb-4 mt-4">
+    <Box>
+      <Box
+        className="flex justify-between items-center mb-4 mt-4"
+        sx={{
+          [theme.fn.smallerThan("sm")]: {
+            display: "flex",
+            flexDirection: "column",
+          },
+        }}
+      >
         <Title className="flex items-center gap-4" order={2}>
           <IconDeviceLaptop size={32} />
           {t("workspaces")}
@@ -60,14 +90,30 @@ const WorkspacesList = () => {
         <Button leftIcon={<IconPlus size={16} />} onClick={() => setModalOpen(true)}>
           {t("createWorkspace")}
         </Button>
-      </div>
+      </Box>
+      {searchTerm}
+      {workspaces.length <= 0 && !loading && (
+        <Text>
+          You do not have any workspaces created, please{" "}
+          <Anchor
+            component="button"
+            onClick={() => {
+              setModalOpen(true);
+            }}
+          >
+            Create a workspace!
+          </Anchor>
+        </Text>
+      )}
 
-      {workspaces?.map((workspace) => {
+      {filteredWorkspaces.map((workspace) => {
         if (!workspace.iAmOwner) return;
         return (
-          <div key={workspace.id}>
+          <Paper key={workspace.id} w="100%" mb="md" shadow="md" p="md" withBorder>
             <Flex gap="md" align="center">
-              <Text size="xl">{workspace.name}</Text>
+              <Group>
+                <IconHammer /> <Text size="xl">{workspace.name}</Text>
+              </Group>
               <Button
                 onClick={() => {
                   dispatch(setActiveWorkspace(workspace));
@@ -79,8 +125,22 @@ const WorkspacesList = () => {
                 {t("addBoard")}
               </Button>
             </Flex>
-
-            <SimpleGrid cols={4} mt="md" mb="xl" spacing="xl">
+            <Flex
+              gap="md"
+              wrap="wrap"
+              w={"100%"}
+              mt="md"
+              mb="xl"
+              sx={{
+                [theme.fn.smallerThan("md")]: {
+                  wrap: "wrap",
+                  gap: 8,
+                },
+                [theme.fn.smallerThan("sm")]: {
+                  gap: 8,
+                },
+              }}
+            >
               {workspace.boards?.map((board) => {
                 return (
                   <BoardCard
@@ -97,8 +157,8 @@ const WorkspacesList = () => {
                   />
                 );
               })}
-            </SimpleGrid>
-          </div>
+            </Flex>
+          </Paper>
         );
       })}
 
@@ -113,7 +173,6 @@ const WorkspacesList = () => {
           return workspace.boards.map((board) => {
             return (
               <BoardCard
-                workspace={workspace}
                 key={board.id + workspace.id}
                 board={board}
                 onClick={() => handleBoardChange(board, workspace.id)}
@@ -185,7 +244,7 @@ const WorkspacesList = () => {
         }}
         board={selectedBoard}
       />
-    </div>
+    </Box>
   );
 };
 

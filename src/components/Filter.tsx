@@ -60,7 +60,6 @@ const Filter = ({ options, onChange, singleSelection, defaultValues }: FilterPro
           LeftArrow={LeftArrow}
           wrapperClassName="whitespace-nowrap overflow-auto scrollbar-hide"
           RightArrow={RightArrow}
-          //   onWheel={<IconMenu />}
           onMouseDown={() => dragStart}
           onMouseUp={() => dragStop}
           onMouseMove={handleDrag}
@@ -69,7 +68,7 @@ const Filter = ({ options, onChange, singleSelection, defaultValues }: FilterPro
             <div
               className="cursor-pointer m-1"
               title={option}
-              //   itemId={option} // NOTE: itemId is required for track items
+              itemID={option}
               key={option}
               onDoubleClick={() => {
                 setSelected([]);

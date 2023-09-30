@@ -1,5 +1,10 @@
 const en = {
   translations: {
+    // Errors
+    error: "Error",
+    unauthorized: "You are not authorized to perform this action. Please login again.",
+    noResponse: "No response received from server. Please try again later.",
+
     // Header
     lightMode: "Light Mode",
     darkMode: "Dark Mode",
@@ -24,7 +29,10 @@ const en = {
     confirmPassword: "Confirm Password",
     name: "Name",
     rememberMe: "Remember me",
-    confirmTermsAndConditions: "I accept terms and conditions",
+    "I have read and accept": "I have read and accept",
+    "terms and conditions": "terms and conditions",
+    and: "and",
+    "privacy policy": "privacy policy",
     continueWithGoogle: "Or continue with Google",
     forgotPassword: "Forgot Password",
     "Don't have an account? Register": "Don't have an account? Register",
@@ -33,6 +41,21 @@ const en = {
       "Enter the email address associated with your account",
     resetPassword: "Reset Password",
     "Remembered your details? Sign In": "Remembered your details? Sign In",
+    loginType: "Login Type",
+    root: "Root",
+    business: "Business",
+    emailRequired: "Email is required",
+    invalidEmail: "Invalid email",
+    passwordLength: "Password must at least be 8 characters",
+    businessRequired: "Business code is required",
+    businessLength: "Business code must at least be 4 characters",
+    yourPassword: "Your Password",
+    businessNameRequired: "Business name is required",
+    nameRequired: "Name is required",
+    passwordRequired: "Password is required",
+    matchPassword: "Passwords must match",
+    businessName: "Business Name",
+    acceptTerms: "Please accept the terms and conditions to continue",
 
     // Workspaces Page
     workspace: "Workspace",
@@ -54,6 +77,8 @@ const en = {
     boardName: "Board Name",
     boardDescription: "Board Description",
     templates: "Templates",
+    commentPlaceholder: "Comment...",
+    commentRequired: "Comment cannot be empty",
 
     // Documents Page
     documents: "Documents",
@@ -109,6 +134,7 @@ const en = {
     createVersion: "Create Version",
     versionTitle: "Version Title",
     versionDate: "Version Date",
+    sheetInfo: "Sheet Information",
 
     // Analytics Page
     export: "Export",
@@ -176,6 +202,9 @@ const en = {
     inviteUserTo: "Invite User to",
     userEmail: "User Email",
     invite: "Invite",
+    businessProfile: "Business Profile",
+    updateBusinessProfile: "Update Business Profile",
+    jobTitle: "Job Title",
   },
 };
 

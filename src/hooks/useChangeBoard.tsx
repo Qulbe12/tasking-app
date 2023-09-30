@@ -1,19 +1,20 @@
 import { useState } from "react";
 import { useAppDispatch, useAppSelector } from "../redux/store";
 import { useNavigate } from "react-router-dom";
-import { IBoard } from "hexa-sdk";
-import { IEntityBoard } from "../interfaces/IEntityBoard";
-import { setActiveWorkspace } from "../redux/slices/workspacesSlice";
 import { axiosPrivate } from "../config/axios";
-import IBoardResourceResponse from "../interfaces/resources/IBoardResourceResponse";
-import { setActiveBoard } from "../redux/slices/boardsSlice";
-import { setTemplates } from "../redux/slices/templateSlice";
-import { setGroups } from "../redux/slices/groupsSlice";
-import { setDocuments } from "../redux/slices/documentSlice";
-import { setSheets } from "../redux/slices/sheetSlice";
-import { showError } from "../redux/commonSliceFunctions";
-import { IErrorResponse } from "../interfaces/IErrorResponse";
 import { useTranslation } from "react-i18next";
+import IBoardResourceResponse from "../interfaces/resources/IBoardResourceResponse";
+import { IEntityBoard } from "../interfaces/IEntityBoard";
+import { IBoard } from "hexa-sdk";
+import { IErrorResponse } from "../interfaces/IErrorResponse";
+import { AxiosError } from "axios";
+import { showError } from "../redux/commonSliceFunctions";
+import { setActiveWorkspace } from "../redux/slices/workspacesSlice";
+import { setSheets } from "../redux/slices/sheetSlice";
+import { setActiveBoard } from "../redux/slices/boardsSlice";
+import { setDocuments } from "../redux/slices/documentSlice";
+import { setGroups } from "../redux/slices/groupsSlice";
+import { setTemplates } from "../redux/slices/templateSlice";
 
 const useChangeBoard = () => {
   const { t } = useTranslation();
@@ -22,20 +23,16 @@ const useChangeBoard = () => {
 
   const { activeWorkspace, data: workspaces } = useAppSelector((state) => state.workspaces);
 
+  const [isLoading, setIsLoading] = useState(false);
   const [loadingText, setLoadingText] = useState<string | null>(null);
   const loadingValue = 100;
 
   const handleBoardChange = async (board: IEntityBoard | IBoard, workspaceId?: string) => {
-    if (!activeWorkspace) {
-      const foundWorkspace = workspaces.find((ws) => ws.id === workspaceId);
-      if (!foundWorkspace) return;
-      dispatch(setActiveWorkspace(foundWorkspace));
-    }
-
+    setIsLoading(true);
     setLoadingText(t("gatheringResources"));
-    try {
-      const res = await axiosPrivate.get<IBoardResourceResponse>(`/resources/boards/${board.id}`);
 
+    try {
+      const res = await axiosPrivate.get<IBoardResourceResponse>(`/boards/${board.id}/resources`);
       const { data } = res;
       const { documents, templates, groups, sheets } = data;
 
@@ -45,16 +42,27 @@ const useChangeBoard = () => {
       dispatch(setDocuments(documents));
       dispatch(setSheets(sheets));
 
-      setLoadingText(null);
+      if (!activeWorkspace) {
+        const foundWorkspace = workspaces.find((ws) => ws.id === workspaceId);
+        if (foundWorkspace) dispatch(setActiveWorkspace(foundWorkspace));
+      }
 
       navigate("/board");
     } catch (err) {
-      const error = err as unknown as IErrorResponse;
-      showError(error.response?.data.message);
+      const error = err as AxiosError<IErrorResponse>;
+      showError(
+        error?.response?.data?.message ||
+          t("errorMessageDefault") ||
+          "Error while gathering resources",
+      );
+      console.error(err);
+    } finally {
+      setIsLoading(false);
+      setLoadingText(null);
     }
   };
 
-  return { loadingText, loadingValue, handleBoardChange };
+  return { isLoading, loadingText, loadingValue, handleBoardChange };
 };
 
 export default useChangeBoard;

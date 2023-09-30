@@ -19,17 +19,18 @@ import SheetDropzone from "../components/SheetDropzone";
 import { useForm, yupResolver } from "@mantine/form";
 import * as yup from "yup";
 import { useEffect, useState } from "react";
-import axios from "axios";
-import { SHEETS_URL } from "../constants/URLS";
+
 import { ISheetProcessResponse } from "../interfaces/sheets/ISheetProcessResponse";
 import { showError } from "../redux/commonSliceFunctions";
-import { startNavigationProgress, completeNavigationProgress } from "@mantine/nprogress";
+import { completeNavigationProgress, startNavigationProgress } from "@mantine/nprogress";
 import { IconTrash } from "@tabler/icons";
 import ISheetCreateVersion from "../interfaces/sheets/ISheetCreateVersion";
 import { createSheetVersion } from "../redux/api/sheetsApi";
 import { ISheetDetailedResponse } from "../interfaces/sheets/ISheetDetailedResponse";
 import { t } from "i18next";
 import { DatePicker } from "@mantine/dates";
+
+import { axiosSheets } from "../config/axiosSheets";
 
 type SheetVersionModalProps = {
   sheet?: ISheetDetailedResponse | null;
@@ -130,7 +131,7 @@ const SheetVersionModal = ({
       >
         <Card>
           <Grid>
-            <Grid.Col span={2}>
+            <Grid.Col md={10} lg={2}>
               <Stack>
                 <TextInput
                   label={t("versionTitle")}
@@ -149,7 +150,7 @@ const SheetVersionModal = ({
                 />
               </Stack>
             </Grid.Col>
-            <Grid.Col span={10}>
+            <Grid.Col md={4} lg={10}>
               {!sheetUploaded && (
                 <SheetDropzone
                   onDrop={async (file) => {
@@ -158,7 +159,7 @@ const SheetVersionModal = ({
                     try {
                       const formData = new FormData();
                       formData.append("file", file[0]);
-                      const res = await axios.post<ISheetProcessResponse[]>(SHEETS_URL, formData, {
+                      const res = await axiosSheets.post<ISheetProcessResponse[]>("", formData, {
                         headers: {
                           "Content-Type": "multipart/form-data",
                         },
@@ -189,7 +190,7 @@ const SheetVersionModal = ({
                         <Group position="apart">
                           <Group>
                             <Image maw={240} src={s.thumbnail.url} />
-                            <Image maw={240} src={s.codeMeta.url} />
+                            <Image maw={240} src={s.meta.url} />
                             <Stack>
                               <TextInput
                                 label={t("sheetCode")}

@@ -1,4 +1,4 @@
-import { Card, Skeleton, Stack } from "@mantine/core";
+import { Card, Skeleton, Stack, Title } from "@mantine/core";
 import React, { useEffect, useState } from "react";
 import { useAppSelector } from "../../../redux/store";
 import {
@@ -7,6 +7,7 @@ import {
 } from "../../../interfaces/nylas/IThreadResponse";
 import ThreadCard from "../../../components/ThreadCard";
 import InfiniteScroll from "../../../components/InfiniteScroll";
+import Empty from "../../../components/Empty";
 
 type ThreadsListProps = {
   onThreadClick: (thread: IThreadExpandedResponse | IThreadResponse) => void;
@@ -15,7 +16,7 @@ type ThreadsListProps = {
 };
 
 const ThreadsList = ({ onThreadClick, selectedThreadId, afterScroll }: ThreadsListProps) => {
-  const { loaders, threads } = useAppSelector((state) => state.nylas);
+  const { loaders, threads, folderTitle } = useAppSelector((state) => state.nylas);
   const [currentOffset, setCurrentOffset] = useState(0);
 
   useEffect(() => {
@@ -41,6 +42,8 @@ const ThreadsList = ({ onThreadClick, selectedThreadId, afterScroll }: ThreadsLi
               })}
         </Stack>
         <>
+          <Title>{folderTitle}</Title>
+          {!loaders.gettingThreads && threads.length <= 0 && <Empty label="Folder is empty" />}
           {!loaders.gettingThreads &&
             threads?.map((t, i) => {
               if (t.participants.length <= 0) return;

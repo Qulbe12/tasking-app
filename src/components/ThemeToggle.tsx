@@ -11,7 +11,7 @@ const ThemeToggle = () => {
   const dispatch = useAppDispatch();
   return (
     <ActionIcon size="xl" onClick={() => dispatch(toggleTheme())}>
-      {mode === "dark" ? <IconBrightnessDown size="300" /> : <IconMoonStars size={iconSize} />}
+      {mode === "dark" ? <IconBrightnessDown size={iconSize} /> : <IconMoonStars size={iconSize} />}
     </ActionIcon>
   );
 };

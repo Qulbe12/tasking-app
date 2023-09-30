@@ -4,6 +4,10 @@ import { axiosPrivate } from "../../config/axios";
 import { ISheetResponse } from "../../interfaces/sheets/ISheetResponse";
 import { ISheetCreate } from "../../interfaces/sheets/ISheetCreate";
 import ISheetCreateVersion from "../../interfaces/sheets/ISheetCreateVersion";
+import { ISheetUpdate } from "../../interfaces/sheets/ISheetUpdate";
+import { axiosSheets } from "../../config/axiosSheets";
+import { ISheetProcessResponse } from "../../interfaces/sheets/ISheetProcessResponse";
+import { FileWithPath } from "@mantine/dropzone";
 
 export const createSheet = createAsyncThunk(
   "sheets/createSheet",
@@ -61,9 +65,9 @@ export const getSheetById = createAsyncThunk(
 
 export const updateSheet = createAsyncThunk(
   "sheets/updateSheet",
-  async ({ id }: { id: string }, { rejectWithValue, dispatch }) => {
+  async ({ id, data }: { id: string; data: ISheetUpdate }, { rejectWithValue, dispatch }) => {
     try {
-      const res = await axiosPrivate.patch<ISheetResponse>(`/sheets/${id}`);
+      const res = await axiosPrivate.patch<ISheetResponse>(`/sheets/${id}`, data);
       return res.data;
     } catch (err) {
       return centralizedErrorHandler(err, rejectWithValue, dispatch);
@@ -103,6 +107,47 @@ export const addUsersToFile = createAsyncThunk(
   ) => {
     try {
       const res = await axiosPrivate.post(`/sheets/${id}/users/${type}`);
+      return res.data;
+    } catch (err) {
+      return centralizedErrorHandler(err, rejectWithValue, dispatch);
+    }
+  },
+);
+
+export const updateSheetTags = createAsyncThunk(
+  "sheets/updateSheetTags",
+  async (
+    {
+      sheetId,
+      code,
+      version,
+      newTags,
+    }: { sheetId: string; code: string; version: number; newTags: string[] },
+    { rejectWithValue, dispatch },
+  ) => {
+    try {
+      const res = await axiosPrivate.patch(
+        `/sheets/${sheetId}/records/${code}/tags/version/${version}`,
+        newTags,
+      );
+
+      return res.data;
+    } catch (err) {
+      return centralizedErrorHandler(err, rejectWithValue, dispatch);
+    }
+  },
+);
+
+export const processSheet = createAsyncThunk(
+  "sheets/processSheet",
+  async (
+    { file }: { file: FileWithPath[]; activeWorkspace: string; activeBoard: string },
+    { rejectWithValue, dispatch },
+  ) => {
+    try {
+      const formData = new FormData();
+      formData.append("file", file[0]);
+      const res = await axiosSheets.post<ISheetProcessResponse[]>("", formData);
       return res.data;
     } catch (err) {
       return centralizedErrorHandler(err, rejectWithValue, dispatch);

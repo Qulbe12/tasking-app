@@ -1,6 +1,6 @@
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import React from "react";
-import { TypedUseSelectorHook, useDispatch, useSelector, Provider } from "react-redux";
+import { Provider, TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 import authReducer from "./slices/authSlice";
 import storage from "redux-persist/lib/storage";
 import { persistReducer, persistStore } from "redux-persist";
@@ -40,7 +40,7 @@ const reducers = combineReducers({
   menus: menuReducer,
   sheets: sheetsReducer,
   comments: commentsReducer,
-  business: businessReducer,
+  business: persistReducer({ key: "business", storage, blacklist: [] }, businessReducer),
 });
 
 const persistedReducer = persistReducer(

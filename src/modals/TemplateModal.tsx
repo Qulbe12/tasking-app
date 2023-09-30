@@ -11,16 +11,17 @@ import {
   Select,
   Stack,
   Text,
-  TextInput,
   Textarea,
+  TextInput,
 } from "@mantine/core";
 import { useForm, yupResolver } from "@mantine/form";
-import { IconPlus } from "@tabler/icons";
+import { IconEdit, IconPlus, IconTrash } from "@tabler/icons";
 import {
   DocumentPriority,
   DocumentStatus,
   FieldType,
   ICreateField,
+  IField,
   ITemplate,
 } from "hexa-sdk/dist/app.api";
 import React, { useEffect, useState } from "react";
@@ -29,7 +30,9 @@ import {
   addTemplate,
   addTemplateField,
   deleteTemplate,
+  deleteTemplateFields,
   updateTemplate,
+  updateTemplateFields,
 } from "../redux/api/templateApi";
 import { useAppDispatch, useAppSelector } from "../redux/store";
 import * as yup from "yup";
@@ -46,6 +49,14 @@ const TemplateModal = ({ onClose, opened, template }: ModalProps & TemplateModal
   const { activeWorkspace } = useAppSelector((state) => state.workspaces);
   const { activeBoard } = useAppSelector((state) => state.boards);
   const { user } = useAppSelector((state) => state.auth);
+  const [field, setField] = useState<IField>({
+    id: "",
+    key: "",
+    options: [],
+    required: false,
+    type: FieldType.Text,
+    label: "",
+  });
 
   const [fieldVals, setFieldVals] = useState<ICreateField>({
     label: "",
@@ -55,6 +66,7 @@ const TemplateModal = ({ onClose, opened, template }: ModalProps & TemplateModal
   });
 
   const [newFieldModal, setNewFieldModal] = useState(false);
+  const [updateFieldModal, setUpdateFieldModal] = useState(false);
 
   const formSchema = yup.object().shape({
     name: yup.string().required("Document type is required"),
@@ -103,11 +115,12 @@ const TemplateModal = ({ onClose, opened, template }: ModalProps & TemplateModal
 
           <Divider label="Default Fields" />
           <Stack>
-            <TextInput label="Title" withAsterisk />
-            <Textarea label="Description" withAsterisk />
-            <DatePicker label="Start Date" withAsterisk />
-            <DatePicker label="Due Date" withAsterisk />
+            <TextInput label="Title" withAsterisk disabled />
+            <Textarea label="Description" withAsterisk disabled />
+            <DatePicker label="Start Date" withAsterisk disabled />
+            <DatePicker label="Due Date" withAsterisk disabled />
             <Select
+              disabled
               label="Priority"
               placeholder="Pick one"
               withAsterisk
@@ -139,7 +152,32 @@ const TemplateModal = ({ onClose, opened, template }: ModalProps & TemplateModal
           )}
 
           {template?.fields.map((f) => {
-            return <DynamicField field={f} key={f.id} />;
+            return (
+              <Flex key={f.id} align="end" gap="md">
+                <DynamicField field={f} />
+                <ActionIcon
+                  color="indigo"
+                  variant={"filled"}
+                  size="lg"
+                  onClick={() => {
+                    setUpdateFieldModal(true);
+                    setField(f);
+                  }}
+                >
+                  <IconEdit />
+                </ActionIcon>
+                <ActionIcon
+                  color="red"
+                  variant={"filled"}
+                  size="lg"
+                  onClick={() => {
+                    dispatch(deleteTemplateFields({ field: f.id, fieldId: template?.id }));
+                  }}
+                >
+                  <IconTrash />
+                </ActionIcon>
+              </Flex>
+            );
           })}
 
           <Group position="apart" mt="md">
@@ -150,7 +188,6 @@ const TemplateModal = ({ onClose, opened, template }: ModalProps & TemplateModal
                 onClick={async () => {
                   if (!template) return;
                   await dispatch(deleteTemplate(template.id));
-                  onClose();
                 }}
               >
                 Delete
@@ -170,6 +207,104 @@ const TemplateModal = ({ onClose, opened, template }: ModalProps & TemplateModal
         </Stack>
       </form>
 
+      {/* update field */}
+      <Modal
+        centered
+        opened={updateFieldModal}
+        onClose={() => {
+          setFieldVals({ label: "", options: [], required: false, type: FieldType.Text });
+          setNewFieldModal(false);
+        }}
+        title="Update field"
+      >
+        <Stack mb="xl">
+          <TextInput
+            required
+            label="Field Label"
+            defaultValue={field.key}
+            onChange={(e) => setFieldVals({ ...fieldVals, label: e.target.value })}
+          />
+          <Select
+            required
+            value={field.type}
+            onChange={(e) => setFieldVals({ ...fieldVals, type: e as FieldType })}
+            label="Field Type"
+            placeholder="Pick one"
+            data={[
+              { value: FieldType.Text, label: "Text" },
+              { value: FieldType.Number, label: "Number" },
+              { value: FieldType.Date, label: "Date" },
+              { value: FieldType.Checkbox, label: "Checkbox" },
+              { value: FieldType.Select, label: "Select" },
+              { value: FieldType.Radio, label: "Radio" },
+              { value: FieldType.Multiselect, label: "Multiselect" },
+            ]}
+          />
+
+          {fieldVals.type === FieldType.Multiselect ||
+          fieldVals.type === FieldType.Radio ||
+          fieldVals.type === FieldType.Select ? (
+            <MultiSelect
+              label="Options"
+              data={[]}
+              withAsterisk
+              required
+              placeholder="Select items"
+              searchable
+              creatable
+              getCreateLabel={(query) => `+ Create ${query}`}
+              onCreate={(query) => {
+                const item = query;
+                setFieldVals({ ...fieldVals, options: [...fieldVals.options, item] });
+                return item;
+              }}
+            />
+          ) : (
+            ""
+          )}
+
+          <Checkbox
+            label="Required?"
+            onChange={(e) => setFieldVals({ ...fieldVals, required: e.target.checked })}
+          />
+        </Stack>
+
+        <Divider my="md" label="Output" />
+        <DynamicField
+          field={{
+            id: "Demo Id",
+            key: "Demo Key",
+            label: field.label,
+            options: field.options,
+            required: field.required,
+            type: field.type,
+          }}
+        />
+        <Group mt="xl" position="right">
+          <Button onClick={() => setUpdateFieldModal(false)}>Cancel</Button>
+          <Button
+            loading={!!loading}
+            onClick={async () => {
+              if (!template) return;
+
+              const { label, options, required, type } = fieldVals;
+
+              await dispatch(
+                updateTemplateFields({
+                  fieldId: template.id,
+                  updatedField: { label, options, required, type },
+                  field: field.id,
+                }),
+              );
+              setUpdateFieldModal(false);
+            }}
+          >
+            Update field
+          </Button>
+        </Group>
+      </Modal>
+
+      {/* add new field */}
       <Modal
         centered
         opened={newFieldModal}

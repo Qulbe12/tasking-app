@@ -1,8 +1,6 @@
-/* eslint-disable */
 import { useEffect, useRef, useState } from "react";
 import PSPDFKit, { Instance } from "pspdfkit";
 import { useAppSelector } from "../redux/store";
-import { axiosPrivate } from "../config/axios";
 import { ISubFile } from "../interfaces/sheets/common";
 
 type SheetPdfViewerProps = {
@@ -10,129 +8,30 @@ type SheetPdfViewerProps = {
   handleKeyEvent: (e: KeyboardEvent) => void;
 };
 
-const controller = new AbortController();
-
-export default function SheetPdfViewer({ file, handleKeyEvent }: SheetPdfViewerProps) {
-  const containerRef = useRef<HTMLElement>();
+export default function SheetPdfViewer({ file }: SheetPdfViewerProps) {
+  const containerRef = useRef<HTMLDivElement | null>(null);
 
   const { mode } = useAppSelector((state) => state.theme);
 
   const [instance, setInstance] = useState<Instance | null>(null);
 
-  const [wheelScroll, setWheelScroll] = useState(false);
-
-  async function exportPdf(excludeAnnotations: boolean) {
-    if (!instance) return;
-    const buffer = await instance.exportPDF({
-      excludeAnnotations,
-    });
-
-    const supportsDownloadAttribute = HTMLAnchorElement.prototype.hasOwnProperty("download");
-    const blob = new Blob([buffer], { type: "application/pdf" });
-    // @ts-ignore
-    if (navigator.msSaveOrOpenBlob) {
-      // @ts-ignore
-      navigator.msSaveOrOpenBlob(blob, documentTitle);
-    } else if (!supportsDownloadAttribute) {
-      const reader = new FileReader();
-      reader.onloadend = function () {
-        const dataUrl = reader.result;
-        downloadPdf(dataUrl);
-      };
-      reader.readAsDataURL(blob);
-    } else {
-      const objectUrl = window.URL.createObjectURL(blob);
-      downloadPdf(objectUrl);
-      window.URL.revokeObjectURL(objectUrl);
-    }
-
-    function downloadPdf(blob: any) {
-      const a = document.createElement("a");
-      a.href = blob;
-      a.style.display = "none";
-      a.download = file.name;
-      a.setAttribute("download", file.name);
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-    }
-  }
-
-  const [loadingAnnotations, setLoadingAnnotations] = useState(false);
-  const [annotsChanged, setAnnotsChanged] = useState(false);
-
   useEffect(() => {
     if (!containerRef.current) return;
     const container = containerRef.current;
-    PSPDFKit.unload(container);
 
-    (async function () {
+    const loadInstance = async () => {
       if (!file) return;
 
-      setLoadingAnnotations(true);
-
-      const res = await axiosPrivate.get(`/annotations/${file.id}`);
-
-      setLoadingAnnotations(false);
-
       try {
+        if (instance) {
+          await PSPDFKit.unload(container);
+        }
         const pspdfInstance = await PSPDFKit.load({
           container,
           theme: mode === "dark" ? "DARK" : "LIGHT",
           document: file.url,
           baseUrl: `${window.location.protocol}//${window.location.host}/`,
-          instantJSON: {
-            annotations: res.data,
-            format: "https://pspdfkit.com/instant-json/v1",
-          },
         });
-        const viewState = pspdfInstance.viewState;
-
-        pspdfInstance.setViewState(
-          viewState.merge({
-            interactionMode: "PAN",
-          }),
-        );
-
-        pspdfInstance.addEventListener("annotations.didSave", () => {
-          setAnnotsChanged(true);
-        });
-
-        const handleScroll = (e: WheelEvent) => {
-          if (e.deltaY < 0) {
-            pspdfInstance?.setViewState((viewState) => viewState.zoomIn());
-          } else if (e.deltaY > 0) {
-            pspdfInstance?.setViewState((viewState) => viewState.zoomOut());
-          }
-        };
-
-        // pspdfInstance?.contentDocument.addEventListener("wheel", handleScroll);
-        var zoom = false;
-        var clickCount = 0;
-        pspdfInstance.contentDocument.addEventListener("mousedown", (e) => {
-          if (e.button !== 1) return;
-
-          clickCount++;
-
-          if (clickCount !== 1) return;
-
-          setTimeout(function () {
-            if (clickCount === 1) return;
-            if (zoom) {
-              pspdfInstance?.contentDocument.removeEventListener("wheel", handleScroll);
-              zoom = false;
-              setWheelScroll(false);
-            } else {
-              pspdfInstance?.contentDocument.addEventListener("wheel", handleScroll);
-              zoom = true;
-              setWheelScroll(true);
-            }
-
-            clickCount = 0;
-          }, 300);
-        });
-
-        pspdfInstance.contentDocument.addEventListener("keydown", handleKeyEvent);
 
         const toolbarItems = pspdfInstance.toolbarItems;
         pspdfInstance.setToolbarItems(toolbarItems.filter((item) => item.type !== "export-pdf"));
@@ -140,7 +39,9 @@ export default function SheetPdfViewer({ file, handleKeyEvent }: SheetPdfViewerP
       } catch (err) {
         console.log(err);
       }
-    })();
+    };
+
+    loadInstance();
 
     return () => {
       PSPDFKit && PSPDFKit.unload(container);
@@ -148,74 +49,8 @@ export default function SheetPdfViewer({ file, handleKeyEvent }: SheetPdfViewerP
   }, [file]);
 
   return (
-    <div style={{ height: "100%" }}>
-      {/* <Flex justify="flex-end">
-        {annotsChanged && (
-          <Button
-            leftIcon={<IconRectangle size={14} />}
-           
-            onClick={async () => {
-              try {
-                const annots = await instance?.exportInstantJSON();
-
-                const res = await axiosPrivate.patch(
-                  `/annotations/${file.id}`,
-                  annots?.annotations,
-                );
-                showNotification({
-                  message: "Annotation changes have been saved",
-                });
-                setAnnotsChanged(false);
-              } catch (error: any) {
-                const err: IErrorResponse = error;
-                showError(err.response?.data.message);
-              }
-            }}
-          >
-            Save Annotations
-          </Button>
-        )}
-        <Menu shadow="md" width={200}>
-          <Menu.Target>
-            <Button color="gray" leftIcon={<IconFileExport size={14} />} >
-              Export
-            </Button>
-          </Menu.Target>
-
-          <Menu.Dropdown>
-            <Menu.Item
-              onClick={() => {
-                exportPdf(false);
-              }}
-              icon={<IconFileExport size={14} />}
-            >
-              With Annotations
-            </Menu.Item>
-            <Menu.Item
-              onClick={() => {
-                exportPdf(true);
-              }}
-              icon={<IconFileExport size={14} />}
-            >
-              Without Annotations
-            </Menu.Item>
-          </Menu.Dropdown>
-        </Menu>
-      </Flex>
-
-      {loadingAnnotations && <Text>Loading annotations...</Text>} */}
-      {/* @ts-ignore */}
+    <div style={{ height: "100%", width: "100%" }}>
       <div ref={containerRef} style={{ width: "100%", height: "100%" }} />
-
-      {/* <div className="absolute right-8 top-28">
-        <Flex direction="column" gap="md">
-          <Tooltip label="Double middle click to toggle zoom or scroll">
-            <ActionIcon color="gray" variant="filled" size="lg" disabled={!wheelScroll}>
-              <IconZoomPan />
-            </ActionIcon>
-          </Tooltip>
-        </Flex>
-      </div> */}
     </div>
   );
 }

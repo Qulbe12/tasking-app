@@ -1,22 +1,43 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { ISheetResponse } from "../../interfaces/sheets/ISheetResponse";
-import { createSheet, createSheetVersion, getSheets } from "../api/sheetsApi";
+import {
+  createSheet,
+  createSheetVersion,
+  getSheets,
+  processSheet,
+  updateSheet,
+} from "../api/sheetsApi";
+import { ISheetProcessResponse } from "../../interfaces/sheets/ISheetProcessResponse";
 
 export interface SheetsState {
   data: ISheetResponse[];
+  sheetRecords: ISheetProcessResponse[];
+  sheetCreateInfo: {
+    activeWorkspace: string | null;
+    activeBoard: string | null;
+  };
   loaders: {
     gettingSheets: boolean;
     addingSheet: boolean;
     addingVersion: boolean;
+    updatingSheet: boolean;
+    processingSheet: boolean;
   };
 }
 
 const initialState: SheetsState = {
   data: [],
+  sheetRecords: [],
+  sheetCreateInfo: {
+    activeBoard: null,
+    activeWorkspace: null,
+  },
   loaders: {
     gettingSheets: false,
+    updatingSheet: false,
     addingSheet: false,
     addingVersion: false,
+    processingSheet: false,
   },
 };
 
@@ -26,6 +47,10 @@ export const sheetsSlice = createSlice({
   reducers: {
     setSheets: (state, action: PayloadAction<ISheetResponse[]>) => {
       state.data = action.payload;
+    },
+    initSheetRecords: (state) => {
+      state.sheetRecords = [];
+      state.loaders.processingSheet = false;
     },
   },
   extraReducers(builder) {
@@ -53,6 +78,21 @@ export const sheetsSlice = createSlice({
       .addCase(createSheet.rejected, (state) => {
         state.loaders.addingSheet = false;
       })
+      // Update Sheet
+      .addCase(updateSheet.pending, (state) => {
+        state.loaders.updatingSheet = true;
+      })
+      .addCase(updateSheet.fulfilled, (state, action: PayloadAction<ISheetResponse>) => {
+        state.loaders.updatingSheet = false;
+        const foundIndex = state.data.findIndex((d) => d.id === action.payload.id);
+
+        if (foundIndex >= 0) {
+          state.data[foundIndex] = action.payload;
+        }
+      })
+      .addCase(updateSheet.rejected, (state) => {
+        state.loaders.updatingSheet = false;
+      })
       // Create Sheet Version
       .addCase(createSheetVersion.pending, (state) => {
         state.loaders.addingVersion = true;
@@ -65,12 +105,23 @@ export const sheetsSlice = createSlice({
       })
       .addCase(createSheetVersion.rejected, (state) => {
         state.loaders.addingVersion = false;
+      })
+      // Process Sheet
+      .addCase(processSheet.pending, (state) => {
+        state.loaders.processingSheet = true;
+      })
+      .addCase(processSheet.fulfilled, (state, action: PayloadAction<ISheetProcessResponse[]>) => {
+        state.sheetRecords = action.payload;
+        state.loaders.processingSheet = false;
+      })
+      .addCase(processSheet.rejected, (state) => {
+        state.loaders.processingSheet = false;
       });
   },
 });
 
 const sheetsReducer = sheetsSlice.reducer;
 
-export const { setSheets } = sheetsSlice.actions;
+export const { setSheets, initSheetRecords } = sheetsSlice.actions;
 
 export default sheetsReducer;

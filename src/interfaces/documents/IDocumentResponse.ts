@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-vars */
-import { ITemplate, IUser } from "hexa-sdk/dist/app.api";
+import { ITemplate } from "hexa-sdk/dist/app.api";
+import { IUser } from "../account/IUserResponse";
 
 export interface IAttachment {
   id: string;
@@ -49,5 +50,6 @@ export interface IDocumentResponse extends Record<string, any> {
   template: ITemplate;
   linkedDocs: string[];
   createdBy: IUser;
+
   linkedEmailIds: string[];
 }
