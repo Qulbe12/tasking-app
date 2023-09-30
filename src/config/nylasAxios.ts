@@ -10,7 +10,6 @@ export const nylasAxios = axios.create({
 nylasAxios.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("nylasToken");
-
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }

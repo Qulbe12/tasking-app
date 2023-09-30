@@ -3,8 +3,9 @@ export interface ICalendar {
   description: string;
   location: string;
   timezone: string;
-  metadata: Record<string, string>;
+  metadata?: Record<string, string>;
 }
+
 export interface ICreateMicrosoftCalendar {
   name: string;
 }

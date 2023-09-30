@@ -2,17 +2,22 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import {
   connectNylas,
   createCalendar,
+  createEvent,
   deleteCalendar,
+  deleteEvent,
   getAllCalendars,
   getAllFolders,
   getAllMessages,
   getAllThreads,
   getContacts,
+  getEventById,
+  getEvents,
   getFolderById,
   getMoreThreads,
   getOneCalendar,
   sendMessage,
   updateCalendar,
+  updateEvent,
   updateThread,
 } from "../api/nylasApi";
 import { NylasConnectedPayload } from "hexa-sdk";
@@ -27,6 +32,8 @@ import {
 } from "../../interfaces/nylas/ICalendarResponse";
 import { IContactRemapped, IContactResponse } from "../../interfaces/nylas/IContactResponse";
 import { IFolderResponse } from "../../interfaces/nylas/IFolderResponse";
+import { IEventResponse } from "../../interfaces/nylas/IEventResponse";
+import { Event } from "react-big-calendar";
 import _ from "lodash";
 
 export interface GroupsState {
@@ -42,6 +49,9 @@ export interface GroupsState {
   folderTitle: string;
   folderId: string;
   deleteCalendarResponseMessage: ICalendarDeleteResponse;
+  events: IEventResponse[];
+  calendarEvents: Event[];
+  event?: IEventResponse;
   status: "conencted" | null;
   nylasToken?: NylasConnectedPayload;
   contacts: IContactRemapped[];
@@ -56,6 +66,8 @@ export interface GroupsState {
     updatingCalendars: boolean;
     deletingCalendars: boolean;
     sendingMessage: boolean;
+    gettingEvents: boolean;
+    creatingEvent: boolean;
     gettingContacts: boolean;
     updatingThread: boolean;
     gettingFolder: boolean;
@@ -71,6 +83,8 @@ const initialState: GroupsState = {
   threads: [],
   calendars: [],
   folders: [],
+  events: [],
+  calendarEvents: [],
   folderId: "",
   folderTitle: "",
   deleteCalendarResponseMessage: {
@@ -87,6 +101,8 @@ const initialState: GroupsState = {
     deletingCalendars: false,
     gettingOneCalendar: false,
     sendingMessage: false,
+    gettingEvents: false,
+    creatingEvent: false,
     gettingContacts: false,
     updatingThread: false,
     gettingFolder: false,
@@ -244,7 +260,84 @@ export const nylasSlice = createSlice({
       .addCase(deleteCalendar.rejected, (state) => {
         state.loaders.deletingCalendars = false;
       })
-
+      // get all events
+      .addCase(getEvents.pending, (state) => {
+        state.loaders.gettingEvents = true;
+      })
+      .addCase(
+        getEvents.fulfilled,
+        (state, { payload: events }: PayloadAction<IEventResponse[]>) => {
+          state.events = events;
+          state.calendarEvents = events.map((e) => {
+            const unixStartTimestamp = parseInt(e?.when?.start_time?.toString() || "0", 10);
+            const startDate = new Date(unixStartTimestamp * 1000);
+            const unixEndTimestamp = parseInt(e?.when?.end_time?.toString(), 10);
+            const endDate = new Date(unixEndTimestamp * 1000);
+            const event: Event = {
+              start: startDate,
+              end: endDate,
+              title: e.title,
+            };
+            return event;
+          });
+          state.loaders.gettingEvents = false;
+        },
+      )
+      .addCase(getEvents.rejected, (state) => {
+        state.loaders.gettingEvents = false;
+      })
+      // get one event
+      .addCase(getEventById.pending, (state) => {
+        state.loaders.gettingEvents = true;
+      })
+      .addCase(
+        getEventById.fulfilled,
+        (state, { payload: event }: PayloadAction<IEventResponse>) => {
+          state.event = event;
+          state.loaders.gettingEvents = false;
+        },
+      )
+      .addCase(getEventById.rejected, (state) => {
+        state.loaders.gettingEvents = false;
+      })
+      // create event
+      .addCase(createEvent.pending, (state) => {
+        state.loaders.creatingEvent = true;
+      })
+      .addCase(
+        createEvent.fulfilled,
+        (state, { payload: event }: PayloadAction<IEventResponse>) => {
+          state.events.push(event);
+          state.loaders.creatingEvent = false;
+        },
+      )
+      .addCase(createEvent.rejected, (state) => {
+        state.loaders.creatingEvent = false;
+      })
+      // update calendar
+      .addCase(updateEvent.pending, (state) => {
+        state.loaders.gettingEvents = true;
+      })
+      .addCase(
+        updateEvent.fulfilled,
+        (state, { payload: event }: PayloadAction<IEventResponse>) => {
+          state.event = event;
+          state.loaders.gettingEvents = false;
+        },
+      )
+      .addCase(updateEvent.rejected, (state) => {
+        state.loaders.gettingEvents = false;
+      })
+      // delete calendar
+      .addCase(deleteEvent.pending, (state) => {
+        state.loaders.gettingEvents = true;
+      })
+      .addCase(deleteEvent.fulfilled, (state) => {
+        state.loaders.gettingEvents = false;
+      })
+      .addCase(deleteEvent.rejected, (state) => {
+        state.loaders.gettingEvents = false;
+      })
       // Get All Contacts
       .addCase(getContacts.pending, (state) => {
         state.loaders.gettingContacts = true;
