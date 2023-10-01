@@ -32,7 +32,10 @@ const SignatureModal = ({ onClose, opened }: CommonModalProps) => {
     const validated = form.validate();
     if (validated.hasErrors) return;
 
-    dispatch(createSignature(form.values)).finally(onClose);
+    dispatch(createSignature(form.values)).finally(() => {
+      form.reset();
+      onClose();
+    });
   };
 
   return (

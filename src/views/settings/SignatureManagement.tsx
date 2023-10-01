@@ -62,7 +62,6 @@ const SignatureManagement = () => {
                   withBorder
                   className="hover:cursor-pointer hover:-translate-y-1"
                   onClick={() => setSelectedSignature(s.id)}
-                  bg={selectedSignature === s.id ? "indigo" : undefined}
                   pos="relative"
                 >
                   {selectedSignature === s.id && (

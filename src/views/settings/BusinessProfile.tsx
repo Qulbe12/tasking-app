@@ -1,18 +1,69 @@
-import { Button, Card, Image, Paper, Stack, Text, TextInput, Title } from "@mantine/core";
-import React, { useState } from "react";
+import { Button, Card, Image, Paper, Skeleton, Stack, Text, TextInput, Title } from "@mantine/core";
+import React, { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useAppSelector } from "../../redux/store";
-import { Dropzone, IMAGE_MIME_TYPE } from "@mantine/dropzone";
+import { useAppDispatch, useAppSelector } from "../../redux/store";
+import { Dropzone, FileWithPath, IMAGE_MIME_TYPE } from "@mantine/dropzone";
 import { axiosPrivate } from "../../config/axios";
+import { getBusinessInfo, updateBusinessInfo } from "../../redux/api/businessApi";
+import { useForm, yupResolver } from "@mantine/form";
+import * as yup from "yup";
 
 const BusinessProfile = () => {
   const { t } = useTranslation();
-  const { businessInfo } = useAppSelector((state) => state.business);
+  const dispatch = useAppDispatch();
+
+  const {
+    businessInfo,
+    loaders: { gettingBusinessInfo, updatingBusinessInfo },
+  } = useAppSelector((state) => state.business);
 
   const [hovered, setHovered] = useState(false);
-  const [businessName, setBusinessName] = useState("");
-  const [jobTitle, setJobTitle] = useState("");
-  const [loading, setLoading] = useState(false);
+
+  const [image, setImage] = useState<string | null>(null);
+
+  useEffect(() => {
+    dispatch(getBusinessInfo());
+  }, []);
+
+  const schema = yup.object({
+    name: yup.string().required(),
+    jobTitle: yup.string().required(),
+  });
+
+  const form = useForm({
+    initialValues: {
+      name: "",
+      jobTitle: "",
+    },
+    validate: yupResolver(schema),
+  });
+
+  const handleAvatarChange = useCallback(async (files: FileWithPath[]) => {
+    try {
+      setImage(URL.createObjectURL(files[0]));
+      const formData = new FormData();
+      formData.append("file", files[0]);
+      await axiosPrivate.patch("/business/logo", formData);
+    } catch (err) {
+      console.log(err);
+    }
+  }, []);
+
+  const handleFormSubmit = useCallback(
+    async (values: typeof form.values) => {
+      await dispatch(updateBusinessInfo({ values }));
+      form.reset();
+    },
+    [businessInfo],
+  );
+
+  if (gettingBusinessInfo) {
+    return (
+      <Stack>
+        <Skeleton h={500} />
+      </Stack>
+    );
+  }
 
   return (
     <Paper mt="md">
@@ -21,46 +72,40 @@ const BusinessProfile = () => {
           {t("updateBusinessProfile")}
         </Title>
         <Stack>
-          {loading ? "Loading" : ""}
           <Dropzone
             pos={"relative"}
             onMouseEnter={() => setHovered(true)}
             onMouseLeave={() => setHovered(false)}
             w="200px"
-            onDrop={async (files) => {
-              try {
-                setLoading(true);
-                const formData = new FormData();
-                formData.append("file", files[0]);
-                const res = await axiosPrivate.patch("/business/logo", formData);
-                console.log(res.data);
-              } catch (err) {
-                console.log(err);
-              } finally {
-                setLoading(false);
-              }
-            }}
+            onDrop={handleAvatarChange}
             onReject={(files) => console.log("rejected files", files)}
             maxSize={3 * 1024 ** 2}
             accept={IMAGE_MIME_TYPE}
           >
-            <Image src={businessInfo?.companyLogoUrl} />
+            <Image src={image || businessInfo?.companyLogoUrl} />
             {hovered ? <Text>Drag image here or click to upload</Text> : ""}
           </Dropzone>
-          <TextInput
-            label={t("businessName")}
-            withAsterisk
-            value={businessName}
-            onChange={(e) => setBusinessName(e.target.value)}
-          />
-          <TextInput
-            label={t("jobTitle")}
-            withAsterisk
-            value={jobTitle}
-            onChange={(e) => setJobTitle(e.target.value)}
-          />
-
-          <Button loading={false}>{t("update")}</Button>
+          <form onSubmit={form.onSubmit(handleFormSubmit)}>
+            <Stack>
+              <TextInput
+                placeholder={businessInfo?.name}
+                label={t("businessName")}
+                withAsterisk
+                {...form.getInputProps("name")}
+              />
+              <TextInput
+                placeholder={businessInfo?.jobTitle}
+                label={t("jobTitle")}
+                withAsterisk
+                {...form.getInputProps("jobTitle")}
+              />
+              {form.isDirty() && (
+                <Button loading={updatingBusinessInfo} type="submit">
+                  {t("update")}
+                </Button>
+              )}
+            </Stack>
+          </form>
         </Stack>
       </Card>
     </Paper>

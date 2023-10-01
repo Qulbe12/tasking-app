@@ -8,7 +8,6 @@ import useSockets from "./hooks/useSockets";
 import { NavigationProgress } from "@mantine/nprogress";
 import { ModalsProvider } from "@mantine/modals";
 import Version from "./components/Version";
-import ProcessSheet from "./components/ProcessSheet";
 
 const myCache = createEmotionCache({ key: "mantine", prepend: false });
 
@@ -50,7 +49,6 @@ const Providers = () => {
       <NotificationsProvider>
         <ModalsProvider>
           <RouterProvider router={router} />
-          <ProcessSheet />
         </ModalsProvider>
       </NotificationsProvider>
     </MantineProvider>
