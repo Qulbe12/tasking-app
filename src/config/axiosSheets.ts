@@ -5,7 +5,6 @@ export const axiosSheets = axios.create({
   baseURL: SHEETS_URL,
 
   headers: {
-    "Access-Control-Allow-Origin": "*",
     Accept: "multipart/form-data",
     "Content-Type": "multipart/form-data",
   },

@@ -42,6 +42,13 @@ const ManageSeats = () => {
             </Text>
           </Group>
 
+          <button
+            onClick={() => {
+              console.log(businessInfo?.invitedUsers);
+            }}
+          >
+            Log Business
+          </button>
           <Table striped my="md">
             <thead>
               <tr>
@@ -51,16 +58,16 @@ const ManageSeats = () => {
               </tr>
             </thead>
             <tbody>
-              {businessInfo?.seats.map((s) => {
+              {businessInfo?.seats.map((s, i) => {
                 return (
-                  <tr key={s.id}>
+                  <tr key={s.id + i + "seats"}>
                     <td>
                       <Group>
-                        <Avatar size="xs" src={s.user.avatar} /> {s.user.name}
+                        <Avatar size="xs" src={s.avatar} /> {s.name}
                       </Group>
                     </td>
-                    <td>{s.user.email}</td>
-                    <td>{s.user.role}</td>
+                    <td>{s.email}</td>
+                    <td>{s.role}</td>
                   </tr>
                 );
               })}
@@ -86,9 +93,9 @@ const ManageSeats = () => {
             </tr>
           </thead>
           <tbody>
-            {businessInfo?.invitedUsers.map((iu) => {
+            {businessInfo?.invitedUsers.map((iu, i) => {
               return (
-                <tr key={iu}>
+                <tr key={iu + i + "invitedUsers"}>
                   <td>{iu}</td>
                 </tr>
               );

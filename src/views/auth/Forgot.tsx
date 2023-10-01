@@ -26,20 +26,54 @@ const Forgot = () => {
     validate: yupResolver(schema),
   });
 
+  const otpSchema = Yup.object().shape({
+    secret: Yup.string().required(t("secretRequired") ?? ""),
+    password: Yup.string().required(t("passwordRequired") ?? ""),
+  });
+  const otpForm = useForm({
+    initialValues: {
+      secret: "",
+      password: "",
+    },
+    validate: yupResolver(otpSchema),
+  });
+
   const [loading, setLoading] = useState(false);
+
+  const [requestSent, setRequestSent] = useState(false);
 
   const handleSubmit = async (values: typeof form.values) => {
     setLoading(true);
     try {
-      const res = await axiosPrivate.post("/users/forgot-password", { email: values.email });
-      showNotification({ message: res.data.message });
-      setLoading(false);
+      await axiosPrivate.post("/users/forgot-password", { email: values.email });
+      setRequestSent(true);
+      showNotification({ message: "Reset opt sent to registered email." });
     } catch (error) {
       const err = error as IErrorResponse;
-      showError(err.response?.data.message);
+      console.log(err);
+    } finally {
       setLoading(false);
     }
   };
+
+  const handleOtpSubmit = async (values: typeof otpForm.values) => {
+    setLoading(true);
+    try {
+      if (form.validate()) {
+        await axiosPrivate.post("/users/reset-password", { email: form.values.email, ...values });
+        showNotification({ message: "Password reset successfully, please login to continue" });
+        form.reset();
+        otpForm.reset();
+        navigate("/auth/login");
+      }
+      setRequestSent(false);
+    } catch (err) {
+      showError("Invalid OTP");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <Paper p="xl" className="h-screen">
       <Flex direction="column" justify="space-between" className="h-full">
@@ -57,10 +91,35 @@ const Forgot = () => {
               />
 
               <Button loading={loading} type="submit">
-                {t("resetPassword")}
+                {requestSent ? t("resendOtp") : t("resetPassword")}
               </Button>
             </Stack>
           </form>
+
+          {requestSent && (
+            <form onSubmit={otpForm.onSubmit(handleOtpSubmit)}>
+              <Title order={2}>{t("resetPassword")}</Title>
+              <Stack>
+                <TextInput
+                  withAsterisk
+                  label="OTP"
+                  placeholder="000000"
+                  {...otpForm.getInputProps("secret")}
+                />
+
+                <TextInput
+                  withAsterisk
+                  type="password"
+                  label={t("newPassword")}
+                  placeholder="******"
+                  {...otpForm.getInputProps("password")}
+                />
+                <Button loading={loading} type="submit">
+                  {t("resetPassword")}
+                </Button>
+              </Stack>
+            </form>
+          )}
         </div>
 
         <Anchor

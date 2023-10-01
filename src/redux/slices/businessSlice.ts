@@ -75,9 +75,8 @@ export const businessSlice = createSlice({
         state.loaders.invitingUser = true;
       })
       .addCase(inviteUserToBusiness.fulfilled, (state, action) => {
-        if (state.businessInfo) {
-          state.businessInfo.invitedUsers = action.payload;
-        }
+        state.businessInfo = action.payload;
+
         state.loaders.invitingUser = false;
       })
       .addCase(inviteUserToBusiness.rejected, (state) => {

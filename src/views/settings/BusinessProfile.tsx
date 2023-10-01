@@ -23,8 +23,8 @@ const BusinessProfile = () => {
   }, []);
 
   const schema = yup.object({
-    name: yup.string().required(),
-    jobTitle: yup.string().required(),
+    name: yup.string(),
+    jobTitle: yup.string(),
   });
 
   const form = useForm({
@@ -47,7 +47,14 @@ const BusinessProfile = () => {
 
   const handleFormSubmit = useCallback(
     async (values: typeof form.values) => {
-      await dispatch(updateBusinessInfo({ values }));
+      const newForm = {
+        name: values.name || businessInfo?.name || "",
+        jobTitle: values.jobTitle || businessInfo?.jobTitle || "",
+      };
+
+      console.log(newForm);
+
+      await dispatch(updateBusinessInfo({ values: newForm }));
       form.reset();
     },
     [businessInfo],
