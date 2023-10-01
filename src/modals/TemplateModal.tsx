@@ -11,19 +11,11 @@ import {
   Select,
   Stack,
   Text,
-  Textarea,
   TextInput,
 } from "@mantine/core";
 import { useForm, yupResolver } from "@mantine/form";
 import { IconEdit, IconPlus, IconTrash } from "@tabler/icons";
-import {
-  DocumentPriority,
-  DocumentStatus,
-  FieldType,
-  ICreateField,
-  IField,
-  ITemplate,
-} from "hexa-sdk/dist/app.api";
+import { FieldType, IField, ITemplate } from "hexa-sdk/dist/app.api";
 import React, { useEffect, useState } from "react";
 import DynamicField from "../components/DynamicField";
 import {
@@ -36,7 +28,7 @@ import {
 } from "../redux/api/templateApi";
 import { useAppDispatch, useAppSelector } from "../redux/store";
 import * as yup from "yup";
-import { DatePicker } from "@mantine/dates";
+import { ICreateField } from "../interfaces/templates/IUpdateTemplatesFields";
 
 type TemplateModalProps = {
   template?: ITemplate;
@@ -64,6 +56,7 @@ const TemplateModal = ({ onClose, opened, template }: ModalProps & TemplateModal
     required: false,
     type: FieldType.Text,
   });
+  const [multiSelectOptions, setMultiSelectOptions] = useState<string[]>([""]);
 
   const [newFieldModal, setNewFieldModal] = useState(false);
   const [updateFieldModal, setUpdateFieldModal] = useState(false);
@@ -113,35 +106,6 @@ const TemplateModal = ({ onClose, opened, template }: ModalProps & TemplateModal
             {...form.getInputProps("name")}
           />
 
-          <Divider label="Default Fields" />
-          <Stack>
-            <TextInput label="Title" withAsterisk disabled />
-            <Textarea label="Description" withAsterisk disabled />
-            <DatePicker label="Start Date" withAsterisk disabled />
-            <DatePicker label="Due Date" withAsterisk disabled />
-            <Select
-              disabled
-              label="Priority"
-              placeholder="Pick one"
-              withAsterisk
-              data={[
-                { value: DocumentPriority.Low, label: "Low" },
-                { value: DocumentPriority.High, label: "High" },
-                { value: DocumentPriority.Urgent, label: "Urgent" },
-              ]}
-            />
-            <Select
-              label="Status"
-              placeholder="Pick one"
-              withAsterisk
-              data={[
-                { value: DocumentStatus.Todo, label: "Todo" },
-                { value: DocumentStatus.InProgresss, label: "In Progress" },
-                { value: DocumentStatus.Complete, label: "Complete" },
-              ]}
-            />
-          </Stack>
-
           {!template?.default && template && activeBoard?.owner.email === user?.user.email && (
             <Flex gap="md">
               <Text>Fields</Text>
@@ -157,19 +121,31 @@ const TemplateModal = ({ onClose, opened, template }: ModalProps & TemplateModal
                 <DynamicField field={f} />
                 <ActionIcon
                   color="indigo"
-                  variant={"filled"}
-                  size="lg"
+                  variant={"subtle"}
+                  size="sm"
                   onClick={() => {
                     setUpdateFieldModal(true);
+                    // const updateField:IUpdateField = {
+                    //     label: f.label,
+                    //     type: f.type,
+                    //     required: f.required,
+                    //     options: f.options
+                    // }
                     setField(f);
+                    setFieldVals({
+                      label: f.label,
+                      options: f.options,
+                      required: f.required,
+                      type: f.type,
+                    });
                   }}
                 >
                   <IconEdit />
                 </ActionIcon>
                 <ActionIcon
                   color="red"
-                  variant={"filled"}
-                  size="lg"
+                  variant={"subtle"}
+                  size="sm"
                   onClick={() => {
                     dispatch(deleteTemplateFields({ field: f.id, fieldId: template?.id }));
                   }}
@@ -221,10 +197,11 @@ const TemplateModal = ({ onClose, opened, template }: ModalProps & TemplateModal
           <TextInput
             required
             label="Field Label"
-            defaultValue={field.key}
+            defaultValue={field.label}
             onChange={(e) => setFieldVals({ ...fieldVals, label: e.target.value })}
           />
           <Select
+            disabled
             required
             value={field.type}
             onChange={(e) => setFieldVals({ ...fieldVals, type: e as FieldType })}
@@ -245,8 +222,10 @@ const TemplateModal = ({ onClose, opened, template }: ModalProps & TemplateModal
           fieldVals.type === FieldType.Radio ||
           fieldVals.type === FieldType.Select ? (
             <MultiSelect
+              disabled
               label="Options"
-              data={[]}
+              value={fieldVals.options}
+              data={fieldVals.options}
               withAsterisk
               required
               placeholder="Select items"
@@ -262,8 +241,54 @@ const TemplateModal = ({ onClose, opened, template }: ModalProps & TemplateModal
           ) : (
             ""
           )}
+          {fieldVals.type === FieldType.Multiselect ||
+          fieldVals.type === FieldType.Radio ||
+          fieldVals.type === FieldType.Select ? (
+            <Flex align="center" justify="space-between">
+              <MultiSelect
+                w="75%"
+                label="Options"
+                data={[]}
+                withAsterisk
+                required
+                placeholder="Select items"
+                searchable
+                creatable
+                getCreateLabel={(query) => `+ Create ${query}`}
+                onCreate={(query) => {
+                  const item = query;
+                  setMultiSelectOptions([...multiSelectOptions, item]);
+                  return item;
+                }}
+              />
+              <Button
+                loading={!!loading}
+                mt="xl"
+                onClick={async () => {
+                  if (!template) return;
+
+                  const { label, required, type } = fieldVals;
+                  console.log(fieldVals);
+                  await dispatch(
+                    updateTemplateFields({
+                      fieldId: template.id,
+                      updatedField: { label, options: multiSelectOptions, required, type },
+                      field: field.id,
+                    }),
+                  );
+                  setMultiSelectOptions([]);
+                  setUpdateFieldModal(false);
+                }}
+              >
+                Update
+              </Button>
+            </Flex>
+          ) : (
+            ""
+          )}
 
           <Checkbox
+            disabled
             label="Required?"
             onChange={(e) => setFieldVals({ ...fieldVals, required: e.target.checked })}
           />
@@ -283,12 +308,23 @@ const TemplateModal = ({ onClose, opened, template }: ModalProps & TemplateModal
         <Group mt="xl" position="right">
           <Button onClick={() => setUpdateFieldModal(false)}>Cancel</Button>
           <Button
-            loading={!!loading}
+            loading={
+              fieldVals.type === FieldType.Multiselect ||
+              fieldVals.type === FieldType.Radio ||
+              fieldVals.type === FieldType.Select
+                ? false
+                : !!loading
+            }
+            disabled={
+              fieldVals.type === FieldType.Multiselect ||
+              fieldVals.type === FieldType.Radio ||
+              fieldVals.type === FieldType.Select
+            }
             onClick={async () => {
               if (!template) return;
 
               const { label, options, required, type } = fieldVals;
-
+              console.log(fieldVals);
               await dispatch(
                 updateTemplateFields({
                   fieldId: template.id,

@@ -124,13 +124,15 @@ export const templateSlice = createSlice({
       .addCase(updateTemplateFields.pending, (state) => {
         state.loading++;
       })
-      .addCase(
-        updateTemplateFields.fulfilled,
-        (state, { payload }: PayloadAction<IUpdateFieldResponse>) => {
-          state.loading--;
-          state.updatedField = payload;
-        },
-      )
+      .addCase(updateTemplateFields.fulfilled, (state, { payload }: PayloadAction<ITemplate>) => {
+        state.loading--;
+        state.data = state.data.map((x) => {
+          if (x.id !== payload.id) {
+            return x;
+          }
+          return payload;
+        });
+      })
       .addCase(updateTemplateFields.rejected, (state, action) => {
         state.loading--;
         showError(action.error.message);
