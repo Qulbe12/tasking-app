@@ -4,6 +4,7 @@ import IUserResponse from "../../interfaces/account/IUserResponse";
 import { centralizedErrorHandler } from "../commonSliceFunctions";
 import IRegisterUser from "../../interfaces/account/IRegisterUser";
 import { IAuthUser } from "hexa-sdk";
+import { FileWithPath } from "file-selector";
 
 interface User {
   email: string;
@@ -76,6 +77,20 @@ export const acceptInvitation = createAsyncThunk(
         `/users/accept-invitation/${invitationId}/${token}`,
       );
       localStorage.setItem("token", res.data.accessToken);
+      return res.data;
+    } catch (err) {
+      return centralizedErrorHandler(err, rejectWithValue, dispatch);
+    }
+  },
+);
+
+export const updateUserAvatar = createAsyncThunk(
+  "auth/updateUserAvatar",
+  async (avatar: FileWithPath, { rejectWithValue, dispatch }) => {
+    try {
+      const formData = new FormData();
+      formData.append("avatar", avatar);
+      const res = await axiosPrivate.post<IAuthUser>("/users/change-avatar", formData);
       return res.data;
     } catch (err) {
       return centralizedErrorHandler(err, rejectWithValue, dispatch);
