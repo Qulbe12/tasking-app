@@ -18,6 +18,8 @@ import { IEventCreate } from "../../interfaces/nylas/IEventCreate";
 import { IContactResponse } from "../../interfaces/nylas/IContactResponse";
 import { IFolderResponse } from "../../interfaces/nylas/IFolderResponse";
 import { setUpdatedThread } from "../slices/nylasSlice";
+import { IContact } from "../../interfaces/nylas/IContact";
+import { ICreateContact } from "../../interfaces/nylas/ICreateContact";
 
 const { nylasApi } = api;
 const { connect } = nylasApi;
@@ -315,12 +317,53 @@ export const getContacts = createAsyncThunk(
   "nylas/getContacts",
   async (args, { rejectWithValue }) => {
     try {
-      const res = await nylasAxios.get<IContactResponse[]>("/contacts");
-
+      const res = await nylasAxios.get<IContactResponse[]>("/contacts?limit=1000");
       return res.data;
     } catch (err) {
       const error = err as unknown as IErrorResponse;
       return rejectWithValue(error.response?.data.message);
+    }
+  },
+);
+
+export const createContact = createAsyncThunk(
+  "nylas/createContact",
+  async (data: Partial<ICreateContact>, { rejectWithValue, dispatch }) => {
+    try {
+      const res = await nylasAxios.post<IContact>("/contacts", data);
+      return res.data;
+    } catch (err) {
+      const error = err as unknown as IErrorResponse;
+      return centralizedErrorHandler(error, rejectWithValue, dispatch);
+    }
+  },
+);
+
+export const updateContact = createAsyncThunk(
+  "nylas/updateContact",
+  async (
+    { id, data }: { id: string; data: Partial<ICreateContact> },
+    { rejectWithValue, dispatch },
+  ) => {
+    try {
+      const res = await nylasAxios.put<IContact>(`/contacts/${id}`, data);
+      return res.data;
+    } catch (err) {
+      const error = err as unknown as IErrorResponse;
+      return centralizedErrorHandler(error, rejectWithValue, dispatch);
+    }
+  },
+);
+
+export const deleteContact = createAsyncThunk(
+  "nylas/deleteContact",
+  async (id: string, { rejectWithValue, dispatch }) => {
+    try {
+      await nylasAxios.delete<string>(`/contacts/${id}`);
+      return id;
+    } catch (err) {
+      const error = err as unknown as IErrorResponse;
+      return centralizedErrorHandler(error, rejectWithValue, dispatch);
     }
   },
 );

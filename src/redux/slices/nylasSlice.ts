@@ -2,8 +2,10 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import {
   connectNylas,
   createCalendar,
+  createContact,
   createEvent,
   deleteCalendar,
+  deleteContact,
   deleteEvent,
   getAllCalendars,
   getAllFolders,
@@ -17,6 +19,7 @@ import {
   getOneCalendar,
   sendMessage,
   updateCalendar,
+  updateContact,
   updateEvent,
   updateThread,
 } from "../api/nylasApi";
@@ -35,6 +38,7 @@ import { IFolderResponse } from "../../interfaces/nylas/IFolderResponse";
 import { IEventResponse } from "../../interfaces/nylas/IEventResponse";
 import { Event } from "react-big-calendar";
 import _ from "lodash";
+import { IContact } from "../../interfaces/nylas/IContact";
 
 export interface GroupsState {
   data: any;
@@ -54,7 +58,9 @@ export interface GroupsState {
   event?: IEventResponse;
   status: "conencted" | null;
   nylasToken?: NylasConnectedPayload;
+  nylasContacts: IContact[];
   contacts: IContactRemapped[];
+  targetedContact: IContact | null;
   loaders: {
     connecting: boolean;
     gettingThreads: boolean;
@@ -69,6 +75,9 @@ export interface GroupsState {
     gettingEvents: boolean;
     creatingEvent: boolean;
     gettingContacts: boolean;
+    creatingContact: boolean;
+    deletingContact: boolean;
+    updatingContact: boolean;
     updatingThread: boolean;
     gettingFolder: boolean;
   };
@@ -104,9 +113,14 @@ const initialState: GroupsState = {
     gettingEvents: false,
     creatingEvent: false,
     gettingContacts: false,
+    creatingContact: false,
+    deletingContact: false,
+    updatingContact: false,
     updatingThread: false,
     gettingFolder: false,
   },
+  nylasContacts: [],
+  targetedContact: null,
 };
 
 export const nylasSlice = createSlice({
@@ -129,6 +143,12 @@ export const nylasSlice = createSlice({
         // Update the object with the specified id using spread syntax
         state.threads[index] = { ...state.threads[index], ...action.payload };
       }
+    },
+    setNylasContacts(state, action: PayloadAction<IContact[]>) {
+      state.nylasContacts = action.payload;
+    },
+    setTargetedContact(state, action: PayloadAction<IContact | null>) {
+      state.targetedContact = action.payload;
     },
   },
   extraReducers: (builder) =>
@@ -344,19 +364,70 @@ export const nylasSlice = createSlice({
       })
       .addCase(getContacts.fulfilled, (state, action: PayloadAction<IContactResponse[]>) => {
         const contacts = action.payload.filter((c) => c.given_name != null);
-        const mappedContacts: IContactRemapped[] = contacts.map((c) => {
+        state.contacts = contacts.map((c) => {
           return {
             id: c.id,
             email: c.emails[0].email,
             name: _.startCase(`${c.given_name} ${c.surname}`),
           };
         });
-
-        state.contacts = mappedContacts;
         state.loaders.gettingContacts = false;
+        state.nylasContacts = action.payload as IContact[];
       })
       .addCase(getContacts.rejected, (state) => {
         state.loaders.gettingContacts = false;
+      })
+      // create contact
+      .addCase(createContact.pending, (state) => {
+        state.loaders.creatingContact = true;
+      })
+      .addCase(createContact.fulfilled, (state, action: PayloadAction<IContact>) => {
+        const contact = action.payload;
+        const mappedContact: IContactRemapped = {
+          id: contact.id,
+          email: contact.emails[0].email,
+          name: _.startCase(`${contact.given_name} ${contact.surname}`),
+        };
+        state.contacts.push(mappedContact);
+        state.loaders.creatingContact = false;
+        state.nylasContacts.push(action.payload);
+      })
+      .addCase(createContact.rejected, (state) => {
+        state.loaders.creatingContact = false;
+      })
+      // update contact
+      .addCase(updateContact.pending, (state) => {
+        state.loaders.updatingContact = true;
+      })
+      .addCase(updateContact.fulfilled, (state, action: PayloadAction<IContact>) => {
+        const contact = action.payload;
+        const mappedContact: IContactRemapped = {
+          id: contact.id,
+          email: contact.emails[0].email,
+          name: _.startCase(`${contact.given_name} ${contact.surname}`),
+        };
+
+        state.contacts = state.contacts.map((existing) =>
+          existing.id === contact.id ? mappedContact : existing,
+        );
+        state.loaders.updatingContact = false;
+        state.nylasContacts = state.nylasContacts.map((existing) =>
+          existing.id === contact.id ? contact : existing,
+        );
+      })
+      .addCase(updateContact.rejected, (state) => {
+        state.loaders.updatingContact = false;
+      })
+      // delete contact
+      .addCase(deleteContact.pending, (state) => {
+        state.loaders.deletingContact = true;
+      })
+      .addCase(deleteContact.fulfilled, (state, action: PayloadAction<string>) => {
+        state.loaders.deletingContact = false;
+        state.nylasContacts = state.nylasContacts.filter((x) => x.id !== action.payload);
+      })
+      .addCase(deleteContact.rejected, (state) => {
+        state.loaders.deletingContact = false;
       })
       // Get All Folders
       .addCase(getAllFolders.pending, (state) => {
@@ -400,6 +471,7 @@ export const nylasSlice = createSlice({
 });
 
 const nylasReducer = nylasSlice.reducer;
-export const { setNylasToken, setFolderId, setUpdatedThread } = nylasSlice.actions;
+export const { setTargetedContact, setNylasToken, setFolderId, setUpdatedThread } =
+  nylasSlice.actions;
 
 export default nylasReducer;
