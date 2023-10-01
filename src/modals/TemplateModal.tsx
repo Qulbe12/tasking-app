@@ -56,7 +56,7 @@ const TemplateModal = ({ onClose, opened, template }: ModalProps & TemplateModal
     required: false,
     type: FieldType.Text,
   });
-  const [multiSelectOptions, setMultiSelectOptions] = useState<string[]>([""]);
+  const [multiSelectOptions, setMultiSelectOptions] = useState<string[]>([]);
 
   const [newFieldModal, setNewFieldModal] = useState(false);
   const [updateFieldModal, setUpdateFieldModal] = useState(false);
