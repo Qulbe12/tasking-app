@@ -1,7 +1,7 @@
 const API_URL = "https://api.hexadesk.ca";
 
 export const BASE_URL = `${API_URL}/api`;
-export const SOCKET_URL = API_URL;
+export const SOCKET_URL = "http://hexa-socket-service.us-east-1.elasticbeanstalk.com/";
 
 export const SHEETS_URL =
   "http://hexasheetprocessorserver-dev.eba-bfpbzp3a.us-east-1.elasticbeanstalk.com/";

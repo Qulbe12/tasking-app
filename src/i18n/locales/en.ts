@@ -205,6 +205,12 @@ const en = {
     businessProfile: "Business Profile",
     updateBusinessProfile: "Update Business Profile",
     jobTitle: "Job Title",
+
+    manageSignatures: "Manage Signatures",
+    addSignature: "Add Signature",
+    signatures: "Signatures",
+    noSignatureAdded: "You do not have any signatures added",
+    pleaseAddOne: "please add one",
   },
 };
 

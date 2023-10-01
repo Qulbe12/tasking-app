@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 
-import { createSlice } from "@reduxjs/toolkit";
+import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import IUserResponse from "../../interfaces/account/IUserResponse";
 import {
   acceptInvitation,
@@ -8,6 +8,7 @@ import {
   loginUser,
   registerUser,
   subscribeToPlan,
+  updateUserAvatar,
 } from "../api/authApi";
 
 export interface AuthState {
@@ -15,10 +16,16 @@ export interface AuthState {
   token: string;
   loading: boolean;
   error?: string;
+  loaders: {
+    updatingAvatar: boolean;
+  };
 }
 
 const initialState: AuthState = {
   loading: false,
+  loaders: {
+    updatingAvatar: false,
+  },
   token: "",
 };
 
@@ -119,6 +126,20 @@ export const authSlice = createSlice({
       })
       .addCase(acceptInvitation.rejected, (state) => {
         state.loading = false;
+      })
+      // Update Avatar
+      .addCase(updateUserAvatar.pending, (state) => {
+        state.loaders.updatingAvatar = true;
+      })
+      .addCase(updateUserAvatar.fulfilled, (state, action: PayloadAction<string>) => {
+        if (state.user) {
+          state.user.user.avatar = action.payload;
+        }
+
+        state.loaders.updatingAvatar = false;
+      })
+      .addCase(updateUserAvatar.rejected, (state) => {
+        state.loaders.updatingAvatar = false;
       });
   },
 });

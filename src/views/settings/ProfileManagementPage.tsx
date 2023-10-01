@@ -1,11 +1,14 @@
 import { Button, Card, Paper, Stack, TextInput, Title } from "@mantine/core";
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { showError } from "../../redux/commonSliceFunctions";
 import { axiosPrivate } from "../../config/axios";
 import { showNotification } from "@mantine/notifications";
 import { useAppDispatch, useAppSelector } from "../../redux/store";
 import { updateName } from "../../redux/slices/authSlice";
 import { useTranslation } from "react-i18next";
+import AvatarSelect from "../../components/AvatarSelect";
+import { FileWithPath } from "file-selector";
+import { updateUserAvatar } from "../../redux/api/authApi";
 
 const ProfileManagementPage = () => {
   const { t } = useTranslation();
@@ -19,26 +22,26 @@ const ProfileManagementPage = () => {
 
   const handleNameUpdate = async () => {
     if (!name) return;
-
     setLoading(true);
-
     try {
       const res = await axiosPrivate.patch("/users/update-profile", {
         name,
       });
-
       dispatch(updateName(name));
       setName("");
-
       showNotification({
         message: res.data.message,
       });
-      setLoading(false);
     } catch (err: any) {
-      setLoading(false);
       showError(err.response.data.message);
+    } finally {
+      setLoading(false);
     }
   };
+
+  const handleAvatarChange = useCallback(async (files: FileWithPath[]) => {
+    dispatch(updateUserAvatar(files[0]));
+  }, []);
 
   return (
     <Paper mt="md">
@@ -47,6 +50,7 @@ const ProfileManagementPage = () => {
           {t("updateUserInformation")}
         </Title>
         <Stack>
+          <AvatarSelect handleAvatarChange={handleAvatarChange} image={user?.user.avatar} />
           <TextInput
             placeholder={user?.user.name}
             label={t("name")}

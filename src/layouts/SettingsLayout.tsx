@@ -68,6 +68,13 @@ const SettingsLayout = () => {
                   onLinkClick("business-profile");
                 }}
               />
+              <NavLink
+                active={location.pathname === "/account/settings/signatures"}
+                label={t("signatures")}
+                onClick={() => {
+                  onLinkClick("signatures");
+                }}
+              />
             </NavLink>
           )}
         </Grid.Col>

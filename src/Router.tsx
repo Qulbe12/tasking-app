@@ -27,6 +27,7 @@ import ProfileManagementPage from "./views/settings/ProfileManagementPage";
 import PrivacyPolicy from "./views/legal/PrivacyPolicy";
 import TermsAndConditions from "./views/legal/TermsAndConditions";
 import BusinessProfile from "./views/settings/BusinessProfile";
+import SignatureManagement from "./views/settings/SignatureManagement";
 
 const router = createBrowserRouter([
   {
@@ -90,6 +91,10 @@ const router = createBrowserRouter([
               {
                 path: "business-profile",
                 element: <BusinessProfile />,
+              },
+              {
+                path: "signatures",
+                element: <SignatureManagement />,
               },
             ],
           },

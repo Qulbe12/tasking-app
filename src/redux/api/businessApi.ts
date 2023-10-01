@@ -15,6 +15,20 @@ export const getBusinessInfo = createAsyncThunk(
     }
   },
 );
+export const updateBusinessInfo = createAsyncThunk(
+  "business/updateBusinessInfo",
+  async (
+    { values }: { values: { name: string; jobTitle: string } },
+    { rejectWithValue, dispatch },
+  ) => {
+    try {
+      const res = await axiosPrivate.patch<IBusinessResponse>("/business", values);
+      return res.data;
+    } catch (err) {
+      return centralizedErrorHandler(err, rejectWithValue, dispatch);
+    }
+  },
+);
 
 export const purchaseSeats = createAsyncThunk(
   "business/purchaseSeats",
