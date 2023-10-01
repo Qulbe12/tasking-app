@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Affix, Button, Grid, ScrollArea } from "@mantine/core";
+import { Affix, Box, Button, Flex } from "@mantine/core";
 import { useAppDispatch, useAppSelector } from "../../redux/store";
 import {
   getAllFolders,
@@ -55,71 +55,69 @@ const EmailList = ({ onActionButtonClick }: EmailListProps) => {
 
   return (
     <>
-      <ScrollArea>
-        <EmailListHeader
-          onActionButtonClick={onActionButtonClick}
-          type={type}
-          onTypeChange={setType}
-        />
-        <Grid h="87vh" miw="90%">
-          <Grid.Col span={2} h="100%">
-            <FoldersList selectedThreadId={selectedThreadId} />
-          </Grid.Col>
-          <Grid.Col span={3} h="100%">
-            <ThreadsList
-              selectedThreadId={selectedThreadId}
-              onThreadClick={(t) => {
-                setSelectedThreadId(t.id);
+      <EmailListHeader
+        onActionButtonClick={onActionButtonClick}
+        type={type}
+        onTypeChange={setType}
+      />
+      <Flex justify="space-between" h="87vh" miw="90%">
+        <Box w="24%" h="100%">
+          <FoldersList selectedThreadId={selectedThreadId} />
+        </Box>
+        <Box w="24%" h="100%">
+          <ThreadsList
+            selectedThreadId={selectedThreadId}
+            onThreadClick={(t) => {
+              setSelectedThreadId(t.id);
+              setShowEmailForm(false);
+            }}
+            afterScroll={() => {
+              dispatch(
+                getMoreThreads({
+                  view: "expanded",
+                  limit: 20,
+                  offset: threads.length,
+                  in: inFolder,
+                }),
+              );
+            }}
+          />
+        </Box>
+        <Box w="50%" h="100%">
+          {showEmailForm ? (
+            <ComposeEmail
+              selectedMessage={selectedMessage}
+              onCancelClick={() => {
                 setShowEmailForm(false);
-              }}
-              afterScroll={() => {
-                dispatch(
-                  getMoreThreads({
-                    view: "expanded",
-                    limit: 20,
-                    offset: threads.length,
-                    in: inFolder,
-                  }),
-                );
+                setSelectedMessage(null);
               }}
             />
-          </Grid.Col>
-          <Grid.Col span={7} h="100%">
-            {showEmailForm ? (
-              <ComposeEmail
-                selectedMessage={selectedMessage}
-                onCancelClick={() => {
-                  setShowEmailForm(false);
-                  setSelectedMessage(null);
-                }}
-              />
-            ) : (
-              <MessageDetails
-                selectedThreadId={selectedThreadId}
-                selectedMessage={selectedMessage}
-                onForwardClick={(m) => {
-                  setSelectedMessage(m);
-                  setShowEmailForm(true);
-                }}
-                onDocumentCardClick={(d) => navigate("/board", { state: { document: d } })}
-              />
-            )}
-          </Grid.Col>
-        </Grid>
-        {!showEmailForm && (
-          <Affix position={{ bottom: 20, right: 20 }}>
-            <Button
-              variant="filled"
-              radius="xl"
-              size="md"
-              uppercase
-              onClick={() => setShowEmailForm(true)}
-            >
-              {t("composeEmail")}
-            </Button>
-          </Affix>
-        )}
-      </ScrollArea>
+          ) : (
+            <MessageDetails
+              selectedThreadId={selectedThreadId}
+              selectedMessage={selectedMessage}
+              onForwardClick={(m) => {
+                setSelectedMessage(m);
+                setShowEmailForm(true);
+              }}
+              onDocumentCardClick={(d) => navigate("/board", { state: { document: d } })}
+            />
+          )}
+        </Box>
+      </Flex>
+      {!showEmailForm && (
+        <Affix position={{ bottom: 20, right: 20 }}>
+          <Button
+            variant="filled"
+            radius="xl"
+            size="md"
+            uppercase
+            onClick={() => setShowEmailForm(true)}
+          >
+            {t("composeEmail")}
+          </Button>
+        </Affix>
+      )}
     </>
   );
 };

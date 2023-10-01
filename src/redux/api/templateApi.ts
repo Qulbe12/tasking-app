@@ -1,5 +1,5 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { ICreateField, ICreateTemplate, IUpdateTemplate } from "hexa-sdk/dist/app.api";
+import { ICreateField, ICreateTemplate, ITemplate, IUpdateTemplate } from "hexa-sdk/dist/app.api";
 import api from "../../config/api";
 import { centralizedErrorHandler } from "../commonSliceFunctions";
 import { axiosPrivate } from "../../config/axios";
@@ -96,10 +96,11 @@ export const updateTemplateFields = createAsyncThunk(
     { rejectWithValue, dispatch },
   ) => {
     try {
-      const res = await axiosPrivate.patch<IUpdateFieldResponse>(
+      const res = await axiosPrivate.patch<ITemplate>(
         `templates/${data.fieldId}/fields/${data.field}`,
         data.updatedField,
       );
+      console.log(res.data);
       return res.data;
     } catch (err) {
       return centralizedErrorHandler(err, rejectWithValue, dispatch);

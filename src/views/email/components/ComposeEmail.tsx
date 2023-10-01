@@ -49,6 +49,7 @@ const ComposeEmail = ({ onCancelClick, selectedMessage }: ComposeEmailProps) => 
     ],
   });
 
+  const [selectedSignature, setSelectedSignature] = useState("");
   const [filteredContacts, setFilteredContacts] = useState<string[]>([]);
   const [selectedEmails, setSelectedEmails] = useState<string[]>([]);
   const [selectSearch, setSelectSearch] = useState<string>("");
@@ -225,10 +226,14 @@ const ComposeEmail = ({ onCancelClick, selectedMessage }: ComposeEmailProps) => 
 
         {!selectedMessage ? (
           <CustomTextEditor
+            onSignatureClick={(s) => {
+              setSelectedSignature(s.value);
+            }}
             content={form.body}
             onUpdate={(content) => {
               setForm({ ...form, body: content });
             }}
+            selectedSignature={selectedSignature}
           />
         ) : (
           <Card>

@@ -206,6 +206,11 @@ const fr = {
     businessProfile: "Profil d'entreprise",
     updateBusinessProfile: "Mettre à jour le profil de l'entreprise",
     jobTitle: "Titre d'emploi",
+    manageSignatures: "Gérer les signatures",
+    addSignature: "Ajouter une signature",
+    signatures: "Signatures",
+    noSignatureAdded: "Vous n'avez ajouté aucune signature",
+    pleaseAddOne: "veuillez en ajouter une",
   },
 };
 

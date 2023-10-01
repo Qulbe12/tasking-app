@@ -1,6 +1,11 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-import { getBusinessInfo, inviteUserToBusiness, purchaseSeats } from "../api/businessApi";
+import {
+  getBusinessInfo,
+  inviteUserToBusiness,
+  purchaseSeats,
+  updateBusinessInfo,
+} from "../api/businessApi";
 import IBusinessResponse from "../../interfaces/business/IBusinessResponse";
 
 export interface BusinessState {
@@ -8,6 +13,8 @@ export interface BusinessState {
   loading: boolean;
   loaders: {
     invitingUser: boolean;
+    gettingBusinessInfo: boolean;
+    updatingBusinessInfo: boolean;
   };
   invitedUsers: any[];
 }
@@ -17,6 +24,8 @@ const initialState: BusinessState = {
   loading: false,
   loaders: {
     invitingUser: false,
+    gettingBusinessInfo: false,
+    updatingBusinessInfo: false,
   },
   invitedUsers: [],
 };
@@ -28,16 +37,26 @@ export const businessSlice = createSlice({
   extraReducers: (builder) =>
     builder
       .addCase(getBusinessInfo.pending, (state) => {
-        state.loading = true;
+        state.loaders.gettingBusinessInfo = true;
       })
       .addCase(getBusinessInfo.fulfilled, (state, action) => {
         state.businessInfo = action.payload;
-        state.loading = false;
+        state.loaders.gettingBusinessInfo = false;
       })
       .addCase(getBusinessInfo.rejected, (state) => {
-        state.loading = false;
+        state.loaders.gettingBusinessInfo = false;
       })
-
+      // Update Business
+      .addCase(updateBusinessInfo.pending, (state) => {
+        state.loaders.updatingBusinessInfo = true;
+      })
+      .addCase(updateBusinessInfo.fulfilled, (state, action) => {
+        state.businessInfo = action.payload;
+        state.loaders.updatingBusinessInfo = false;
+      })
+      .addCase(updateBusinessInfo.rejected, (state) => {
+        state.loaders.updatingBusinessInfo = false;
+      })
       // Purchase Seats
       .addCase(purchaseSeats.pending, (state) => {
         state.loading = true;
@@ -56,9 +75,8 @@ export const businessSlice = createSlice({
         state.loaders.invitingUser = true;
       })
       .addCase(inviteUserToBusiness.fulfilled, (state, action) => {
-        if (state.businessInfo) {
-          state.businessInfo.invitedUsers = action.payload;
-        }
+        state.businessInfo = action.payload;
+
         state.loaders.invitingUser = false;
       })
       .addCase(inviteUserToBusiness.rejected, (state) => {

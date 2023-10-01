@@ -1,6 +1,14 @@
+import { FieldType } from "../documents/IField";
+
 export interface IUpdateField {
   label: string;
-  type: string;
+  type: FieldType;
+  required: boolean;
+  options: string[];
+}
+export interface ICreateField {
+  label: string;
+  type: FieldType;
   required: boolean;
   options: string[];
 }
@@ -11,11 +19,11 @@ interface IFieldResponse {
   label: string;
   options: string[];
   required: boolean;
-  type: string;
+  type: "Text" | "Number" | "Checkbox" | "Radio" | "Date" | "Select" | "Multiselect";
 }
 
 export interface IUpdateFieldResponse {
-  is: string;
+  id: string;
   default: boolean;
   fields: IFieldResponse[];
   name: string;

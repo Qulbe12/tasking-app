@@ -1,9 +1,7 @@
 import { IEntityUser } from "../IEntityUser";
 
-interface ISeatResponse {
+interface ISeatResponse extends IEntityUser {
   id: string;
-  user: IEntityUser;
-  subscription: string;
 }
 
 export default ISeatResponse;

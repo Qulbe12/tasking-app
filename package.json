@@ -2,6 +2,7 @@
   "name": "hexa-react-fe",
   "private": true,
   "version": "0.8.67",
+  "version": "0.8.73",
   "type": "module",
   "scripts": {
     "start": "vite --host",

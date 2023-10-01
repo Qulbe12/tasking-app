@@ -19,6 +19,7 @@ import menuReducer from "./slices/menuSlice";
 import sheetsReducer from "./slices/sheetSlice";
 import commentsReducer from "./slices/commentsSlice";
 import businessReducer from "./slices/businessSlice";
+import signatureReducer from "./slices/signatureSlice";
 
 const persistConfig = {
   blacklist: ["filters"], // eg: ["Boards"]
@@ -40,7 +41,8 @@ const reducers = combineReducers({
   menus: menuReducer,
   sheets: sheetsReducer,
   comments: commentsReducer,
-  business: persistReducer({ key: "business", storage, blacklist: [] }, businessReducer),
+  business: businessReducer,
+  signatures: signatureReducer,
 });
 
 const persistedReducer = persistReducer(
