@@ -30,6 +30,7 @@ const AddCalendarModel = ({ opened, onClose, title }: CommonModalProps) => {
             name: values.name,
           };
           await dispatch(createCalendar(newCalendar));
+
           await dispatch(getAllCalendars());
           form.reset();
           onClose();
