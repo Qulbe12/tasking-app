@@ -14,7 +14,7 @@ const CustomDropzone = (props: Partial<DropzoneProps> & CustomDropzoneProps) => 
 
   return (
     <Dropzone
-      maxSize={props.isSheet ? undefined : 3 * 1024 ** 2}
+      maxSize={props.isSheet ? undefined : 50 * 1024 ** 2}
       accept={PDF_MIME_TYPE}
       onDrop={function (files: FileWithPath[]): void {
         props.onDrop?.(files);
