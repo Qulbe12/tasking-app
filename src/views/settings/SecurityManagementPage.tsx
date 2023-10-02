@@ -26,7 +26,7 @@ const SecurityManagementPage = () => {
     setLoading(true);
 
     try {
-      const res = await axiosPrivate.patch("/users/change-password", {
+      const res = await axiosPrivate.post("/users/change-password", {
         oldPassword,
         newPassword,
       });
