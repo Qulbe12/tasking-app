@@ -15,10 +15,10 @@ import {
   ScrollArea,
   SimpleGrid,
   Stack,
+  Table,
   Tabs,
   Text,
   Title,
-  Tooltip,
   useMantineTheme,
 } from "@mantine/core";
 import { FieldType, IAttachment } from "hexa-sdk/dist/app.api";
@@ -428,37 +428,26 @@ const DocumentsBoardView = () => {
 
                   {gettingChangeLog && <Loader size="sm" />}
 
-                  {changeLog.reverse().map((cl, clIndex) => {
-                    return (
-                      <div key={cl.rid + clIndex}>
-                        {cl.change.reverse().map((ch, i) => {
-                          if (typeof ch.oldVal !== "string" || typeof ch.val !== "string") {
-                            return (
-                              <Text lineClamp={1} size="sm" key={i}>{`${cl.by.name} ${ch.type} ${_(
-                                ch.key,
-                              ).startCase()}`}</Text>
-                            );
-                          }
+                  <Table withColumnBorders={false}>
+                    <tbody>
+                      {changeLog.reverse().map((cl, clIndex) => {
+                        return cl.change.map((ch) => {
                           return (
-                            <Tooltip
-                              zIndex={99}
-                              key={i}
-                              label={`${cl.by.name} ${ch.type} ${_(ch.key).startCase()} from ${
-                                ch.oldVal
-                              } to ${ch.val}`}
-                            >
-                              <Group align="center" position="apart">
-                                <Text lineClamp={1} size="sm">{`${cl.by.name} ${ch.type} ${_(
-                                  ch.key,
-                                ).startCase()} from ${ch.oldVal} to ${ch.val}`}</Text>
-                                <Text size="xs">{dayjs(cl.date).format("MM/DD/YY HH:mm")}</Text>
-                              </Group>
-                            </Tooltip>
+                            <tr key={cl.rid + clIndex}>
+                              <td>
+                                {`${cl.by.name} ${ch.type} ${_(ch.key).startCase()} from ${
+                                  ch.oldVal
+                                } to ${ch.val}`}
+                              </td>
+                              <td className="text-end">
+                                {dayjs(cl.date).format("MM/DD/YY HH:mm")}
+                              </td>
+                            </tr>
                           );
-                        })}
-                      </div>
-                    );
-                  })}
+                        });
+                      })}
+                    </tbody>
+                  </Table>
                 </ScrollArea>
               </Card>
             </Flex>
