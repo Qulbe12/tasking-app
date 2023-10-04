@@ -1,33 +1,31 @@
 import { ActionIcon, Box, Flex, Menu, Text } from "@mantine/core";
 import dayjs from "dayjs";
-import React, { useMemo, useState } from "react";
-import { IThreadResponse } from "../interfaces/nylas/IThreadResponse";
+import React, { useState } from "react";
+import { IThreadExpandedResponse } from "../interfaces/nylas/IThreadResponse";
 import { useAppSelector } from "../redux/store";
 import { IconDots, IconFolder, IconTrash } from "@tabler/icons";
 import { useDisclosure } from "@mantine/hooks";
 import FoldersListModal from "../modals/FoldersListModal";
+import { getThreadSender } from "../utils/getThreadSender";
 
 type ThreadCardProps = {
-  thread: IThreadResponse;
-  onClick: (t: IThreadResponse) => void;
+  thread: IThreadExpandedResponse;
+  onClick: (t: IThreadExpandedResponse) => void;
   selectedThreadId?: string | null;
 };
 
 const ThreadCard: React.FC<ThreadCardProps> = ({ thread, onClick, selectedThreadId }) => {
-  const { contacts } = useAppSelector((state) => state.nylas);
+  const { user } = useAppSelector((state) => state.auth);
   const [threadId, setThreadId] = useState("");
   const [opened, { open, close }] = useDisclosure(false);
 
-  const fullName = useMemo(() => {
-    const participant = thread.participants[0];
-    if (!participant) return "";
-
-    const foundContact = contacts.find((c) => c.email === participant.email);
-    return foundContact ? foundContact.name : participant.email;
-  }, [thread, contacts]);
-
   return (
-    <Box key={thread.id}>
+    <Box
+      key={thread.id}
+      onClick={() => {
+        console.log(thread);
+      }}
+    >
       <Flex
         direction="column"
         my="sm"
@@ -48,7 +46,8 @@ const ThreadCard: React.FC<ThreadCardProps> = ({ thread, onClick, selectedThread
               setThreadId(thread.id);
             }}
           >
-            {fullName}
+            {getThreadSender(thread, user?.user.email ?? "").name ??
+              getThreadSender(thread, user?.user.email ?? "").email}
           </Text>
           <Menu shadow="md" width={160}>
             <Menu.Target>

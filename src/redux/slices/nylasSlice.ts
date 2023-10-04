@@ -44,7 +44,7 @@ export interface GroupsState {
   data: any;
   loading: number;
   messages: IMessageResponse[] | IMessageExpandedResponse[];
-  threads: IThreadResponse[] | IThreadExpandedResponse[];
+  threads: IThreadExpandedResponse[];
   thread?: IThreadResponse;
   calendars: ICalendarResponse[];
   calendar?: ICalendarResponse;

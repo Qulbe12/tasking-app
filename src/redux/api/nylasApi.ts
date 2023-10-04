@@ -112,8 +112,8 @@ export const getAllThreads = createAsyncThunk(
   "nylas/getAllThreads",
   async (args: GetAllThreadsArgs, { rejectWithValue }) => {
     try {
-      const res = await nylasAxios.get<IThreadResponse[] | IThreadExpandedResponse[]>(
-        `/threads${generateQueryString(args)}`,
+      const res = await nylasAxios.get<IThreadExpandedResponse[]>(
+        `/threads${generateQueryString(generateQueryString({ ...args, view: "expanded" }))}`,
       );
       return res.data;
     } catch (err) {
@@ -127,8 +127,8 @@ export const getMoreThreads = createAsyncThunk(
   "nylas/getMoreThreads",
   async (args: GetAllThreadsArgs, { rejectWithValue }) => {
     try {
-      const res = await nylasAxios.get<IThreadResponse[] | IThreadExpandedResponse[]>(
-        `/threads${generateQueryString(args)}`,
+      const res = await nylasAxios.get<IThreadExpandedResponse[]>(
+        `/threads${generateQueryString({ ...args, view: "expanded" })}`,
       );
       return res.data;
     } catch (err) {
