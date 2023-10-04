@@ -48,24 +48,25 @@ const EmailModal = ({ opened, onClose, selectedDocument }: CommonModalProps & Em
   const [documents, setDocuments] = useState<TransferListData>([[], []]);
 
   useEffect(() => {
-    const newDocumentTransferListData: TransferListData = [[], []];
-    data.forEach((d) => {
-      newDocumentTransferListData[0].push({
+    const otherDocuments = data
+      .filter((d) => d.id !== selectedDocument?.id)
+      .map((d) => ({
         value: d.id,
         label: d.title,
         ...d,
-      });
-    });
+      }));
 
-    if (selectedDocument) {
-      newDocumentTransferListData[1].push({
-        label: selectedDocument.title,
-        value: selectedDocument.id,
-        ...selectedDocument,
-      });
-    }
+    const selectedData = selectedDocument
+      ? [
+          {
+            label: selectedDocument.title,
+            value: selectedDocument.id,
+            ...selectedDocument,
+          },
+        ]
+      : [];
 
-    setDocuments(newDocumentTransferListData);
+    setDocuments([otherDocuments, selectedData]);
   }, [data, selectedDocument]);
 
   const ItemComponent: TransferListItemComponent = ({

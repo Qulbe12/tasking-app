@@ -91,6 +91,7 @@ const WorkspacesList = () => {
           {t("createWorkspace")}
         </Button>
       </Box>
+
       {searchTerm}
       {workspaces.length <= 0 && !loading && (
         <Text>
