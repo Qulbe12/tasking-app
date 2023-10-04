@@ -5,6 +5,7 @@ import dayjs from "dayjs";
 import { DocumentStatus } from "hexa-sdk/dist/app.api";
 import { generateDocumentColor } from "../utils/generateDocumentColor";
 import { IDocumentResponse } from "../interfaces/documents/IDocumentResponse";
+import PDFPreview from "./PDFPreview";
 
 type DocumentCardProps = {
   addCard?: boolean;
@@ -68,7 +69,14 @@ const DocumentCard: React.FC<DocumentCardProps> = ({
         border: selected === documentId ? "1px solid cyan" : undefined,
       }}
     >
-      <Flex align="center" justify="space-between">
+      {document && document.attachments.length > 0 && (
+        <PDFPreview url={document.attachments[0].url} />
+      )}
+      <Flex
+        mt={document && document.attachments.length > 0 ? "md" : undefined}
+        align="center"
+        justify="space-between"
+      >
         <Flex gap="md">
           {linkedView && renderUnlinkIcon()}
           <Text weight="bold">{document?.title}</Text>

@@ -94,7 +94,7 @@ const EmailList = ({ onActionButtonClick }: EmailListProps) => {
                 setSelectedMessage(null);
               }}
             />
-          ) : (
+          ) : selectedThreadId ? (
             <MessageDetails
               selectedThreadId={selectedThreadId}
               selectedMessage={selectedMessage}
@@ -104,6 +104,8 @@ const EmailList = ({ onActionButtonClick }: EmailListProps) => {
               }}
               onDocumentCardClick={(d) => navigate("/board", { state: { document: d } })}
             />
+          ) : (
+            ""
           )}
         </Box>
       </Flex>

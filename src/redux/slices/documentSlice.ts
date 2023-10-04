@@ -110,9 +110,17 @@ export const documentsSlice = createSlice({
       .addCase(addLinkedDocsAction.pending, (state) => {
         state.loaders.linkingDocument = true;
       })
-      .addCase(addLinkedDocsAction.fulfilled, (state, action) => {
+      .addCase(addLinkedDocsAction.fulfilled, (state, action: PayloadAction<IDocumentResponse>) => {
         const foundIndex = state.data.findIndex((d) => d.id === action.payload.id);
         state.data[foundIndex] = action.payload;
+
+        state.data = state.data.map((d) => {
+          if (action.payload.linkedDocs.includes(d.id)) {
+            d.linkedDocs.push(action.payload.id);
+          }
+          return d;
+        });
+
         state.loaders.linkingDocument = null;
       })
       .addCase(addLinkedDocsAction.rejected, (state) => {
@@ -122,11 +130,20 @@ export const documentsSlice = createSlice({
       .addCase(removeLinkedDocsAction.pending, (state) => {
         state.loaders.linkingDocument = true;
       })
-      .addCase(removeLinkedDocsAction.fulfilled, (state, action) => {
-        const foundIndex = state.data.findIndex((d) => d.id === action.payload.id);
-        state.data[foundIndex] = action.payload;
-        state.loaders.linkingDocument = null;
-      })
+      .addCase(
+        removeLinkedDocsAction.fulfilled,
+        (state, action: PayloadAction<IDocumentResponse>) => {
+          const foundIndex = state.data.findIndex((d) => d.id === action.payload.id);
+          state.data[foundIndex] = action.payload;
+          state.data = state.data.map((d) => {
+            const filteredLinkedDocs = d.linkedDocs.filter((d) => d !== action.payload.id);
+            d.linkedDocs = filteredLinkedDocs;
+            return d;
+          });
+
+          state.loaders.linkingDocument = null;
+        },
+      )
       .addCase(removeLinkedDocsAction.rejected, (state) => {
         state.loaders.linkingDocument = null;
       })
