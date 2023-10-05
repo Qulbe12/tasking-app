@@ -109,7 +109,7 @@ const MessageDetails = ({
 
   return (
     <Stack h="100%">
-      <Card className="p-0" h="100%" component={ScrollArea}>
+      <Card withBorder className="p-0" h="100%" component={ScrollArea}>
         {loaders.gettingMessages && !!selectedThreadId && (
           <Stack>
             <Skeleton h={20} w={400} />
@@ -125,7 +125,7 @@ const MessageDetails = ({
             !loaders.gettingMessages &&
             messages.map((m) => {
               return (
-                <Card withBorder key={m.id}>
+                <Card key={m.id}>
                   <Group position="apart">
                     <Text size="lg">
                       {m.from[0].name} {`<${m.from[0].email}>`}
@@ -205,7 +205,7 @@ const MessageDetails = ({
             })}
         </Stack>
       </Card>
-      <Card h="50%">
+      <Card withBorder h="50%">
         <Group align="center" position="apart">
           <Text mb="md">Linked Documents: </Text>
           <Button size="xs" leftIcon={<IconLink />} onClick={() => setShowDocumentsModal(true)}>

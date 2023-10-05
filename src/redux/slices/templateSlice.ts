@@ -139,17 +139,22 @@ export const templateSlice = createSlice({
       })
       // delete templates field
       .addCase(deleteTemplateFields.pending, (state) => {
-        state.loading++;
+        state.loaders.deletingField = true;
       })
-      .addCase(
-        deleteTemplateFields.fulfilled,
-        (state, { payload }: PayloadAction<IUpdateFieldResponse>) => {
-          state.loading--;
-          state.updatedField = payload;
-        },
-      )
+      .addCase(deleteTemplateFields.fulfilled, (state, { payload }: PayloadAction<ITemplate>) => {
+        state.loaders.deletingField = false;
+        state.data = state.data.map((template) => {
+          if (template.id === payload.id) {
+            // If the template ID matches the one to replace, return the new template
+            return payload;
+          } else {
+            // Otherwise, return the existing template
+            return template;
+          }
+        });
+      })
       .addCase(deleteTemplateFields.rejected, (state, action) => {
-        state.loading--;
+        state.loaders.deletingField = false;
         showError(action.error.message);
       });
   },

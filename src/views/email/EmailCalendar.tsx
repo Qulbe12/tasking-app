@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Calendar as CalendarComponent, dayjsLocalizer } from "react-big-calendar";
+import { Calendar as CalendarComponent, dayjsLocalizer, Event } from "react-big-calendar";
 import dayjs from "dayjs";
 
 import "react-big-calendar/lib/css/react-big-calendar.css";
@@ -9,6 +9,7 @@ import {
   ActionIcon,
   Box,
   Button,
+  Card,
   Flex,
   Group,
   Loader,
@@ -41,6 +42,7 @@ const EmailCalendar = ({ onActionButtonClick }: EmailCalendarProps) => {
   const [openCalendarModel, { toggle: calendarModelToggle }] = useDisclosure(false);
   const [eventModelOpened, { toggle: eventModelToggle }] = useDisclosure(false);
   const [calendarId, setCalendarId] = useState("");
+  const [calendarEvent, setCalendarEvent] = useState<Event>({});
 
   const onChangeAccordion = (value: string) => {
     dispatch(getEvents(value));
@@ -49,6 +51,11 @@ const EmailCalendar = ({ onActionButtonClick }: EmailCalendarProps) => {
 
   useEffect(() => {
     dispatch(getAllCalendars());
+    calendars.map((c) => {
+      if (c.name === "Calendar") {
+        setCalendarId(c.id);
+      }
+    });
     setCalendarId("");
   }, []);
 
@@ -61,29 +68,39 @@ const EmailCalendar = ({ onActionButtonClick }: EmailCalendarProps) => {
         </Button>
       </Group>
       <Flex justify="space-between" h="100vh">
-        <CalendarComponent
-          events={calendarEvents && calendarEvents}
-          localizer={localizer}
-          onSelectSlot={(e) => {
-            setSelectedDate(e.start);
-            if (e.action === "doubleClick") {
-              if (calendarId !== null && calendarId !== "") {
-                eventModelToggle();
+        <Card withBorder h="82%" w="82%">
+          <CalendarComponent
+            onSelectEvent={(event) => {
+              console.log(event);
+              setCalendarEvent(event);
+              eventModelToggle();
+            }}
+            events={calendarEvents && calendarEvents}
+            localizer={localizer}
+            onSelectSlot={(e) => {
+              setSelectedDate(e.start);
+              if (e.action) {
+                console.log("single click");
               }
-              if (calendarId == null || calendarId == "") {
-                showNotification({
-                  title: "Select Calendar",
-                  message: "Please select the calendar to add event",
-                });
+              if (e.action === "doubleClick") {
+                if (calendarId !== null && calendarId !== "") {
+                  eventModelToggle();
+                }
+                if (calendarId == null || calendarId == "") {
+                  showNotification({
+                    title: "Select Calendar",
+                    message: "Please select the calendar to add event",
+                  });
+                }
               }
-            }
-          }}
-          selectable
-          startAccessor="start"
-          endAccessor="end"
-          style={{ height: "82%", width: "84%" }}
-        />
-        <div style={{ width: "15%" }}>
+            }}
+            selectable
+            startAccessor="start"
+            endAccessor="end"
+            style={{ height: "100%", width: "100%" }}
+          />
+        </Card>
+        <div style={{ width: "15%", height: "68vh" }}>
           <DatePicker
             label="Calendar"
             value={date}
@@ -95,31 +112,33 @@ const EmailCalendar = ({ onActionButtonClick }: EmailCalendarProps) => {
           <Button onClick={calendarModelToggle} leftIcon={<IconCalendar />} my="md">
             Add calendar
           </Button>
-          <Accordion chevron={""} defaultValue="customization" onChange={onChangeAccordion}>
-            {calendars.map((c, i) => {
-              return (
-                <Accordion.Item key={i} value={c.id}>
-                  {loaders.deletingCalendars ||
-                  loaders.gettingEvents ||
-                  loaders.gettingCalendars ? (
-                    <AccordionControl
-                      id={c.id}
-                      icon={c.id === calendarId ? <Loader size="sm" /> : <IconCircleCheck />}
-                    >
-                      {c.name}
-                    </AccordionControl>
-                  ) : (
-                    <AccordionControl
-                      id={c.id}
-                      icon={c.id === calendarId ? <IconCircleCheckFilled /> : <IconCircleCheck />}
-                    >
-                      {c.name}
-                    </AccordionControl>
-                  )}
-                </Accordion.Item>
-              );
-            })}
-          </Accordion>
+          <Card withBorder h="100%">
+            <Accordion chevron={""} defaultValue="customization" onChange={onChangeAccordion}>
+              {calendars.map((c, i) => {
+                return (
+                  <Accordion.Item key={i} value={c.id}>
+                    {loaders.deletingCalendars ||
+                    loaders.gettingEvents ||
+                    loaders.gettingCalendars ? (
+                      <AccordionControl
+                        id={c.id}
+                        icon={c.id === calendarId ? <Loader size="sm" /> : <IconCircleCheck />}
+                      >
+                        {c.name}
+                      </AccordionControl>
+                    ) : (
+                      <AccordionControl
+                        id={c.id}
+                        icon={c.id === calendarId ? <IconCircleCheckFilled /> : <IconCircleCheck />}
+                      >
+                        {c.name}
+                      </AccordionControl>
+                    )}
+                  </Accordion.Item>
+                );
+              })}
+            </Accordion>
+          </Card>
         </div>
       </Flex>
       {/* Add calendar model*/}
@@ -131,6 +150,14 @@ const EmailCalendar = ({ onActionButtonClick }: EmailCalendarProps) => {
       {/* Add Event model*/}
       <AddEventCalendar
         title={"Add event"}
+        calendarId={calendarId}
+        opened={eventModelOpened}
+        onClose={() => eventModelToggle()}
+      />
+      {/* update Event model*/}
+      <AddEventCalendar
+        title={"Update event"}
+        event={calendarEvent}
         calendarId={calendarId}
         opened={eventModelOpened}
         onClose={() => eventModelToggle()}

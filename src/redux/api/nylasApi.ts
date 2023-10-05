@@ -256,6 +256,7 @@ export const getEvents = createAsyncThunk(
   async (id: string, { rejectWithValue, dispatch }) => {
     try {
       const res = await nylasAxios.get<IEventResponse[]>(`/events?calendar_id=${id}`);
+      console.log(res.data);
       return res.data;
     } catch (err) {
       return centralizedErrorHandler(err, rejectWithValue, dispatch);

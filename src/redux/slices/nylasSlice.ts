@@ -277,6 +277,10 @@ export const nylasSlice = createSlice({
               start: startDate,
               end: endDate,
               title: e.title,
+              resource: {
+                location: e.location,
+                description: e.description,
+              },
             };
             return event;
           });

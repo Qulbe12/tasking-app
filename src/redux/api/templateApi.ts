@@ -3,10 +3,7 @@ import { ICreateField, ICreateTemplate, ITemplate, IUpdateTemplate } from "hexa-
 import api from "../../config/api";
 import { centralizedErrorHandler } from "../commonSliceFunctions";
 import { axiosPrivate } from "../../config/axios";
-import {
-  IUpdateField,
-  IUpdateFieldResponse,
-} from "../../interfaces/templates/IUpdateTemplatesFields";
+import { IUpdateField } from "../../interfaces/templates/IUpdateTemplatesFields";
 
 const { templateApi } = api;
 const { addField, create, get, remove, removeField, update } = templateApi;
@@ -111,7 +108,7 @@ export const deleteTemplateFields = createAsyncThunk(
   "templates/deleteTemplateFields",
   async (data: { fieldId: string; field: string }, { rejectWithValue, dispatch }) => {
     try {
-      const res = await axiosPrivate.delete<IUpdateFieldResponse>(
+      const res = await axiosPrivate.delete<ITemplate>(
         `templates/${data.fieldId}/fields/${data.field}`,
       );
       return res.data;

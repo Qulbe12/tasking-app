@@ -10,7 +10,7 @@ const Empty: React.FC<EmptyProps> = ({ label }) => {
   return (
     <Center>
       <Stack>
-        <IconFolder size="xs" />
+        <IconFolder style={{ marginLeft: "20px", marginTop: "10px" }} size="50px" />
         <Text>{label}</Text>
       </Stack>
     </Center>
