@@ -20,19 +20,6 @@ const EmailPage = () => {
     }
   }, []);
 
-  // const filteredEmails = useMemo<IEmailThreadResponse[]>(() => {
-  //   let fEmails = emails;
-  //   const lowSearch = _.lowerCase(search);
-
-  //   if (search) {
-  //     fEmails = fEmails.filter((e) => {
-  //       return _.lowerCase(e.subject + e.snippet).includes(lowSearch);
-  //     });
-  //   }
-
-  //   return fEmails;
-  // }, [emails, search]);
-
   if (!nylasToken?.access_token) {
     return (
       <div

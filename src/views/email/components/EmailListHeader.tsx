@@ -1,6 +1,7 @@
 import React from "react";
-import { Group, Button } from "@mantine/core";
-import { IconCalendar } from "@tabler/icons";
+import { Button, Group } from "@mantine/core";
+import { IconCalendar, IconPhone } from "@tabler/icons";
+import { useNavigate } from "react-router-dom";
 
 type EmailListHeaderProps = {
   onActionButtonClick: () => void;
@@ -9,6 +10,7 @@ type EmailListHeaderProps = {
 };
 
 const EmailListHeader = ({ onActionButtonClick }: EmailListHeaderProps) => {
+  const navigate = useNavigate();
   return (
     <Group position="right" my="md">
       {/* <Group> */}
@@ -75,6 +77,10 @@ const EmailListHeader = ({ onActionButtonClick }: EmailListHeaderProps) => {
       {/*     Trash */}
       {/*   </Badge> */}
       {/* </Group> */}
+      <Button onClick={() => navigate("/board/contacts")} leftIcon={<IconPhone />}>
+        Contacts
+      </Button>
+
       <Button onClick={onActionButtonClick} leftIcon={<IconCalendar />}>
         Calendar
       </Button>

@@ -27,6 +27,7 @@ import ProfileManagementPage from "./views/settings/ProfileManagementPage";
 import PrivacyPolicy from "./views/legal/PrivacyPolicy";
 import TermsAndConditions from "./views/legal/TermsAndConditions";
 import BusinessProfile from "./views/settings/BusinessProfile";
+import { ContactList } from "./views/email/contacts/ContactList";
 import SignatureManagement from "./views/settings/SignatureManagement";
 
 const router = createBrowserRouter([
@@ -137,6 +138,10 @@ const router = createBrowserRouter([
           {
             path: "/board/emails",
             element: <EmailPage />,
+          },
+          {
+            path: "/board/contacts",
+            element: <ContactList />,
           },
         ],
       },

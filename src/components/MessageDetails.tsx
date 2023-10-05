@@ -46,7 +46,7 @@ const MessageDetails = ({
 }: MessageDetailsProps) => {
   const dispatch = useAppDispatch();
   const { loaders, messages, threads, nylasToken } = useAppSelector((state) => state.nylas);
-  const { data: documents } = useAppSelector((state) => state.documents);
+  const { data: documents, loading: gettingDocuments } = useAppSelector((state) => state.documents);
   const { activeBoard } = useAppSelector((state) => state.boards);
 
   const [selectedMessageIds, setSelectedMessageIds] = useState<string[]>([]);
@@ -56,8 +56,13 @@ const MessageDetails = ({
   const [selectedDocuments, setSelectedDocuments] = useState<string[]>([]);
 
   useEffect(() => {
-    setEmailContent("");
+    if (!selectedThreadId) return;
+    if (!activeBoard) return;
+    dispatch(getDocuments({ boardId: activeBoard.id, query: { emailId: selectedThreadId } }));
+  }, [selectedThreadId, activeBoard]);
 
+  useEffect(() => {
+    setEmailContent("");
     const replyElement = document.getElementById("reply-container");
     replyElement?.scrollIntoView({ behavior: "smooth" });
   }, [selectedMessageIds]);
@@ -106,6 +111,27 @@ const MessageDetails = ({
 
   const [showDocumentsModal, setShowDocumentsModal] = useState(false);
   const [linking, setLinking] = useState(false);
+
+  const handleLinkDocument = useCallback(async () => {
+    if (!selectedThreadId) return;
+    setLinking(true);
+    try {
+      await axiosPrivate.post(`/doc-email-links/${selectedThreadId}`, {
+        docIds: selectedDocuments,
+      });
+
+      setShowDocumentsModal(false);
+      setSelectedDocuments([]);
+      setLinking(false);
+      if (activeBoard) {
+        dispatch(getDocuments({ boardId: activeBoard.id, query: { emailId: selectedThreadId } }));
+      }
+    } catch (err) {
+      const error = err as IErrorResponse;
+      showError(error.response?.data.message);
+      setLinking(false);
+    }
+  }, [selectedDocuments, activeBoard, selectedThreadId]);
 
   return (
     <Stack h="100%">
@@ -214,15 +240,19 @@ const MessageDetails = ({
         </Group>
         <ScrollArea h="100%">
           <SimpleGrid cols={4}>
-            {linkedDocuments.map((d) => {
-              return (
-                <DocumentCard
-                  key={d.id}
-                  document={d}
-                  onClick={() => onDocumentCardClick && onDocumentCardClick(d)}
-                />
-              );
-            })}
+            {gettingDocuments
+              ? Array.from({ length: 6 }).map((e, i) => {
+                  return <Skeleton height={180} key={i} />;
+                })
+              : linkedDocuments.map((d) => {
+                  return (
+                    <DocumentCard
+                      key={d.id}
+                      document={d}
+                      onClick={() => onDocumentCardClick && onDocumentCardClick(d)}
+                    />
+                  );
+                })}
           </SimpleGrid>
         </ScrollArea>
       </Card>
@@ -246,28 +276,7 @@ const MessageDetails = ({
         okText="Link Document"
         selectedDocuments={selectedDocuments}
         loading={linking}
-        onOk={async () => {
-          if (!selectedThreadId) return;
-          setLinking(true);
-          try {
-            await axiosPrivate.post(`/doc-email-links/${selectedThreadId}`, {
-              docIds: selectedDocuments,
-            });
-
-            setShowDocumentsModal(false);
-            setSelectedDocuments([]);
-            setLinking(false);
-            if (activeBoard) {
-              dispatch(
-                getDocuments({ boardId: activeBoard.id, query: { emailId: selectedThreadId } }),
-              );
-            }
-          } catch (err) {
-            const error = err as IErrorResponse;
-            showError(error.response?.data.message);
-            setLinking(false);
-          }
-        }}
+        onOk={handleLinkDocument}
       />
     </Stack>
   );

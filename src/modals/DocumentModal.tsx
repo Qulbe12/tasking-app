@@ -89,6 +89,8 @@ const DocumentModal = ({ onClose, opened, title }: CommonModalProps) => {
 
     form.reset();
     setAttachments([]);
+    setSelectedTemplate(null);
+    setFields(undefined);
     onClose();
   };
 
@@ -178,61 +180,6 @@ const DocumentModal = ({ onClose, opened, title }: CommonModalProps) => {
           </Group>
         </Stack>
       </form>
-
-      {selectedTemplate && (
-        <Stack>
-          {/* <Grid grow my="xl">
-            {commentFiles.map((file, index) => {
-              return (
-                <Grid.Col span="content" key={file.name + index}>
-                  <Group position="apart">
-                    <Group>
-                      <IconFile stroke={1} size={36} />
-                      {file.name}
-                    </Group>
-                    <IconX
-                      cursor="pointer"
-                      stroke={1}
-                      size={16}
-                      onClick={() => {
-                        // const newFiles = files.filter((f) => {
-                        //   return f.name === file.name;
-                        // });
-                        // setCommentFiles(newFiles);
-                      }}
-                    />
-                  </Group>
-                </Grid.Col>
-              );
-            })}
-          </Grid> */}
-          {/* <>
-            <Dropzone
-              onDrop={(files) => {
-                setCommentFiles(files);
-              }}
-              activateOnClick={false}
-              styles={{
-                inner: { pointerEvents: "all" },
-                root: {
-                  padding: 0,
-                  border: "none",
-                  backgroundColor: "transparent",
-                  ":hover": { backgroundColor: "transparent" },
-                },
-              }}
-            >
-              <Textarea label="Comment" description="Drag files here..." />
-            </Dropzone>
-
-            <Group position="right" mt="md">
-              <Button disabled  loading={false}>
-                Comment
-              </Button>
-            </Group>
-          </> */}
-        </Stack>
-      )}
 
       <TemplateModal opened={templateModalOpen} onClose={() => setTemplateModalOpen((o) => !o)} />
     </Modal>

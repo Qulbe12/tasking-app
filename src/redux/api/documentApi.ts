@@ -8,7 +8,7 @@ import generateQueryString from "../../utils/generateQueryString";
 
 const { documentApi } = api;
 
-const { addUsers, getById, removeUser, addLinkedDocs, removeLinkedDocs } = documentApi;
+const { addUsers, getById, removeUser } = documentApi;
 
 export const createDocument = createAsyncThunk(
   "documents/createDocument",
@@ -17,7 +17,6 @@ export const createDocument = createAsyncThunk(
     { rejectWithValue, dispatch },
   ) => {
     try {
-      // const res = await create(boardId, document);
       const res = await axiosPrivate.post(`/boards/${boardId}/documents/`, document);
 
       return res.data;
@@ -159,7 +158,10 @@ export const addLinkedDocsAction = createAsyncThunk(
     { rejectWithValue, dispatch },
   ) => {
     try {
-      const res = await addLinkedDocs(documentId, documentsToLink);
+      const res = await axiosPrivate.post(`/documents/${documentId}/linked-docs`, {
+        docIds: documentsToLink,
+      });
+
       return res.data;
     } catch (err) {
       return centralizedErrorHandler(err, rejectWithValue, dispatch);
@@ -180,7 +182,11 @@ export const removeLinkedDocsAction = createAsyncThunk(
     { rejectWithValue, dispatch },
   ) => {
     try {
-      const res = await removeLinkedDocs(documentId, documentsToUnlink);
+      const res = await axiosPrivate.delete(`/documents/${documentId}/linked-docs`, {
+        data: {
+          docIds: documentsToUnlink,
+        },
+      });
       return res.data;
     } catch (err) {
       return centralizedErrorHandler(err, rejectWithValue, dispatch);

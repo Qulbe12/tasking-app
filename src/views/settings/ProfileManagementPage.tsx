@@ -24,7 +24,7 @@ const ProfileManagementPage = () => {
     if (!name) return;
     setLoading(true);
     try {
-      const res = await axiosPrivate.patch("/users/update-profile", {
+      const res = await axiosPrivate.post("/users/update-profile", {
         name,
       });
       dispatch(updateName(name));

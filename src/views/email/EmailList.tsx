@@ -17,6 +17,7 @@ import EmailListHeader from "./components/EmailListHeader";
 import ComposeEmail from "./components/ComposeEmail";
 import FoldersList from "./components/FoldersList";
 import { IMessageResponse } from "../../interfaces/nylas/IMessageResponse";
+import { getSignatures } from "../../redux/api/signatureApi";
 
 type EmailListProps = {
   filter?: string[];
@@ -51,6 +52,7 @@ const EmailList = ({ onActionButtonClick }: EmailListProps) => {
 
   useEffect(() => {
     dispatch(getAllFolders());
+    dispatch(getSignatures());
   }, []);
 
   return (
@@ -94,7 +96,7 @@ const EmailList = ({ onActionButtonClick }: EmailListProps) => {
                 setSelectedMessage(null);
               }}
             />
-          ) : (
+          ) : selectedThreadId ? (
             <MessageDetails
               selectedThreadId={selectedThreadId}
               selectedMessage={selectedMessage}
@@ -104,6 +106,8 @@ const EmailList = ({ onActionButtonClick }: EmailListProps) => {
               }}
               onDocumentCardClick={(d) => navigate("/board", { state: { document: d } })}
             />
+          ) : (
+            ""
           )}
         </Card>
       </Flex>
