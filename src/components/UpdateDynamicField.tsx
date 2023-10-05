@@ -1,7 +1,15 @@
-import { Checkbox, MultiSelect, NumberInput, Radio, Select, TextInput } from "@mantine/core";
-import { FieldType, IField } from "hexa-sdk/dist/app.api";
+import {
+  Checkbox,
+  MultiSelect,
+  NumberInput,
+  Radio,
+  Select,
+  TextInput,
+  Textarea,
+} from "@mantine/core";
 import { DatePicker } from "@mantine/dates";
 import React from "react";
+import { FieldType, IField } from "../interfaces/documents/IField";
 
 type UpdateDynamicFieldProps = {
   field: IField;
@@ -14,6 +22,15 @@ const UpdateDynamicField: React.FC<UpdateDynamicFieldProps> = ({ field, value, o
     case FieldType.Text:
       return (
         <TextInput
+          withAsterisk={field.required}
+          label={field.label}
+          value={value}
+          onChange={(e) => onChange && onChange(e.target.value)}
+        />
+      );
+    case FieldType.Textarea:
+      return (
+        <Textarea
           withAsterisk={field.required}
           label={field.label}
           value={value}

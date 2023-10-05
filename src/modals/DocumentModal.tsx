@@ -97,6 +97,7 @@ const DocumentModal = ({ onClose, opened, title }: CommonModalProps) => {
   return (
     <Modal opened={opened} onClose={onClose} title={title}>
       <LoadingOverlay visible={!!loaders.adding} />
+
       <form onSubmit={form.onSubmit(handleSubmit)}>
         <Stack>
           <Select

@@ -669,7 +669,13 @@ const DocumentsBoardView = () => {
           onClose={() => toggleShowEditModal()}
         />
 
-        <DocumentModal onClose={toggle} opened={opened} title={t("createDocument")} />
+        <DocumentModal
+          onClose={() => {
+            toggle();
+          }}
+          opened={opened}
+          title={t("createDocument")}
+        />
 
         <Modal
           title={`Assign Users to document - ${selectedDocument?.title}`}

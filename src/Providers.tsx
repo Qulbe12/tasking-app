@@ -45,8 +45,7 @@ const Providers = () => {
       theme={{ colorScheme: mode, ...theme }}
     >
       <NavigationProgress size={8} autoReset />
-      {isConnected}
-      <Version connected />
+      <Version connected={isConnected} />
       <NotificationsProvider>
         <ModalsProvider>
           <RouterProvider router={router} />
