@@ -3,7 +3,7 @@ import dayjs from "dayjs";
 import React, { useMemo, useState } from "react";
 import { IThreadResponse } from "../interfaces/nylas/IThreadResponse";
 import { useAppSelector } from "../redux/store";
-import { IconDots, IconFolder, IconTrash } from "@tabler/icons";
+import { IconDotsVertical, IconFolder, IconTrash } from "@tabler/icons";
 import { useDisclosure } from "@mantine/hooks";
 import FoldersListModal from "../modals/FoldersListModal";
 
@@ -53,17 +53,16 @@ const ThreadCard: React.FC<ThreadCardProps> = ({ thread, onClick, selectedThread
           <Menu shadow="md" width={160}>
             <Menu.Target>
               <ActionIcon>
-                <IconDots size={48} />
+                <IconDotsVertical size="1em" />
               </ActionIcon>
             </Menu.Target>
             <Menu.Dropdown>
               <Menu.Item
-                color="white"
                 onClick={() => {
                   setThreadId(thread.id);
                   open();
                 }}
-                icon={<IconFolder />}
+                icon={<IconFolder size="1em" />}
               >
                 Move to folder
               </Menu.Item>
@@ -72,7 +71,7 @@ const ThreadCard: React.FC<ThreadCardProps> = ({ thread, onClick, selectedThread
                 onClick={() => {
                   setThreadId(thread.id);
                 }}
-                icon={<IconTrash />}
+                icon={<IconTrash size="1em" />}
               >
                 Delete
               </Menu.Item>

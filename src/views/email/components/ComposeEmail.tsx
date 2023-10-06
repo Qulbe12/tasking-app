@@ -1,21 +1,21 @@
 import {
-  Stack,
+  Badge,
   Button,
+  Card,
+  Checkbox,
   Divider,
+  Flex,
+  Group,
+  MultiSelect,
+  ScrollArea,
+  Stack,
+  Text,
+  TextInput,
   TransferList,
   TransferListData,
+  TransferListItem,
   TransferListItemComponent,
   TransferListItemComponentProps,
-  Group,
-  Text,
-  Checkbox,
-  Badge,
-  Card,
-  TextInput,
-  Flex,
-  TransferListItem,
-  ScrollArea,
-  MultiSelect,
 } from "@mantine/core";
 import { FormEvent, useCallback, useEffect, useState } from "react";
 
@@ -178,103 +178,109 @@ const ComposeEmail = ({ onCancelClick, selectedMessage }: ComposeEmailProps) => 
   return (
     <form onSubmit={handleSendEmail} style={{ height: "100%" }}>
       <Stack spacing={"md"} h="100%">
-        <MultiSelect
-          label="To"
-          limit={5}
-          placeholder="To"
-          searchValue={selectSearch}
-          onSearchChange={setSelectSearch}
-          data={filteredContacts}
-          itemID="id"
-          onBlur={(e) => {
-            if (!e.target.value) return;
-            if (!filteredContacts.includes(e.target.value)) {
-              setFilteredContacts([...filteredContacts, e.target.value]);
-            }
-            if (!selectedEmails.includes(e.target.value)) {
-              setSelectedEmails([...selectedEmails, e.target.value]);
-            }
+        <ScrollArea>
+          <MultiSelect
+            label="To"
+            limit={5}
+            placeholder="To"
+            searchValue={selectSearch}
+            onSearchChange={setSelectSearch}
+            data={filteredContacts}
+            itemID="id"
+            onBlur={(e) => {
+              if (!e.target.value) return;
+              if (!filteredContacts.includes(e.target.value)) {
+                setFilteredContacts([...filteredContacts, e.target.value]);
+              }
+              if (!selectedEmails.includes(e.target.value)) {
+                setSelectedEmails([...selectedEmails, e.target.value]);
+              }
 
-            setSelectSearch("");
-          }}
-          searchable
-          onChange={setSelectedEmails}
-          value={selectedEmails}
-        />
-
-        <TextInput
-          label="CC"
-          width="100%"
-          value={form.cc ? form.cc[0].email : ""}
-          placeholder="CC"
-          onChange={(e) => {
-            setForm((f) => {
-              return {
-                ...f,
-                cc: [{ name: e.target.value, email: e.target.value }],
-              };
-            });
-          }}
-        />
-
-        <TextInput
-          label="Subject"
-          placeholder="Subject"
-          value={form.subject}
-          onChange={(e) => setForm({ ...form, subject: e.target.value })}
-        />
-
-        {!selectedMessage ? (
-          <CustomTextEditor
-            onSignatureClick={(s) => {
-              setSelectedSignature(s.value);
+              setSelectSearch("");
             }}
-            content={form.body}
-            onUpdate={(content) => {
-              setForm({ ...form, body: content });
-            }}
-            selectedSignature={selectedSignature}
+            searchable
+            onChange={setSelectedEmails}
+            value={selectedEmails}
           />
-        ) : (
-          <Card>
-            <Flex gap="md">
-              <Divider orientation="vertical" size="xl" />
-              <ScrollArea>
-                <div dangerouslySetInnerHTML={{ __html: selectedMessage.body }}></div>
-              </ScrollArea>
-            </Flex>
-          </Card>
-        )}
-        {!selectedMessage && (
-          <>
-            <Divider label="Attach Documents" />
-            <TransferList
-              value={documents}
-              onChange={setDocuments}
-              itemComponent={ItemComponent}
-              searchPlaceholder="Search..."
-              nothingFound="Nothing here"
-              titles={["Available", "In-Email"]}
-              showTransferAll={false}
-              breakpoint="sm"
-              filter={(query, item) => JSON.stringify(item).includes(query.toLowerCase().trim())}
+
+          <TextInput
+            label="CC"
+            width="100%"
+            value={form.cc ? form.cc[0].email : ""}
+            placeholder="CC"
+            onChange={(e) => {
+              setForm((f) => {
+                return {
+                  ...f,
+                  cc: [{ name: e.target.value, email: e.target.value }],
+                };
+              });
+            }}
+          />
+
+          <TextInput
+            label="Subject"
+            placeholder="Subject"
+            value={form.subject}
+            onChange={(e) => setForm({ ...form, subject: e.target.value })}
+          />
+
+          {!selectedMessage ? (
+            <CustomTextEditor
+              onSignatureClick={(s) => {
+                setSelectedSignature(s.value);
+              }}
+              content={form.body}
+              onUpdate={(content) => {
+                setForm({ ...form, body: content });
+              }}
+              selectedSignature={selectedSignature}
             />
-          </>
-        )}
-        <Group position="right">
-          <Button
-            leftIcon={<IconTrash size="1em" />}
-            onClick={onCancelClick}
-            type="button"
-            color="red"
-            loading={loaders.sendingMessage}
-          >
-            Cancel
-          </Button>
-          <Button leftIcon={<IconSend size="1em" />} type="submit" loading={loaders.sendingMessage}>
-            Send
-          </Button>
-        </Group>
+          ) : (
+            <Card>
+              <Flex gap="md">
+                <Divider orientation="vertical" size="xl" />
+                <ScrollArea>
+                  <div dangerouslySetInnerHTML={{ __html: selectedMessage.body }}></div>
+                </ScrollArea>
+              </Flex>
+            </Card>
+          )}
+          {!selectedMessage && (
+            <>
+              <Divider label="Attach Documents" />
+              <TransferList
+                value={documents}
+                onChange={setDocuments}
+                itemComponent={ItemComponent}
+                searchPlaceholder="Search..."
+                nothingFound="Nothing here"
+                titles={["Available", "In-Email"]}
+                showTransferAll={false}
+                breakpoint="sm"
+                filter={(query, item) => JSON.stringify(item).includes(query.toLowerCase().trim())}
+              />
+            </>
+          )}
+          <Group position="right">
+            <Button
+              leftIcon={<IconTrash size="1em" />}
+              onClick={onCancelClick}
+              type="button"
+              color="red"
+              loading={loaders.sendingMessage}
+            >
+              Cancel
+            </Button>
+            <Button
+              leftIcon={<IconSend size="1em" />}
+              type="submit"
+              loading={loaders.sendingMessage}
+            >
+              Send
+            </Button>
+          </Group>
+        </ScrollArea>
       </Stack>
     </form>
   );

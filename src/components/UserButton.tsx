@@ -1,5 +1,5 @@
-import { Avatar, Menu, Tooltip } from "@mantine/core";
-import { IconLogout, IconMoon, IconSettings, IconSun } from "@tabler/icons";
+import { Avatar, Menu, NavLink, Tooltip } from "@mantine/core";
+import { IconLanguage, IconLogout, IconMoon, IconSettings, IconSun } from "@tabler/icons";
 import React from "react";
 import { logout } from "../redux/slices/authSlice";
 import { useAppDispatch, useAppSelector } from "../redux/store";
@@ -12,9 +12,12 @@ type UserButtonProps = {
 };
 
 const UserButton: React.FC<UserButtonProps> = ({ isUnsubscribed }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const changeLanguage = (lng: string) => {
+    i18n.changeLanguage(lng);
+  };
 
   const { user } = useAppSelector((state) => state.auth);
   const { mode } = useAppSelector((state) => state.theme);
@@ -46,9 +49,13 @@ const UserButton: React.FC<UserButtonProps> = ({ isUnsubscribed }) => {
             {t("accountSettings")}
           </Menu.Item>
         )}
-
+        <Menu.Item style={{ padding: "0" }} closeMenuOnClick={false}>
+          <NavLink icon={<IconLanguage />}>
+            <NavLink onClick={() => changeLanguage("en")} label="English" />
+            <NavLink onClick={() => changeLanguage("fr")} label="Français" />
+          </NavLink>
+        </Menu.Item>
         <Menu.Divider />
-
         <Menu.Item onClick={() => dispatch(logout())} color="red" icon={<IconLogout size={14} />}>
           {t("logout")}
         </Menu.Item>

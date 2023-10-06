@@ -42,7 +42,7 @@ const ThreadsList = ({ onThreadClick, selectedThreadId, afterScroll }: ThreadsLi
               })}
         </Stack>
         <>
-          <Title>{folderTitle}</Title>
+          <Title order={4}>{folderTitle}</Title>
           {!loaders.gettingThreads && threads.length <= 0 && <Empty label="Folder is empty" />}
           {!loaders.gettingThreads &&
             threads?.map((t, i) => {

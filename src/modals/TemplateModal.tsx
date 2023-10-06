@@ -56,7 +56,6 @@ const TemplateModal = ({ onClose, opened, template }: ModalProps & TemplateModal
     required: false,
     type: FieldType.Text,
   });
-  const [multiSelectOptions, setMultiSelectOptions] = useState<string[]>([]);
 
   const [newFieldModal, setNewFieldModal] = useState(false);
   const [updateFieldModal, setUpdateFieldModal] = useState(false);
@@ -125,12 +124,6 @@ const TemplateModal = ({ onClose, opened, template }: ModalProps & TemplateModal
                   size="sm"
                   onClick={() => {
                     setUpdateFieldModal(true);
-                    // const updateField:IUpdateField = {
-                    //     label: f.label,
-                    //     type: f.type,
-                    //     required: f.required,
-                    //     options: f.options
-                    // }
                     setField(f);
                     setFieldVals({
                       label: f.label,
@@ -248,7 +241,8 @@ const TemplateModal = ({ onClose, opened, template }: ModalProps & TemplateModal
               <MultiSelect
                 w="75%"
                 label="Options"
-                data={[]}
+                data={fieldVals.options}
+                value={fieldVals.options}
                 withAsterisk
                 required
                 placeholder="Select items"
@@ -257,7 +251,7 @@ const TemplateModal = ({ onClose, opened, template }: ModalProps & TemplateModal
                 getCreateLabel={(query) => `+ Create ${query}`}
                 onCreate={(query) => {
                   const item = query;
-                  setMultiSelectOptions([...multiSelectOptions, item]);
+                  setFieldVals({ ...fieldVals, options: [...fieldVals.options, item] });
                   return item;
                 }}
               />
@@ -266,17 +260,14 @@ const TemplateModal = ({ onClose, opened, template }: ModalProps & TemplateModal
                 mt="xl"
                 onClick={async () => {
                   if (!template) return;
-
-                  const { label, required, type } = fieldVals;
-                  console.log(fieldVals);
+                  const { label, required, type, options } = fieldVals;
                   await dispatch(
                     updateTemplateFields({
                       fieldId: template.id,
-                      updatedField: { label, options: multiSelectOptions, required, type },
+                      updatedField: { label, options, required, type },
                       field: field.id,
                     }),
                   );
-                  setMultiSelectOptions([]);
                   setUpdateFieldModal(false);
                 }}
               >

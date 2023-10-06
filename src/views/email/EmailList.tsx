@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Affix, Box, Button, Flex } from "@mantine/core";
+import { Affix, Box, Button, Card, Flex } from "@mantine/core";
 import { useAppDispatch, useAppSelector } from "../../redux/store";
 import {
   getAllFolders,
@@ -56,17 +56,19 @@ const EmailList = ({ onActionButtonClick }: EmailListProps) => {
   }, []);
 
   return (
-    <>
+    <Flex direction="column" h="92vh">
       <EmailListHeader
         onActionButtonClick={onActionButtonClick}
         type={type}
         onTypeChange={setType}
       />
-      <Flex justify="space-between" h="87vh" miw="90%">
-        <Box w="24%" h="100%">
-          <FoldersList selectedThreadId={selectedThreadId} />
+      <Flex justify="space-between" h="92%" miw="90%">
+        <Box w="14%" h="100%">
+          <Card withBorder>
+            <FoldersList selectedThreadId={selectedThreadId} />
+          </Card>
         </Box>
-        <Box w="24%" h="100%">
+        <Box w="20%" h="100%">
           <ThreadsList
             selectedThreadId={selectedThreadId}
             onThreadClick={(t) => {
@@ -85,7 +87,7 @@ const EmailList = ({ onActionButtonClick }: EmailListProps) => {
             }}
           />
         </Box>
-        <Box w="50%" h="100%">
+        <Card m={0} withBorder w="64%" h="100%">
           {showEmailForm ? (
             <ComposeEmail
               selectedMessage={selectedMessage}
@@ -107,7 +109,7 @@ const EmailList = ({ onActionButtonClick }: EmailListProps) => {
           ) : (
             ""
           )}
-        </Box>
+        </Card>
       </Flex>
       {!showEmailForm && (
         <Affix position={{ bottom: 20, right: 20 }}>
@@ -122,7 +124,7 @@ const EmailList = ({ onActionButtonClick }: EmailListProps) => {
           </Button>
         </Affix>
       )}
-    </>
+    </Flex>
   );
 };
 

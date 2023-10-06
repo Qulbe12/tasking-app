@@ -1,8 +1,10 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../redux/store";
-import { Button, Flex, Modal, NavLink, ScrollArea } from "@mantine/core";
+import { Button, Flex, Modal, NavLink, ScrollArea, TextInput } from "@mantine/core";
 import CommonModalProps from "./CommonModalProps";
 import { getAllThreads, updateThread } from "../redux/api/nylasApi";
+import _ from "lodash";
+import { useTranslation } from "react-i18next";
 
 interface NestedFolder {
   id: string;
@@ -54,21 +56,33 @@ const FoldersListModal = ({
     return nestedArray;
   }, [folders]);
 
+  const [search, setSearch] = useState("");
+
+  const filteredFolders = useMemo(() => {
+    return preppedFolders.filter((f) => {
+      return (
+        _.toLower(f.display_name).includes(_.toLower(search)) ||
+        _.toLower(JSON.stringify(f.nestedChildren)).includes(_.toLower(search))
+      );
+    });
+  }, [[search]]);
   const handleFolderSelect = useCallback((value: string) => {
     setFolderId(value);
-    console.log("folder selected", value);
   }, []);
 
-  useEffect(() => {
-    if (selectedThreadId) {
-      console.log(selectedThreadId);
-    }
-  }, [selectedThreadId]);
+  const { t } = useTranslation();
 
   return (
     <Modal opened={opened} onClose={onClose}>
+      <TextInput
+        label={t("search")}
+        my={"md"}
+        placeholder={t("search") ?? ""}
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+      />
       <ScrollArea h="100%">
-        {preppedFolders.map((folder) => (
+        {filteredFolders.map((folder) => (
           <RecursiveNavLink
             key={folder.id}
             id={folder.id}

@@ -12,7 +12,7 @@ type EmailListHeaderProps = {
 const EmailListHeader = ({ onActionButtonClick }: EmailListHeaderProps) => {
   const navigate = useNavigate();
   return (
-    <Group position="right" my="md">
+    <Group position="right" my="md" m="0" p="0">
       {/* <Group> */}
       {/*   <Badge */}
       {/*     variant={type === "folder" ? "filled" : "outline"} */}

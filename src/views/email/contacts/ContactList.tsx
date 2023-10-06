@@ -65,7 +65,7 @@ export function ContactList() {
       </Flex>
       <SimpleGrid cols={4}>
         {filteredData.map((contact, index) => (
-          <Card key={index}>
+          <Card withBorder key={index}>
             <Flex justify="space-between">
               <Text>{contact.given_name}</Text>
               <Menu width={150} shadow="md" withinPortal={true} position="bottom-end">

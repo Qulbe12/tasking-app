@@ -8,9 +8,11 @@ import * as yup from "yup";
 import { useForm, yupResolver } from "@mantine/form";
 import dayjs from "dayjs";
 import { createEvent } from "../redux/api/nylasApi";
+import { Event } from "react-big-calendar";
 
 type AddEventCalendar = {
   calendarId: string;
+  event?: Event;
 } & CommonModalProps;
 
 const AddEventCalendar = ({ title, opened, onClose, calendarId }: AddEventCalendar) => {
@@ -74,7 +76,6 @@ const AddEventCalendar = ({ title, opened, onClose, calendarId }: AddEventCalend
             label="Start date"
             onChange={(e) => {
               if (!e) return;
-
               const startDateWithoutDatePrefix = e.toString().replace("Date ", "");
               const parsedStartDate = dayjs(startDateWithoutDatePrefix);
               // Get the Unix timestamp in seconds (number of seconds since January 1, 1970)
@@ -85,7 +86,6 @@ const AddEventCalendar = ({ title, opened, onClose, calendarId }: AddEventCalend
             label="End date"
             onChange={(e) => {
               if (!e) return;
-
               const endDateWithoutDatePrefix = e.toString().replace("Date ", "");
               const parsedEndDate = dayjs(endDateWithoutDatePrefix);
               // Get the Unix timestamp in seconds (number of seconds since January 1, 1970)
