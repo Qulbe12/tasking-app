@@ -4,6 +4,7 @@ import {
   createCalendar,
   createContact,
   createEvent,
+  createFolder,
   deleteCalendar,
   deleteContact,
   deleteEvent,
@@ -21,6 +22,7 @@ import {
   updateCalendar,
   updateContact,
   updateEvent,
+  updateFolderById,
   updateThread,
 } from "../api/nylasApi";
 import { NylasConnectedPayload } from "hexa-sdk";
@@ -80,6 +82,7 @@ export interface GroupsState {
     updatingContact: boolean;
     updatingThread: boolean;
     gettingFolder: boolean;
+    creatingFolder: boolean;
   };
 }
 
@@ -118,6 +121,7 @@ const initialState: GroupsState = {
     updatingContact: false,
     updatingThread: false,
     gettingFolder: false,
+    creatingFolder: false,
   },
   nylasContacts: [],
   targetedContact: null,
@@ -138,7 +142,6 @@ export const nylasSlice = createSlice({
     },
     setUpdatedThread: (state, action: PayloadAction<IThreadResponse>) => {
       const index = state.threads.findIndex((obj) => obj.id === action.payload.id);
-      console.log("set updated thread", action.payload);
       if (index !== -1) {
         // Update the object with the specified id using spread syntax
         state.threads[index] = { ...state.threads[index], ...action.payload };
@@ -149,6 +152,9 @@ export const nylasSlice = createSlice({
     },
     setTargetedContact(state, action: PayloadAction<IContact | null>) {
       state.targetedContact = action.payload;
+    },
+    deleteFolder: function (state, { payload }: PayloadAction<string>) {
+      state.folders = state.folders.filter((f) => f.id !== payload);
     },
   },
   extraReducers: (builder) =>
@@ -433,6 +439,17 @@ export const nylasSlice = createSlice({
       .addCase(deleteContact.rejected, (state) => {
         state.loaders.deletingContact = false;
       })
+      // create folder
+      .addCase(createFolder.pending, (state) => {
+        state.loaders.creatingFolder = true;
+      })
+      .addCase(createFolder.fulfilled, (state, action: PayloadAction<IFolderResponse>) => {
+        state.folders.push(action.payload);
+        state.loaders.creatingFolder = false;
+      })
+      .addCase(createFolder.rejected, (state) => {
+        state.loaders.creatingFolder = false;
+      })
       // Get All Folders
       .addCase(getAllFolders.pending, (state) => {
         state.loaders.gettingThreads = true;
@@ -461,6 +478,21 @@ export const nylasSlice = createSlice({
       .addCase(getFolderById.rejected, (state) => {
         state.loaders.gettingFolder = false;
       })
+      // update folder
+      .addCase(updateFolderById.pending, (state) => {
+        state.loaders.gettingFolder = true;
+      })
+      .addCase(updateFolderById.fulfilled, (state, action: PayloadAction<IFolderResponse>) => {
+        state.folders = state.folders.map((f) => {
+          if (f.id === action.payload.id) {
+            return f;
+          }
+          return action.payload;
+        });
+      })
+      .addCase(updateFolderById.rejected, (state) => {
+        state.loaders.gettingFolder = false;
+      })
       // update threads
       .addCase(updateThread.pending, (state) => {
         state.loaders.updatingThread = true;
@@ -475,7 +507,7 @@ export const nylasSlice = createSlice({
 });
 
 const nylasReducer = nylasSlice.reducer;
-export const { setTargetedContact, setNylasToken, setFolderId, setUpdatedThread } =
+export const { setTargetedContact, setNylasToken, setFolderId, setUpdatedThread, deleteFolder } =
   nylasSlice.actions;
 
 export default nylasReducer;

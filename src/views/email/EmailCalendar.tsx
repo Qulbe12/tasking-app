@@ -51,11 +51,6 @@ const EmailCalendar = ({ onActionButtonClick }: EmailCalendarProps) => {
 
   useEffect(() => {
     dispatch(getAllCalendars());
-    calendars.map((c) => {
-      if (c.name === "Calendar") {
-        setCalendarId(c.id);
-      }
-    });
     setCalendarId("");
   }, []);
 
@@ -71,7 +66,6 @@ const EmailCalendar = ({ onActionButtonClick }: EmailCalendarProps) => {
         <Card withBorder h="82%" w="82%">
           <CalendarComponent
             onSelectEvent={(event) => {
-              console.log(event);
               setCalendarEvent(event);
               eventModelToggle();
             }}
@@ -79,9 +73,6 @@ const EmailCalendar = ({ onActionButtonClick }: EmailCalendarProps) => {
             localizer={localizer}
             onSelectSlot={(e) => {
               setSelectedDate(e.start);
-              if (e.action) {
-                console.log("single click");
-              }
               if (e.action === "doubleClick") {
                 if (calendarId !== null && calendarId !== "") {
                   eventModelToggle();

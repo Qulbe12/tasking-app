@@ -1,15 +1,15 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
-  Stack,
-  Card,
-  Skeleton,
-  ScrollArea,
-  Group,
-  Tooltip,
   ActionIcon,
-  Text,
   Button,
+  Card,
+  Group,
+  ScrollArea,
   SimpleGrid,
+  Skeleton,
+  Stack,
+  Text,
+  Tooltip,
 } from "@mantine/core";
 import {
   IconCornerUpLeft,
@@ -197,7 +197,7 @@ const MessageDetails = ({
                   <iframe
                     srcDoc={m.body}
                     width="100%"
-                    height="500px"
+                    height="360px"
                     title={`email-${m.id}`}
                     style={{ borderRadius: "5px" }}
                   ></iframe>

@@ -31,7 +31,6 @@ import { useDisclosure, useMediaQuery } from "@mantine/hooks";
 import { IconChevronLeft, IconEdit, IconPlus } from "@tabler/icons";
 import SheetPdfViewer from "../../components/SheetPdfViewer";
 import _ from "lodash";
-import Filter from "../../components/Filter";
 import { useTranslation } from "react-i18next";
 import dayjs from "dayjs";
 import { useAppDispatch } from "../../redux/store";
@@ -39,6 +38,7 @@ import { updateSheet } from "../../redux/api/sheetsApi";
 import { ISheetUpdate } from "../../interfaces/sheets/ISheetUpdate";
 import { IErrorResponse } from "../../interfaces/IErrorResponse";
 import { DatePicker } from "@mantine/dates";
+import Filter from "../../components/Filter";
 
 const SheetDetails = () => {
   const { t } = useTranslation();
@@ -118,7 +118,6 @@ const SheetDetails = () => {
       setSelectedSheet(res.data);
       setLoading(false);
     } catch (err) {
-      console.log(err);
       showError("Something went wrong");
 
       setLoading(false);
@@ -210,46 +209,53 @@ const SheetDetails = () => {
     <Paper>
       <LoadingOverlay visible={loading} />
 
-      <Filter onChange={(e) => setTagFilter(e)} options={selectedSheet?.tags || []} />
+      <Filter
+        onChange={(e) => {
+          setTagFilter(e);
+        }}
+        options={selectedSheet?.tags || []}
+      />
 
       <Grid mt="sm" h="80vh">
         <Grid.Col span="auto" h="100%">
           <MediaQuery smallerThan="md" styles={{ width: 100 }}>
             <ScrollArea h="100%" offsetScrollbars>
-              <Stack>
-                {filteredRecords.map((r) => {
-                  return (
-                    <Flex
-                      key={r.id}
-                      onClick={() => {
-                        setSelectedPage({
-                          id: r.id,
-                          name: r.code,
-                          url: r.file.url,
-                        });
-                      }}
-                      direction="column"
-                      align="center"
-                      justify="center"
-                      className={`hover:scale-110 cursor-pointer mx-2 my-2 ${
-                        selectedPage?.id === r.id ? "scale-110" : undefined
-                      }`}
-                    >
-                      <Image
-                        src={r.thumbnail.url}
-                        maw={150}
-                        style={{
-                          border:
-                            selectedPage?.id === r.id
-                              ? `2px solid ${theme.colors.indigo[6]}`
-                              : undefined,
+              <Card withBorder>
+                <Stack>
+                  {filteredRecords.map((r) => {
+                    return (
+                      <Flex
+                        key={r.id}
+                        onClick={() => {
+                          setSelectedPage({
+                            id: r.id,
+                            name: r.code,
+                            url: r.file.url,
+                          });
                         }}
-                      />
-                      {r.code}
-                    </Flex>
-                  );
-                })}
-              </Stack>
+                        direction="column"
+                        align="center"
+                        justify="center"
+                        className={`hover:scale-110 cursor-pointer mx-2 my-2 ${
+                          selectedPage?.id === r.id ? "scale-110" : undefined
+                        }`}
+                      >
+                        <Image
+                          src={r.thumbnail.url}
+                          maw={150}
+                          style={{
+                            border:
+                              selectedPage?.id === r.id
+                                ? `2px solid ${theme.colors.indigo[6]}`
+                                : undefined,
+                          }}
+                        />
+                        {r.code}
+                      </Flex>
+                    );
+                  })}
+                </Stack>
+              </Card>
             </ScrollArea>
           </MediaQuery>
         </Grid.Col>
@@ -267,7 +273,7 @@ const SheetDetails = () => {
         ) : (
           <Grid.Col span="auto">
             <Stack h="100%">
-              <Card h="50%" pos="relative">
+              <Card withBorder h="50%" pos="relative">
                 <LoadingOverlay visible={sheetUpdating} />
                 <Group position="apart" mb="xs">
                   <Text>{t("sheetInfo")}:</Text>
@@ -420,7 +426,7 @@ const SheetDetails = () => {
                   </Stack>
                 </ScrollArea>
               </Card>
-              <Card h="50%">
+              <Card withBorder h="50%">
                 <Group position="apart" mb="xs">
                   <Text>{t("versions")}:</Text>
                   <ActionIcon size="sm" onClick={toggleSheetVersionModal}>

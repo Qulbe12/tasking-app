@@ -1,6 +1,5 @@
 import { useEffect, useMemo } from "react";
 import {
-  ActionIcon,
   AppShell,
   Box,
   Burger,
@@ -9,7 +8,6 @@ import {
   Group,
   Header,
   MediaQuery,
-  Menu,
   Modal,
   Navbar,
   Progress,
@@ -19,7 +17,6 @@ import {
 
 import { Outlet, useLocation } from "react-router-dom";
 import { MainLinks } from "./MainLinks";
-import { IconLanguage } from "@tabler/icons";
 import { useAppDispatch, useAppSelector } from "../redux/store";
 import { resetFilters, setSearch } from "../redux/slices/filterSlice";
 import { useDisclosure } from "@mantine/hooks";
@@ -30,7 +27,7 @@ import NavBreadcrumbs from "./NavBreadcrumbs";
 import NavTabs from "./NavTabs";
 
 const DashboardLayout = () => {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const dispatch = useAppDispatch();
 
   const { loadingText, loadingValue } = useChangeWorkspace();
@@ -38,10 +35,6 @@ const DashboardLayout = () => {
 
   const location = useLocation();
   const { search } = useAppSelector((state) => state.filters);
-
-  const changeLanguage = (lng: string) => {
-    i18n.changeLanguage(lng);
-  };
 
   useEffect(() => {
     dispatch(setSearch(""));
@@ -63,6 +56,8 @@ const DashboardLayout = () => {
     <AppShell
       navbarOffsetBreakpoint="sm"
       asideOffsetBreakpoint="sm"
+      padding={0}
+      style={{ height: "90vh" }}
       navbar={
         opened ? (
           <Navbar p="md" hiddenBreakpoint="lg" hidden={!opened} width={{ lg: 95, sm: "30%" }}>
@@ -118,31 +113,13 @@ const DashboardLayout = () => {
                   dispatch(setSearch(e.target.value));
                 }}
               />
-              <Menu
-                styles={{
-                  [theme.fn.smallerThan("md")]: {
-                    width: "50%",
-                  },
-                }}
-                shadow="md"
-                width={200}
-              >
-                <Menu.Target>
-                  <ActionIcon>
-                    <IconLanguage size={48} />
-                  </ActionIcon>
-                </Menu.Target>
-                <Menu.Dropdown>
-                  <Menu.Item onClick={() => changeLanguage("en")}>English</Menu.Item>
-                  <Menu.Item onClick={() => changeLanguage("fr")}>Français</Menu.Item>
-                </Menu.Dropdown>
-              </Menu>
             </Flex>
           </Group>
         </Header>
       }
     >
       <Outlet />
+
       <Modal
         opacity={0.8}
         opened={!!loadingText}

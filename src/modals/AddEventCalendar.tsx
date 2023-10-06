@@ -15,7 +15,7 @@ type AddEventCalendar = {
   event?: Event;
 } & CommonModalProps;
 
-const AddEventCalendar = ({ title, opened, onClose, calendarId, event }: AddEventCalendar) => {
+const AddEventCalendar = ({ title, opened, onClose, calendarId }: AddEventCalendar) => {
   const validationSchema: any = yup.object().shape({
     title: yup.string().required("Please enter title of the event"),
     calendar_id: yup.string(),

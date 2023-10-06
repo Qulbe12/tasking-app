@@ -17,9 +17,11 @@ import { IEventResponse } from "../../interfaces/nylas/IEventResponse";
 import { IEventCreate } from "../../interfaces/nylas/IEventCreate";
 import { IContactResponse } from "../../interfaces/nylas/IContactResponse";
 import { IFolderResponse } from "../../interfaces/nylas/IFolderResponse";
-import { setUpdatedThread } from "../slices/nylasSlice";
+import { deleteFolder, setUpdatedThread } from "../slices/nylasSlice";
 import { IContact } from "../../interfaces/nylas/IContact";
 import { ICreateContact } from "../../interfaces/nylas/ICreateContact";
+import { IUpdateFolder } from "../../interfaces/nylas/IUpdateFolder";
+import { ICreateFolder } from "../../interfaces/nylas/ICreateFolder";
 
 const { nylasApi } = api;
 const { connect } = nylasApi;
@@ -59,6 +61,11 @@ export type GetAllThreadsArgs = {
   last_updated_after?: string;
   last_updated_timestamp?: string;
 } & BaseArgs;
+
+export type UpdateFolder = {
+  id: string;
+  data: IUpdateFolder;
+};
 
 export const connectNylas = createAsyncThunk(
   "nylas/connectNylas",
@@ -258,7 +265,6 @@ export const getEvents = createAsyncThunk(
   async (id: string, { rejectWithValue, dispatch }) => {
     try {
       const res = await nylasAxios.get<IEventResponse[]>(`/events?calendar_id=${id}`);
-      console.log(res.data);
       return res.data;
     } catch (err) {
       return centralizedErrorHandler(err, rejectWithValue, dispatch);
@@ -386,6 +392,43 @@ export const getFolderById = createAsyncThunk(
   async ({ id }: { id: string }, { rejectWithValue }) => {
     try {
       const res = await nylasAxios.get<IFolderResponse>(`/folders/${id}`);
+      return res.data;
+    } catch (err) {
+      const error = err as unknown as IErrorResponse;
+      return rejectWithValue(error.response?.data.message);
+    }
+  },
+);
+export const createFolder = createAsyncThunk(
+  "nylas/createFolder",
+  async (data: ICreateFolder, { rejectWithValue }) => {
+    try {
+      const res = await nylasAxios.post<IFolderResponse>("/folders", data);
+      return res.data;
+    } catch (err) {
+      const error = err as unknown as IErrorResponse;
+      return rejectWithValue(error.response?.data.message);
+    }
+  },
+);
+export const deleteFolderById = createAsyncThunk(
+  "nylas/deleteFolderById",
+  async ({ id }: { id: string }, { rejectWithValue, dispatch }) => {
+    try {
+      const res = await nylasAxios.delete<{ job_status_id: string }>(`/folders/${id}`);
+      dispatch(deleteFolder(id));
+      return res.data;
+    } catch (err) {
+      const error = err as unknown as IErrorResponse;
+      return centralizedErrorHandler(error, rejectWithValue, dispatch);
+    }
+  },
+);
+export const updateFolderById = createAsyncThunk(
+  "nylas/updateFolderById",
+  async ({ id, data }: UpdateFolder, { rejectWithValue }) => {
+    try {
+      const res = await nylasAxios.put<IFolderResponse>(`/folders/${id}`, data);
       return res.data;
     } catch (err) {
       const error = err as unknown as IErrorResponse;

@@ -56,13 +56,13 @@ const EmailList = ({ onActionButtonClick }: EmailListProps) => {
   }, []);
 
   return (
-    <>
+    <Flex direction="column" h="92vh">
       <EmailListHeader
         onActionButtonClick={onActionButtonClick}
         type={type}
         onTypeChange={setType}
       />
-      <Flex justify="space-between" h="87vh" miw="90%">
+      <Flex justify="space-between" h="92%" miw="90%">
         <Box w="14%" h="100%">
           <Card withBorder>
             <FoldersList selectedThreadId={selectedThreadId} />
@@ -87,7 +87,7 @@ const EmailList = ({ onActionButtonClick }: EmailListProps) => {
             }}
           />
         </Box>
-        <Card withBorder w="64%" h="100%">
+        <Card m={0} withBorder w="64%" h="100%">
           {showEmailForm ? (
             <ComposeEmail
               selectedMessage={selectedMessage}
@@ -124,7 +124,7 @@ const EmailList = ({ onActionButtonClick }: EmailListProps) => {
           </Button>
         </Affix>
       )}
-    </>
+    </Flex>
   );
 };
 
