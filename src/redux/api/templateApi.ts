@@ -100,7 +100,6 @@ export const updateTemplateFields = createAsyncThunk(
         `templates/${data.fieldId}/fields/${data.field}`,
         data.updatedField,
       );
-      console.log(res.data);
       return res.data;
     } catch (err) {
       return centralizedErrorHandler(err, rejectWithValue, dispatch);

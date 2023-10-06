@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../redux/store";
 import { Button, Flex, Modal, NavLink, ScrollArea } from "@mantine/core";
 import CommonModalProps from "./CommonModalProps";
@@ -56,14 +56,7 @@ const FoldersListModal = ({
 
   const handleFolderSelect = useCallback((value: string) => {
     setFolderId(value);
-    console.log("folder selected", value);
   }, []);
-
-  useEffect(() => {
-    if (selectedThreadId) {
-      console.log(selectedThreadId);
-    }
-  }, [selectedThreadId]);
 
   return (
     <Modal opened={opened} onClose={onClose}>

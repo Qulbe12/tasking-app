@@ -42,13 +42,6 @@ const ManageSeats = () => {
             </Text>
           </Group>
 
-          <button
-            onClick={() => {
-              console.log(businessInfo?.invitedUsers);
-            }}
-          >
-            Log Business
-          </button>
           <Table striped my="md">
             <thead>
               <tr>

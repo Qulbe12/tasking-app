@@ -138,9 +138,7 @@ export const nylasSlice = createSlice({
     },
     setUpdatedThread: (state, action: PayloadAction<IThreadResponse>) => {
       const index = state.threads.findIndex((obj) => obj.id === action.payload.id);
-      console.log("set updated thread", action.payload);
       if (index !== -1) {
-        // Update the object with the specified id using spread syntax
         state.threads[index] = { ...state.threads[index], ...action.payload };
       }
     },

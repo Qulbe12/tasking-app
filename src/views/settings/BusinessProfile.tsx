@@ -52,8 +52,6 @@ const BusinessProfile = () => {
         jobTitle: values.jobTitle || businessInfo?.jobTitle || "",
       };
 
-      console.log(newForm);
-
       await dispatch(updateBusinessInfo({ values: newForm }));
       form.reset();
     },

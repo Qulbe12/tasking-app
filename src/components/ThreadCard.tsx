@@ -20,12 +20,7 @@ const ThreadCard: React.FC<ThreadCardProps> = ({ thread, onClick, selectedThread
   const [opened, { open, close }] = useDisclosure(false);
 
   return (
-    <Box
-      key={thread.id}
-      onClick={() => {
-        console.log(thread);
-      }}
-    >
+    <Box key={thread.id}>
       <Flex
         direction="column"
         my="sm"
