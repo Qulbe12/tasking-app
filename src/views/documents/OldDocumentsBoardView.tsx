@@ -9,6 +9,7 @@ import {
   Group,
   Loader,
   LoadingOverlay,
+  Menu,
   Modal,
   MultiSelect,
   Paper,
@@ -29,6 +30,8 @@ import { useAppDispatch, useAppSelector } from "../../redux/store";
 import _ from "lodash";
 import dayjs from "dayjs";
 import {
+  IconArchive,
+  IconDotsVertical,
   IconEdit,
   IconFileText,
   IconLink,
@@ -66,7 +69,7 @@ import ThreadCard from "../../components/ThreadCard";
 import MessageDetails from "../../components/MessageDetails";
 import { useLocation } from "react-router-dom";
 
-const DocumentsBoardView = () => {
+const OldDocumentsBoardView = () => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const { state } = useLocation();
@@ -199,6 +202,10 @@ const DocumentsBoardView = () => {
     }
   };
 
+  const handleArchiveClick = () => {
+    console.log("Archiving");
+  };
+
   return (
     <Paper h="80vh">
       <div className="mb-2">
@@ -287,12 +294,26 @@ const DocumentsBoardView = () => {
                 <ScrollArea h="75vh">
                   <Flex justify="space-between" mb="xl">
                     <Text size="lg">{selectedDocument?.title}</Text>
-                    <Button
-                      leftIcon={<IconEdit size="1em" />}
-                      onClick={() => toggleShowEditModal()}
-                    >
-                      {t("edit")}
-                    </Button>
+
+                    <Menu>
+                      <Menu.Target>
+                        <ActionIcon size="sm">
+                          <IconDotsVertical size="1em" />
+                        </ActionIcon>
+                      </Menu.Target>
+
+                      <Menu.Dropdown>
+                        <Menu.Item
+                          icon={<IconEdit size="1em" />}
+                          onClick={() => toggleShowEditModal()}
+                        >
+                          {t("edit")}
+                        </Menu.Item>
+                        <Menu.Item icon={<IconArchive size="1em" />} onClick={handleArchiveClick}>
+                          {t("archive")}
+                        </Menu.Item>
+                      </Menu.Dropdown>
+                    </Menu>
                   </Flex>
 
                   <Stack>
@@ -789,4 +810,4 @@ const DocumentsBoardView = () => {
   );
 };
 
-export default DocumentsBoardView;
+export default OldDocumentsBoardView;

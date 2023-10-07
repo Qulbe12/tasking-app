@@ -4,7 +4,7 @@ import React from "react";
 import { useAppSelector } from "../../redux/store";
 import Teams from "../teams/Teams";
 import AnalyticsPage from "../analytics/AnalyticsPage";
-import DocumentsBoardView from "../documents/DocumentsBoardView";
+import DocumentsBoardView from "../documents/components/DocumentsBoardView";
 import SheetsPage from "../sheets/SheetsPage";
 
 const BoardDetails = () => {

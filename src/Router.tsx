@@ -17,7 +17,6 @@ import PaymentPage from "./views/settings/PaymentPage";
 import SettingsLayout from "./layouts/SettingsLayout";
 import DocumentPublicView from "./views/documents/DocumentPublicView";
 import SheetsPage from "./views/sheets/SheetsPage";
-import DocumentsBoardView from "./views/documents/DocumentsBoardView";
 import SheetDetails from "./views/sheets/SheetDetails";
 import PaymentMethodsPage from "./views/settings/PaymentMethodsPage";
 import ManageSeats from "./views/settings/ManageSeats";
@@ -29,6 +28,8 @@ import TermsAndConditions from "./views/legal/TermsAndConditions";
 import BusinessProfile from "./views/settings/BusinessProfile";
 import { ContactList } from "./views/email/contacts/ContactList";
 import SignatureManagement from "./views/settings/SignatureManagement";
+// import DocumentsPage from "./views/documents/DocumentsPage";
+import OldDocumentsBoardView from "./views/documents/OldDocumentsBoardView";
 
 const router = createBrowserRouter([
   {
@@ -117,7 +118,7 @@ const router = createBrowserRouter([
         children: [
           {
             path: "/board",
-            element: <DocumentsBoardView />,
+            element: <OldDocumentsBoardView />,
           },
           {
             path: "/board/sheets",
