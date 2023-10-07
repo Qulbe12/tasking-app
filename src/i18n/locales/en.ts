@@ -102,6 +102,9 @@ const en = {
     assignedUsers: "Assigned Users",
     ccUsers: "CC Users",
     addUsers: "Add Users",
+    archive: "Archive",
+    archiveDocument: "Archive Document",
+    archiveConfirmation: "Are you sure you want to archive ",
 
     // Document Modal
     documentType: "Document Type",

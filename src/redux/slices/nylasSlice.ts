@@ -46,7 +46,7 @@ export interface GroupsState {
   data: any;
   loading: number;
   messages: IMessageResponse[] | IMessageExpandedResponse[];
-  threads: IThreadResponse[] | IThreadExpandedResponse[];
+  threads: IThreadExpandedResponse[];
   thread?: IThreadResponse;
   calendars: ICalendarResponse[];
   calendar?: ICalendarResponse;
@@ -143,7 +143,6 @@ export const nylasSlice = createSlice({
     setUpdatedThread: (state, action: PayloadAction<IThreadResponse>) => {
       const index = state.threads.findIndex((obj) => obj.id === action.payload.id);
       if (index !== -1) {
-        // Update the object with the specified id using spread syntax
         state.threads[index] = { ...state.threads[index], ...action.payload };
       }
     },

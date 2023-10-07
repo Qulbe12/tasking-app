@@ -1,5 +1,5 @@
 import React from "react";
-import { Avatar, Menu, Tooltip } from "@mantine/core";
+import { Avatar, Menu, Text, Tooltip } from "@mantine/core";
 import { IconTrash } from "@tabler/icons";
 import { IUser } from "../interfaces/account/IUserResponse";
 
@@ -19,6 +19,10 @@ const AvatarGroup: React.FC<AvatarGroupProps> = ({ users, ccUsers }) => {
       {typeof item === "string" ? item : item.email}
     </Menu.Item>
   );
+
+  if ((users && users?.length <= 0) || (ccUsers && ccUsers?.length <= 0)) {
+    return <Text size="sm">No Users Added</Text>;
+  }
 
   return (
     <Tooltip.Group openDelay={300} closeDelay={100}>

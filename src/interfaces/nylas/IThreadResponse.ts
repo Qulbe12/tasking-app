@@ -66,5 +66,5 @@ export interface IThreadExpandedResponse extends IThreadResponse {
       id: string;
       name: string;
     }[];
-  };
+  }[];
 }

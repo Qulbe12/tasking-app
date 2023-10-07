@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-export declare enum FieldType {
+export enum FieldType {
   Text = "Text",
   Number = "Number",
   Checkbox = "Checkbox",
@@ -7,6 +7,7 @@ export declare enum FieldType {
   Date = "Date",
   Select = "Select",
   Multiselect = "Multiselect",
+  Textarea = "Textarea",
 }
 
 export interface IField {

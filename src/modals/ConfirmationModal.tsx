@@ -26,7 +26,7 @@ const ConfirmationModal = ({
         {body}
       </Text>
       <Flex gap="md" justify="flex-end">
-        <Button>{t("cancel")}</Button>
+        <Button onClick={onClose}>{t("cancel")}</Button>
         <Button loading={loading} color={type === "delete" ? "red" : undefined} onClick={onOk}>
           {t("confirm")}
         </Button>

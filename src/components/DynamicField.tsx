@@ -1,27 +1,41 @@
 import React from "react";
-import { Checkbox, MultiSelect, NumberInput, Radio, Select, TextInput } from "@mantine/core";
-import { FieldType, IField } from "hexa-sdk/dist/app.api";
+import {
+  Checkbox,
+  MultiSelect,
+  NumberInput,
+  Radio,
+  Select,
+  TextInput,
+  Textarea,
+} from "@mantine/core";
 import { DatePicker } from "@mantine/dates";
 import { UseFormReturnType } from "@mantine/form";
+import { FieldType, IField } from "../interfaces/documents/IField";
 
 type DynamicFieldProps = {
   field: IField;
   form?: UseFormReturnType<any>;
-  value?: string;
-  onChange?: (e: string | boolean | Date | string[]) => void;
+
   width?: number;
 };
 
-const DynamicField: React.FC<DynamicFieldProps> = ({ field, form, value, onChange, width }) => {
+const DynamicField: React.FC<DynamicFieldProps> = ({ field, form, width }) => {
   switch (field.type) {
     case FieldType.Text:
       return (
         <TextInput
           withAsterisk={field.required}
           label={field.label}
-          value={value}
           w={width ? `${width}%` : "100%"}
-          onChange={(e) => onChange && onChange(e.target.value)}
+          {...form?.getInputProps(field.key)}
+        />
+      );
+    case FieldType.Textarea:
+      return (
+        <Textarea
+          withAsterisk={field.required}
+          label={field.label}
+          w={width ? `${width}%` : "100%"}
           {...form?.getInputProps(field.key)}
         />
       );
@@ -31,8 +45,6 @@ const DynamicField: React.FC<DynamicFieldProps> = ({ field, form, value, onChang
           withAsterisk={field.required}
           label={field.label}
           w={width ? `${width}%` : "100%"}
-          value={parseInt(value || "0")}
-          onChange={(e) => onChange && onChange(`${e}`)}
           {...form?.getInputProps(field.key)}
         />
       );
@@ -40,10 +52,7 @@ const DynamicField: React.FC<DynamicFieldProps> = ({ field, form, value, onChang
       return (
         <Checkbox
           label={field.label}
-          value={value}
           w={width ? `${width}%` : "100%"}
-          checked={value}
-          onChange={(e) => onChange && onChange(e.target.checked)}
           {...form?.getInputProps(field.key, { type: "checkbox" })}
         />
       );
@@ -54,10 +63,6 @@ const DynamicField: React.FC<DynamicFieldProps> = ({ field, form, value, onChang
           placeholder="Pick date"
           w={width ? `${width}%` : "100%"}
           label={field.label}
-          onChange={(e) => {
-            if (!e) return;
-            onChange && onChange(e);
-          }}
           {...form?.getInputProps(field.key)}
         />
       );
@@ -69,7 +74,6 @@ const DynamicField: React.FC<DynamicFieldProps> = ({ field, form, value, onChang
           w={width ? `${width}%` : "100%"}
           placeholder="Pick values"
           withAsterisk={field.required}
-          onChange={(e) => onChange && onChange(e)}
           {...form?.getInputProps(field.key)}
         />
       );
@@ -91,6 +95,7 @@ const DynamicField: React.FC<DynamicFieldProps> = ({ field, form, value, onChang
     case FieldType.Select:
       return (
         <Select
+          withAsterisk={field.required}
           label={field.label}
           placeholder="Pick one"
           w={width ? `${width}%` : "100%"}

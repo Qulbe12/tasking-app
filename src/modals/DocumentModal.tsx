@@ -39,14 +39,7 @@ const DocumentModal = ({ onClose, opened, title }: CommonModalProps) => {
   const [templateModalOpen, setTemplateModalOpen] = useState(false);
 
   const formSchema = useMemo(() => {
-    const schema: any = {
-      title: yup.string().required("Document title is required"),
-      description: yup.string().required("Description is required"),
-      startDate: yup.date().required("Start date is required"),
-      dueDate: yup.date().required("Due date is required"),
-      priority: yup.string().required("Priority is required"),
-      status: yup.string().required("Status is required"),
-    };
+    const schema: any = {};
     fields?.forEach((f) => {
       if (f.required) {
         if (f.type === FieldType.Multiselect) {
@@ -62,6 +55,12 @@ const DocumentModal = ({ onClose, opened, title }: CommonModalProps) => {
   }, [fields]);
 
   const form = useForm({
+    initialValues: {
+      title: "",
+      description: "",
+      startDate: new Date(),
+      dueDate: new Date(),
+    },
     validate: yupResolver(formSchema),
   });
 
@@ -97,6 +96,7 @@ const DocumentModal = ({ onClose, opened, title }: CommonModalProps) => {
   return (
     <Modal opened={opened} onClose={onClose} title={title}>
       <LoadingOverlay visible={!!loaders.adding} />
+
       <form onSubmit={form.onSubmit(handleSubmit)}>
         <Stack>
           <Select

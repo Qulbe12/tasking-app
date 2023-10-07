@@ -315,7 +315,6 @@ const TemplateModal = ({ onClose, opened, template }: ModalProps & TemplateModal
               if (!template) return;
 
               const { label, options, required, type } = fieldVals;
-              console.log(fieldVals);
               await dispatch(
                 updateTemplateFields({
                   fieldId: template.id,
