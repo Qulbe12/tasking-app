@@ -3,6 +3,7 @@ import {
   ActionIcon,
   Button,
   Card,
+  Flex,
   Group,
   ScrollArea,
   SimpleGrid,
@@ -15,6 +16,7 @@ import {
   IconCornerUpLeft,
   IconCornerUpLeftDouble,
   IconCornerUpRight,
+  IconFile,
   IconLink,
   IconSend,
   IconTrash,
@@ -30,6 +32,9 @@ import { showError } from "../redux/commonSliceFunctions";
 import { IErrorResponse } from "../interfaces/IErrorResponse";
 import { IDocumentResponse } from "../interfaces/documents/IDocumentResponse";
 import { ISendMessage } from "../interfaces/nylas/ISendMessage";
+import { IconPdf } from "@tabler/icons-react";
+import { nylasAxios } from "../config/nylasAxios";
+import { IFile } from "../interfaces/nylas/IFile";
 
 type MessageDetailsProps = {
   selectedThreadId: string | null;
@@ -55,6 +60,51 @@ const MessageDetails = ({
   const [replyType, setReplyType] = useState<"all" | "solo">("solo");
 
   const [selectedDocuments, setSelectedDocuments] = useState<string[]>([]);
+
+  const [updatedMessages, setUpdatedMessages] = useState<IMessageResponse[]>([]);
+
+  useEffect(() => {
+    setUpdatedMessages(messages); // Set messages immediately
+
+    const fetchFileAndUpdateMessage = async (file: IFile, messageId: string) => {
+      try {
+        const res = await nylasAxios.get(`/files/${file.id}/download`, {
+          responseType: "arraybuffer",
+        });
+        const blob = new Blob([res.data], { type: file.content_type });
+        const imageUrl = window.URL.createObjectURL(blob);
+
+        setUpdatedMessages((prevMsgs) =>
+          prevMsgs.map((message) => {
+            if (message.id !== messageId) return message;
+
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(message.body, "text/html");
+            const imgElements =
+              (doc.querySelectorAll(
+                `img[src="cid:${file.content_id}"]`,
+              ) as unknown as HTMLImageElement[]) ?? [];
+            imgElements.forEach((img) => {
+              img.src = imageUrl;
+            });
+
+            return {
+              ...message,
+              body: doc.body.innerHTML,
+            };
+          }),
+        );
+      } catch (error) {
+        console.error(`Error fetching file with ID ${file.id}:`, error);
+      }
+    };
+
+    messages.forEach((message) => {
+      message.files.forEach((file) => {
+        fetchFileAndUpdateMessage(file, message.id);
+      });
+    });
+  }, [messages]);
 
   useEffect(() => {
     setEmailContent("");
@@ -129,6 +179,32 @@ const MessageDetails = ({
     }
   }, [selectedDocuments, activeBoard, selectedThreadId]);
 
+  const downloadAttachment = async (file: IFile) => {
+    const res = await nylasAxios.get(`/files/${file.id}/download`, {
+      responseType: "arraybuffer",
+    });
+
+    const blob = new Blob([res.data], { type: file.content_type });
+    const href = window.URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+    link.href = href;
+    link.download = file.filename?.split(".")[0] + "." + file.content_type.split("/")[1] ?? "file";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const TypeIcon = ({ type }: { type: string }) => {
+    switch (type) {
+      case "application/pdf":
+        return <IconPdf />;
+
+      default:
+        return <IconFile />;
+    }
+  };
+
   return (
     <Stack h="100%">
       <Card withBorder className="p-0" h="100%" component={ScrollArea}>
@@ -145,7 +221,7 @@ const MessageDetails = ({
         <Stack>
           {selectedThreadId &&
             !loaders.gettingMessages &&
-            messages.map((m) => {
+            updatedMessages.map((m) => {
               return (
                 <Card key={m.id}>
                   <Group position="apart">
@@ -198,6 +274,28 @@ const MessageDetails = ({
                   <Text size="sm" opacity={0.7} mb="md">
                     To: {m.to[0].name} {`<${m.to[0].email}>`}
                   </Text>
+
+                  {m.files.length > 0 && (
+                    <Group my="md">
+                      {m.files.map((f) => {
+                        return (
+                          <Card
+                            p="xs"
+                            withBorder
+                            key={f.id}
+                            className="cursor-pointer"
+                            onClick={() => downloadAttachment(f as any)}
+                          >
+                            <Flex align="center" gap="sm">
+                              <TypeIcon type={f.content_type} />
+                              <Text>{f.filename}</Text>
+                            </Flex>
+                          </Card>
+                        );
+                      })}
+                    </Group>
+                  )}
+
                   <iframe
                     srcDoc={m.body}
                     width="100%"

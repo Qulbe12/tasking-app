@@ -11,11 +11,7 @@ interface NestedFolder {
   nestedChildren?: NestedFolder[];
 }
 
-type FoldersListProps = {
-  selectedThreadId: string | null;
-};
-
-const FoldersList = ({ selectedThreadId }: FoldersListProps) => {
+const FoldersList = () => {
   const dispatch = useAppDispatch();
   const { folders } = useAppSelector((state) => state.nylas);
   const [value, setValue] = useState<string | null>(null);
@@ -49,9 +45,12 @@ const FoldersList = ({ selectedThreadId }: FoldersListProps) => {
     return nestedArray;
   }, [folders]);
 
-  const handleFolderSelect = useCallback((value: string) => {
-    setValue(value);
-  }, []);
+  const handleFolderSelect = useCallback(
+    (value: string) => {
+      setValue(value);
+    },
+    [value],
+  );
 
   useEffect(() => {
     if (value) {
@@ -59,9 +58,6 @@ const FoldersList = ({ selectedThreadId }: FoldersListProps) => {
       dispatch(getFolderById({ id: value }));
     }
   }, [value]);
-  useEffect(() => {
-    console.log(selectedThreadId);
-  }, []);
 
   return (
     <ScrollArea h="100%">
