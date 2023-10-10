@@ -105,6 +105,10 @@ const en = {
     archive: "Archive",
     archiveDocument: "Archive Document",
     archiveConfirmation: "Are you sure you want to archive ",
+    comments: "Comments",
+    changelog: "Changelog",
+    linkedDocs: "Linked Documents",
+    linkedEmails: "Linked Emails",
 
     // Document Modal
     documentType: "Document Type",

@@ -5,6 +5,8 @@ import { IDocumentResponse } from "../../../interfaces/documents/IDocumentRespon
 
 import "./DocumentsBoardView.scss";
 import DocumentsDetailsCol from "./DocumentsDetailsCol";
+import DocumentsCommentsCol from "./DocumentsCommentsCol";
+import DocumentsLinkedDocsCol from "./DocumentsLinkedDocsCol";
 
 type DocumentsBoardViewProps = {
   documents: IDocumentResponse[];
@@ -25,6 +27,12 @@ const DocumentsBoardView: React.FC<DocumentsBoardViewProps> = ({
         onDocumentClick={onDocumentClick}
       />
       <DocumentsDetailsCol document={selectedDocument} />
+      <DocumentsCommentsCol selectedDocument={selectedDocument} />
+      <DocumentsLinkedDocsCol
+        documents={documents}
+        onDocumentClick={onDocumentClick}
+        selectedDocument={selectedDocument}
+      />
     </div>
   );
 };

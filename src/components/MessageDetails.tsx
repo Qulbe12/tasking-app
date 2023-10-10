@@ -197,7 +197,7 @@ const MessageDetails = ({
                   <iframe
                     srcDoc={m.body}
                     width="100%"
-                    height="360px"
+                    height="500px"
                     title={`email-${m.id}`}
                     style={{ borderRadius: "5px" }}
                   ></iframe>

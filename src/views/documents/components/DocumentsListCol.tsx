@@ -1,4 +1,4 @@
-import { Button, Group, Paper, Title } from "@mantine/core";
+import { Button, Group, Paper, ScrollArea, Title } from "@mantine/core";
 import React from "react";
 import { IDocumentResponse } from "../../../interfaces/documents/IDocumentResponse";
 import DocumentCard from "../../../components/DocumentCard";
@@ -44,7 +44,7 @@ const DocumentsListCol: React.FC<DocumentsListColProps> = ({
           </Button>
         </Group>
       </div>
-      <div className="content">
+      <ScrollArea className="content">
         {documents.map((d, i) => {
           return (
             <div key={i} id={d.id} onClick={() => handleCardContainerClick(d.id)}>
@@ -56,7 +56,7 @@ const DocumentsListCol: React.FC<DocumentsListColProps> = ({
             </div>
           );
         })}
-      </div>
+      </ScrollArea>
 
       <DocumentModal
         opened={showDocumentModal}

@@ -28,8 +28,8 @@ import TermsAndConditions from "./views/legal/TermsAndConditions";
 import BusinessProfile from "./views/settings/BusinessProfile";
 import { ContactList } from "./views/email/contacts/ContactList";
 import SignatureManagement from "./views/settings/SignatureManagement";
-// import DocumentsPage from "./views/documents/DocumentsPage";
-import OldDocumentsBoardView from "./views/documents/OldDocumentsBoardView";
+import DocumentsPage from "./views/documents/DocumentsPage";
+// import OldDocumentsBoardView from "./views/documents/OldDocumentsBoardView";
 
 const router = createBrowserRouter([
   {
@@ -118,7 +118,7 @@ const router = createBrowserRouter([
         children: [
           {
             path: "/board",
-            element: <OldDocumentsBoardView />,
+            element: <DocumentsPage />,
           },
           {
             path: "/board/sheets",
