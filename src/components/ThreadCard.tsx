@@ -15,7 +15,7 @@ type ThreadCardProps = {
   hideMenu?: boolean;
 };
 
-const ThreadCard: React.FC<ThreadCardProps> = ({ thread, onClick, selectedThreadId, hideMenu }) => {
+const ThreadCard: React.FC<ThreadCardProps> = ({ thread, onClick, hideMenu }) => {
   const { user } = useAppSelector((state) => state.auth);
   const [threadId, setThreadId] = useState("");
   const [opened, { open, close }] = useDisclosure(false);
