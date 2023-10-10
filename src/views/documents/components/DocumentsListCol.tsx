@@ -62,6 +62,7 @@ const DocumentsListCol: React.FC<DocumentsListColProps> = ({
         opened={showDocumentModal}
         onClose={closeDocumentModal}
         title={t("createDocument")}
+        onAfterCreate={(doc) => onDocumentClick(doc)}
       />
     </Paper>
   );

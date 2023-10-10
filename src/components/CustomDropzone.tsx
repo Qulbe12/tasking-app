@@ -3,6 +3,7 @@ import { Group, Text, useMantineTheme } from "@mantine/core";
 import { IconUpload, IconX, IconFile } from "@tabler/icons";
 import { Dropzone, DropzoneProps, FileWithPath, PDF_MIME_TYPE } from "@mantine/dropzone";
 import { useTranslation } from "react-i18next";
+import { showError } from "../redux/commonSliceFunctions";
 
 type CustomDropzoneProps = {
   isSheet?: boolean;
@@ -14,8 +15,17 @@ const CustomDropzone = (props: Partial<DropzoneProps> & CustomDropzoneProps) => 
 
   return (
     <Dropzone
-      maxSize={props.isSheet ? undefined : 50 * 1024 ** 2}
+      maxSize={props.isSheet ? undefined : 100 * 1024 ** 2}
       accept={PDF_MIME_TYPE}
+      onReject={(files) => {
+        files.forEach((f) => {
+          f.errors.forEach((e) => {
+            if (e.code === "file-too-large") {
+              showError("File too large, limit is 100mb");
+            }
+          });
+        });
+      }}
       onDrop={function (files: FileWithPath[]): void {
         props.onDrop?.(files);
       }}

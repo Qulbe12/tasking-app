@@ -25,8 +25,18 @@ import { IconX } from "@tabler/icons";
 import * as yup from "yup";
 import { useTranslation } from "react-i18next";
 import { isValidDate } from "../utils/isValidDate";
+import { IDocumentResponse } from "../interfaces/documents/IDocumentResponse";
 
-const DocumentModal = ({ onClose, opened, title }: CommonModalProps) => {
+type DocumentModalProps = {
+  onAfterCreate?: (document: IDocumentResponse) => void;
+};
+
+const DocumentModal = ({
+  onClose,
+  opened,
+  title,
+  onAfterCreate,
+}: CommonModalProps & DocumentModalProps) => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
 
@@ -84,13 +94,18 @@ const DocumentModal = ({ onClose, opened, title }: CommonModalProps) => {
       formData.append(k, value);
     });
 
-    await dispatch(createDocument({ boardId: activeBoard.id, document: formData }));
-
-    form.reset();
-    setAttachments([]);
-    setSelectedTemplate(null);
-    setFields(undefined);
-    onClose();
+    try {
+      const actionRes = await dispatch(
+        createDocument({ boardId: activeBoard.id, document: formData }),
+      );
+      onAfterCreate && onAfterCreate(actionRes.payload);
+    } finally {
+      form.reset();
+      setAttachments([]);
+      setSelectedTemplate(null);
+      setFields(undefined);
+      onClose();
+    }
   };
 
   return (

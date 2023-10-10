@@ -50,6 +50,7 @@ const DocumentsGridView: React.FC<DocumentsGridViewProps> = ({ documents, onDocu
         opened={showDocumentModal}
         onClose={closeDocumentModal}
         title={t("createDocument")}
+        onAfterCreate={(doc) => onDocumentClick(doc)}
       />
     </div>
   );
