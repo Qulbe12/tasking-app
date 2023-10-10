@@ -68,9 +68,9 @@ const DocumentsCommentsCol: React.FC<DocumentsCommentsColProps> = ({ selectedDoc
                 )}
                 {!gettingChangeLog &&
                   changeLog.reverse().map((cl, clIndex) => {
-                    return cl.change.map((ch) => {
+                    return cl.change.map((ch, chIndex) => {
                       return (
-                        <tr key={cl.rid + clIndex}>
+                        <tr key={cl.rid + clIndex + chIndex + "changelogReversed"}>
                           <td>
                             {`${cl.by.name} ${ch.type} ${_(ch.key).startCase()} from ${
                               ch.oldVal

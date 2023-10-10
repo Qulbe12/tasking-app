@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useMemo } from "react";
-import { Button, Group, Paper, ScrollArea, Tabs } from "@mantine/core";
+import { Button, Group, Modal, Paper, ScrollArea, Skeleton, Stack, Tabs } from "@mantine/core";
 import { IconFolder, IconLink, IconMail } from "@tabler/icons";
 import { useTranslation } from "react-i18next";
 import { IDocumentResponse } from "../../../interfaces/documents/IDocumentResponse";
@@ -9,6 +9,11 @@ import { useAppDispatch, useAppSelector } from "../../../redux/store";
 import { useDisclosure } from "@mantine/hooks";
 import { addLinkedDocsAction, removeLinkedDocsAction } from "../../../redux/api/documentApi";
 import DocumentsListModal from "../../../modals/DocumentsListModal";
+
+import ThreadCard from "../../../components/ThreadCard";
+import useGetLinkedThreads from "../../../hooks/useGetLinkedThreads";
+import MessageDetails from "../../../components/MessageDetails";
+import ComposeEmail from "../../email/components/ComposeEmail";
 
 type DocumentsLinkedDocsColProps = {
   selectedDocument?: IDocumentResponse | null;
@@ -28,6 +33,11 @@ const DocumentsLinkedDocsCol: React.FC<DocumentsLinkedDocsColProps> = ({
   const [activeTab, setActiveTab] = useState<string | null>("linkedDocs");
   const [selectedLinkedDocument, setSelectedLinkedDocument] = useState<string | undefined>();
   const [selectedDocumentToLink, setSelectedDocumentToLink] = useState<string[]>([]);
+  const [selectedThreadId, setSelectedThreadId] = useState<string | null>(null);
+  const [showComposeModal, setShowComposeModal] = useState<boolean>(false);
+
+  const { linkedThreads, gettingThreads } = useGetLinkedThreads({ selectedDocument });
+
   const [showDocumentsModal, { toggle: toggleShowDocumentsModal }] = useDisclosure(false);
   const [showConfirmationModal, { toggle: toggleShowConfirmationModal }] = useDisclosure(false);
 
@@ -99,7 +109,7 @@ const DocumentsLinkedDocsCol: React.FC<DocumentsLinkedDocsColProps> = ({
               </Button>
             </Group>
             {linkedDocs?.map((foundDocument, index) => (
-              <div key={index} className="mb-4">
+              <div key={index + "linkedDocs" + foundDocument?.id} className="mb-4">
                 <DocumentCard
                   linkedView
                   document={foundDocument}
@@ -109,7 +119,33 @@ const DocumentsLinkedDocsCol: React.FC<DocumentsLinkedDocsColProps> = ({
               </div>
             ))}
           </Tabs.Panel>
-          <Tabs.Panel value="linkedEmails">Emails</Tabs.Panel>
+          <Tabs.Panel value="linkedEmails">
+            <Group position="right" mb="md">
+              <Button onClick={() => setShowComposeModal(true)} leftIcon={<IconLink size="1em" />}>
+                {t("composeEmail")}
+              </Button>
+            </Group>
+            {gettingThreads && (
+              <Stack>
+                <Skeleton height={100} />
+                <Skeleton height={100} />
+                <Skeleton height={100} />
+              </Stack>
+            )}
+
+            {!gettingThreads &&
+              linkedThreads.map((t) => {
+                if (!t) return;
+                return (
+                  <ThreadCard
+                    thread={t}
+                    onClick={() => setSelectedThreadId(t.id)}
+                    key={t.id}
+                    hideMenu
+                  />
+                );
+              })}
+          </Tabs.Panel>
         </Tabs>
       </ScrollArea>
 
@@ -142,6 +178,18 @@ const DocumentsLinkedDocsCol: React.FC<DocumentsLinkedDocsColProps> = ({
           }
         }}
       />
+
+      <Modal size="60%" opened={!!selectedThreadId} onClose={() => setSelectedThreadId(null)}>
+        <MessageDetails justMessages selectedThreadId={selectedThreadId} />
+      </Modal>
+
+      <Modal size="80%" opened={showComposeModal} onClose={() => setShowComposeModal(false)}>
+        <ComposeEmail
+          onCancelClick={() => {
+            setShowComposeModal(false);
+          }}
+        />
+      </Modal>
     </Paper>
   );
 };
