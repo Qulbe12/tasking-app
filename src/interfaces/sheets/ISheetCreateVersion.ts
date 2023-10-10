@@ -2,6 +2,6 @@ import { ISheetProcessResponse } from "./ISheetProcessResponse";
 
 export default interface ISheetCreateVersion {
   versionTitle: string;
-  date: string;
+  versionDate: string;
   records: ISheetProcessResponse[];
 }

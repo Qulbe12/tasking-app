@@ -4,8 +4,8 @@ import React from "react";
 import { useAppSelector } from "../../redux/store";
 import Teams from "../teams/Teams";
 import AnalyticsPage from "../analytics/AnalyticsPage";
-import DocumentsBoardView from "../documents/components/DocumentsBoardView";
 import SheetsPage from "../sheets/SheetsPage";
+import DocumentsPage from "../documents/DocumentsPage";
 
 const BoardDetails = () => {
   const { boardTab } = useAppSelector((state) => state.menus);
@@ -14,7 +14,7 @@ const BoardDetails = () => {
     {
       value: "Work Items",
       icon: <IconPhoto size="0.8rem" />,
-      element: <DocumentsBoardView />,
+      element: <DocumentsPage />,
     },
     {
       value: "Sheets",

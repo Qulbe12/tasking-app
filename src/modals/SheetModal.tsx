@@ -68,7 +68,7 @@ const SheetModal = ({ onClose, opened, title }: CommonModalProps) => {
     setNewCodes(sheetRecords.map((sr) => sr.code));
   }, [sheetRecords]);
 
-  const [tagsData, setTagsData] = useState<{ value: string; label: string; recordindex: number }[]>(
+  const [tagsData, setTagsData] = useState<{ value: string; label: string; recordIndex: number }[]>(
     [],
   );
   const [newTags, setNewTags] = useState<string[][]>([]);
@@ -105,6 +105,8 @@ const SheetModal = ({ onClose, opened, title }: CommonModalProps) => {
       dueDate: form.values.dueDate.toISOString(),
       records: newRecords,
     };
+
+    console.log(preppedSheet);
 
     await dispatch(createSheet({ boardId: activeBoard.id, sheet: preppedSheet }));
     form.reset();
@@ -144,7 +146,7 @@ const SheetModal = ({ onClose, opened, title }: CommonModalProps) => {
                     setNewTags(nNewTags);
                   }}
                   onCreate={(query) => {
-                    const item = { value: query, label: query, recordindex: i };
+                    const item = { value: query, label: query, recordIndex: i };
                     setTagsData((current) => [...current, item]);
                     return item;
                   }}
@@ -163,7 +165,7 @@ const SheetModal = ({ onClose, opened, title }: CommonModalProps) => {
           </Group>
         </Paper>
       )),
-    [sheetRes, newCodes, handleSheetRemove],
+    [sheetRes, newCodes, handleSheetRemove, tagsData, newTags],
   );
 
   return (
