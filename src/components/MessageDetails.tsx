@@ -278,6 +278,7 @@ const MessageDetails = ({
                   {m.files.length > 0 && (
                     <Group my="md">
                       {m.files.map((f) => {
+                        if (f.content_disposition !== "attachment") return;
                         return (
                           <Card
                             p="xs"
