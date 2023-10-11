@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../../redux/store";
 import { Card, NavLink, ScrollArea } from "@mantine/core";
 import { deleteFolderById, getAllThreads, getFolderById } from "../../../redux/api/nylasApi";
@@ -8,6 +8,7 @@ import CreateFolderModal from "../../../modals/CreateFolderModel";
 interface NestedFolder {
   id: string;
   display_name: string;
+  name: string;
   nestedChildren?: NestedFolder[];
 }
 
@@ -19,6 +20,22 @@ const FoldersList = ({ selectedThreadId }: FoldersListProps) => {
   const dispatch = useAppDispatch();
   const { folders } = useAppSelector((state) => state.nylas);
   const [value, setValue] = useState<string | null>(null);
+  const [contextMenuVisible, setContextMenuVisible] = useState(false);
+  const [contextMenuPosition, setContextMenuPosition] = useState({ top: 0, left: 0 });
+  useEffect(() => {
+    const handleWindowClick = () => {
+      setContextMenuVisible(false);
+    };
+    if (contextMenuVisible) {
+      window.addEventListener("click", handleWindowClick);
+    } else {
+      window.removeEventListener("click", handleWindowClick);
+    }
+
+    return () => {
+      window.removeEventListener("click", handleWindowClick);
+    };
+  }, [contextMenuVisible]);
 
   const preppedFolders = useMemo(() => {
     const nestedArray: NestedFolder[] = [];
@@ -33,7 +50,7 @@ const FoldersList = ({ selectedThreadId }: FoldersListProps) => {
         if (existingItem) {
           currentLevel = existingItem.nestedChildren || (existingItem.nestedChildren = []);
         } else {
-          const newItem: NestedFolder = { id: item.id, display_name: name };
+          const newItem: NestedFolder = { id: item.id, display_name: name, name: item.name };
           currentLevel.push(newItem);
           currentLevel = newItem.nestedChildren || (newItem.nestedChildren = []);
         }
@@ -52,6 +69,11 @@ const FoldersList = ({ selectedThreadId }: FoldersListProps) => {
   const handleFolderSelect = useCallback((value: string) => {
     setValue(value);
   }, []);
+  const handleContextChange = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setContextMenuVisible((o) => !o);
+    setContextMenuPosition({ top: e.clientY, left: e.clientX });
+  };
 
   useEffect(() => {
     if (value) {
@@ -59,14 +81,18 @@ const FoldersList = ({ selectedThreadId }: FoldersListProps) => {
       dispatch(getFolderById({ id: value }));
     }
   }, [value]);
-  useEffect(() => {
-    console.log(selectedThreadId);
-  }, []);
 
   return (
     <ScrollArea h="100%">
       {preppedFolders.map((folder) => (
         <RecursiveNavLink
+          folderRemove={() => {
+            dispatch(deleteFolderById({ id: folder.id }));
+          }}
+          contextPosition={contextMenuPosition}
+          contextVisible={contextMenuVisible}
+          onContextClick={handleContextChange}
+          name={folder.name}
           key={folder.id}
           id={folder.id}
           display_name={folder.display_name}
@@ -84,36 +110,37 @@ function RecursiveNavLink({
   display_name,
   nestedChildren,
   selectedId,
+  name,
   onFolderSelect,
+  onContextClick,
+  contextVisible,
+  contextPosition,
+  folderRemove,
 }: NestedFolder & {
   selectedId: string | null;
   onFolderSelect: (id: string) => void;
+  onContextClick: (e: React.MouseEvent) => void;
+  contextVisible: boolean;
+  contextPosition: { top: number; left: number };
+  folderRemove: () => void;
 }) {
   const handleFolderClick = () => {
     onFolderSelect(id);
   };
-  const [contextMenuVisible, setContextMenuVisible] = useState(false);
-  const [contextMenuPosition, setContextMenuPosition] = useState({ top: 0, left: 0 });
-  const [opened, { open, close }] = useDisclosure();
-  const dispatch = useAppDispatch();
-
-  const handleContextMenu = (e: any) => {
-    e.preventDefault();
-
-    if (contextMenuVisible) {
-      setContextMenuVisible(false);
-    } else {
-      setContextMenuVisible(true);
-    }
-    setContextMenuPosition({ top: e.clientY, left: e.clientX });
+  const handleContextClick = (e: React.MouseEvent) => {
+    onContextClick(e);
   };
 
-  const removeFolder = () => {
-    setContextMenuVisible(false);
-    dispatch(deleteFolderById({ id: id }));
+  const [opened, { open, close }] = useDisclosure();
+
+  useEffect(() => {
+    console.log(name);
+  }, [name]);
+
+  const handleRemoveFolder = () => {
+    folderRemove();
   };
   const addFolder = () => {
-    setContextMenuVisible(false);
     open();
   };
 
@@ -122,20 +149,26 @@ function RecursiveNavLink({
   return (
     <>
       <NavLink
-        onContextMenu={handleContextMenu}
+        onContextMenu={(e) => {
+          handleContextClick(e);
+        }}
         active={selectedId === id}
         variant="filled"
         key={id}
         label={display_name}
         childrenOffset={hasNested ? 28 : undefined}
         onClick={() => {
-          setContextMenuVisible(false);
           handleFolderClick();
         }}
       >
         {hasNested &&
           nestedChildren?.map((child) => (
             <RecursiveNavLink
+              folderRemove={handleRemoveFolder}
+              contextPosition={contextPosition}
+              contextVisible={contextVisible}
+              onContextClick={onContextClick}
+              name={child.name}
               key={child.id}
               id={child.id}
               display_name={child.display_name}
@@ -145,16 +178,18 @@ function RecursiveNavLink({
             />
           ))}
       </NavLink>
-      {contextMenuVisible && (
+      {contextVisible && (
         <>
           <Card
+            withBorder
             style={{
               position: "fixed",
-              top: contextMenuPosition.top,
-              left: contextMenuPosition.left,
+              top: contextPosition.top,
+              left: contextPosition.left,
+              zIndex: 999,
             }}
           >
-            <NavLink onClick={removeFolder} label="Remove" />
+            <NavLink disabled={name !== null} onClick={folderRemove} label="Remove" />
             <NavLink onClick={addFolder} label="Add new folder" />
           </Card>
         </>

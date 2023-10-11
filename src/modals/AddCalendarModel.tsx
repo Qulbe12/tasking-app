@@ -1,6 +1,6 @@
 import { Button, Group, Modal, Stack, TextInput } from "@mantine/core";
 import React from "react";
-import { createCalendar, getAllCalendars } from "../redux/api/nylasApi";
+import { createCalendar } from "../redux/api/nylasApi";
 import { useAppDispatch, useAppSelector } from "../redux/store";
 import CommonModalProps from "./CommonModalProps";
 import * as yup from "yup";
@@ -25,13 +25,11 @@ const AddCalendarModel = ({ opened, onClose, title }: CommonModalProps) => {
   return (
     <Modal opened={opened} onClose={onClose} title={title}>
       <form
-        onSubmit={form.onSubmit(async (values) => {
+        onSubmit={form.onSubmit((values) => {
           const newCalendar = {
             name: values.name,
           };
-          await dispatch(createCalendar(newCalendar));
-
-          await dispatch(getAllCalendars());
+          dispatch(createCalendar(newCalendar));
           form.reset();
           onClose();
         })}

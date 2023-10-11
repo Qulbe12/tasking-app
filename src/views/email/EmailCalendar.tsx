@@ -51,7 +51,11 @@ const EmailCalendar = ({ onActionButtonClick }: EmailCalendarProps) => {
 
   useEffect(() => {
     dispatch(getAllCalendars());
-    setCalendarId("");
+    calendars.map((c) => {
+      if (c.name === "Calender") {
+        setCalendarId(c.id);
+      }
+    });
   }, []);
 
   return (
@@ -106,11 +110,10 @@ const EmailCalendar = ({ onActionButtonClick }: EmailCalendarProps) => {
           <Card withBorder h="100%">
             <Accordion chevron={""} defaultValue="customization" onChange={onChangeAccordion}>
               {calendars.map((c, i) => {
+                console.log("calendar id", c.id);
                 return (
                   <Accordion.Item key={i} value={c.id}>
-                    {loaders.deletingCalendars ||
-                    loaders.gettingEvents ||
-                    loaders.gettingCalendars ? (
+                    {loaders.gettingEvents ? (
                       <AccordionControl
                         id={c.id}
                         icon={c.id === calendarId ? <Loader size="sm" /> : <IconCircleCheck />}

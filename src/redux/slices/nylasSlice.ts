@@ -223,6 +223,7 @@ export const nylasSlice = createSlice({
         createCalendar.fulfilled,
         (state, { payload: calendar }: PayloadAction<ICalendarResponse>) => {
           state.calendar = calendar;
+          state.calendars.push(calendar);
           state.loaders.creatingCalendar = false;
         },
       )
