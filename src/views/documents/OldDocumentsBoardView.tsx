@@ -454,7 +454,7 @@ const OldDocumentsBoardView = () => {
                       {changeLog.reverse().map((cl, clIndex) => {
                         return cl.change.map((ch) => {
                           return (
-                            <tr key={cl.rid + clIndex}>
+                            <tr key={cl.rid + clIndex + "changelog"}>
                               <td>
                                 {`${cl.by.name} ${ch.type} ${_(ch.key).startCase()} from ${
                                   ch.oldVal

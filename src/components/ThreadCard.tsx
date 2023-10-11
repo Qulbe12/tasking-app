@@ -1,4 +1,4 @@
-import { ActionIcon, Box, Flex, Menu, Text } from "@mantine/core";
+import { ActionIcon, Card, Flex, Menu, Text } from "@mantine/core";
 import dayjs from "dayjs";
 import React, { useState } from "react";
 import { IThreadExpandedResponse } from "../interfaces/nylas/IThreadResponse";
@@ -12,65 +12,66 @@ type ThreadCardProps = {
   thread: IThreadExpandedResponse;
   onClick: (t: IThreadExpandedResponse) => void;
   selectedThreadId?: string | null;
+  hideMenu?: boolean;
 };
 
-const ThreadCard: React.FC<ThreadCardProps> = ({ thread, onClick, selectedThreadId }) => {
+const ThreadCard: React.FC<ThreadCardProps> = ({ thread, onClick, hideMenu }) => {
   const { user } = useAppSelector((state) => state.auth);
   const [threadId, setThreadId] = useState("");
   const [opened, { open, close }] = useDisclosure(false);
 
   return (
-    <Box key={thread.id}>
-      <Flex
-        direction="column"
-        my="sm"
-        py="sm"
-        style={{
-          boxSizing: "border-box",
-          paddingLeft: "4px",
-          paddingRight: "4px",
-        }}
-        className={`cursor-pointer rounded-sm border ${
-          selectedThreadId === thread.id && "border-l-2 border-l-blue-500 box-border"
-        }`}
-      >
+    <Card
+      withBorder
+      my="md"
+      className="cursor-pointer"
+      key={thread.id}
+      onClick={() => {
+        onClick(thread);
+        setThreadId(thread.id);
+      }}
+    >
+      <Flex direction="column">
         <Flex justify="space-between">
-          <Text
-            onClick={() => {
-              onClick(thread);
-              setThreadId(thread.id);
-            }}
-          >
+          <Text>
             {getThreadSender(thread, user?.user.email ?? "").name ??
               getThreadSender(thread, user?.user.email ?? "").email}
           </Text>
-          <Menu shadow="md" width={160}>
-            <Menu.Target>
-              <ActionIcon>
-                <IconDotsVertical size="1em" />
-              </ActionIcon>
-            </Menu.Target>
-            <Menu.Dropdown>
-              <Menu.Item
-                onClick={() => {
-                  setThreadId(thread.id);
-                  open();
-                }}
-                icon={<IconFolder size="1em" />}
-              >
-                Move to folder
-              </Menu.Item>
-              <Menu.Item
-                color="red"
-                onClick={() => {
-                  setThreadId(thread.id);
-                }}
-                icon={<IconTrash size="1em" />}
-              >
-                Delete
-              </Menu.Item>
-            </Menu.Dropdown>
-          </Menu>
+          {!hideMenu && (
+            <Menu shadow="md" width={160} withinPortal>
+              <Menu.Target>
+                <ActionIcon
+                  onClick={(e) => {
+                    e.stopPropagation();
+                  }}
+                >
+                  <IconDotsVertical size="1em" />
+                </ActionIcon>
+              </Menu.Target>
+              <Menu.Dropdown>
+                <Menu.Item
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setThreadId(thread.id);
+                    open();
+                  }}
+                  icon={<IconFolder size="1em" />}
+                >
+                  Move to folder
+                </Menu.Item>
+                <Menu.Item
+                  color="red"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setThreadId(thread.id);
+                  }}
+                  icon={<IconTrash size="1em" />}
+                >
+                  Delete
+                </Menu.Item>
+              </Menu.Dropdown>
+            </Menu>
+          )}
         </Flex>
         <Flex
           onClick={() => {
@@ -99,7 +100,7 @@ const ThreadCard: React.FC<ThreadCardProps> = ({ thread, onClick, selectedThread
         </Text>
       </Flex>
       <FoldersListModal selectedThreadId={threadId} onClose={close} opened={opened} />
-    </Box>
+    </Card>
   );
 };
 

@@ -101,6 +101,10 @@ const fr = {
     documentHistory: "Historique du document",
     assignedUsers: "Utilisateurs assignés",
     ccUsers: "Utilisateurs CC",
+    comments: "Commentaires",
+    changelog: "Journal des modifications",
+    linkedDocs: "Documents liés",
+    linkedEmails: "E-mails liés",
 
     // Document Modal
     documentType: "Type de document",

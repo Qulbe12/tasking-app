@@ -1,6 +1,17 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { IAttachment, IDocumentResponse } from "../../../interfaces/documents/IDocumentResponse";
-import { ActionIcon, Drawer, Flex, Group, Menu, Paper, Stack, Text, Title } from "@mantine/core";
+import {
+  ActionIcon,
+  Drawer,
+  Flex,
+  Group,
+  Menu,
+  Paper,
+  Stack,
+  Text,
+  Title,
+  ScrollArea,
+} from "@mantine/core";
 import {
   IconArchive,
   IconDotsVertical,
@@ -19,7 +30,7 @@ import AvatarGroup from "../../../components/AvatarGroup";
 import { FieldType } from "../../../interfaces/documents/IField";
 import PdfViewerComponent from "../../../components/PdfViewerComponent";
 import { useAppDispatch } from "../../../redux/store";
-import { removeDocumentFiles } from "../../../redux/api/documentApi";
+import { archiveDocument, removeDocumentFiles } from "../../../redux/api/documentApi";
 import { openConfirmModal } from "@mantine/modals";
 import AddDocumentFilesModal from "../../../modals/AddDocumentFilesModal";
 
@@ -45,9 +56,10 @@ const DocumentsDetailsCol: React.FC<DocumentsDetailsColProps> = ({ document }) =
 
   const handleArchiveClick = () => openArchiveConfirmModal();
 
-  const handleArchive = () => {
-    //
-  };
+  const handleArchive = useCallback(() => {
+    if (!document) return;
+    dispatch(archiveDocument(document.id));
+  }, [document]);
 
   const onAttachmentClick = (attachment: IAttachment) => {
     setSelectedAttachment(attachment);
@@ -82,14 +94,12 @@ const DocumentsDetailsCol: React.FC<DocumentsDetailsColProps> = ({ document }) =
   return (
     <Paper withBorder className="board">
       <div className="board-header">
-        <Flex justify="space-between">
-          <Title order={4} mb="md">
-            {document?.title}
-          </Title>
+        <Flex justify="space-between" py="md" align="center">
+          <Title order={4}>{document?.title}</Title>
           <Menu>
             <Menu.Target>
               <ActionIcon size="sm">
-                <IconDotsVertical size="1em" />
+                <IconDotsVertical />
               </ActionIcon>
             </Menu.Target>
 
@@ -104,7 +114,7 @@ const DocumentsDetailsCol: React.FC<DocumentsDetailsColProps> = ({ document }) =
           </Menu>
         </Flex>
       </div>
-      <div className="content">
+      <ScrollArea className="content">
         {document && (
           <Stack>
             {Object.entries(document).map(([k, v], i) => {
@@ -205,7 +215,7 @@ const DocumentsDetailsCol: React.FC<DocumentsDetailsColProps> = ({ document }) =
             })}
           </Stack>
         )}
-      </div>
+      </ScrollArea>
 
       {/* Document Update Modal */}
       <DocumentUpdateModal opened={showEditModal} onClose={closeEditModal} document={document} />

@@ -53,13 +53,13 @@ const SheetVersionModal = ({
 
   const formSchema = yup.object().shape({
     versionTitle: yup.string().required("Version is required"),
-    date: yup.string().required("Date is required"),
+    versionDate: yup.string().required("Date is required"),
   });
 
   const form = useForm({
     initialValues: {
       versionTitle: "",
-      date: new Date().toISOString(),
+      versionDate: new Date().toISOString(),
     },
     validate: yupResolver(formSchema),
   });
@@ -94,7 +94,6 @@ const SheetVersionModal = ({
         completeNavigationProgress();
         setSheetUploaded(false);
         form.reset();
-
         onClose();
       }}
       title={title}
@@ -120,6 +119,7 @@ const SheetVersionModal = ({
             ...form.values,
             records: newRecords,
           };
+
           await dispatch(createSheetVersion({ sheetId: sheet.id, sheet: preppedSheet }));
           setNewCodes([]);
           setSheetRes([]);
@@ -146,7 +146,7 @@ const SheetVersionModal = ({
                   maw={400}
                   mx="auto"
                   defaultValue={new Date()}
-                  {...form.getInputProps("date")}
+                  {...form.getInputProps("versionDate")}
                 />
               </Stack>
             </Grid.Col>
@@ -189,7 +189,7 @@ const SheetVersionModal = ({
                       <Paper key={s.code + i} p="md">
                         <Group position="apart">
                           <Group>
-                            <Image maw={240} src={s.thumbnail.url} />
+                            <Image height={150} width={150} src={s.thumbnail.url} />
                             <Image maw={240} src={s.meta.url} />
                             <Stack>
                               <TextInput

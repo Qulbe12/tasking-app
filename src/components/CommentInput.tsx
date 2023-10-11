@@ -42,6 +42,7 @@ const CommentInput: React.FC<CommentInputProps> = ({ documentId }) => {
     <form onSubmit={form.onSubmit(handleCommentSubmit)}>
       <Stack mt="md">
         <Textarea
+          px="md"
           size="xs"
           minRows={3}
           maxRows={3}
@@ -51,7 +52,13 @@ const CommentInput: React.FC<CommentInputProps> = ({ documentId }) => {
         />
 
         <Group position="right">
-          <Button rightIcon={<IconSend size="1em" />} type="submit" loading={loading} size="xs">
+          <Button
+            rightIcon={<IconSend size="1em" />}
+            type="submit"
+            loading={loading}
+            size="xs"
+            mx="md"
+          >
             {t("comment")}
           </Button>
         </Group>

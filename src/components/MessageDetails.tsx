@@ -1,8 +1,9 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   ActionIcon,
   Button,
   Card,
+  Flex,
   Group,
   ScrollArea,
   SimpleGrid,
@@ -15,6 +16,7 @@ import {
   IconCornerUpLeft,
   IconCornerUpLeftDouble,
   IconCornerUpRight,
+  IconFile,
   IconLink,
   IconSend,
   IconTrash,
@@ -28,21 +30,25 @@ import DocumentsListModal from "../modals/DocumentsListModal";
 import { axiosPrivate } from "../config/axios";
 import { showError } from "../redux/commonSliceFunctions";
 import { IErrorResponse } from "../interfaces/IErrorResponse";
-import { getDocuments } from "../redux/api/documentApi";
 import { IDocumentResponse } from "../interfaces/documents/IDocumentResponse";
 import { ISendMessage } from "../interfaces/nylas/ISendMessage";
+import { IconPdf } from "@tabler/icons-react";
+import { nylasAxios } from "../config/nylasAxios";
+import { IFile } from "../interfaces/nylas/IFile";
 
 type MessageDetailsProps = {
   selectedThreadId: string | null;
-  onForwardClick: (e: IMessageResponse) => void;
+  onForwardClick?: (e: IMessageResponse) => void;
   selectedMessage?: IMessageResponse | null;
   onDocumentCardClick?: (d: IDocumentResponse) => void;
+  justMessages?: boolean;
 };
 
 const MessageDetails = ({
   selectedThreadId,
   onForwardClick,
   onDocumentCardClick,
+  justMessages,
 }: MessageDetailsProps) => {
   const dispatch = useAppDispatch();
   const { loaders, messages, threads, nylasToken } = useAppSelector((state) => state.nylas);
@@ -55,11 +61,50 @@ const MessageDetails = ({
 
   const [selectedDocuments, setSelectedDocuments] = useState<string[]>([]);
 
+  const [updatedMessages, setUpdatedMessages] = useState<IMessageResponse[]>([]);
+
   useEffect(() => {
-    if (!selectedThreadId) return;
-    if (!activeBoard) return;
-    dispatch(getDocuments({ boardId: activeBoard.id, query: { emailId: selectedThreadId } }));
-  }, [selectedThreadId, activeBoard]);
+    setUpdatedMessages(messages); // Set messages immediately
+
+    const fetchFileAndUpdateMessage = async (file: IFile, messageId: string) => {
+      try {
+        const res = await nylasAxios.get(`/files/${file.id}/download`, {
+          responseType: "arraybuffer",
+        });
+        const blob = new Blob([res.data], { type: file.content_type });
+        const imageUrl = window.URL.createObjectURL(blob);
+
+        setUpdatedMessages((prevMsgs) =>
+          prevMsgs.map((message) => {
+            if (message.id !== messageId) return message;
+
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(message.body, "text/html");
+            const imgElements =
+              (doc.querySelectorAll(
+                `img[src="cid:${file.content_id}"]`,
+              ) as unknown as HTMLImageElement[]) ?? [];
+            imgElements.forEach((img) => {
+              img.src = imageUrl;
+            });
+
+            return {
+              ...message,
+              body: doc.body.innerHTML,
+            };
+          }),
+        );
+      } catch (error) {
+        console.error(`Error fetching file with ID ${file.id}:`, error);
+      }
+    };
+
+    messages.forEach((message) => {
+      message.files.forEach((file) => {
+        fetchFileAndUpdateMessage(file, message.id);
+      });
+    });
+  }, [messages]);
 
   useEffect(() => {
     setEmailContent("");
@@ -104,13 +149,15 @@ const MessageDetails = ({
     setSelectedMessageIds([]);
   }, [selectedMessageIds, emailContent, replyType]);
 
-  const linkedDocuments = useMemo(() => {
-    if (!selectedThreadId) return [];
-    return documents.filter((d) => d.linkedEmailIds.includes(selectedThreadId));
-  }, [messages, selectedThreadId]);
+  const [linkedDocuments, setLinkedDocuments] = useState<IDocumentResponse[]>([]);
 
   const [showDocumentsModal, setShowDocumentsModal] = useState(false);
   const [linking, setLinking] = useState(false);
+
+  useEffect(() => {
+    if (!selectedThreadId) return setLinkedDocuments([]);
+    setLinkedDocuments(documents.filter((d) => d.linkedEmailIds.includes(selectedThreadId)));
+  }, [messages, selectedThreadId]);
 
   const handleLinkDocument = useCallback(async () => {
     if (!selectedThreadId) return;
@@ -120,18 +167,43 @@ const MessageDetails = ({
         docIds: selectedDocuments,
       });
 
+      setLinkedDocuments(documents.filter((d) => selectedDocuments.includes(d.id)));
+
       setShowDocumentsModal(false);
       setSelectedDocuments([]);
       setLinking(false);
-      if (activeBoard) {
-        dispatch(getDocuments({ boardId: activeBoard.id, query: { emailId: selectedThreadId } }));
-      }
     } catch (err) {
       const error = err as IErrorResponse;
       showError(error.response?.data.message);
       setLinking(false);
     }
   }, [selectedDocuments, activeBoard, selectedThreadId]);
+
+  const downloadAttachment = async (file: IFile) => {
+    const res = await nylasAxios.get(`/files/${file.id}/download`, {
+      responseType: "arraybuffer",
+    });
+
+    const blob = new Blob([res.data], { type: file.content_type });
+    const href = window.URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+    link.href = href;
+    link.download = file.filename?.split(".")[0] + "." + file.content_type.split("/")[1] ?? "file";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const TypeIcon = ({ type }: { type: string }) => {
+    switch (type) {
+      case "application/pdf":
+        return <IconPdf />;
+
+      default:
+        return <IconFile />;
+    }
+  };
 
   return (
     <Stack h="100%">
@@ -149,7 +221,7 @@ const MessageDetails = ({
         <Stack>
           {selectedThreadId &&
             !loaders.gettingMessages &&
-            messages.map((m) => {
+            updatedMessages.map((m) => {
               return (
                 <Card key={m.id}>
                   <Group position="apart">
@@ -157,47 +229,78 @@ const MessageDetails = ({
                       {m.from[0].name} {`<${m.from[0].email}>`}
                     </Text>
 
-                    <Group position="right">
-                      <Tooltip label="Reply">
-                        <ActionIcon
-                          color="indigo"
-                          size="sm"
-                          onClick={() => {
-                            setReplyType("solo");
-                            setSelectedMessageIds([m.id]);
-                          }}
-                        >
-                          <IconCornerUpLeft />
-                        </ActionIcon>
-                      </Tooltip>
+                    {!justMessages ? (
+                      <Group position="right">
+                        <Tooltip label="Reply">
+                          <ActionIcon
+                            color="indigo"
+                            size="sm"
+                            onClick={() => {
+                              setReplyType("solo");
+                              setSelectedMessageIds([m.id]);
+                            }}
+                          >
+                            <IconCornerUpLeft />
+                          </ActionIcon>
+                        </Tooltip>
 
-                      <Tooltip label="Reply All">
-                        <ActionIcon
-                          color="indigo"
-                          size="sm"
-                          onClick={() => {
-                            setReplyType("all");
-                            setSelectedMessageIds([m.id]);
-                          }}
-                        >
-                          <IconCornerUpLeftDouble />
-                        </ActionIcon>
-                      </Tooltip>
+                        <Tooltip label="Reply All">
+                          <ActionIcon
+                            color="indigo"
+                            size="sm"
+                            onClick={() => {
+                              setReplyType("all");
+                              setSelectedMessageIds([m.id]);
+                            }}
+                          >
+                            <IconCornerUpLeftDouble />
+                          </ActionIcon>
+                        </Tooltip>
 
-                      <Tooltip label="Forward">
-                        <ActionIcon color="indigo" size="sm" onClick={() => onForwardClick(m)}>
-                          <IconCornerUpRight />
-                        </ActionIcon>
-                      </Tooltip>
-                    </Group>
+                        <Tooltip label="Forward">
+                          <ActionIcon
+                            color="indigo"
+                            size="sm"
+                            onClick={() => onForwardClick && onForwardClick(m)}
+                          >
+                            <IconCornerUpRight />
+                          </ActionIcon>
+                        </Tooltip>
+                      </Group>
+                    ) : (
+                      ""
+                    )}
                   </Group>
                   <Text size="sm" opacity={0.7} mb="md">
                     To: {m.to[0].name} {`<${m.to[0].email}>`}
                   </Text>
+
+                  {m.files.length > 0 && (
+                    <Group my="md">
+                      {m.files.map((f) => {
+                        if (f.content_disposition !== "attachment") return;
+                        return (
+                          <Card
+                            p="xs"
+                            withBorder
+                            key={f.id}
+                            className="cursor-pointer"
+                            onClick={() => downloadAttachment(f as any)}
+                          >
+                            <Flex align="center" gap="sm">
+                              <TypeIcon type={f.content_type} />
+                              <Text>{f.filename}</Text>
+                            </Flex>
+                          </Card>
+                        );
+                      })}
+                    </Group>
+                  )}
+
                   <iframe
                     srcDoc={m.body}
                     width="100%"
-                    height="360px"
+                    height="500px"
                     title={`email-${m.id}`}
                     style={{ borderRadius: "5px" }}
                   ></iframe>
@@ -231,31 +334,33 @@ const MessageDetails = ({
             })}
         </Stack>
       </Card>
-      <Card withBorder h="50%">
-        <Group align="center" position="apart">
-          <Text mb="md">Linked Documents: </Text>
-          <Button size="xs" leftIcon={<IconLink />} onClick={() => setShowDocumentsModal(true)}>
-            Link
-          </Button>
-        </Group>
-        <ScrollArea h="100%">
-          <SimpleGrid cols={4}>
-            {gettingDocuments
-              ? Array.from({ length: 6 }).map((e, i) => {
-                  return <Skeleton height={180} key={i} />;
-                })
-              : linkedDocuments.map((d) => {
-                  return (
-                    <DocumentCard
-                      key={d.id}
-                      document={d}
-                      onClick={() => onDocumentCardClick && onDocumentCardClick(d)}
-                    />
-                  );
-                })}
-          </SimpleGrid>
-        </ScrollArea>
-      </Card>
+      {!justMessages && (
+        <Card withBorder h="50%">
+          <Group align="center" position="apart">
+            <Text mb="md">Linked Documents: </Text>
+            <Button size="xs" leftIcon={<IconLink />} onClick={() => setShowDocumentsModal(true)}>
+              Link
+            </Button>
+          </Group>
+          <ScrollArea h="100%">
+            <SimpleGrid cols={4}>
+              {gettingDocuments
+                ? Array.from({ length: 6 }).map((e, i) => {
+                    return <Skeleton height={180} key={i} />;
+                  })
+                : linkedDocuments.map((d) => {
+                    return (
+                      <DocumentCard
+                        key={d.id}
+                        document={d}
+                        onClick={() => onDocumentCardClick && onDocumentCardClick(d)}
+                      />
+                    );
+                  })}
+            </SimpleGrid>
+          </ScrollArea>
+        </Card>
+      )}
 
       <DocumentsListModal
         onClose={() => {

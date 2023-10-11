@@ -308,7 +308,7 @@ const AnalyticsPage = () => {
           <tbody>
             {dataToExport.map((d, i) => {
               return (
-                <tr className="border border-black p-2" key={i + "bodyRow"}>
+                <tr className="border border-black p-2" key={i + "bodyRowDataToExport"}>
                   {d.map((v, valIndex) => {
                     if (i === 0) return;
                     return (

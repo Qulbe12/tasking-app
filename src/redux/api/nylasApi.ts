@@ -120,7 +120,7 @@ export const getAllThreads = createAsyncThunk(
   async (args: GetAllThreadsArgs, { rejectWithValue }) => {
     try {
       const res = await nylasAxios.get<IThreadExpandedResponse[]>(
-        `/threads${generateQueryString(generateQueryString({ ...args, view: "expanded" }))}`,
+        `/threads${generateQueryString({ ...args, view: "expanded" })}`,
       );
       return res.data;
     } catch (err) {

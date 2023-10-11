@@ -193,3 +193,26 @@ export const removeLinkedDocsAction = createAsyncThunk(
     }
   },
 );
+
+export const archiveDocument = createAsyncThunk(
+  "documents/archiveDocument",
+  async (documentId: string, { rejectWithValue, dispatch }) => {
+    try {
+      const res = await axiosPrivate.patch(`/documents/${documentId}/archive`, {
+        notifyUsers: {
+          ccUsers: {
+            notify: true,
+            exclude: [],
+          },
+          assignedUsers: {
+            notify: true,
+            exclude: [],
+          },
+        },
+      });
+      return res.data;
+    } catch (err) {
+      return centralizedErrorHandler(err, rejectWithValue, dispatch);
+    }
+  },
+);

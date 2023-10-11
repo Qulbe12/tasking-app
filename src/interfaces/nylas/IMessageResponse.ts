@@ -30,6 +30,7 @@ interface IEvent {
 }
 
 interface IFile {
+  content_id: string;
   content_disposition: string;
   content_type: string;
   filename: string | null;

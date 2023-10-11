@@ -1,4 +1,4 @@
-import { useAppSelector } from "../../redux/store";
+import { useAppDispatch, useAppSelector } from "../../redux/store";
 import { Button, Flex, Group, Paper, useMantineTheme } from "@mantine/core";
 import { IconPlus } from "@tabler/icons";
 import { useDisclosure } from "@mantine/hooks";
@@ -7,6 +7,8 @@ import SheetCard from "../../components/SheetCard";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import SheetProcessModal from "../../modals/SheetProcessModal";
+import { useEffect } from "react";
+import { getSheets } from "../../redux/api/sheetsApi";
 
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
   "pdfjs-dist/build/pdf.worker.min.js",
@@ -15,8 +17,11 @@ pdfjs.GlobalWorkerOptions.workerSrc = new URL(
 
 const SheetsPage = () => {
   const { t } = useTranslation();
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
+
   const { data: sheets } = useAppSelector((state) => state.sheets);
+  const { activeBoard } = useAppSelector((state) => state.boards);
 
   const [showSheetModal, { toggle: toggleSheetModal }] = useDisclosure(false);
   const theme = useMantineTheme();
@@ -24,6 +29,11 @@ const SheetsPage = () => {
   const handleAddButtonClick = () => {
     toggleSheetModal();
   };
+
+  useEffect(() => {
+    if (!activeBoard) return;
+    dispatch(getSheets({ boardId: activeBoard.id }));
+  }, []);
 
   return (
     <Paper>
