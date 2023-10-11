@@ -92,7 +92,6 @@ const WorkspacesList = () => {
         </Button>
       </Box>
 
-      {searchTerm}
       {workspaces.length <= 0 && !loading && (
         <Text>
           You do not have any workspaces created, please{" "}

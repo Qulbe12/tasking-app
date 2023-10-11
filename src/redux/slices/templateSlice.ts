@@ -11,7 +11,7 @@ import {
   updateTemplateFields,
 } from "../api/templateApi";
 import { showError } from "../commonSliceFunctions";
-import { IUpdateFieldResponse } from "../../interfaces/templates/IUpdateTemplatesFields";
+import { IUpdateFieldResponse } from "../../interfaces/template/IUpdateTemplatesFields";
 
 export interface TemplatesState {
   data: ITemplate[];

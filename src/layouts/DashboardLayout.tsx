@@ -11,30 +11,26 @@ import {
   Modal,
   Navbar,
   Progress,
-  TextInput,
-  useMantineTheme,
 } from "@mantine/core";
 
 import { Outlet, useLocation } from "react-router-dom";
 import { MainLinks } from "./MainLinks";
-import { useAppDispatch, useAppSelector } from "../redux/store";
+import { useAppDispatch } from "../redux/store";
 import { resetFilters, setSearch } from "../redux/slices/filterSlice";
 import { useDisclosure } from "@mantine/hooks";
-import { useTranslation } from "react-i18next";
 import useChangeWorkspace from "../hooks/useChangeWorkspace";
 import useChangeBoard from "../hooks/useChangeBoard";
 import NavBreadcrumbs from "./NavBreadcrumbs";
 import NavTabs from "./NavTabs";
+import SearchInput from "../components/SearchInput";
 
 const DashboardLayout = () => {
-  const { t } = useTranslation();
   const dispatch = useAppDispatch();
 
   const { loadingText, loadingValue } = useChangeWorkspace();
   const { loadingText: boardLoadingText, loadingValue: boardLoadingValue } = useChangeBoard();
 
   const location = useLocation();
-  const { search } = useAppSelector((state) => state.filters);
 
   useEffect(() => {
     dispatch(setSearch(""));
@@ -42,7 +38,6 @@ const DashboardLayout = () => {
   }, [window.location.href]);
 
   const [opened, { toggle }] = useDisclosure(false);
-  const theme = useMantineTheme();
 
   const isBoardsPage = useMemo(() => {
     return location.pathname.split("/")[1] === "board";
@@ -96,23 +91,7 @@ const DashboardLayout = () => {
               >
                 <IconFilter size={24} />
               </ActionIcon> */}
-              <TextInput
-                sx={{
-                  [theme.fn.smallerThan("md")]: {
-                    width: "300px",
-                  },
-                  [theme.fn.smallerThan("sm")]: {
-                    width: "150px",
-                  },
-                }}
-                w="400px"
-                placeholder={`${t("search")}`}
-                variant="filled"
-                value={search}
-                onChange={(e) => {
-                  dispatch(setSearch(e.target.value));
-                }}
-              />
+              <SearchInput />
             </Flex>
           </Group>
         </Header>

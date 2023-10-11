@@ -28,7 +28,7 @@ import {
 } from "../redux/api/templateApi";
 import { useAppDispatch, useAppSelector } from "../redux/store";
 import * as yup from "yup";
-import { ICreateField } from "../interfaces/templates/IUpdateTemplatesFields";
+import { ICreateField } from "../interfaces/template/IUpdateTemplatesFields";
 
 type TemplateModalProps = {
   template?: ITemplate;

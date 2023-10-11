@@ -3,7 +3,7 @@ import { ICreateTemplate, ITemplate, IUpdateTemplate } from "hexa-sdk/dist/app.a
 import api from "../../config/api";
 import { centralizedErrorHandler } from "../commonSliceFunctions";
 import { axiosPrivate } from "../../config/axios";
-import { IUpdateField } from "../../interfaces/templates/IUpdateTemplatesFields";
+import { IUpdateField } from "../../interfaces/template/IUpdateTemplatesFields";
 
 const { templateApi } = api;
 const { addField, create, get, remove, removeField, update } = templateApi;

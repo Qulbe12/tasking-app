@@ -1,41 +1,24 @@
 import React from "react";
-import { Input, ActionIcon } from "@mantine/core";
-import { IconBell, IconSearch } from "@tabler/icons";
-import { useAppDispatch, useAppSelector } from "../redux/store";
-import { setSearch } from "../redux/slices/filterSlice";
-import { useTranslation } from "react-i18next";
+import { ActionIcon } from "@mantine/core";
+import { IconBell } from "@tabler/icons";
+
 import LanguageButton from "./LanguageButton";
 import UserButton from "./UserButton";
 import { useLocation } from "react-router-dom";
+import SearchInput from "./SearchInput";
 
 type HeaderProps = {
   isUnsubscribed?: boolean;
 };
 
 const Header: React.FC<HeaderProps> = ({ isUnsubscribed }) => {
-  const { t } = useTranslation();
-  const dispatch = useAppDispatch();
   const location = useLocation();
-  const { search } = useAppSelector((state) => state.filters);
-
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    dispatch(setSearch(e.target.value));
-  };
 
   return (
     <div className="flex justify-end items-center h-full gap-4">
       {!isUnsubscribed && (
         <>
-          {location.pathname !== "/account/settings" && (
-            <Input
-              icon={<IconSearch />}
-              placeholder={`${t("search")}...`}
-              variant="filled"
-              w="400px"
-              value={search}
-              onChange={handleSearchChange}
-            />
-          )}
+          {location.pathname !== "/account/settings" && <SearchInput />}
 
           <ActionIcon>
             <IconBell size={48} />
