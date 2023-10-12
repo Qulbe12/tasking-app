@@ -39,8 +39,11 @@ const DocumentsPage = () => {
     return () => window.removeEventListener("keydown", handleEscapePress, false);
   }, []);
 
+  const handleAfterArchive = () => setSelectedDocument(documents.length > 0 ? documents[0] : null);
+
   return selectedDocument ? (
     <DocumentsBoardView
+      afterArchive={handleAfterArchive}
       documents={documents}
       onDocumentClick={setSelectedDocument}
       selectedDocument={selectedDocument}

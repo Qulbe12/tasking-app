@@ -29,19 +29,21 @@ import _ from "lodash";
 import AvatarGroup from "../../../components/AvatarGroup";
 import { FieldType } from "../../../interfaces/documents/IField";
 import PdfViewerComponent from "../../../components/PdfViewerComponent";
-import { useAppDispatch } from "../../../redux/store";
+import { useAppDispatch, useAppSelector } from "../../../redux/store";
 import { archiveDocument, removeDocumentFiles } from "../../../redux/api/documentApi";
 import { openConfirmModal } from "@mantine/modals";
 import AddDocumentFilesModal from "../../../modals/AddDocumentFilesModal";
 
 type DocumentsDetailsColProps = {
   document: IDocumentResponse | null;
+  afterArchive: () => void;
 };
 
-const DocumentsDetailsCol: React.FC<DocumentsDetailsColProps> = ({ document }) => {
+const DocumentsDetailsCol: React.FC<DocumentsDetailsColProps> = ({ document, afterArchive }) => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
 
+  const { loaders } = useAppSelector((state) => state.documents);
   const [showEditModal, { open: openEditModal, close: closeEditModal }] = useDisclosure(false);
   const [showAttachmentModal, { open: openAttachmentModal, close: closeAttachmentModal }] =
     useDisclosure(false);
@@ -58,7 +60,10 @@ const DocumentsDetailsCol: React.FC<DocumentsDetailsColProps> = ({ document }) =
 
   const handleArchive = useCallback(() => {
     if (!document) return;
-    dispatch(archiveDocument(document.id));
+    dispatch(archiveDocument(document.id)).finally(() => {
+      afterArchive();
+      closeArchiveConfirmModal();
+    });
   }, [document]);
 
   const onAttachmentClick = (attachment: IAttachment) => {
@@ -224,6 +229,7 @@ const DocumentsDetailsCol: React.FC<DocumentsDetailsColProps> = ({ document }) =
       <ConfirmationModal
         opened={showArchiveConfirmModal}
         onClose={closeArchiveConfirmModal}
+        loading={loaders.updating === document?.id}
         onOk={handleArchive}
         type="archive"
         body={`${t("archiveConfirmation")} ${document?.title}`}

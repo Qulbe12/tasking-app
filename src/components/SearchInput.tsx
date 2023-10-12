@@ -21,12 +21,12 @@ const SearchInput = () => {
   const { t } = useTranslation();
   const theme = useMantineTheme();
   const dispatch = useAppDispatch();
+
   const { search } = useAppSelector((state) => state.filters);
 
   const searchTerm = useDebouncedValue(search, 300);
 
   const [gettingResults, setGettingResults] = useState(false);
-
   const [searchRes, setSearchRes] = useState<ISearchRes[]>([]);
 
   useEffect(() => {
@@ -113,6 +113,11 @@ const SearchInput = () => {
   const handleItemClick = (id: string, group: string) => {
     switch (group) {
       case "Boards":
+        console.log("Board Clicked");
+        return;
+
+      case "Sheets":
+        console.log("Board Clicked");
         return;
 
       default:

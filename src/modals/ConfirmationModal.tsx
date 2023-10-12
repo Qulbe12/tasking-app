@@ -22,7 +22,7 @@ const ConfirmationModal = ({
   const { t } = useTranslation();
   return (
     <Modal opened={opened} onClose={onClose} title={title}>
-      <Text my="md" size="lg">
+      <Text my="md" size="sm">
         {body}
       </Text>
       <Flex gap="md" justify="flex-end">
