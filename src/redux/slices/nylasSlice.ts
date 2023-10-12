@@ -306,6 +306,8 @@ export const nylasSlice = createSlice({
               resource: {
                 location: e.location,
                 description: e.description,
+                title: e.title,
+                id: e.id,
               },
             };
             return event;

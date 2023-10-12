@@ -7,15 +7,16 @@ import { useAppDispatch, useAppSelector } from "../redux/store";
 import * as yup from "yup";
 import { useForm, yupResolver } from "@mantine/form";
 import dayjs from "dayjs";
-import { createEvent } from "../redux/api/nylasApi";
+import { createEvent, deleteEvent, updateEvent } from "../redux/api/nylasApi";
 import { Event } from "react-big-calendar";
+import { IconEdit, IconTrash } from "@tabler/icons";
 
 type AddEventCalendar = {
   calendarId: string;
   event?: Event;
 } & CommonModalProps;
 
-const AddEventCalendar = ({ title, opened, onClose, calendarId }: AddEventCalendar) => {
+const AddEventCalendar = ({ title, opened, onClose, calendarId, event }: AddEventCalendar) => {
   const validationSchema: any = yup.object().shape({
     title: yup.string().required("Please enter title of the event"),
     calendar_id: yup.string(),
@@ -45,6 +46,14 @@ const AddEventCalendar = ({ title, opened, onClose, calendarId }: AddEventCalend
     form.values.calendar_id = calendarId;
   }, [calendarId]);
 
+  useEffect(() => {
+    if (event) {
+      form.values.title = event?.resource?.title;
+      form.values.description = event?.resource?.description;
+      form.values.location = event?.resource?.location;
+    }
+  }, [event]);
+
   return (
     <Modal opened={opened} onClose={onClose} title={title}>
       <form
@@ -73,6 +82,7 @@ const AddEventCalendar = ({ title, opened, onClose, calendarId }: AddEventCalend
           <TextInput withAsterisk label="Location" {...form.getInputProps("location")} />
           {/* <TimeInput withAsterisk label="Time" {...form.getInputProps("time")} maw={400} />*/}
           <DatePicker
+            defaultValue={event ? event?.start : null}
             label="Start date"
             onChange={(e) => {
               if (!e) return;
@@ -83,6 +93,7 @@ const AddEventCalendar = ({ title, opened, onClose, calendarId }: AddEventCalend
             }}
           />
           <DatePicker
+            defaultValue={event ? event?.start : null}
             label="End date"
             onChange={(e) => {
               if (!e) return;
@@ -94,9 +105,50 @@ const AddEventCalendar = ({ title, opened, onClose, calendarId }: AddEventCalend
           />
           <Switch label="Busy" checked={form.values.busy} {...form.getInputProps("busy")} />
           <Group position="right" mt="md">
-            <Button loading={loaders.creatingEvent} type="submit">
-              Add Event
-            </Button>
+            {title === "Update event" ? (
+              <>
+                <Button
+                  loading={loaders.creatingEvent}
+                  leftIcon={<IconTrash />}
+                  color="red"
+                  onClick={async () => {
+                    await dispatch(deleteEvent(event?.resource?.id));
+                    form.reset();
+                    onClose();
+                  }}
+                >
+                  Delete Event
+                </Button>
+                <Button
+                  onClick={async () => {
+                    const updateEventDetail: IEventCreate = {
+                      title: form.values.title,
+                      calendar_id: form.values.calendar_id,
+                      description: form.values.description,
+                      location: form.values.location,
+                      busy: form.values.busy,
+                      when: {
+                        start_time: form.values.startDate,
+                        end_time: form.values.endDate,
+                      },
+                    };
+                    await dispatch(
+                      updateEvent({ id: event?.resource?.id, data: updateEventDetail }),
+                    );
+                    form.reset();
+                    onClose();
+                  }}
+                  leftIcon={<IconEdit />}
+                  loading={loaders.creatingEvent}
+                >
+                  Update Event
+                </Button>
+              </>
+            ) : (
+              <Button loading={loaders.creatingEvent} type="submit">
+                Add Event
+              </Button>
+            )}
           </Group>
         </Stack>
       </form>

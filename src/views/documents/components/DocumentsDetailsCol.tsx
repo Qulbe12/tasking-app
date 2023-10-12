@@ -2,15 +2,18 @@ import React, { useCallback, useState } from "react";
 import { IAttachment, IDocumentResponse } from "../../../interfaces/documents/IDocumentResponse";
 import {
   ActionIcon,
+  Button,
   Drawer,
   Flex,
   Group,
   Menu,
+  Modal,
+  MultiSelect,
   Paper,
+  ScrollArea,
   Stack,
   Text,
   Title,
-  ScrollArea,
 } from "@mantine/core";
 import {
   IconArchive,
@@ -30,7 +33,12 @@ import AvatarGroup from "../../../components/AvatarGroup";
 import { FieldType } from "../../../interfaces/documents/IField";
 import PdfViewerComponent from "../../../components/PdfViewerComponent";
 import { useAppDispatch } from "../../../redux/store";
-import { archiveDocument, removeDocumentFiles } from "../../../redux/api/documentApi";
+import {
+  addDocumentUsers,
+  archiveDocument,
+  removeDocumentFiles,
+  removeDocumentUser,
+} from "../../../redux/api/documentApi";
 import { openConfirmModal } from "@mantine/modals";
 import AddDocumentFilesModal from "../../../modals/AddDocumentFilesModal";
 
@@ -51,6 +59,9 @@ const DocumentsDetailsCol: React.FC<DocumentsDetailsColProps> = ({ document }) =
   ] = useDisclosure(false);
 
   const [selectedAttachment, setSelectedAttachment] = useState<IAttachment | null>(null);
+  const [showNewMemberModal, setShowMember] = useState(false);
+  const [aUsers, setAUsers] = useState<string[]>([]);
+  const [userType, setUserType] = useState<"ccUsers" | "assignedUsers">("assignedUsers");
 
   const handleEditClick = () => openEditModal();
 
@@ -155,7 +166,8 @@ const DocumentsDetailsCol: React.FC<DocumentsDetailsColProps> = ({ document }) =
                   size="sm"
                   variant="filled"
                   onClick={() => {
-                    //
+                    setUserType("assignedUsers");
+                    setShowMember((o) => !o);
                   }}
                 >
                   <IconPlus />
@@ -173,13 +185,29 @@ const DocumentsDetailsCol: React.FC<DocumentsDetailsColProps> = ({ document }) =
                   size="sm"
                   variant="filled"
                   onClick={() => {
-                    //
+                    setUserType("ccUsers");
+                    setShowMember((o) => !o);
                   }}
                 >
                   <IconPlus />
                 </ActionIcon>
               </Flex>
-              <AvatarGroup ccUsers={document.ccUsers} />
+              <AvatarGroup
+                ccUsers={document.ccUsers}
+                onRemoveClick={(ccUsers) => {
+                  if (ccUsers) {
+                    const users: string[] = [ccUsers];
+                    console.log(users);
+                    dispatch(
+                      removeDocumentUser({
+                        documentId: document?.id,
+                        type: "ccUsers",
+                        email: users,
+                      }),
+                    );
+                  }
+                }}
+              />
             </Flex>
 
             <Group position="apart" align="center">
@@ -250,6 +278,55 @@ const DocumentsDetailsCol: React.FC<DocumentsDetailsColProps> = ({ document }) =
           <PdfViewerComponent selectedDocument={document} attachment={selectedAttachment} />
         )}
       </Drawer>
+
+      {/* add user modal */}
+      <Modal
+        title={`Assign Users to document - ${document?.title}`}
+        opened={showNewMemberModal}
+        onClose={() => {
+          setShowMember((o) => !o);
+        }}
+      >
+        <MultiSelect
+          label="Member Emails"
+          data={aUsers}
+          placeholder="Please select users..."
+          searchable
+          creatable
+          getCreateLabel={(query) => `+ Add ${query}`}
+          onCreate={(query) => {
+            const item = query;
+            setAUsers((current) => [...current, item]);
+            return item;
+          }}
+        />
+
+        <Flex mt="md" justify="flex-end" gap="md">
+          <Button
+            onClick={() => {
+              setShowMember(false);
+            }}
+          >
+            {t("cancel")}
+          </Button>
+          <Button
+            onClick={async () => {
+              console.log(aUsers);
+              await dispatch(
+                addDocumentUsers({
+                  documentId: document ? document.id : "",
+                  emails: aUsers,
+                  type: userType,
+                }),
+              );
+              console.log(document?.id, aUsers, userType);
+              setShowMember(false);
+            }}
+          >
+            {t("addUsers")}
+          </Button>
+        </Flex>
+      </Modal>
     </Paper>
   );
 };

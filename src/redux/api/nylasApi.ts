@@ -312,7 +312,8 @@ export const deleteEvent = createAsyncThunk(
   "nylas/deleteEvent",
   async (id: string, { rejectWithValue, dispatch }) => {
     try {
-      const res = await nylasAxios.delete(`/events${id}`);
+      const res = await nylasAxios.delete(`/events/${id}`);
+      console.log("deleted event", res.data);
       return res.data;
     } catch (err) {
       return centralizedErrorHandler(err, rejectWithValue, dispatch);
