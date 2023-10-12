@@ -15,6 +15,7 @@ export interface ISheetResponse {
   isArchived: boolean;
   versions: { title: string; version: number }[];
   tags: string[];
+  thumbnail: string | null;
   currentVerion: {
     version: number;
     title: string;

@@ -12,12 +12,14 @@ type DocumentsBoardViewProps = {
   documents: IDocumentResponse[];
   selectedDocument: IDocumentResponse | null;
   onDocumentClick: (document: IDocumentResponse) => void;
+  afterArchive: () => void;
 };
 
 const DocumentsBoardView: React.FC<DocumentsBoardViewProps> = ({
   documents,
   selectedDocument,
   onDocumentClick,
+  afterArchive,
 }) => {
   return (
     <div className="documents-board-view">
@@ -26,7 +28,7 @@ const DocumentsBoardView: React.FC<DocumentsBoardViewProps> = ({
         selectedDocument={selectedDocument}
         onDocumentClick={onDocumentClick}
       />
-      <DocumentsDetailsCol document={selectedDocument} />
+      <DocumentsDetailsCol document={selectedDocument} afterArchive={afterArchive} />
       <DocumentsCommentsCol selectedDocument={selectedDocument} />
       <DocumentsLinkedDocsCol
         documents={documents}

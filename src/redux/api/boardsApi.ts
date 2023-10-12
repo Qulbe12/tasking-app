@@ -7,9 +7,10 @@ import {
   removeBoardFromWorkspace,
   updateBoardFromWorkspace,
 } from "../slices/workspacesSlice";
+import { axiosPrivate } from "../../config/axios";
 
 const { boardApi } = api;
-const { create, get, getById, update, remove, addMembers, removeMember } = boardApi;
+const { create, get, getById, update, remove } = boardApi;
 
 export const addBoard = createAsyncThunk(
   "boards/add",
@@ -88,7 +89,7 @@ export const addBoardMembers = createAsyncThunk(
     { rejectWithValue, dispatch },
   ) => {
     try {
-      const res = await addMembers(boardId, emails);
+      const res = await axiosPrivate.post(`/boards/${boardId}/members`, { emails });
       return res.data;
     } catch (err) {
       return centralizedErrorHandler(err, rejectWithValue, dispatch);
@@ -100,7 +101,11 @@ export const removeBoardMember = createAsyncThunk(
   "boards/removeBoardMember",
   async ({ boardId, email }: { boardId: string; email: string }, { rejectWithValue, dispatch }) => {
     try {
-      const res = await removeMember(boardId, email);
+      const res = await axiosPrivate.delete(`/boards/${boardId}/members`, {
+        data: {
+          emails: [email],
+        },
+      });
       return res.data;
     } catch (err) {
       return centralizedErrorHandler(err, rejectWithValue, dispatch);

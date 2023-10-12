@@ -3,6 +3,7 @@ import {
   addDocumentFiles,
   addDocumentUsers,
   addLinkedDocsAction,
+  archiveDocument,
   createDocument,
   getDocuments,
   removeDocumentFiles,
@@ -43,6 +44,13 @@ export const documentsSlice = createSlice({
   reducers: {
     setDocuments: (state, action: PayloadAction<IDocumentResponse[]>) => {
       state.data = action.payload;
+    },
+    resetDocumentLoaders: (state) => {
+      state.loaders.adding = null;
+      state.loaders.updating = null;
+      state.loaders.deleting = null;
+      state.loaders.linkingDocument = null;
+      state.loaders.addingUser = null;
     },
   },
   extraReducers: (builder) => {
@@ -174,6 +182,24 @@ export const documentsSlice = createSlice({
       })
       .addCase(removeDocumentUser.rejected, (state) => {
         state.loaders.addingUser = false;
+      })
+      // Remove Document Users
+      .addCase(archiveDocument.pending, (state, action) => {
+        state.loaders.updating = action.meta.arg;
+      })
+      .addCase(archiveDocument.fulfilled, (state, action) => {
+        const foundIndex = state.data.findIndex((d) => d.id === action.payload.id);
+
+        if (foundIndex >= 0) {
+          const newDocs = [...state.data];
+          newDocs.splice(foundIndex, 1);
+          state.data = newDocs;
+        }
+
+        state.loaders.updating = null;
+      })
+      .addCase(archiveDocument.rejected, (state) => {
+        state.loaders.updating = null;
       });
   },
 });

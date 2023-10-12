@@ -1,5 +1,4 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { IBoard } from "hexa-sdk/dist/app.api";
 import {
   addBoard,
   addBoardMembers,
@@ -10,12 +9,13 @@ import {
   updateBoard,
 } from "../api/boardsApi";
 import { showError } from "../commonSliceFunctions";
+import IBoardResponse from "../../interfaces/boards/IBoardResponse";
 
 export interface BoardsState {
-  data: IBoard[];
+  data: IBoardResponse[];
   loading: boolean;
   error?: string;
-  activeBoard?: IBoard | null;
+  activeBoard?: IBoardResponse | null;
   loaders: {
     gettingById: boolean | null;
     adding: string | null;
@@ -43,12 +43,20 @@ export const boardsSlice = createSlice({
   name: "boards",
   initialState,
   reducers: {
-    setActiveBoard: (state, action: PayloadAction<IBoard | null>) => {
+    setActiveBoard: (state, action: PayloadAction<IBoardResponse | null>) => {
       state.activeBoard = action.payload;
     },
-    updateSocketBoard: (state, action: PayloadAction<IBoard>) => {
+    updateSocketBoard: (state, action: PayloadAction<IBoardResponse>) => {
       const index = state.data.findIndex((b) => b.id === action.payload.id);
       state.data[index] = action.payload;
+    },
+    resetBoardLoaders: (state) => {
+      state.loaders.adding = null;
+      state.loaders.gettingById = null;
+      state.loaders.updating = null;
+      state.loaders.deleting = null;
+      state.loaders.addingMembers = false;
+      state.loaders.removingMember = false;
     },
   },
   extraReducers: (builder) => {
@@ -127,11 +135,7 @@ export const boardsSlice = createSlice({
       })
       .addCase(addBoardMembers.fulfilled, (state, action) => {
         state.loaders.addingMembers = false;
-        const foundIndex = state.data.findIndex((b) => b.id === action.payload.id);
 
-        if (foundIndex) {
-          state.data[foundIndex].members = action.payload.members;
-        }
         state.activeBoard = action.payload;
       })
       .addCase(addBoardMembers.rejected, (state, action) => {
@@ -144,11 +148,6 @@ export const boardsSlice = createSlice({
       })
       .addCase(removeBoardMember.fulfilled, (state, action) => {
         state.loaders.removingMember = false;
-        const foundIndex = state.data.findIndex((b) => b.id === action.payload.id);
-
-        if (foundIndex) {
-          state.data[foundIndex].members = action.payload.members;
-        }
         state.activeBoard = action.payload;
       })
       .addCase(removeBoardMember.rejected, (state, action) => {
@@ -159,7 +158,7 @@ export const boardsSlice = createSlice({
   },
 });
 
-export const { setActiveBoard, updateSocketBoard } = boardsSlice.actions;
+export const { setActiveBoard, updateSocketBoard, resetBoardLoaders } = boardsSlice.actions;
 
 const boardsReducer = boardsSlice.reducer;
 

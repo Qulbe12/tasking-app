@@ -411,7 +411,7 @@ const SheetDetails = () => {
                               if (!selectedSheet || !selectedPage || !selectedVersion) return;
 
                               const res = await axiosPrivate.patch(
-                                `/sheets/${selectedSheet.id}/records/${selectedPage.name}/tags/version/${selectedVersion}`,
+                                `/records/${selectedPage.id}/tags`,
                                 newTags,
                               );
 

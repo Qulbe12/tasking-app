@@ -4,7 +4,7 @@ interface IBoardResponse {
   id: string;
   title: string;
   description: string;
-  members: IEntityUser[];
+  members: string[];
   owner: IEntityUser;
 }
 

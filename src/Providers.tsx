@@ -3,17 +3,25 @@ import { createEmotionCache, MantineProvider, MantineThemeOverride } from "@mant
 import { RouterProvider } from "react-router-dom";
 import router from "./Router";
 import { NotificationsProvider } from "@mantine/notifications";
-import { useAppSelector } from "./redux/store";
+import { useAppDispatch, useAppSelector } from "./redux/store";
 import useSockets from "./hooks/useSockets";
 import { NavigationProgress } from "@mantine/nprogress";
 import { ModalsProvider } from "@mantine/modals";
 import Version from "./components/Version";
 import ProcessSheet from "./components/ProcessSheet";
+import { useEffect } from "react";
+import { resetBoardLoaders } from "./redux/slices/boardsSlice";
 
 const myCache = createEmotionCache({ key: "mantine", prepend: false });
 
 const Providers = () => {
   const { mode } = useAppSelector((state) => state.theme);
+
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    dispatch(resetBoardLoaders());
+  }, []);
 
   const { isConnected } = useSockets();
 
