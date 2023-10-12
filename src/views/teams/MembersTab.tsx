@@ -1,22 +1,21 @@
 import {
   ActionIcon,
-  Avatar,
+  Anchor,
   Button,
-  Card,
   Flex,
-  Grid,
   Group,
   Menu,
   Modal,
   MultiSelect,
+  Table,
   Text,
-  Title,
 } from "@mantine/core";
 import { useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../redux/store";
 import { addBoardMembers, removeBoardMember } from "../../redux/api/boardsApi";
-import { IconDots, IconMail, IconTrash } from "@tabler/icons";
+import { IconDotsVertical, IconTrash } from "@tabler/icons";
 import { useTranslation } from "react-i18next";
+import ConfirmationModal from "../../modals/ConfirmationModal";
 
 const MembersTab = () => {
   const { t } = useTranslation();
@@ -26,6 +25,7 @@ const MembersTab = () => {
 
   const { activeBoard, loaders } = useAppSelector((state) => state.boards);
   const [emails, setEmails] = useState<string[]>([]);
+  const [selectedEmail, setSelectedEmail] = useState<string | null>(null);
 
   const handleAddMembers = async () => {
     if (!activeBoard?.id) return;
@@ -35,50 +35,67 @@ const MembersTab = () => {
     setCreateOpen(false);
   };
 
+  const handleRemovePress = (email: string) => {
+    setSelectedEmail(email);
+  };
+
+  const handleRemoveMember = async () => {
+    if (!selectedEmail || !activeBoard) return;
+    dispatch(removeBoardMember({ boardId: activeBoard.id, email: selectedEmail })).finally(() =>
+      setSelectedEmail(null),
+    );
+  };
+
   return (
     <div>
       <Group position="right">
         <Button onClick={() => setCreateOpen(true)}>{t("addMember")}</Button>
       </Group>
-      <Grid>
-        {activeBoard?.members.map((m, i) => {
-          return (
-            <Grid.Col key={m.id || i + "member"} md={6} lg={3}>
-              <Card className="relative h-fit">
-                <Flex direction="column" align="center" justify="center" gap="md" mb="md">
-                  <Avatar radius={"xl"} size="xl" src={m.avatar} />
-                  <Title order={5}>{m.name}</Title>
-                  <Flex align="center" gap="sm">
-                    <IconMail /> {m.email}
-                  </Flex>
-                  <Text size="sm">{t("lastOnline")}: 23-04-2023 at 9:51</Text>
-                </Flex>
-
-                <div className="absolute top-4 right-4">
-                  <Menu shadow="md" width={200}>
+      <Table highlightOnHover>
+        <thead>
+          {activeBoard && activeBoard.members.length > 0 && (
+            <tr>
+              <td>Email</td>
+              <td></td>
+            </tr>
+          )}
+        </thead>
+        <tbody>
+          {activeBoard && activeBoard.members.length <= 0 && (
+            <Text>
+              {t("noMembersAdded")}{" "}
+              <Anchor onClick={() => setCreateOpen(true)} component="button">
+                {t("addMember")}
+              </Anchor>
+            </Text>
+          )}
+          {activeBoard?.members.map((m, i) => {
+            return (
+              <tr key={m + i + "activeBoardMember"}>
+                <td>{m}</td>
+                <td className="flex align-middle justify-end">
+                  <Menu>
                     <Menu.Target>
                       <ActionIcon>
-                        <IconDots />
+                        <IconDotsVertical size="1em" />
                       </ActionIcon>
                     </Menu.Target>
 
                     <Menu.Dropdown>
                       <Menu.Item
-                        onClick={() => {
-                          dispatch(removeBoardMember({ boardId: activeBoard.id, email: m.email }));
-                        }}
-                        icon={<IconTrash color="red" size={16} />}
+                        icon={<IconTrash color="red" size="1em" />}
+                        onClick={() => handleRemovePress(m)}
                       >
-                        {t("removeMember")}
+                        {t("remove")}
                       </Menu.Item>
                     </Menu.Dropdown>
                   </Menu>
-                </div>
-              </Card>
-            </Grid.Col>
-          );
-        })}
-      </Grid>
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </Table>
 
       <Modal
         title={`${t("addMembersTo")} ${activeBoard?.title}`}
@@ -114,6 +131,16 @@ const MembersTab = () => {
           </Button>
         </Flex>
       </Modal>
+
+      <ConfirmationModal
+        loading={loaders.removingMember}
+        onClose={() => setSelectedEmail(null)}
+        onOk={handleRemoveMember}
+        opened={!!selectedEmail}
+        type="delete"
+        body={t("areYouSure") ?? ""}
+        title={t("removeMember")}
+      />
     </div>
   );
 };
