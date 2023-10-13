@@ -12,11 +12,7 @@ interface NestedFolder {
   nestedChildren?: NestedFolder[];
 }
 
-type FoldersListProps = {
-  selectedThreadId: string | null;
-};
-
-const FoldersList = ({ selectedThreadId }: FoldersListProps) => {
+const FoldersList = () => {
   const dispatch = useAppDispatch();
   const { folders } = useAppSelector((state) => state.nylas);
   const [value, setValue] = useState<string | null>(null);
