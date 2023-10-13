@@ -32,6 +32,7 @@ export interface IDocumentQuery {
   dueDate?: Date;
   startDate?: Date;
   emailId?: string;
+  archived?: boolean;
 }
 
 export interface IDocumentResponse extends Record<string, any> {
