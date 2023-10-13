@@ -16,7 +16,7 @@ import {
   Menu,
   Text,
 } from "@mantine/core";
-import { IconCalendar, IconCircleCheck, IconDots, IconList } from "@tabler/icons";
+import { IconCalendar, IconCircleCheck, IconDotsVertical, IconList } from "@tabler/icons";
 import { useAppDispatch, useAppSelector } from "../../redux/store";
 import { deleteCalendar, getAllCalendars, getEvents } from "../../redux/api/nylasApi";
 import { DatePicker } from "@mantine/dates";
@@ -180,7 +180,7 @@ const EmailCalendar = ({ onActionButtonClick }: EmailCalendarProps) => {
         <Menu position="left-start" offset={0}>
           <Menu.Target>
             <ActionIcon size="lg">
-              <IconDots size={"16px"} />
+              <IconDotsVertical size={"16px"} />
             </ActionIcon>
           </Menu.Target>
           <Menu.Dropdown>

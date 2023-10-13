@@ -1,4 +1,4 @@
-import { Button, Group, SimpleGrid } from "@mantine/core";
+import { Button, Group, Paper, SimpleGrid, Skeleton, Title } from "@mantine/core";
 import React from "react";
 import { IDocumentResponse } from "../../../interfaces/documents/IDocumentResponse";
 import DocumentCard from "../../../components/DocumentCard";
@@ -10,9 +10,14 @@ import DocumentModal from "../../../modals/DocumentModal";
 type DocumentsGridViewProps = {
   documents: IDocumentResponse[];
   onDocumentClick: (document: IDocumentResponse) => void;
+  gettingDocuments?: boolean;
 };
 
-const DocumentsGridView: React.FC<DocumentsGridViewProps> = ({ documents, onDocumentClick }) => {
+const DocumentsGridView: React.FC<DocumentsGridViewProps> = ({
+  documents,
+  onDocumentClick,
+  gettingDocuments,
+}) => {
   const { t } = useTranslation();
 
   const [showDocumentModal, { open: openDocumentModal, close: closeDocumentModal }] =
@@ -21,8 +26,9 @@ const DocumentsGridView: React.FC<DocumentsGridViewProps> = ({ documents, onDocu
   const handleDocumentClick = (document: IDocumentResponse) => onDocumentClick(document);
 
   return (
-    <div>
-      <Group position="right">
+    <Paper p="md">
+      <Group position="apart">
+        <Title order={4}>{t("documents")}</Title>
         <Button onClick={openDocumentModal}>
           <IconPlus size={16} />
           {t("newDocument")}
@@ -37,13 +43,24 @@ const DocumentsGridView: React.FC<DocumentsGridViewProps> = ({ documents, onDocu
           { maxWidth: "xs", cols: 1, spacing: "sm" },
         ]}
       >
-        {documents.map((d) => (
-          <DocumentCard
-            document={d}
-            key={d.id + "documentsGrid"}
-            onClick={() => handleDocumentClick(d)}
-          />
-        ))}
+        {!gettingDocuments ? (
+          documents.map((d) => (
+            <DocumentCard
+              document={d}
+              key={d.id + "documentsGrid"}
+              onClick={() => handleDocumentClick(d)}
+            />
+          ))
+        ) : (
+          <>
+            <Skeleton height={250} />
+            <Skeleton height={250} />
+            <Skeleton height={250} />
+            <Skeleton height={250} />
+            <Skeleton height={250} />
+            <Skeleton height={250} />
+          </>
+        )}
       </SimpleGrid>
 
       <DocumentModal
@@ -52,7 +69,7 @@ const DocumentsGridView: React.FC<DocumentsGridViewProps> = ({ documents, onDocu
         title={t("createDocument")}
         onAfterCreate={(doc) => onDocumentClick(doc)}
       />
-    </div>
+    </Paper>
   );
 };
 

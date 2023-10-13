@@ -5,7 +5,7 @@ import { IUser } from "../interfaces/account/IUserResponse";
 import ConfirmationModal from "../modals/ConfirmationModal";
 
 type AvatarGroupProps = {
-  users?: IUser[];
+  users?: string[];
   ccUsers?: string[];
   onRemoveClick?: (ccUsers?: string) => void;
 };
@@ -37,9 +37,9 @@ const AvatarGroup: React.FC<AvatarGroupProps> = ({ users, ccUsers, onRemoveClick
       <Menu trigger="click" position="top-start" shadow="md" width={200}>
         <Menu.Target>
           <Avatar.Group className="hover:cursor-pointer" spacing="sm">
-            {visibleUsers?.map((u) => (
-              <Tooltip key={u.id + "assUsersAvatars"} label={u.email} withArrow>
-                <Avatar src={u.avatar} radius="xl" />
+            {visibleUsers?.map((u, i) => (
+              <Tooltip key={u + i + "assUsersAvatars"} label={u} withArrow>
+                <Avatar src={u} radius="xl" />
               </Tooltip>
             ))}
             {ccUsers?.map((u) => (
@@ -53,7 +53,7 @@ const AvatarGroup: React.FC<AvatarGroupProps> = ({ users, ccUsers, onRemoveClick
                 label={
                   <>
                     {users.slice(5).map((u) => (
-                      <div key={u.id + "extra users"}>{u.email}</div>
+                      <div key={u + "extra users"}>{u}</div>
                     ))}
                   </>
                 }
@@ -71,7 +71,7 @@ const AvatarGroup: React.FC<AvatarGroupProps> = ({ users, ccUsers, onRemoveClick
       <ConfirmationModal
         type="delete"
         title={`${user}`}
-        body="Are you sure to delet this user?"
+        body="Are you sure you want to remove this user?"
         opened={open}
         onClose={() => {
           setOpen(false);

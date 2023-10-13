@@ -32,6 +32,7 @@ export interface IDocumentQuery {
   dueDate?: Date;
   startDate?: Date;
   emailId?: string;
+  archived?: boolean;
 }
 
 export interface IDocumentResponse extends Record<string, any> {
@@ -45,7 +46,7 @@ export interface IDocumentResponse extends Record<string, any> {
   startDate: Date;
   archived: boolean;
   attachments: IAttachment[];
-  assignedUsers: IUser[];
+  assignedUsers: string[];
   ccUsers: string[];
   template: ITemplate;
   linkedDocs: string[];

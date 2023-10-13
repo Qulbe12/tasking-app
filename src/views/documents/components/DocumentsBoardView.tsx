@@ -28,7 +28,11 @@ const DocumentsBoardView: React.FC<DocumentsBoardViewProps> = ({
         selectedDocument={selectedDocument}
         onDocumentClick={onDocumentClick}
       />
-      <DocumentsDetailsCol document={selectedDocument} afterArchive={afterArchive} />
+      <DocumentsDetailsCol
+        document={selectedDocument}
+        afterArchive={afterArchive}
+        onAfterUserRemove={onDocumentClick}
+      />
       <DocumentsCommentsCol selectedDocument={selectedDocument} />
       <DocumentsLinkedDocsCol
         documents={documents}
