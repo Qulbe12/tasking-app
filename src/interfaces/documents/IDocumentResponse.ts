@@ -46,7 +46,7 @@ export interface IDocumentResponse extends Record<string, any> {
   startDate: Date;
   archived: boolean;
   attachments: IAttachment[];
-  assignedUsers: IUser[];
+  assignedUsers: string[];
   ccUsers: string[];
   template: ITemplate;
   linkedDocs: string[];

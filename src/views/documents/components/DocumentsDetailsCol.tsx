@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { IAttachment, IDocumentResponse } from "../../../interfaces/documents/IDocumentResponse";
 import {
   ActionIcon,
@@ -48,13 +48,19 @@ import AddDocumentFilesModal from "../../../modals/AddDocumentFilesModal";
 type DocumentsDetailsColProps = {
   document: IDocumentResponse | null;
   afterArchive: () => void;
+  onAfterUserRemove?: (doc: IDocumentResponse) => void;
 };
 
-const DocumentsDetailsCol: React.FC<DocumentsDetailsColProps> = ({ document, afterArchive }) => {
+const DocumentsDetailsCol: React.FC<DocumentsDetailsColProps> = ({
+  document,
+  afterArchive,
+  onAfterUserRemove,
+}) => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
 
   const { loaders } = useAppSelector((state) => state.documents);
+  const { activeBoard } = useAppSelector((state) => state.boards);
   const [showEditModal, { open: openEditModal, close: closeEditModal }] = useDisclosure(false);
   const [showAttachmentModal, { open: openAttachmentModal, close: closeAttachmentModal }] =
     useDisclosure(false);
@@ -67,6 +73,11 @@ const DocumentsDetailsCol: React.FC<DocumentsDetailsColProps> = ({ document, aft
   const [showNewMemberModal, setShowMember] = useState(false);
   const [aUsers, setAUsers] = useState<string[]>([]);
   const [userType, setUserType] = useState<"ccUsers" | "assignedUsers">("assignedUsers");
+
+  useEffect(() => {
+    if (!activeBoard) return;
+    setAUsers(activeBoard?.members);
+  }, [activeBoard]);
 
   const handleEditClick = () => openEditModal();
 
@@ -108,6 +119,13 @@ const DocumentsDetailsCol: React.FC<DocumentsDetailsColProps> = ({ document, aft
 
   const onAttachmentAddClick = () => {
     openAttachmentModal();
+  };
+
+  const handleRemoveUser = (email: string, type: "ccUsers" | "assignedUsers") => {
+    if (!document) return;
+    dispatch(removeDocumentUser({ documentId: document.id, email: [email], type })).then((res) => {
+      onAfterUserRemove && onAfterUserRemove(res.payload);
+    });
   };
 
   return (
@@ -181,7 +199,13 @@ const DocumentsDetailsCol: React.FC<DocumentsDetailsColProps> = ({ document, aft
                   <IconPlus />
                 </ActionIcon>
               </Flex>
-              <AvatarGroup users={document.assignedUsers} />
+              <AvatarGroup
+                users={document.assignedUsers}
+                onRemoveClick={(user) => {
+                  if (!user) return;
+                  handleRemoveUser(user, "assignedUsers");
+                }}
+              />
             </Flex>
 
             <Flex direction="column">
@@ -202,18 +226,9 @@ const DocumentsDetailsCol: React.FC<DocumentsDetailsColProps> = ({ document, aft
               </Flex>
               <AvatarGroup
                 ccUsers={document.ccUsers}
-                onRemoveClick={(ccUsers) => {
-                  if (ccUsers) {
-                    const users: string[] = [ccUsers];
-                    console.log(users);
-                    dispatch(
-                      removeDocumentUser({
-                        documentId: document?.id,
-                        type: "ccUsers",
-                        email: users,
-                      }),
-                    );
-                  }
+                onRemoveClick={(user) => {
+                  if (!user) return;
+                  handleRemoveUser(user, "ccUsers");
                 }}
               />
             </Flex>
@@ -293,6 +308,7 @@ const DocumentsDetailsCol: React.FC<DocumentsDetailsColProps> = ({ document, aft
         title={`Assign Users to document - ${document?.title}`}
         opened={showNewMemberModal}
         onClose={() => {
+          setAUsers([]);
           setShowMember((o) => !o);
         }}
       >
@@ -328,7 +344,6 @@ const DocumentsDetailsCol: React.FC<DocumentsDetailsColProps> = ({ document, aft
                   type: userType,
                 }),
               );
-              console.log(document?.id, aUsers, userType);
               setShowMember(false);
             }}
           >
