@@ -64,8 +64,8 @@ const DocumentUpdateModal = ({ onClose, opened, document }: DocumentUpdateModalP
 
     const modAssUsers = document.assignedUsers.map((u) => {
       return {
-        value: u.email,
-        label: `${u.email} (${u.name})`,
+        value: u,
+        label: `${u} (${u})`,
       };
     });
 
