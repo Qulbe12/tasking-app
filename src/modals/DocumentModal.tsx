@@ -11,7 +11,6 @@ import {
   Text,
 } from "@mantine/core";
 import { useForm, yupResolver } from "@mantine/form";
-import { FieldType, IField } from "hexa-sdk/dist/app.api";
 import { useMemo, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../redux/store";
 import CommonModalProps from "./CommonModalProps";
@@ -26,6 +25,7 @@ import * as yup from "yup";
 import { useTranslation } from "react-i18next";
 import { isValidDate } from "../utils/isValidDate";
 import { IDocumentResponse } from "../interfaces/documents/IDocumentResponse";
+import { FieldType, IField } from "../interfaces/documents/IField";
 
 type DocumentModalProps = {
   onAfterCreate?: (document: IDocumentResponse) => void;

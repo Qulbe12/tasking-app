@@ -1,5 +1,4 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { ITemplate } from "hexa-sdk/dist/app.api";
 import {
   addTemplate,
   addTemplateField,
@@ -12,9 +11,10 @@ import {
 } from "../api/templateApi";
 import { showError } from "../commonSliceFunctions";
 import { IUpdateFieldResponse } from "../../interfaces/template/IUpdateTemplatesFields";
+import { ITemplateResponse } from "../../interfaces/template/ITemplateResponse";
 
 export interface TemplatesState {
-  data: ITemplate[];
+  data: ITemplateResponse[];
   updatedField?: IUpdateFieldResponse;
   loading: number;
   loaders: {
@@ -37,7 +37,7 @@ export const templateSlice = createSlice({
   name: "templates",
   initialState,
   reducers: {
-    setTemplates: (state, action: PayloadAction<ITemplate[]>) => {
+    setTemplates: (state, action: PayloadAction<ITemplateResponse[]>) => {
       state.data = action.payload;
     },
   },
@@ -124,15 +124,18 @@ export const templateSlice = createSlice({
       .addCase(updateTemplateFields.pending, (state) => {
         state.loading++;
       })
-      .addCase(updateTemplateFields.fulfilled, (state, { payload }: PayloadAction<ITemplate>) => {
-        state.loading--;
-        state.data = state.data.map((x) => {
-          if (x.id !== payload.id) {
-            return x;
-          }
-          return payload;
-        });
-      })
+      .addCase(
+        updateTemplateFields.fulfilled,
+        (state, { payload }: PayloadAction<ITemplateResponse>) => {
+          state.loading--;
+          state.data = state.data.map((x) => {
+            if (x.id !== payload.id) {
+              return x;
+            }
+            return payload;
+          });
+        },
+      )
       .addCase(updateTemplateFields.rejected, (state, action) => {
         state.loading--;
         showError(action.error.message);
@@ -141,18 +144,21 @@ export const templateSlice = createSlice({
       .addCase(deleteTemplateFields.pending, (state) => {
         state.loaders.deletingField = true;
       })
-      .addCase(deleteTemplateFields.fulfilled, (state, { payload }: PayloadAction<ITemplate>) => {
-        state.loaders.deletingField = false;
-        state.data = state.data.map((template) => {
-          if (template.id === payload.id) {
-            // If the template ID matches the one to replace, return the new template
-            return payload;
-          } else {
-            // Otherwise, return the existing template
-            return template;
-          }
-        });
-      })
+      .addCase(
+        deleteTemplateFields.fulfilled,
+        (state, { payload }: PayloadAction<ITemplateResponse>) => {
+          state.loaders.deletingField = false;
+          state.data = state.data.map((template) => {
+            if (template.id === payload.id) {
+              // If the template ID matches the one to replace, return the new template
+              return payload;
+            } else {
+              // Otherwise, return the existing template
+              return template;
+            }
+          });
+        },
+      )
       .addCase(deleteTemplateFields.rejected, (state, action) => {
         state.loaders.deletingField = false;
         showError(action.error.message);

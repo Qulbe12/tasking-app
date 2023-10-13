@@ -8,7 +8,7 @@ import generateQueryString from "../../utils/generateQueryString";
 
 const { documentApi } = api;
 
-const { addUsers, getById, removeUser } = documentApi;
+const { addUsers, getById } = documentApi;
 
 export const createDocument = createAsyncThunk(
   "documents/createDocument",
@@ -126,12 +126,18 @@ export const removeDocumentUser = createAsyncThunk(
     }: {
       documentId: string;
       type: "ccUsers" | "assignedUsers";
-      email: string;
+      email: string[];
     },
     { rejectWithValue, dispatch },
   ) => {
     try {
-      const res = await removeUser(documentId, type, email);
+      const res = await axiosPrivate.delete<IDocumentResponse>(
+        `/documents/${documentId}/users/${type}`,
+        {
+          data: email,
+        },
+      );
+      console.log(res.data);
       return res.data;
     } catch (err) {
       return centralizedErrorHandler(err, rejectWithValue, dispatch);

@@ -10,13 +10,12 @@ import {
   useMantineTheme,
 } from "@mantine/core";
 import { IconDots, IconEdit, IconTrash } from "@tabler/icons";
-import { IBoard } from "hexa-sdk/dist/app.api";
 import { useAppSelector } from "../redux/store";
 import { t } from "i18next";
-import { IEntityBoard } from "../interfaces/IEntityBoard";
+import IBoardResponse from "../interfaces/boards/IBoardResponse";
 
 type BoardCardProps = {
-  board: IBoard | IEntityBoard;
+  board: IBoardResponse;
   onEditClick?: () => void;
   onDeleteClick?: () => void;
   onClick: () => void;

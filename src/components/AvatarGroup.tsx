@@ -1,18 +1,26 @@
-import React from "react";
+import React, { useState } from "react";
 import { Avatar, Menu, Text, Tooltip } from "@mantine/core";
 import { IconTrash } from "@tabler/icons";
 import { IUser } from "../interfaces/account/IUserResponse";
+import ConfirmationModal from "../modals/ConfirmationModal";
 
 type AvatarGroupProps = {
   users?: IUser[];
   ccUsers?: string[];
+  onRemoveClick?: (ccUsers?: string) => void;
 };
 
-const AvatarGroup: React.FC<AvatarGroupProps> = ({ users, ccUsers }) => {
+const AvatarGroup: React.FC<AvatarGroupProps> = ({ users, ccUsers, onRemoveClick }) => {
   const visibleUsers = users?.slice(0, 5);
+  const [open, setOpen] = useState(false);
+  const [user, setUser] = useState("");
 
   const renderMenuItem = (item: IUser | string) => (
     <Menu.Item
+      onClick={() => {
+        setOpen(true);
+        setUser(typeof item === "string" ? item : "");
+      }}
       icon={<IconTrash color="red" size={14} />}
       key={typeof item === "string" ? item : item.id}
     >
@@ -60,6 +68,21 @@ const AvatarGroup: React.FC<AvatarGroupProps> = ({ users, ccUsers }) => {
           {ccUsers?.map(renderMenuItem)}
         </Menu.Dropdown>
       </Menu>
+      <ConfirmationModal
+        type="delete"
+        title={`${user}`}
+        body="Are you sure to delet this user?"
+        opened={open}
+        onClose={() => {
+          setOpen(false);
+        }}
+        onOk={() => {
+          if (onRemoveClick) {
+            onRemoveClick(user);
+            setOpen(false);
+          }
+        }}
+      />
     </Tooltip.Group>
   );
 };

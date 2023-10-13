@@ -28,8 +28,8 @@ import BoardModal from "../../modals/BoardModal";
 import { useDisclosure } from "@mantine/hooks";
 import { setActiveWorkspace } from "../../redux/slices/workspacesSlice";
 import { deleteBoard } from "../../redux/api/boardsApi";
-import { IEntityBoard } from "../../interfaces/IEntityBoard";
 import useDebouncedValue from "../../hooks/useDebounedValue";
+import IBoardResponse from "../../interfaces/boards/IBoardResponse";
 
 const WorkspacesList = () => {
   const { t } = useTranslation();
@@ -50,7 +50,7 @@ const WorkspacesList = () => {
   const [selectedWorkspace, setSelectedWorkspace] = useState<IWorkspace | undefined>();
   const [modalOpen, setModalOpen] = useState(false);
 
-  const [selectedBoard, setSelectedBoard] = useState<IEntityBoard | undefined>();
+  const [selectedBoard, setSelectedBoard] = useState<IBoardResponse | undefined>();
   const [boardEditModalOpen, setBoardEditModalOpen] = useState(false);
 
   const [showBoardModal, { toggle: toggleBoardModal }] = useDisclosure(false);

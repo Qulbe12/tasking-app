@@ -8,13 +8,13 @@ import {
   TemplateEvents,
   IJoinRoomPayload,
   JoinRoom,
-  IBoard,
   NylasConnectedPayload,
 } from "hexa-sdk/dist/app.api";
 import { SOCKET_URL } from "../constants/URLS";
 import { useAppDispatch, useAppSelector } from "../redux/store";
 import { updateSocketBoard } from "../redux/slices/boardsSlice";
 import { setNylasToken } from "../redux/slices/nylasSlice";
+import IBoardResponse from "../interfaces/boards/IBoardResponse";
 
 const useSockets = () => {
   const dispatch = useAppDispatch();
@@ -49,7 +49,7 @@ const useSockets = () => {
     socket.on(BoardEvents.Created, () => {
       //
     });
-    socket.on(BoardEvents.Updated, (payload: IBoard) => {
+    socket.on(BoardEvents.Updated, (payload: IBoardResponse) => {
       dispatch(updateSocketBoard(payload));
       //
     });

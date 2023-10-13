@@ -1,9 +1,9 @@
 import { Card } from "@mantine/core";
-import { ITemplate } from "hexa-sdk/dist/app.api";
 import React from "react";
+import { ITemplateResponse } from "../interfaces/template/ITemplateResponse";
 
 type TemplateCardProps = {
-  template: ITemplate;
+  template: ITemplateResponse;
 };
 
 const TemplateCard: React.FC<TemplateCardProps> = ({ template }) => {

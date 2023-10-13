@@ -40,7 +40,8 @@ const EmailCalendar = ({ onActionButtonClick }: EmailCalendarProps) => {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [date, setDate] = useState<Date | null>(null);
   const [openCalendarModel, { toggle: calendarModelToggle }] = useDisclosure(false);
-  const [eventModelOpened, { toggle: eventModelToggle }] = useDisclosure(false);
+  const [addEventModelOpened, { toggle: addEventModelToggle }] = useDisclosure(false);
+  const [updateEventModelOpened, { toggle: updateEventModelToggle }] = useDisclosure(false);
   const [calendarId, setCalendarId] = useState("");
   const [calendarEvent, setCalendarEvent] = useState<Event>({});
 
@@ -51,7 +52,11 @@ const EmailCalendar = ({ onActionButtonClick }: EmailCalendarProps) => {
 
   useEffect(() => {
     dispatch(getAllCalendars());
-    setCalendarId("");
+    calendars.map((c) => {
+      if (c.name === "Calender") {
+        setCalendarId(c.id);
+      }
+    });
   }, []);
 
   return (
@@ -67,7 +72,7 @@ const EmailCalendar = ({ onActionButtonClick }: EmailCalendarProps) => {
           <CalendarComponent
             onSelectEvent={(event) => {
               setCalendarEvent(event);
-              eventModelToggle();
+              updateEventModelToggle();
             }}
             events={calendarEvents && calendarEvents}
             localizer={localizer}
@@ -75,7 +80,7 @@ const EmailCalendar = ({ onActionButtonClick }: EmailCalendarProps) => {
               setSelectedDate(e.start);
               if (e.action === "doubleClick") {
                 if (calendarId !== null && calendarId !== "") {
-                  eventModelToggle();
+                  addEventModelToggle();
                 }
                 if (calendarId == null || calendarId == "") {
                   showNotification({
@@ -106,11 +111,10 @@ const EmailCalendar = ({ onActionButtonClick }: EmailCalendarProps) => {
           <Card withBorder h="100%">
             <Accordion chevron={""} defaultValue="customization" onChange={onChangeAccordion}>
               {calendars.map((c, i) => {
+                console.log("calendar id", c.id);
                 return (
                   <Accordion.Item key={i} value={c.id}>
-                    {loaders.deletingCalendars ||
-                    loaders.gettingEvents ||
-                    loaders.gettingCalendars ? (
+                    {loaders.gettingEvents ? (
                       <AccordionControl
                         id={c.id}
                         icon={c.id === calendarId ? <Loader size="sm" /> : <IconCircleCheck />}
@@ -142,16 +146,16 @@ const EmailCalendar = ({ onActionButtonClick }: EmailCalendarProps) => {
       <AddEventCalendar
         title={"Add event"}
         calendarId={calendarId}
-        opened={eventModelOpened}
-        onClose={() => eventModelToggle()}
+        opened={addEventModelOpened}
+        onClose={() => addEventModelToggle()}
       />
       {/* update Event model*/}
       <AddEventCalendar
         title={"Update event"}
         event={calendarEvent}
         calendarId={calendarId}
-        opened={eventModelOpened}
-        onClose={() => eventModelToggle()}
+        opened={updateEventModelOpened}
+        onClose={() => updateEventModelToggle()}
       />
     </div>
   );

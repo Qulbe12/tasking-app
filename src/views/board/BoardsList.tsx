@@ -1,6 +1,5 @@
 import { Button, Center, Grid, Modal, Progress, Title } from "@mantine/core";
 import { IconClock, IconPlus } from "@tabler/icons";
-import { IBoard } from "hexa-sdk/dist/app.api";
 import { useEffect, useMemo, useState } from "react";
 import BoardCard from "../../components/BoardCard";
 import BoardModal from "../../modals/BoardModal";
@@ -9,6 +8,7 @@ import { useAppDispatch, useAppSelector } from "../../redux/store";
 import { useTranslation } from "react-i18next";
 import useChangeBoard from "../../hooks/useChangeBoard";
 import { setActiveBoard } from "../../redux/slices/boardsSlice";
+import IBoardResponse from "../../interfaces/boards/IBoardResponse";
 
 const BoardsList = () => {
   const { t } = useTranslation();
@@ -24,7 +24,7 @@ const BoardsList = () => {
   const { data: boards, loading: gettingBoards } = useAppSelector((state) => state.boards);
   const { search } = useAppSelector((state) => state.filters);
 
-  const [selectedBoard, setSelectedBoard] = useState<IBoard | undefined>();
+  const [selectedBoard, setSelectedBoard] = useState<IBoardResponse | undefined>();
   const [modalOpen, setModalOpen] = useState(false);
 
   const filteredBoards = useMemo(() => {
