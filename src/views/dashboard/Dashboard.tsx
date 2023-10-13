@@ -1,11 +1,11 @@
 import { Button, Grid, LoadingOverlay, Title } from "@mantine/core";
 import { IconClock, IconPlus } from "@tabler/icons";
-import { IBoard } from "hexa-sdk/dist/app.api";
 import React, { useState } from "react";
 import BoardCard from "../../components/BoardCard";
 import BoardModal from "../../modals/BoardModal";
 import { deleteBoard } from "../../redux/api/boardsApi";
 import { useAppDispatch, useAppSelector } from "../../redux/store";
+import IBoardResponse from "../../interfaces/boards/IBoardResponse";
 
 const Dashboard = () => {
   const [modalOpen, setModalOpen] = useState(false);
@@ -14,7 +14,7 @@ const Dashboard = () => {
 
   const { data: boards, loading } = useAppSelector((state) => state.boards);
 
-  const [selectedBoard, setSelectedBoard] = useState<IBoard | undefined>();
+  const [selectedBoard, setSelectedBoard] = useState<IBoardResponse | undefined>();
 
   return (
     <div>

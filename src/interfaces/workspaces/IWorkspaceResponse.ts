@@ -1,9 +1,9 @@
-import { IEntityBoard } from "../IEntityBoard";
+import IBoardResponse from "../boards/IBoardResponse";
 
 export interface IWorkspaceResponse {
   id: string;
   name: string;
   memberType: "Owner" | "Member";
-  boards: IEntityBoard[];
+  boards: IBoardResponse[];
   iAmOwner: boolean;
 }

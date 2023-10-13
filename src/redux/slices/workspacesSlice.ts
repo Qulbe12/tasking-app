@@ -6,7 +6,7 @@ import {
   updateWorkspace,
 } from "../api/workspacesApi";
 import { IWorkspaceResponse } from "../../interfaces/workspaces/IWorkspaceResponse";
-import { IEntityBoard } from "../../interfaces/IEntityBoard";
+import IBoardResponse from "../../interfaces/boards/IBoardResponse";
 
 export interface WorkspacesState {
   data: IWorkspaceResponse[];
@@ -70,7 +70,7 @@ export const workspacesSlice = createSlice({
     },
     addBoardToWorkspace: (
       state,
-      action: PayloadAction<{ workspaceId: string; board: IEntityBoard }>,
+      action: PayloadAction<{ workspaceId: string; board: IBoardResponse }>,
     ) => {
       const foundIndex = state.data.findIndex((w) => w.id === action.payload.workspaceId);
 

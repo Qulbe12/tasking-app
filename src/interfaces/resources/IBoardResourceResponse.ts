@@ -1,11 +1,13 @@
-import { IBoard, IGroup, ITemplate } from "hexa-sdk/dist/app.api";
+import { IGroup } from "hexa-sdk/dist/app.api";
 import { ISheetResponse } from "../sheets/ISheetResponse";
 import { IDocumentResponse } from "../documents/IDocumentResponse";
+import IBoardResponse from "../boards/IBoardResponse";
+import { ITemplateResponse } from "../template/ITemplateResponse";
 
 interface IBoardResourceResponse {
-  board: IBoard;
+  board: IBoardResponse;
   groups: IGroup[];
-  templates: ITemplate[];
+  templates: ITemplateResponse[];
   documents: IDocumentResponse[];
   sheets: ISheetResponse[];
 }

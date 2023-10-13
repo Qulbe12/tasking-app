@@ -15,7 +15,6 @@ import {
 } from "@mantine/core";
 import { useForm, yupResolver } from "@mantine/form";
 import { IconEdit, IconPlus, IconTrash } from "@tabler/icons";
-import { FieldType, IField, ITemplate } from "hexa-sdk/dist/app.api";
 import React, { useEffect, useState } from "react";
 import DynamicField from "../components/DynamicField";
 import {
@@ -29,9 +28,11 @@ import {
 import { useAppDispatch, useAppSelector } from "../redux/store";
 import * as yup from "yup";
 import { ICreateField } from "../interfaces/template/IUpdateTemplatesFields";
+import { ITemplateResponse } from "../interfaces/template/ITemplateResponse";
+import { FieldType, IField } from "../interfaces/documents/IField";
 
 type TemplateModalProps = {
-  template?: ITemplate;
+  template?: ITemplateResponse;
 };
 
 const TemplateModal = ({ onClose, opened, template }: ModalProps & TemplateModalProps) => {

@@ -7,10 +7,10 @@ import { useAppDispatch, useAppSelector } from "../redux/store";
 import CommonModalProps from "./CommonModalProps";
 import * as yup from "yup";
 import { useTranslation } from "react-i18next";
-import { IEntityBoard } from "../interfaces/IEntityBoard";
+import IBoardResponse from "../interfaces/boards/IBoardResponse";
 
 type BoardModalProps = {
-  board?: IEntityBoard;
+  board?: IBoardResponse;
 };
 
 const BoardModal = ({ opened, onClose, title, board }: CommonModalProps & BoardModalProps) => {

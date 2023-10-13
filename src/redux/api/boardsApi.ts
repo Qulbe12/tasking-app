@@ -8,9 +8,10 @@ import {
   updateBoardFromWorkspace,
 } from "../slices/workspacesSlice";
 import { axiosPrivate } from "../../config/axios";
+import IBoardResponse from "../../interfaces/boards/IBoardResponse";
 
 const { boardApi } = api;
-const { create, get, getById, update, remove } = boardApi;
+const { get, getById, update, remove } = boardApi;
 
 export const addBoard = createAsyncThunk(
   "boards/add",
@@ -19,7 +20,10 @@ export const addBoard = createAsyncThunk(
     { rejectWithValue, dispatch },
   ) => {
     try {
-      const res = await create(workspaceId, board);
+      const res = await axiosPrivate.post<IBoardResponse>(
+        `/workspaces/${workspaceId}/boards`,
+        board,
+      );
 
       dispatch(addBoardToWorkspace({ workspaceId, board: res.data }));
 

@@ -65,7 +65,7 @@ const EmailList = ({ onActionButtonClick }: EmailListProps) => {
       <Flex justify="space-between" h="92%" miw="90%">
         <Box w="14%" h="100%">
           <Card withBorder>
-            <FoldersList />
+            <FoldersList selectedThreadId={selectedThreadId} />
           </Card>
         </Box>
         <Box w="20%" h="100%">

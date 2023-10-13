@@ -145,8 +145,8 @@ const OldDocumentsBoardView = () => {
       setAUsers(
         activeBoard.members.map((m) => {
           return {
-            label: m.email,
-            value: m.email,
+            label: m,
+            value: m,
           };
         }),
       );
@@ -734,7 +734,7 @@ const OldDocumentsBoardView = () => {
                 let hasExtra = false;
                 activeBoard?.members.forEach((am) => {
                   aUsers.forEach((au) => {
-                    if (au.value !== am.email) {
+                    if (au.value !== am) {
                       hasExtra = true;
                     }
                   });
