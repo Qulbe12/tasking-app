@@ -1,5 +1,5 @@
 import { ActionIcon, Card, Group, LoadingOverlay, Menu, Title } from "@mantine/core";
-import { IconDots, IconEdit, IconTrash } from "@tabler/icons";
+import { IconDotsVertical, IconEdit, IconTrash } from "@tabler/icons";
 import { IWorkspace } from "hexa-sdk/dist/app.api";
 import { useAppSelector } from "../redux/store";
 import { useTranslation } from "react-i18next";
@@ -42,7 +42,7 @@ const WorkspaceCard = ({ workspace, onEditClick, onDeleteClick, onClick }: Works
                   e.stopPropagation();
                 }}
               >
-                <IconDots size={ICON_SIZE} />
+                <IconDotsVertical size={ICON_SIZE} />
               </ActionIcon>
             </Menu.Target>
 

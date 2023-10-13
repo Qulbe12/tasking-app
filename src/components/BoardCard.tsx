@@ -9,7 +9,7 @@ import {
   Title,
   useMantineTheme,
 } from "@mantine/core";
-import { IconDots, IconEdit, IconTrash } from "@tabler/icons";
+import { IconDotsVertical, IconEdit, IconTrash } from "@tabler/icons";
 import { useAppSelector } from "../redux/store";
 import { t } from "i18next";
 import IBoardResponse from "../interfaces/boards/IBoardResponse";
@@ -71,7 +71,7 @@ const BoardCard: React.FC<BoardCardProps> = ({ board, onEditClick, onDeleteClick
                 }}
                 onClick={(e) => e.stopPropagation()}
               >
-                <IconDots size={14} />
+                <IconDotsVertical size={14} />
               </ActionIcon>
             </Menu.Target>
 

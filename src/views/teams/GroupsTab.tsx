@@ -1,5 +1,5 @@
 import { ActionIcon, Button, Group, Menu, Table } from "@mantine/core";
-import { IconDots, IconTrash } from "@tabler/icons";
+import { IconDotsVertical, IconTrash } from "@tabler/icons";
 import { IGroup } from "hexa-sdk/dist/app.api";
 import React, { useState } from "react";
 import { deleteGroup } from "../../redux/api/groupsApi";
@@ -37,7 +37,7 @@ const GroupsTab = () => {
                 e.stopPropagation();
               }}
             >
-              <IconDots size={16} />
+              <IconDotsVertical size={16} />
             </ActionIcon>
           </Menu.Target>
 
