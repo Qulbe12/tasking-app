@@ -5,7 +5,6 @@ import {
   PasswordInput,
   Text,
   Paper,
-  Group,
   Button,
   Divider,
   Stack,
@@ -14,7 +13,6 @@ import {
   Anchor,
   Flex,
 } from "@mantine/core";
-import GoogleButton from "../../components/GoogleButton";
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../redux/store";
 
@@ -128,10 +126,10 @@ const Register = () => {
           </form>
 
           <Divider label={t("continueWithGoogle")} labelPosition="center" my="lg" />
-
+          {/* 
           <Group grow mb="md" mt="md">
             <GoogleButton radius="xl">Google</GoogleButton>
-          </Group>
+          </Group> */}
         </div>
 
         <Anchor

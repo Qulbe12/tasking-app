@@ -16,7 +16,7 @@ import {
   TextInput,
   Title,
 } from "@mantine/core";
-import GoogleButton from "../../components/GoogleButton";
+// import GoogleButton from "../../components/GoogleButton";
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../redux/store";
 import { useTranslation } from "react-i18next";
@@ -131,10 +131,10 @@ const Login = () => {
             </form>
 
             <Divider label={t("continueWithGoogle")} labelPosition="center" my="lg" />
-
+            {/* 
             <Group grow mb="md" mt="md">
               <GoogleButton radius="xl">Google</GoogleButton>
-            </Group>
+            </Group> */}
           </div>
 
           <Flex justify="space-between">
