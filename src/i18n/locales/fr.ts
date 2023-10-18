@@ -125,6 +125,7 @@ const fr = {
 
     // Sheets Page
     addSheet: "Ajouter une feuille",
+    archiveSheets: "feuille archivées",
     createNewSheet: "Créer une nouvelle feuille",
     emissionDate: "Date d'émission",
     dragAndDropHere: "Faites glisser et déposez le document ici",

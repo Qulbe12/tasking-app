@@ -29,6 +29,7 @@ import BusinessProfile from "./views/settings/BusinessProfile";
 import { ContactList } from "./views/email/contacts/ContactList";
 import SignatureManagement from "./views/settings/SignatureManagement";
 import DocumentsPage from "./views/documents/DocumentsPage";
+import ArchivedSheets from "./views/sheets/archivedSheets";
 // import OldDocumentsBoardView from "./views/documents/OldDocumentsBoardView";
 
 const router = createBrowserRouter([
@@ -123,6 +124,10 @@ const router = createBrowserRouter([
           {
             path: "/board/sheets",
             element: <SheetsPage />,
+          },
+          {
+            path: "/board/archivedSheets",
+            element: <ArchivedSheets />,
           },
           {
             path: "/board/sheets/:id",

@@ -33,6 +33,7 @@ export interface IRecord {
   versions: number[];
 }
 
+// TODO: version spelling mistake
 export interface ISheetDetailedResponse {
   id: string;
   title: string;
