@@ -1,0 +1,30 @@
+.calendar-view {
+  height: calc(100vh - 100px);
+  padding: 16px;
+  box-sizing: border-box;
+  display: grid;
+  grid-template-columns: 5fr 1fr;
+  column-gap: 16px;
+
+  .board {
+    border-radius: 5px;
+    height: 100%;
+    overflow-y: hidden;
+    box-sizing: border-box;
+
+    .board-header {
+      position: sticky;
+      top: 0;
+      background-color: inherit;
+      z-index: 1;
+      box-sizing: border-box;
+      padding: 8px 16px;
+    }
+
+    .content {
+      height: calc(100% - 70px);
+      padding: 16px;
+      padding-top: 0;
+    }
+  }
+}
