@@ -155,6 +155,27 @@ export const nylasSlice = createSlice({
     deleteFolder: function (state, { payload }: PayloadAction<string>) {
       state.folders = state.folders.filter((f) => f.id !== payload);
     },
+    resetNylasLoaders: (state) => {
+      state.loaders.connecting = false;
+      state.loaders.gettingThreads = false;
+      state.loaders.gettingMoreThreads = false;
+      state.loaders.gettingMessages = false;
+      state.loaders.creatingCalendar = false;
+      state.loaders.gettingCalendars = false;
+      state.loaders.updatingCalendars = false;
+      state.loaders.deletingCalendars = false;
+      state.loaders.gettingOneCalendar = false;
+      state.loaders.sendingMessage = false;
+      state.loaders.gettingEvents = false;
+      state.loaders.creatingEvent = false;
+      state.loaders.gettingContacts = false;
+      state.loaders.creatingContact = false;
+      state.loaders.deletingContact = false;
+      state.loaders.updatingContact = false;
+      state.loaders.updatingThread = false;
+      state.loaders.gettingFolder = false;
+      state.loaders.creatingFolder = false;
+    },
   },
   extraReducers: (builder) =>
     builder
@@ -336,13 +357,10 @@ export const nylasSlice = createSlice({
       .addCase(createEvent.pending, (state) => {
         state.loaders.creatingEvent = true;
       })
-      .addCase(
-        createEvent.fulfilled,
-        (state, { payload: event }: PayloadAction<IEventResponse>) => {
-          state.events.push(event);
-          state.loaders.creatingEvent = false;
-        },
-      )
+      .addCase(createEvent.fulfilled, (state, action: PayloadAction<IEventResponse>) => {
+        state.calendarEvents.push(action.payload);
+        state.loaders.creatingEvent = false;
+      })
       .addCase(createEvent.rejected, (state) => {
         state.loaders.creatingEvent = false;
       })
@@ -509,7 +527,13 @@ export const nylasSlice = createSlice({
 });
 
 const nylasReducer = nylasSlice.reducer;
-export const { setTargetedContact, setNylasToken, setFolderId, setUpdatedThread, deleteFolder } =
-  nylasSlice.actions;
+export const {
+  setTargetedContact,
+  setNylasToken,
+  setFolderId,
+  setUpdatedThread,
+  deleteFolder,
+  resetNylasLoaders,
+} = nylasSlice.actions;
 
 export default nylasReducer;

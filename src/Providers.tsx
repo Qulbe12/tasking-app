@@ -11,6 +11,7 @@ import Version from "./components/Version";
 import ProcessSheet from "./components/ProcessSheet";
 import { useEffect } from "react";
 import { resetBoardLoaders } from "./redux/slices/boardsSlice";
+import { resetNylasLoaders } from "./redux/slices/nylasSlice";
 
 const myCache = createEmotionCache({ key: "mantine", prepend: false });
 
@@ -21,6 +22,7 @@ const Providers = () => {
 
   useEffect(() => {
     dispatch(resetBoardLoaders());
+    dispatch(resetNylasLoaders());
   }, []);
 
   const { isConnected } = useSockets();

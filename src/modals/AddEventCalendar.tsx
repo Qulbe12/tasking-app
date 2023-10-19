@@ -14,9 +14,17 @@ import { IconEdit, IconTrash } from "@tabler/icons";
 type AddEventCalendar = {
   calendarId: string;
   event?: Event;
+  selectedDate?: Date;
 } & CommonModalProps;
 
-const AddEventCalendar = ({ title, opened, onClose, calendarId, event }: AddEventCalendar) => {
+const AddEventCalendar = ({
+  title,
+  opened,
+  onClose,
+  calendarId,
+  event,
+  selectedDate,
+}: AddEventCalendar) => {
   const validationSchema: any = yup.object().shape({
     title: yup.string().required("Please enter title of the event"),
     calendar_id: yup.string(),
@@ -82,7 +90,7 @@ const AddEventCalendar = ({ title, opened, onClose, calendarId, event }: AddEven
           <TextInput withAsterisk label="Location" {...form.getInputProps("location")} />
           {/* <TimeInput withAsterisk label="Time" {...form.getInputProps("time")} maw={400} />*/}
           <DatePicker
-            defaultValue={event ? event?.start : null}
+            defaultValue={event?.start || selectedDate || new Date()}
             label="Start date"
             onChange={(e) => {
               if (!e) return;
@@ -93,7 +101,7 @@ const AddEventCalendar = ({ title, opened, onClose, calendarId, event }: AddEven
             }}
           />
           <DatePicker
-            defaultValue={event ? event?.start : null}
+            defaultValue={event?.start || selectedDate || new Date()}
             label="End date"
             onChange={(e) => {
               if (!e) return;
