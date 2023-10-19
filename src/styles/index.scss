@@ -4,6 +4,36 @@
 
 @import "../components/Calendar.scss";
 
+$out-of-range-color: lighten(#333, 40%);
+$out-of-range-bg-color: lighten(#333, 70%);
+
+$calendar-border: rgba(255, 255, 255, 0.437);
+$cell-border: rgba(255, 255, 255, 0.1);
+
+$border-color: rgba(255, 255, 255, 0.437);
+
+$time-selection-color: white;
+$time-selection-bg-color: rgba(0, 0, 0, 0.5);
+$date-selection-bg-color: rgba(0, 0, 0, 0.1);
+
+$event-bg: #3b5bdb;
+$event-border: darken(#3174ad, 10%);
+$event-outline: rgba(59, 91, 219, 0.5);
+$event-color: rgba(255, 255, 255, 1);
+$event-border-radius: 4px;
+$event-padding: 2px 5px;
+$event-zindex: 4;
+
+$btn-color: #373a3c;
+$btn-bg: #fff;
+$btn-border: #ccc;
+
+$current-time-color: #0033ff;
+
+$today-highlight-bg: rgba(59, 91, 219, 0.3);
+
+@import "react-big-calendar/lib/sass/styles";
+
 body {
   height: 100%;
 }

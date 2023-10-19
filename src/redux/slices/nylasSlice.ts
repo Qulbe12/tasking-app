@@ -38,7 +38,7 @@ import {
 import { IContactRemapped, IContactResponse } from "../../interfaces/nylas/IContactResponse";
 import { IFolderResponse } from "../../interfaces/nylas/IFolderResponse";
 import { IEventResponse } from "../../interfaces/nylas/IEventResponse";
-import { Event } from "react-big-calendar";
+
 import _ from "lodash";
 import { IContact } from "../../interfaces/nylas/IContact";
 
@@ -56,7 +56,6 @@ export interface GroupsState {
   folderId: string;
   deleteCalendarResponseMessage: ICalendarDeleteResponse;
   events: IEventResponse[];
-  calendarEvents: Event[];
   event?: IEventResponse;
   status: "conencted" | null;
   nylasToken?: NylasConnectedPayload;
@@ -83,6 +82,7 @@ export interface GroupsState {
     updatingThread: boolean;
     gettingFolder: boolean;
     creatingFolder: boolean;
+    updatingEvent: string | null;
   };
 }
 
@@ -96,7 +96,6 @@ const initialState: GroupsState = {
   calendars: [],
   folders: [],
   events: [],
-  calendarEvents: [],
   folderId: "",
   folderTitle: "",
   deleteCalendarResponseMessage: {
@@ -122,6 +121,7 @@ const initialState: GroupsState = {
     updatingThread: false,
     gettingFolder: false,
     creatingFolder: false,
+    updatingEvent: null,
   },
   nylasContacts: [],
   targetedContact: null,
@@ -175,6 +175,7 @@ export const nylasSlice = createSlice({
       state.loaders.updatingThread = false;
       state.loaders.gettingFolder = false;
       state.loaders.creatingFolder = false;
+      state.loaders.updatingEvent = null;
     },
   },
   extraReducers: (builder) =>
@@ -315,24 +316,6 @@ export const nylasSlice = createSlice({
         getEvents.fulfilled,
         (state, { payload: events }: PayloadAction<IEventResponse[]>) => {
           state.events = events;
-          state.calendarEvents = events.map((e) => {
-            const unixStartTimestamp = parseInt(e?.when?.start_time?.toString() || "0", 10);
-            const startDate = new Date(unixStartTimestamp * 1000);
-            const unixEndTimestamp = parseInt(e?.when?.end_time?.toString(), 10);
-            const endDate = new Date(unixEndTimestamp * 1000);
-            const event: Event = {
-              start: startDate,
-              end: endDate,
-              title: e.title,
-              resource: {
-                location: e.location,
-                description: e.description,
-                title: e.title,
-                id: e.id,
-              },
-            };
-            return event;
-          });
           state.loaders.gettingEvents = false;
         },
       )
@@ -358,31 +341,36 @@ export const nylasSlice = createSlice({
         state.loaders.creatingEvent = true;
       })
       .addCase(createEvent.fulfilled, (state, action: PayloadAction<IEventResponse>) => {
-        state.calendarEvents.push(action.payload);
+        state.events.push(action.payload);
         state.loaders.creatingEvent = false;
       })
       .addCase(createEvent.rejected, (state) => {
         state.loaders.creatingEvent = false;
       })
       // update calendar
-      .addCase(updateEvent.pending, (state) => {
-        state.loaders.gettingEvents = true;
+      .addCase(updateEvent.pending, (state, action) => {
+        state.loaders.updatingEvent = action.meta.arg.id;
       })
-      .addCase(
-        updateEvent.fulfilled,
-        (state, { payload: event }: PayloadAction<IEventResponse>) => {
-          state.event = event;
-          state.loaders.gettingEvents = false;
-        },
-      )
+      .addCase(updateEvent.fulfilled, (state, action: PayloadAction<IEventResponse>) => {
+        const { payload: event } = action;
+
+        const foundIndex = state.events.findIndex((e) => e.id === event.id);
+
+        if (foundIndex >= 0) {
+          state.events[foundIndex] = event;
+        }
+
+        state.loaders.updatingEvent = null;
+      })
       .addCase(updateEvent.rejected, (state) => {
-        state.loaders.gettingEvents = false;
+        state.loaders.updatingEvent = null;
       })
       // delete calendar
       .addCase(deleteEvent.pending, (state) => {
         state.loaders.gettingEvents = true;
       })
-      .addCase(deleteEvent.fulfilled, (state) => {
+      .addCase(deleteEvent.fulfilled, (state, action) => {
+        state.events = state.events.filter((e) => e.id !== action.meta.arg);
         state.loaders.gettingEvents = false;
       })
       .addCase(deleteEvent.rejected, (state) => {

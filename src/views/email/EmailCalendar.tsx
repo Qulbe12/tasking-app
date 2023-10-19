@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { Calendar as CalendarComponent, dayjsLocalizer, Event, View } from "react-big-calendar";
+import { Calendar as CalendarComponent, dayjsLocalizer, View } from "react-big-calendar";
 import dayjs from "dayjs";
 
 import {
@@ -23,9 +23,12 @@ import AddEventCalendar from "../../modals/AddEventCalendar";
 import AddCalendarModel from "../../modals/AddCalendarModel";
 import { openConfirmModal } from "@mantine/modals";
 import { IconCircleCheckFilled } from "@tabler/icons-react";
+import useCalendarEvents from "../../hooks/useCalendarEvents";
 
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import "./EmailCalendar.scss";
+import { ICalendarEvent } from "../../interfaces/nylas/ICalendarEvents";
+import UpdateEventModal from "../../modals/UpdateEventModal";
 
 const localizer = dayjsLocalizer(dayjs);
 
@@ -34,7 +37,8 @@ type EmailCalendarProps = {
 };
 
 const EmailCalendar = ({ onActionButtonClick }: EmailCalendarProps) => {
-  const { calendars, calendarEvents, loaders } = useAppSelector((state) => state.nylas);
+  const { calendars, loaders } = useAppSelector((state) => state.nylas);
+  const { calendarEvents } = useCalendarEvents();
 
   const dispatch = useAppDispatch();
   const [date, setDate] = useState<Date>(new Date());
@@ -42,7 +46,7 @@ const EmailCalendar = ({ onActionButtonClick }: EmailCalendarProps) => {
   const [addEventModelOpened, { toggle: addEventModelToggle }] = useDisclosure(false);
   const [updateEventModelOpened, { toggle: updateEventModelToggle }] = useDisclosure(false);
   const [calendarId, setCalendarId] = useState("");
-  const [calendarEvent, setCalendarEvent] = useState<Event>({});
+  const [calendarEvent, setCalendarEvent] = useState<ICalendarEvent | undefined>();
   const [selectedView, setSelectedView] = useState<View>("month");
 
   const onChangeAccordion = (value: string) => {
@@ -182,21 +186,21 @@ const EmailCalendar = ({ onActionButtonClick }: EmailCalendarProps) => {
             setCalendarEvent(event);
             updateEventModelToggle();
           }}
-          events={calendarEvents && calendarEvents}
+          events={calendarEvents}
           localizer={localizer}
           onSelectSlot={(e) => {
             setDate(e.start);
 
-            if (e.action === "doubleClick") {
-              if (calendarId !== null && calendarId !== "") {
-                addEventModelToggle();
-              }
-              if (calendarId == null || calendarId == "") {
-                showNotification({
-                  title: "Select Calendar",
-                  message: "Please select the calendar to add event",
-                });
-              }
+            if (e.action !== "doubleClick") return;
+
+            if (calendarId !== null && calendarId !== "") {
+              addEventModelToggle();
+            }
+            if (calendarId == null || calendarId == "") {
+              showNotification({
+                title: "Select Calendar",
+                message: "Please select the calendar to add event",
+              });
             }
           }}
           selectable
@@ -226,7 +230,6 @@ const EmailCalendar = ({ onActionButtonClick }: EmailCalendarProps) => {
 
         <Accordion chevron={""} defaultValue="customization" onChange={onChangeAccordion}>
           {calendars.map((c, i) => {
-            console.log("calendar id", c.id);
             return (
               <Accordion.Item key={i} value={c.id}>
                 {loaders.gettingEvents ? (
@@ -261,16 +264,16 @@ const EmailCalendar = ({ onActionButtonClick }: EmailCalendarProps) => {
         title={"Add event"}
         calendarId={calendarId}
         opened={addEventModelOpened}
-        onClose={() => addEventModelToggle()}
+        onClose={addEventModelToggle}
         selectedDate={date}
       />
       {/* update Event model*/}
-      <AddEventCalendar
+      <UpdateEventModal
         title={"Update event"}
         event={calendarEvent}
         calendarId={calendarId}
         opened={updateEventModelOpened}
-        onClose={() => updateEventModelToggle()}
+        onClose={updateEventModelToggle}
       />
     </div>
   );

@@ -301,7 +301,7 @@ export const updateEvent = createAsyncThunk(
   "nylas/updateEvent",
   async ({ id, data }: { id: string; data: IEventCreate }, { rejectWithValue, dispatch }) => {
     try {
-      const res = await nylasAxios.put<IEventResponse>(`/events${id}`, data);
+      const res = await nylasAxios.put<IEventResponse>(`/events/${id}`, data);
       return res.data;
     } catch (err) {
       return centralizedErrorHandler(err, rejectWithValue, dispatch);
