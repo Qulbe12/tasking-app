@@ -27,6 +27,9 @@ import { useAppDispatch, useAppSelector } from "../../../redux/store";
 import { sendMessage } from "../../../redux/api/nylasApi";
 import { ISendMessage } from "../../../interfaces/nylas/ISendMessage";
 
+import { IFile } from "../../../interfaces/nylas/IFile";
+import AttachFilesInput from "./AttachFilesInput";
+
 type ComposeEmailProps = {
   onCancelClick: () => void;
   selectedMessage?: IMessageResponse | null;
@@ -53,6 +56,8 @@ const ComposeEmail = ({ onCancelClick, selectedMessage }: ComposeEmailProps) => 
   const [filteredContacts, setFilteredContacts] = useState<string[]>([]);
   const [selectedEmails, setSelectedEmails] = useState<string[]>([]);
   const [selectSearch, setSelectSearch] = useState<string>("");
+
+  const [uploadedAttachments, setUploadedAttachments] = useState<IFile[]>([]);
 
   useEffect(() => {
     setFilteredContacts(contacts.map((c) => c.email));
@@ -137,6 +142,7 @@ const ComposeEmail = ({ onCancelClick, selectedMessage }: ComposeEmailProps) => 
           to: finalTo,
           subject: newSubject,
           body: newBody,
+          file_ids: uploadedAttachments.map((a) => a.id),
         }),
       );
       setForm({
@@ -144,9 +150,15 @@ const ComposeEmail = ({ onCancelClick, selectedMessage }: ComposeEmailProps) => 
         subject: "",
         to: [{ email: "", name: "" }],
       });
+      setUploadedAttachments([]);
+      onCancelClick();
     },
     [form, documents],
   );
+
+  const handleRemoveAttachment = (attachment: IFile) => {
+    setUploadedAttachments((a) => a.filter((a) => a.id !== attachment.id));
+  };
 
   const ItemComponent: TransferListItemComponent = ({
     data,
@@ -177,8 +189,8 @@ const ComposeEmail = ({ onCancelClick, selectedMessage }: ComposeEmailProps) => 
 
   return (
     <form onSubmit={handleSendEmail} style={{ height: "100%" }}>
-      <Stack spacing={"md"} h="100%">
-        <ScrollArea>
+      <ScrollArea>
+        <Stack spacing={"md"} h="100%">
           <MultiSelect
             label="To"
             limit={5}
@@ -246,6 +258,12 @@ const ComposeEmail = ({ onCancelClick, selectedMessage }: ComposeEmailProps) => 
               </Flex>
             </Card>
           )}
+
+          <AttachFilesInput
+            handleRemoveAttachment={handleRemoveAttachment}
+            afterUpload={(a) => setUploadedAttachments((attachments) => [...attachments, a])}
+            uploadedAttachments={uploadedAttachments}
+          />
           {!selectedMessage && (
             <>
               <Divider label="Attach Documents" />
@@ -280,8 +298,8 @@ const ComposeEmail = ({ onCancelClick, selectedMessage }: ComposeEmailProps) => 
               Send
             </Button>
           </Group>
-        </ScrollArea>
-      </Stack>
+        </Stack>
+      </ScrollArea>
     </form>
   );
 };

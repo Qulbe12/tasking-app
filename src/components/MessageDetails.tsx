@@ -1,9 +1,8 @@
-import React, { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   ActionIcon,
   Button,
   Card,
-  Flex,
   Group,
   ScrollArea,
   SimpleGrid,
@@ -35,6 +34,7 @@ import { ISendMessage } from "../interfaces/nylas/ISendMessage";
 import { IconPdf } from "@tabler/icons-react";
 import { nylasAxios } from "../config/nylasAxios";
 import { IFile } from "../interfaces/nylas/IFile";
+import AttachFilesInput from "../views/email/components/AttachFilesInput";
 
 type MessageDetailsProps = {
   selectedThreadId: string | null;
@@ -51,6 +51,7 @@ const MessageDetails = ({
   justMessages,
 }: MessageDetailsProps) => {
   const dispatch = useAppDispatch();
+
   const { loaders, messages, threads, nylasToken } = useAppSelector((state) => state.nylas);
   const { data: documents, loading: gettingDocuments } = useAppSelector((state) => state.documents);
   const { activeBoard } = useAppSelector((state) => state.boards);
@@ -62,6 +63,13 @@ const MessageDetails = ({
   const [selectedDocuments, setSelectedDocuments] = useState<string[]>([]);
 
   const [updatedMessages, setUpdatedMessages] = useState<IMessageResponse[]>([]);
+
+  const [uploadedAttachments, setUploadedAttachments] = useState<IFile[]>([]);
+
+  const [linkedDocuments, setLinkedDocuments] = useState<IDocumentResponse[]>([]);
+
+  const [showDocumentsModal, setShowDocumentsModal] = useState(false);
+  const [linking, setLinking] = useState(false);
 
   useEffect(() => {
     setUpdatedMessages(messages); // Set messages immediately
@@ -112,6 +120,11 @@ const MessageDetails = ({
     replyElement?.scrollIntoView({ behavior: "smooth" });
   }, [selectedMessageIds]);
 
+  useEffect(() => {
+    if (!selectedThreadId) return setLinkedDocuments([]);
+    setLinkedDocuments(documents.filter((d) => d.linkedEmailIds.includes(selectedThreadId)));
+  }, [messages, selectedThreadId]);
+
   const handleReply = useCallback(async () => {
     if (selectedMessageIds.length <= 0) return;
 
@@ -142,22 +155,13 @@ const MessageDetails = ({
         to: to,
         reply_to: to,
         cc: cc,
+        file_ids: uploadedAttachments.map((a) => a.id),
       }),
     );
 
     setEmailContent("");
     setSelectedMessageIds([]);
   }, [selectedMessageIds, emailContent, replyType]);
-
-  const [linkedDocuments, setLinkedDocuments] = useState<IDocumentResponse[]>([]);
-
-  const [showDocumentsModal, setShowDocumentsModal] = useState(false);
-  const [linking, setLinking] = useState(false);
-
-  useEffect(() => {
-    if (!selectedThreadId) return setLinkedDocuments([]);
-    setLinkedDocuments(documents.filter((d) => d.linkedEmailIds.includes(selectedThreadId)));
-  }, [messages, selectedThreadId]);
 
   const handleLinkDocument = useCallback(async () => {
     if (!selectedThreadId) return;
@@ -193,6 +197,10 @@ const MessageDetails = ({
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+  };
+
+  const handleRemoveAttachment = (attachment: IFile) => {
+    setUploadedAttachments((a) => a.filter((a) => a.id !== attachment.id));
   };
 
   const TypeIcon = ({ type }: { type: string }) => {
@@ -280,23 +288,17 @@ const MessageDetails = ({
                       {m.files.map((f) => {
                         if (f.content_disposition !== "attachment") return;
                         return (
-                          <Card
-                            p="xs"
-                            withBorder
+                          <Button
                             key={f.id}
-                            className="cursor-pointer"
                             onClick={() => downloadAttachment(f as any)}
+                            leftIcon={<TypeIcon type={f.content_type} />}
                           >
-                            <Flex align="center" gap="sm">
-                              <TypeIcon type={f.content_type} />
-                              <Text>{f.filename}</Text>
-                            </Flex>
-                          </Card>
+                            {f.filename}
+                          </Button>
                         );
                       })}
                     </Group>
                   )}
-
                   <iframe
                     srcDoc={m.body}
                     width="100%"
@@ -308,6 +310,14 @@ const MessageDetails = ({
                   {selectedMessageIds.length === 1 && selectedMessageIds.includes(m.id) && (
                     <Stack my="md" id="reply-container">
                       <CustomTextEditor content={emailContent} onUpdate={setEmailContent} />
+
+                      <AttachFilesInput
+                        uploadedAttachments={uploadedAttachments}
+                        afterUpload={(a) =>
+                          setUploadedAttachments((attachments) => [...attachments, a])
+                        }
+                        handleRemoveAttachment={handleRemoveAttachment}
+                      />
                       <Group position="right">
                         <Button
                           loading={loaders.sendingMessage}

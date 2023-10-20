@@ -10,7 +10,7 @@ import TextStyle from "@tiptap/extension-text-style";
 import { ActionIcon, Group, Menu } from "@mantine/core";
 import { IconSettings, IconSignature } from "@tabler/icons";
 import { useAppSelector } from "../redux/store";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import SignatureModal from "../modals/SignatureModal";
 import { ISignatureResponse } from "../interfaces/signatures/ISignatureResponse";
 import { useNavigate } from "react-router-dom";
@@ -56,6 +56,8 @@ export default function CustomTextEditor({
     },
     [selectedSignature],
   );
+
+  useEffect(() => editor?.setOptions({ content: "" }), [content]);
 
   const [showSigModal, setShowSigModal] = useState(false);
 
