@@ -4,6 +4,7 @@ import {
   Button,
   Card,
   Group,
+  Menu,
   ScrollArea,
   SimpleGrid,
   Skeleton,
@@ -17,6 +18,7 @@ import {
   IconCornerUpRight,
   IconFile,
   IconLink,
+  IconPlus,
   IconSend,
   IconTrash,
 } from "@tabler/icons";
@@ -35,6 +37,8 @@ import { IconPdf } from "@tabler/icons-react";
 import { nylasAxios } from "../config/nylasAxios";
 import { IFile } from "../interfaces/nylas/IFile";
 import AttachFilesInput from "../views/email/components/AttachFilesInput";
+import { useTranslation } from "react-i18next";
+import DocumentModal from "../modals/DocumentModal";
 
 type MessageDetailsProps = {
   selectedThreadId: string | null;
@@ -50,6 +54,7 @@ const MessageDetails = ({
   onDocumentCardClick,
   justMessages,
 }: MessageDetailsProps) => {
+  const { t } = useTranslation();
   const dispatch = useAppDispatch();
 
   const { loaders, messages, threads, nylasToken } = useAppSelector((state) => state.nylas);
@@ -69,6 +74,7 @@ const MessageDetails = ({
   const [linkedDocuments, setLinkedDocuments] = useState<IDocumentResponse[]>([]);
 
   const [showDocumentsModal, setShowDocumentsModal] = useState(false);
+  const [showNewDocumentModal, setShowNewDocumentModal] = useState(false);
   const [linking, setLinking] = useState(false);
 
   useEffect(() => {
@@ -348,9 +354,30 @@ const MessageDetails = ({
         <Card withBorder h="50%">
           <Group align="center" position="apart">
             <Text mb="md">Linked Documents: </Text>
-            <Button size="xs" leftIcon={<IconLink />} onClick={() => setShowDocumentsModal(true)}>
-              Link
-            </Button>
+
+            <Menu>
+              <Menu.Target>
+                <Button size="xs" leftIcon={<IconLink />}>
+                  Link
+                </Button>
+              </Menu.Target>
+
+              <Menu.Dropdown>
+                <Menu.Item
+                  icon={<IconFile size="1em" />}
+                  onClick={() => setShowDocumentsModal(true)}
+                >
+                  {t("existingDocument")}
+                </Menu.Item>
+                <Menu.Item
+                  icon={<IconPlus size="1en" />}
+                  onClick={() => setShowNewDocumentModal(true)}
+                >
+                  {" "}
+                  {t("createDocument")}
+                </Menu.Item>
+              </Menu.Dropdown>
+            </Menu>
           </Group>
           <ScrollArea h="100%">
             <SimpleGrid cols={4}>
@@ -371,6 +398,16 @@ const MessageDetails = ({
           </ScrollArea>
         </Card>
       )}
+
+      <DocumentModal
+        onClose={() => setShowNewDocumentModal(false)}
+        opened={showNewDocumentModal}
+        title={t("createDocument")}
+        selectedEmailId={selectedThreadId}
+        onAfterCreate={(document) => {
+          setLinkedDocuments((docs) => [...docs, document]);
+        }}
+      />
 
       <DocumentsListModal
         onClose={() => {
