@@ -50,7 +50,7 @@ const EmailCalendar = ({ onActionButtonClick }: EmailCalendarProps) => {
   const [calendarId, setCalendarId] = useState("");
   const [calendarEvent, setCalendarEvent] = useState<ICalendarEvent | undefined>();
   const [selectedView, setSelectedView] = useState<View>("month");
-  const clickRef = useRef(null);
+  const clickRef = useRef<number | undefined>(0);
 
   const onChangeAccordion = (value: string) => {
     dispatch(getEvents(value));

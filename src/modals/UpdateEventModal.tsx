@@ -1,11 +1,10 @@
-import { Button, Group, Modal, Stack, Switch, TextInput } from "@mantine/core";
-import { DatePicker } from "@mantine/dates";
+import { Button, Flex, Group, Modal, Stack, Switch, TextInput } from "@mantine/core";
+import { DatePicker, TimeInput } from "@mantine/dates";
 import React, { useEffect, useState } from "react";
 import CommonModalProps from "./CommonModalProps";
 import { IEventCreate } from "../interfaces/nylas/IEventCreate";
 import { useAppDispatch, useAppSelector } from "../redux/store";
 import * as yup from "yup";
-import dayjs from "dayjs";
 import { deleteEvent, updateEvent } from "../redux/api/nylasApi";
 import { IconEdit, IconTrash } from "@tabler/icons";
 import { ICalendarEvent } from "../interfaces/nylas/ICalendarEvents";
@@ -119,26 +118,74 @@ const UpdateEventModal = ({
             value={form.location ?? ""}
             onChange={(e) => setForm({ ...form, location: e.target.value })}
           />
-          <DatePicker
-            defaultValue={event?.start || selectedDate || new Date()}
-            label="Start date"
-            onChange={(e) => {
-              if (!e) return;
-              const startDateWithoutDatePrefix = e.toString().replace("Date ", "");
-              const parsedStartDate = dayjs(startDateWithoutDatePrefix);
-              console.log(parsedStartDate);
-            }}
-          />
-          <DatePicker
-            defaultValue={event?.start || selectedDate || new Date()}
-            label="End date"
-            onChange={(e) => {
-              if (!e) return;
-              const endDateWithoutDatePrefix = e.toString().replace("Date ", "");
-              const parsedEndDate = dayjs(endDateWithoutDatePrefix);
-              console.log(parsedEndDate);
-            }}
-          />
+          <Flex direction="row" w="100%" justify="space-between">
+            <DatePicker
+              w="45%"
+              defaultValue={event?.start || selectedDate || new Date()}
+              label="Start date"
+              onChange={(e) => {
+                if (!e) return;
+                const startDate = e.getTime() / 1000;
+
+                setForm((current) => {
+                  if (!current.when) return current;
+                  current.when.start_time = startDate;
+                  return current;
+                });
+              }}
+            />
+            <TimeInput
+              defaultValue={event?.start || selectedDate || new Date()}
+              format="24"
+              label="Start time"
+              w="45%"
+              onChange={(d) => {
+                setForm((prevState) => {
+                  if (!prevState.when) return prevState;
+                  const prevDate = new Date(prevState.when.start_time * 1000);
+                  prevDate.setHours(d.getHours());
+                  prevDate.setMinutes(d.getMinutes());
+                  prevState.when.start_time = prevDate.getTime() / 1000;
+                  return prevState;
+                });
+              }}
+            />
+          </Flex>
+          <Flex direction="row" w="100%" justify="space-between">
+            <DatePicker
+              w="45%"
+              defaultValue={event?.end || selectedDate || new Date()}
+              label="End date"
+              onChange={(e) => {
+                if (!e) return;
+                // const endDateWithoutDatePrefix = e.toString().replace("Date ", "");
+                // const parsedEndDate = dayjs(endDateWithoutDatePrefix);
+                const endDate = e.getTime() / 1000;
+
+                setForm((current) => {
+                  if (!current.when) return current;
+                  current.when.end_time = endDate;
+                  return current;
+                });
+              }}
+            />
+            <TimeInput
+              defaultValue={event?.end || selectedDate || new Date()}
+              format="24"
+              label="End time"
+              w="45%"
+              onChange={(d) => {
+                setForm((prevState) => {
+                  if (!prevState.when) return prevState;
+                  const prevDate = new Date(prevState.when.end_time * 1000);
+                  prevDate.setHours(d.getHours());
+                  prevDate.setMinutes(d.getMinutes());
+                  prevState.when.end_time = prevDate.getTime() / 1000;
+                  return prevState;
+                });
+              }}
+            />
+          </Flex>
           <Switch
             label="Busy"
             checked={form.busy}
