@@ -183,6 +183,16 @@ const AnalyticsPage = () => {
       tempVals.push(dayjs(d["dueDate"]).format("MM/DD/YYYY"));
 
       d.template.fields.forEach((f) => {
+        if (
+          f.key === "title" ||
+          f.key === "description" ||
+          f.key === "status" ||
+          f.key === "priority" ||
+          f.key === "startDate" ||
+          f.key === "dueDate"
+        )
+          return;
+
         // @ts-ignore
         tempVals.push(d[f.key]);
       });
