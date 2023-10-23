@@ -217,6 +217,12 @@ const SheetVersionModal = ({
                   defaultValue={new Date()}
                   {...form.getInputProps("versionDate")}
                 />
+
+                <Group mt="md" position="right">
+                  <Button type="submit" disabled={!sheetUploaded} loading={addingVersion}>
+                    {t("createVersion")}
+                  </Button>
+                </Group>
               </Stack>
             </Grid.Col>
             <Grid.Col md={4} lg={10}>
@@ -255,11 +261,6 @@ const SheetVersionModal = ({
             </Grid.Col>
           </Grid>
         </Card>
-        <Group mt="md" position="right">
-          <Button type="submit" disabled={!sheetUploaded} loading={addingVersion}>
-            {t("createVersion")}
-          </Button>
-        </Group>
       </form>
     </Modal>
   );

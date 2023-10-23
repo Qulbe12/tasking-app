@@ -187,6 +187,12 @@ const SheetModal = ({ onClose, opened, title }: CommonModalProps) => {
                   withAsterisk
                   {...form.getInputProps("versionTitle")}
                 />
+
+                <Group mt="md" position="right">
+                  <Button type="submit" disabled={sheetRecords.length <= 0} loading={addingSheet}>
+                    {t("createSheet")}
+                  </Button>
+                </Group>
               </Stack>
             </Grid.Col>
             <Grid.Col md={4} lg={10}>
@@ -194,11 +200,6 @@ const SheetModal = ({ onClose, opened, title }: CommonModalProps) => {
             </Grid.Col>
           </Grid>
         </Card>
-        <Group mt="md" position="right">
-          <Button type="submit" disabled={sheetRecords.length <= 0} loading={addingSheet}>
-            {t("createSheet")}
-          </Button>
-        </Group>
       </form>
     </Modal>
   );
