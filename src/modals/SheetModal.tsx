@@ -106,8 +106,6 @@ const SheetModal = ({ onClose, opened, title }: CommonModalProps) => {
       records: newRecords,
     };
 
-    console.log(preppedSheet);
-
     await dispatch(createSheet({ boardId: activeBoard.id, sheet: preppedSheet }));
     form.reset();
     onClose();
