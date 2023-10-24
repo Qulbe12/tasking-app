@@ -29,6 +29,7 @@ import { FieldType, IField } from "../interfaces/documents/IField";
 
 type DocumentModalProps = {
   onAfterCreate?: (document: IDocumentResponse) => void;
+  selectedEmailId?: string | null;
 };
 
 const DocumentModal = ({
@@ -36,6 +37,7 @@ const DocumentModal = ({
   opened,
   title,
   onAfterCreate,
+  selectedEmailId,
 }: CommonModalProps & DocumentModalProps) => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
@@ -80,6 +82,11 @@ const DocumentModal = ({
     if (!activeBoard?.id) return;
 
     const formData = new FormData();
+
+    if (selectedEmailId) {
+      formData.append("emailId", selectedEmailId);
+    }
+
     formData.append("templateId", data.find((t) => t.name === selectedTemplate)?.id || "");
     attachments.forEach((a) => {
       formData.append("files", a);

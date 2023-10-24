@@ -18,7 +18,7 @@ import CommonModalProps from "./CommonModalProps";
 import SheetDropzone from "../components/SheetDropzone";
 import { useForm, yupResolver } from "@mantine/form";
 import * as yup from "yup";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { ISheetProcessResponse } from "../interfaces/sheets/ISheetProcessResponse";
 import { showError } from "../redux/commonSliceFunctions";
@@ -71,6 +71,12 @@ const SheetVersionModal = ({
 
   const [tags, setTags] = useState<{ value: string; label: string; recordindex: number }[]>([]);
 
+  const [tagsData, setTagsData] = useState<{ value: string; label: string; recordIndex: number }[]>(
+    [],
+  );
+
+  const [newTags, setNewTags] = useState<string[][]>([]);
+
   useEffect(() => {
     if (sheet) {
       setTags(
@@ -84,6 +90,70 @@ const SheetVersionModal = ({
       );
     }
   }, [sheet]);
+
+  const handleSheetRemove = useCallback((sheetCode: string, index: number) => {
+    setSheetRes((prev) => prev.filter((sr) => sr.code !== sheetCode));
+    setNewCodes((prev) => {
+      const updatedCodes = [...prev];
+      updatedCodes.splice(index, 1);
+      return updatedCodes;
+    });
+  }, []);
+
+  const renderedSheets = useMemo(
+    () =>
+      sheetRes.map((s, i) => (
+        <Paper key={s.code + i} p="md">
+          <Group position="apart">
+            <Group>
+              <Image height={150} width={150} src={s.thumbnail.url} />
+              <Image maw={240} src={s.meta.url} />
+              <Stack>
+                <TextInput
+                  label={t("sheetCode")}
+                  value={newCodes[i]}
+                  onChange={(e) => {
+                    const oldCodes = [...newCodes];
+                    oldCodes[i] = e.target.value;
+                    setNewCodes(oldCodes);
+                  }}
+                />
+              </Stack>
+              <Stack>
+                <MultiSelect
+                  label={t("tags")}
+                  data={tagsData}
+                  placeholder={t("selectTags") || ""}
+                  searchable
+                  creatable
+                  getCreateLabel={(query) => `+ Create ${query}`}
+                  onChange={(e) => {
+                    const nNewTags = [...newTags];
+                    nNewTags[i] = e;
+                    setNewTags(nNewTags);
+                  }}
+                  onCreate={(query) => {
+                    const item = { value: query, label: query, recordIndex: i };
+                    setTagsData((current) => [...current, item]);
+                    return item;
+                  }}
+                />
+              </Stack>
+            </Group>
+            <ActionIcon
+              color="red"
+              size="sm"
+              onClick={() => {
+                handleSheetRemove(s.code, i);
+              }}
+            >
+              <IconTrash />
+            </ActionIcon>
+          </Group>
+        </Paper>
+      )),
+    [sheetRes, newCodes, handleSheetRemove, tagsData, newTags],
+  );
 
   return (
     <Modal
@@ -103,12 +173,11 @@ const SheetVersionModal = ({
       <form
         onSubmit={form.onSubmit(async () => {
           if (!sheet?.id) return;
-          const newRecords: ISheetProcessResponse[] = [];
-          sheetRes.forEach((s, i) => {
-            s.code = newCodes[i];
-            s.tags = [];
-            newRecords.push(s);
-          });
+          const newRecords = sheetRes.map((s, i) => ({
+            ...s,
+            code: newCodes[i],
+            tags: newTags[i] || [],
+          }));
 
           tags.forEach((t) => {
             if (t.recordindex < 0) return;
@@ -148,6 +217,12 @@ const SheetVersionModal = ({
                   defaultValue={new Date()}
                   {...form.getInputProps("versionDate")}
                 />
+
+                <Group mt="md" position="right">
+                  <Button type="submit" disabled={!sheetUploaded} loading={addingVersion}>
+                    {t("createVersion")}
+                  </Button>
+                </Group>
               </Stack>
             </Grid.Col>
             <Grid.Col md={4} lg={10}>
@@ -182,59 +257,10 @@ const SheetVersionModal = ({
                 />
               )}
 
-              {sheetUploaded && (
-                <Stack>
-                  {sheetRes.map((s, i) => {
-                    return (
-                      <Paper key={s.code + i} p="md">
-                        <Group position="apart">
-                          <Group>
-                            <Image height={150} width={150} src={s.thumbnail.url} />
-                            <Image maw={240} src={s.meta.url} />
-                            <Stack>
-                              <TextInput
-                                label={t("sheetCode")}
-                                value={newCodes[i]}
-                                onChange={(e) => {
-                                  const oldCodes = [...newCodes];
-                                  oldCodes[i] = e.target.value;
-                                  setNewCodes(oldCodes);
-                                }}
-                              />
-                            </Stack>
-                            <Stack>
-                              <MultiSelect
-                                label={t("tags")}
-                                data={tags}
-                                placeholder={t("selectTags") || ""}
-                                searchable
-                                creatable
-                                getCreateLabel={(query) => `+ Create ${query}`}
-                                onCreate={(query) => {
-                                  const item = { value: query, label: query, recordindex: i };
-                                  setTags((current) => [...current, item]);
-                                  return item;
-                                }}
-                              />
-                            </Stack>
-                          </Group>
-                          <ActionIcon color="red" size="sm">
-                            <IconTrash />
-                          </ActionIcon>
-                        </Group>
-                      </Paper>
-                    );
-                  })}
-                </Stack>
-              )}
+              {sheetUploaded && <Stack>{renderedSheets}</Stack>}
             </Grid.Col>
           </Grid>
         </Card>
-        <Group mt="md" position="right">
-          <Button type="submit" disabled={!sheetUploaded} loading={addingVersion}>
-            {t("createVersion")}
-          </Button>
-        </Group>
       </form>
     </Modal>
   );
