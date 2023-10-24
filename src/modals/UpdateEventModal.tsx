@@ -194,7 +194,7 @@ const UpdateEventModal = ({
           <Group position="right" mt="md">
             <Button
               type="button"
-              loading={!!loaders.updatingEvent}
+              loading={loaders.deletingEvent}
               leftIcon={<IconTrash />}
               color="red"
               onClick={async () => {

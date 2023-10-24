@@ -270,7 +270,7 @@ const EmailCalendar = ({ onActionButtonClick }: EmailCalendarProps) => {
           {calendars.map((c, i) => {
             return (
               <Accordion.Item key={i} value={c.id}>
-                {loaders.gettingEvents ? (
+                {loaders.gettingEvents || loaders.deletingCalendars ? (
                   <AccordionControl
                     id={c.id}
                     icon={c.id === calendarId ? <Loader size="sm" /> : <IconCircleCheck />}
@@ -325,7 +325,9 @@ const EmailCalendar = ({ onActionButtonClick }: EmailCalendarProps) => {
 
   function AccordionControl(props: AccordionControlProps) {
     const dispatch = useAppDispatch();
-    const openModal = () =>
+    const openModal = () => {
+      if (!props.id) return;
+      setCalendarId(props.id);
       openConfirmModal({
         title: "Remove calendar",
         children: <Text size="sm">Are you sure?</Text>,
@@ -336,6 +338,7 @@ const EmailCalendar = ({ onActionButtonClick }: EmailCalendarProps) => {
           await dispatch(getAllCalendars());
         },
       });
+    };
 
     return (
       <Box sx={{ display: "flex", alignItems: "center" }}>

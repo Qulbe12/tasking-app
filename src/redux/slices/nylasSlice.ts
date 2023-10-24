@@ -83,6 +83,7 @@ export interface GroupsState {
     gettingFolder: boolean;
     creatingFolder: boolean;
     updatingEvent: string | null;
+    deletingEvent: boolean;
   };
 }
 
@@ -122,6 +123,7 @@ const initialState: GroupsState = {
     gettingFolder: false,
     creatingFolder: false,
     updatingEvent: null,
+    deletingEvent: false,
   },
   nylasContacts: [],
   targetedContact: null,
@@ -367,14 +369,14 @@ export const nylasSlice = createSlice({
       })
       // delete calendar
       .addCase(deleteEvent.pending, (state) => {
-        state.loaders.gettingEvents = true;
+        state.loaders.deletingEvent = true;
       })
       .addCase(deleteEvent.fulfilled, (state, action) => {
         state.events = state.events.filter((e) => e.id !== action.meta.arg);
-        state.loaders.gettingEvents = false;
+        state.loaders.deletingEvent = false;
       })
       .addCase(deleteEvent.rejected, (state) => {
-        state.loaders.gettingEvents = false;
+        state.loaders.deletingEvent = false;
       })
       // Get All Contacts
       .addCase(getContacts.pending, (state) => {
