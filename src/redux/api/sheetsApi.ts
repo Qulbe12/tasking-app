@@ -8,6 +8,8 @@ import { ISheetUpdate } from "../../interfaces/sheets/ISheetUpdate";
 import { axiosSheets } from "../../config/axiosSheets";
 import { ISheetProcessResponse } from "../../interfaces/sheets/ISheetProcessResponse";
 import { FileWithPath } from "@mantine/dropzone";
+import { ISheetDetailedResponse } from "../../interfaces/sheets/ISheetDetailedResponse";
+import generateQueryString from "../../utils/generateQueryString";
 
 export const createSheet = createAsyncThunk(
   "sheets/createSheet",
@@ -41,9 +43,14 @@ export const createSheetVersion = createAsyncThunk(
 
 export const getSheets = createAsyncThunk(
   "sheets/getSheets",
-  async ({ boardId }: { boardId: string }, { rejectWithValue, dispatch }) => {
+  async (
+    { boardId, archived }: { boardId: string; archived?: boolean },
+    { rejectWithValue, dispatch },
+  ) => {
     try {
-      const res = await axiosPrivate.get<ISheetResponse[]>(`/boards/${boardId}/sheets`);
+      const res = await axiosPrivate.get<ISheetResponse[]>(
+        `/boards/${boardId}/sheets${generateQueryString({ isArchived: archived })}`,
+      );
       return res.data;
     } catch (err) {
       return centralizedErrorHandler(err, rejectWithValue, dispatch);
@@ -148,6 +155,19 @@ export const processSheet = createAsyncThunk(
       const formData = new FormData();
       formData.append("file", file[0]);
       const res = await axiosSheets.post<ISheetProcessResponse[]>("", formData);
+      return res.data;
+    } catch (err) {
+      return centralizedErrorHandler(err, rejectWithValue, dispatch);
+    }
+  },
+);
+
+export const archiveSheet = createAsyncThunk(
+  "sheets/archiveSheet",
+  async (id: string, { dispatch, rejectWithValue }) => {
+    try {
+      const res = await axiosPrivate.patch<ISheetDetailedResponse>(`/sheets/${id}/archive`);
+
       return res.data;
     } catch (err) {
       return centralizedErrorHandler(err, rejectWithValue, dispatch);

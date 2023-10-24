@@ -1,6 +1,5 @@
 import { useAppDispatch, useAppSelector } from "../../redux/store";
 import { Button, Flex, Group, Paper, useMantineTheme } from "@mantine/core";
-import { IconArchive, IconPlus } from "@tabler/icons";
 import { useDisclosure } from "@mantine/hooks";
 import { pdfjs } from "react-pdf";
 import SheetCard from "../../components/SheetCard";
@@ -15,7 +14,7 @@ pdfjs.GlobalWorkerOptions.workerSrc = new URL(
   import.meta.url,
 ).toString();
 
-const SheetsPage = () => {
+const ArchivedSheets = () => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
@@ -26,51 +25,45 @@ const SheetsPage = () => {
   const [showSheetModal, { toggle: toggleSheetModal }] = useDisclosure(false);
   const theme = useMantineTheme();
 
-  const handleAddButtonClick = () => {
-    toggleSheetModal();
-  };
-
   const handleArchiveSheets = () => {
-    navigate("/board/archivedSheets");
+    navigate("/board/sheets");
   };
 
   useEffect(() => {
     if (!activeBoard) return;
-    dispatch(getSheets({ boardId: activeBoard.id, archived: false }));
+    dispatch(getSheets({ boardId: activeBoard.id, archived: true }));
+    console.log(sheets);
   }, []);
 
   return (
     <Paper>
       <Group mb="md" position="right">
         <Button onClick={handleArchiveSheets} size="xs">
-          <IconArchive size={16} />
-          {t("archiveSheets")}
-        </Button>
-        <Button onClick={handleAddButtonClick} size="xs">
-          <IconPlus size={16} />
-          {t("addSheet")}
+          {t("sheets")}
         </Button>
       </Group>
       <Flex wrap="wrap" gap={6}>
         {sheets.map((s) => {
-          return (
-            <Flex
-              sx={{
-                [theme.fn.smallerThan("sm")]: {
-                  width: "100%",
-                },
-              }}
-              w="20%"
-              key={s.id}
-            >
-              <SheetCard
-                sheet={s}
-                onClick={() => {
-                  navigate(`/board/sheets/${s.id}`);
+          if (s.isArchived) {
+            return (
+              <Flex
+                sx={{
+                  [theme.fn.smallerThan("sm")]: {
+                    width: "100%",
+                  },
                 }}
-              />
-            </Flex>
-          );
+                w="20%"
+                key={s.id}
+              >
+                <SheetCard
+                  sheet={s}
+                  onClick={() => {
+                    navigate(`/board/sheets/${s.id}`);
+                  }}
+                />
+              </Flex>
+            );
+          }
         })}
       </Flex>
 
@@ -79,4 +72,4 @@ const SheetsPage = () => {
   );
 };
 
-export default SheetsPage;
+export default ArchivedSheets;

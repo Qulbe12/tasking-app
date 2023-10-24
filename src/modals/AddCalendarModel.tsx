@@ -25,11 +25,11 @@ const AddCalendarModel = ({ opened, onClose, title }: CommonModalProps) => {
   return (
     <Modal opened={opened} onClose={onClose} title={title}>
       <form
-        onSubmit={form.onSubmit((values) => {
+        onSubmit={form.onSubmit(async (values) => {
           const newCalendar = {
             name: values.name,
           };
-          dispatch(createCalendar(newCalendar));
+          await dispatch(createCalendar(newCalendar));
           form.reset();
           onClose();
         })}

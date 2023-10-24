@@ -127,6 +127,7 @@ const en = {
 
     // Sheets Page
     addSheet: "Add Sheet",
+    archiveSheets: "Archived Sheets",
     createNewSheet: "Create New Sheet",
     emissionDate: "Emission Date",
     dragAndDropHere: "Drag and drop document here",

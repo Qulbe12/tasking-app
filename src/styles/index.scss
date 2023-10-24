@@ -9,6 +9,7 @@ $out-of-range-bg-color: lighten(#333, 70%);
 
 $calendar-border: rgba(255, 255, 255, 0.437);
 $cell-border: rgba(255, 255, 255, 0.1);
+$cell-hover: rgba(255, 255, 255, 0.1);
 
 $border-color: rgba(255, 255, 255, 0.437);
 
@@ -31,6 +32,20 @@ $btn-border: #ccc;
 $current-time-color: #0033ff;
 
 $today-highlight-bg: rgba(59, 91, 219, 0.3);
+
+.rbc-row-bg {
+  transition: background-color 0.2s ease;
+  cursor: pointer;
+}
+
+.rbc-day-bg:hover {
+  background-color: rgba(0, 72, 255, 0.32); /* Change this color to your desired hover color */
+}
+
+
+.rbc-timeslot-group:hover {
+  background-color: #0033ff;
+}
 
 @import "react-big-calendar/lib/sass/styles";
 

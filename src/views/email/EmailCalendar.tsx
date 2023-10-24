@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Calendar as CalendarComponent, dayjsLocalizer, View } from "react-big-calendar";
 import dayjs from "dayjs";
 
@@ -13,7 +13,7 @@ import {
   Menu,
   Text,
 } from "@mantine/core";
-import { IconCalendar, IconCircleCheck, IconDotsVertical } from "@tabler/icons";
+import { IconCalendar, IconCircleCheck, IconDotsVertical, IconList } from "@tabler/icons";
 import { useAppDispatch, useAppSelector } from "../../redux/store";
 import { deleteCalendar, getAllCalendars, getEvents } from "../../redux/api/nylasApi";
 import { Calendar } from "@mantine/dates";
@@ -29,6 +29,8 @@ import "react-big-calendar/lib/css/react-big-calendar.css";
 import "./EmailCalendar.scss";
 import { ICalendarEvent } from "../../interfaces/nylas/ICalendarEvents";
 import UpdateEventModal from "../../modals/UpdateEventModal";
+import EventDetailModal from "../../modals/EventDetailModal";
+import { ICalendarResponse } from "../../interfaces/nylas/ICalendarResponse";
 
 const localizer = dayjsLocalizer(dayjs);
 
@@ -45,9 +47,11 @@ const EmailCalendar = ({ onActionButtonClick }: EmailCalendarProps) => {
   const [openCalendarModel, { toggle: calendarModelToggle }] = useDisclosure(false);
   const [addEventModelOpened, { toggle: addEventModelToggle }] = useDisclosure(false);
   const [updateEventModelOpened, { toggle: updateEventModelToggle }] = useDisclosure(false);
+  const [eventDetailModelOpened, { toggle: eventDetailModelToggle }] = useDisclosure(false);
   const [calendarId, setCalendarId] = useState("");
   const [calendarEvent, setCalendarEvent] = useState<ICalendarEvent | undefined>();
   const [selectedView, setSelectedView] = useState<View>("month");
+  const clickRef = useRef<number | undefined>(0);
 
   const onChangeAccordion = (value: string) => {
     dispatch(getEvents(value));
@@ -56,11 +60,15 @@ const EmailCalendar = ({ onActionButtonClick }: EmailCalendarProps) => {
 
   useEffect(() => {
     dispatch(getAllCalendars());
+
     calendars.map((c) => {
-      if (c.name === "Calender") {
+      if (c.name === "Calendar") {
         setCalendarId(c.id);
       }
     });
+    return () => {
+      window.clearTimeout(clickRef?.current);
+    };
   }, []);
 
   const handleViewChange = useCallback((view: View) => setSelectedView(view), []);
@@ -104,6 +112,34 @@ const EmailCalendar = ({ onActionButtonClick }: EmailCalendarProps) => {
     [date, selectedView],
   );
 
+  const onSelectEvent = useCallback((event: ICalendarEvent) => {
+    /**
+     * Here we are waiting 250 milliseconds (use what you want) prior to firing
+     * our method. Why? Because both 'click' and 'doubleClick'
+     * would fire, in the event of a 'doubleClick'. By doing
+     * this, the 'click' handler is overridden by the 'doubleClick'
+     * action.
+     */
+    if (!clickRef) return;
+    window.clearTimeout(clickRef?.current);
+    clickRef.current = window.setTimeout(() => {
+      setCalendarEvent(event);
+      eventDetailModelToggle();
+    }, 250);
+  }, []);
+
+  const onDoubleClickEvent = useCallback((event: ICalendarEvent) => {
+    /**
+     * Notice our use of the same ref as above.
+     */
+    if (!clickRef) return;
+    window.clearTimeout(clickRef?.current);
+    clickRef.current = window.setTimeout(() => {
+      setCalendarEvent(event);
+      updateEventModelToggle();
+    }, 250);
+  }, []);
+
   const calculatedDateString = useMemo(() => {
     switch (selectedView) {
       case "month":
@@ -135,6 +171,11 @@ const EmailCalendar = ({ onActionButtonClick }: EmailCalendarProps) => {
   return (
     <div className="calendar-view">
       <div className="board">
+        <Group position="right" my="md">
+          <Button onClick={onActionButtonClick} leftIcon={<IconList />}>
+            Emails
+          </Button>
+        </Group>
         <Group position="apart" my="md">
           <Button.Group>
             <Button
@@ -182,16 +223,14 @@ const EmailCalendar = ({ onActionButtonClick }: EmailCalendarProps) => {
         <CalendarComponent
           view={selectedView}
           toolbar={false}
-          onSelectEvent={(event) => {
-            setCalendarEvent(event);
-            updateEventModelToggle();
-          }}
+          onDoubleClickEvent={onDoubleClickEvent}
+          onSelectEvent={onSelectEvent}
           events={calendarEvents}
           localizer={localizer}
           onSelectSlot={(e) => {
             setDate(e.start);
 
-            if (e.action !== "doubleClick") return;
+            if (e.action !== "click") return;
 
             if (calendarId !== null && calendarId !== "") {
               addEventModelToggle();
@@ -232,8 +271,9 @@ const EmailCalendar = ({ onActionButtonClick }: EmailCalendarProps) => {
           {calendars.map((c, i) => {
             return (
               <Accordion.Item key={i} value={c.id}>
-                {loaders.gettingEvents ? (
+                {loaders.gettingEvents || loaders.deletingCalendars ? (
                   <AccordionControl
+                    calendar={c}
                     id={c.id}
                     icon={c.id === calendarId ? <Loader size="sm" /> : <IconCircleCheck />}
                   >
@@ -241,6 +281,7 @@ const EmailCalendar = ({ onActionButtonClick }: EmailCalendarProps) => {
                   </AccordionControl>
                 ) : (
                   <AccordionControl
+                    calendar={c}
                     id={c.id}
                     icon={c.id === calendarId ? <IconCircleCheckFilled /> : <IconCircleCheck />}
                   >
@@ -275,12 +316,22 @@ const EmailCalendar = ({ onActionButtonClick }: EmailCalendarProps) => {
         opened={updateEventModelOpened}
         onClose={updateEventModelToggle}
       />
+      {/*   Event detail modal */}
+      <EventDetailModal
+        event={calendarEvent}
+        opened={eventDetailModelOpened}
+        onClose={eventDetailModelToggle}
+        title={"Event detail"}
+      />
     </div>
   );
 
-  function AccordionControl(props: AccordionControlProps) {
+  function AccordionControl(props: AccordionControlProps & { calendar: ICalendarResponse }) {
+    const [calendarName, setCalendarName] = useState<string>("");
     const dispatch = useAppDispatch();
-    const openModal = () =>
+    const openModal = () => {
+      if (!props.id) return;
+      setCalendarId(props.id);
       openConfirmModal({
         title: "Remove calendar",
         children: <Text size="sm">Are you sure?</Text>,
@@ -291,18 +342,34 @@ const EmailCalendar = ({ onActionButtonClick }: EmailCalendarProps) => {
           await dispatch(getAllCalendars());
         },
       });
+    };
 
     return (
       <Box sx={{ display: "flex", alignItems: "center" }}>
         <Accordion.Control {...props} />
-        <Menu position="left-start" offset={0}>
+        <Menu
+          position="left-start"
+          offset={0}
+          onOpen={() => {
+            setCalendarName(props.calendar.name);
+          }}
+        >
           <Menu.Target>
             <ActionIcon size="lg">
               <IconDotsVertical size={"16px"} />
             </ActionIcon>
           </Menu.Target>
           <Menu.Dropdown>
-            <Menu.Item onClick={openModal}>Remove</Menu.Item>
+            <Menu.Item
+              disabled={
+                calendarName === "Emailed events" ||
+                calendarName === "Calendar" ||
+                calendarName === "Birthdays"
+              }
+              onClick={openModal}
+            >
+              Remove
+            </Menu.Item>
           </Menu.Dropdown>
         </Menu>
       </Box>

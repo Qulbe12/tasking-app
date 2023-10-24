@@ -336,7 +336,6 @@ const DocumentsDetailsCol: React.FC<DocumentsDetailsColProps> = ({
           </Button>
           <Button
             onClick={async () => {
-              console.log(aUsers);
               await dispatch(
                 addDocumentUsers({
                   documentId: document ? document.id : "",
@@ -344,6 +343,7 @@ const DocumentsDetailsCol: React.FC<DocumentsDetailsColProps> = ({
                   type: userType,
                 }),
               );
+              setAUsers([]);
               setShowMember(false);
             }}
           >
