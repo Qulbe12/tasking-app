@@ -30,6 +30,7 @@ import "./EmailCalendar.scss";
 import { ICalendarEvent } from "../../interfaces/nylas/ICalendarEvents";
 import UpdateEventModal from "../../modals/UpdateEventModal";
 import EventDetailModal from "../../modals/EventDetailModal";
+import { ICalendarResponse } from "../../interfaces/nylas/ICalendarResponse";
 
 const localizer = dayjsLocalizer(dayjs);
 
@@ -272,6 +273,7 @@ const EmailCalendar = ({ onActionButtonClick }: EmailCalendarProps) => {
               <Accordion.Item key={i} value={c.id}>
                 {loaders.gettingEvents || loaders.deletingCalendars ? (
                   <AccordionControl
+                    calendar={c}
                     id={c.id}
                     icon={c.id === calendarId ? <Loader size="sm" /> : <IconCircleCheck />}
                   >
@@ -279,6 +281,7 @@ const EmailCalendar = ({ onActionButtonClick }: EmailCalendarProps) => {
                   </AccordionControl>
                 ) : (
                   <AccordionControl
+                    calendar={c}
                     id={c.id}
                     icon={c.id === calendarId ? <IconCircleCheckFilled /> : <IconCircleCheck />}
                   >
@@ -323,7 +326,8 @@ const EmailCalendar = ({ onActionButtonClick }: EmailCalendarProps) => {
     </div>
   );
 
-  function AccordionControl(props: AccordionControlProps) {
+  function AccordionControl(props: AccordionControlProps & { calendar: ICalendarResponse }) {
+    const [calendarName, setCalendarName] = useState<string>("");
     const dispatch = useAppDispatch();
     const openModal = () => {
       if (!props.id) return;
@@ -343,14 +347,29 @@ const EmailCalendar = ({ onActionButtonClick }: EmailCalendarProps) => {
     return (
       <Box sx={{ display: "flex", alignItems: "center" }}>
         <Accordion.Control {...props} />
-        <Menu position="left-start" offset={0}>
+        <Menu
+          position="left-start"
+          offset={0}
+          onOpen={() => {
+            setCalendarName(props.calendar.name);
+          }}
+        >
           <Menu.Target>
             <ActionIcon size="lg">
               <IconDotsVertical size={"16px"} />
             </ActionIcon>
           </Menu.Target>
           <Menu.Dropdown>
-            <Menu.Item onClick={openModal}>Remove</Menu.Item>
+            <Menu.Item
+              disabled={
+                calendarName === "Emailed events" ||
+                calendarName === "Calendar" ||
+                calendarName === "Birthdays"
+              }
+              onClick={openModal}
+            >
+              Remove
+            </Menu.Item>
           </Menu.Dropdown>
         </Menu>
       </Box>
