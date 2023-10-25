@@ -3,7 +3,8 @@ import api from "../../config/api";
 import { centralizedErrorHandler } from "../commonSliceFunctions";
 import { axiosPrivate } from "../../config/axios";
 import { IUpdateDocument } from "../../interfaces/IUpdateDocument";
-import { IDocumentQuery, IDocumentResponse } from "../../interfaces/documents/IDocumentResponse";
+import { IDocumentResponse } from "../../interfaces/documents/IDocumentResponse";
+import objectToString from "../../utils/objectToString";
 
 const { documentApi } = api;
 
@@ -27,12 +28,9 @@ export const createDocument = createAsyncThunk(
 
 export const getDocuments = createAsyncThunk(
   "documents/getDocuments",
-  async (
-    { boardId, query }: { boardId: string; query: IDocumentQuery },
-    { rejectWithValue, dispatch },
-  ) => {
+  async ({ boardId, query }: { boardId: string; query: any }, { rejectWithValue, dispatch }) => {
     try {
-      const res = await axiosPrivate.get(`/boards/${boardId}/documents`, { params: query });
+      const res = await axiosPrivate.get(`/boards/${boardId}/documents?${objectToString(query)}`);
       return res.data;
     } catch (err) {
       return centralizedErrorHandler(err, rejectWithValue, dispatch);
