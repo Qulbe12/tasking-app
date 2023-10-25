@@ -7,18 +7,24 @@ const useCalendarEvents = () => {
 
   const calendarEvents = useMemo(() => {
     return events.map((e) => {
-      const unixStartTimestamp = parseInt(e?.when?.start_time?.toString() || "0", 10);
-      const startDate = new Date(unixStartTimestamp * 1000);
+      const resource = e;
+      const { when, title } = resource;
 
-      const unixEndTimestamp = parseInt(e?.when?.end_time?.toString(), 10);
-      const endDate = new Date(unixEndTimestamp * 1000);
+      let start = new Date();
+      let end = new Date();
 
-      const event: ICalendarEvent = {
-        start: startDate,
-        end: endDate,
-        title: e.title,
-        resource: e,
-      };
+      if (when.object === "timespan") {
+        start = new Date(when.start_time * 1000);
+        end = new Date(when.end_time * 1000);
+      }
+
+      if (when.object === "time") {
+        start = new Date(when.time * 1000);
+        end = new Date(when.time * 1000);
+      }
+
+      const event: ICalendarEvent = { start, end, title: title + "asd", resource };
+
       return event;
     });
   }, [events]);
