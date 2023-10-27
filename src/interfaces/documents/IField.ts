@@ -11,6 +11,7 @@ export enum FieldType {
 }
 
 export interface IField {
+  auto: boolean;
   id: string;
   key: string;
   label: string;

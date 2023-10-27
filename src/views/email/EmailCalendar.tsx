@@ -114,13 +114,6 @@ const EmailCalendar = ({ onActionButtonClick }: EmailCalendarProps) => {
   );
 
   const onSelectEvent = useCallback((event: ICalendarEvent) => {
-    /**
-     * Here we are waiting 250 milliseconds (use what you want) prior to firing
-     * our method. Why? Because both 'click' and 'doubleClick'
-     * would fire, in the event of a 'doubleClick'. By doing
-     * this, the 'click' handler is overridden by the 'doubleClick'
-     * action.
-     */
     if (!clickRef) return;
     window.clearTimeout(clickRef?.current);
     clickRef.current = window.setTimeout(() => {
@@ -130,9 +123,6 @@ const EmailCalendar = ({ onActionButtonClick }: EmailCalendarProps) => {
   }, []);
 
   const onDoubleClickEvent = useCallback((event: ICalendarEvent) => {
-    /**
-     * Notice our use of the same ref as above.
-     */
     if (!clickRef) return;
     window.clearTimeout(clickRef?.current);
     clickRef.current = window.setTimeout(() => {
@@ -166,7 +156,6 @@ const EmailCalendar = ({ onActionButtonClick }: EmailCalendarProps) => {
       default:
         return "Invalid Date";
     }
-    return "Hello";
   }, [selectedView, date]);
 
   return (
@@ -192,7 +181,6 @@ const EmailCalendar = ({ onActionButtonClick }: EmailCalendarProps) => {
               Next
             </Button>
           </Button.Group>
-          {/* {dayjs(date).format("MMMM YYYY")} */}
           {calculatedDateString}
           <Button.Group>
             <Button
@@ -222,6 +210,12 @@ const EmailCalendar = ({ onActionButtonClick }: EmailCalendarProps) => {
           </Button.Group>
         </Group>
         <CalendarComponent
+          onNavigate={(e) => {
+            console.log(e);
+          }}
+          onView={(e) => {
+            console.log(e);
+          }}
           view={selectedView}
           toolbar={false}
           onDoubleClickEvent={onDoubleClickEvent}

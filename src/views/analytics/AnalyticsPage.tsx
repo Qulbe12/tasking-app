@@ -20,6 +20,7 @@ import "@inovua/reactdatagrid-enterprise/theme/default-dark.css";
 import "@inovua/reactdatagrid-enterprise/theme/default-light.css";
 import "./AnalyticsPage.scss";
 import { IDocumentResponse } from "../../interfaces/documents/IDocumentResponse";
+import { isValidDate } from "../../utils/isValidDate";
 
 const AnalyticsPage = () => {
   const { t } = useTranslation();
@@ -41,39 +42,46 @@ const AnalyticsPage = () => {
   }, [templates]);
 
   const columns: TypeColumns = useMemo(() => {
-    const baseCols: TypeColumns = [
-      { name: "title", header: t("title"), defaultFlex: 1 },
-      { name: "description", header: t("description"), defaultFlex: 1 },
-      {
-        name: "status",
-        header: t("status"),
-        defaultFlex: 1,
-      },
-      { name: "priority", header: t("priority"), defaultFlex: 1 },
-      {
-        name: "startDate",
-        header: t("startDate"),
-        defaultFlex: 1,
-        groupBy: false,
-        render: ({ value }: { value: string }) => new Date(value).toDateString(),
-      },
-      {
-        name: "dueDate",
-        header: t("dueDate"),
-        defaultFlex: 1,
-        groupBy: false,
-        render: ({ value }: { value: string }) => new Date(value).toDateString(),
-      },
-    ];
+    let baseCols: TypeColumns = [];
 
     if (!selectedTemplate) {
-      baseCols.splice(3, 0, { name: "type", header: t("type"), defaultFlex: 1 });
+      baseCols = [
+        { name: "title", header: t("title"), defaultFlex: 1 },
+        { name: "description", header: t("description"), defaultFlex: 1 },
+        { name: "type", header: t("type"), defaultFlex: 1 },
+        {
+          name: "status",
+          header: t("status"),
+          defaultFlex: 1,
+        },
+        { name: "priority", header: t("priority"), defaultFlex: 1 },
+        {
+          name: "startDate",
+          header: t("startDate"),
+          defaultFlex: 1,
+          groupBy: false,
+          render: ({ value }: { value: string }) => new Date(value).toDateString(),
+        },
+        {
+          name: "dueDate",
+          header: t("dueDate"),
+          defaultFlex: 1,
+          groupBy: false,
+          render: ({ value }: { value: string }) => new Date(value).toDateString(),
+        },
+      ];
     }
 
     const foundTemplate = templates.find((t) => t.id === selectedTemplate);
 
     foundTemplate?.fields.forEach((f) => {
-      baseCols.push({ name: f.key, header: f.label, defaultFlex: 1 });
+      baseCols.push({
+        name: f.key,
+        header: f.label,
+        defaultFlex: 1,
+        render: ({ value }: { value: string }) =>
+          isValidDate(value) ? new Date(value).toDateString() : value,
+      });
     });
 
     return baseCols;
@@ -307,7 +315,7 @@ const AnalyticsPage = () => {
                       color: "black",
                     }}
                     className="border border-black p-2"
-                    key={i}
+                    key={i + "titleRowDateToExport"}
                   >
                     {d}
                   </td>

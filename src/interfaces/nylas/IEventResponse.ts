@@ -8,6 +8,8 @@ interface IParticipant {
 interface IWhen {
   start_time: number;
   end_time: number;
+  time: number;
+  object: "time" | "timespan";
 }
 
 interface IConferencing {

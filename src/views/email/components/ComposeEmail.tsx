@@ -189,7 +189,7 @@ const ComposeEmail = ({ onCancelClick, selectedMessage }: ComposeEmailProps) => 
 
   return (
     <form onSubmit={handleSendEmail} style={{ height: "100%" }}>
-      <ScrollArea>
+      <ScrollArea h="100%" offsetScrollbars>
         <Stack spacing={"md"} h="100%">
           <MultiSelect
             label="To"

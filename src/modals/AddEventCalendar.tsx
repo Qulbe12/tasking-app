@@ -51,14 +51,14 @@ const AddEventCalendar = ({
 
   useEffect(() => {
     if (!selectedDate) return;
-    const newStartDate = new Date(selectedDate);
-    const newEndDate = new Date(new Date(newStartDate).setHours(newStartDate.getHours() + 3));
 
     form.setValues({
       ...form.values,
       calendar_id: calendarId,
-      startDate: newStartDate,
-      endDate: newEndDate,
+      startDate: selectedDate,
+      endDate: selectedDate,
+      startTime: selectedDate,
+      endTime: selectedDate,
     });
   }, [calendarId, selectedDate]);
 

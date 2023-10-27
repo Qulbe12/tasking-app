@@ -23,6 +23,7 @@ import useChangeBoard from "../hooks/useChangeBoard";
 import NavBreadcrumbs from "./NavBreadcrumbs";
 import NavTabs from "./NavTabs";
 import SearchInput from "../components/SearchInput";
+import FilterMenu from "../components/FilterMenu";
 
 const DashboardLayout = () => {
   const dispatch = useAppDispatch();
@@ -85,12 +86,8 @@ const DashboardLayout = () => {
 
             {/* RIGHT SIDE */}
             <Flex gap="md" align="center" justify="space-between">
-              {/* <ActionIcon
-                color={filtersOpen ? "orange" : undefined}
-                onClick={() => dispatch(toggleFilterOpen())}
-              >
-                <IconFilter size={24} />
-              </ActionIcon> */}
+              <FilterMenu />
+
               <SearchInput />
             </Flex>
           </Group>

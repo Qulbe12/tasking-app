@@ -1,7 +1,7 @@
 {
   "name": "hexa-react-fe",
   "private": true,
-  "version": "0.8.123",
+  "version": "0.8.126",
   "type": "module",
   "scripts": {
     "start": "vite --host",
@@ -72,11 +72,11 @@
     "jszip": "^3.10.1",
     "lodash": "^4.17.21",
     "moment": "^2.29.4",
-    "npm": "^9.8.1",
+    "npm": "^9.9.0",
     "nylas": "^6.10.0",
     "pspdfkit": "^2023.1.0",
     "react": "^18.2.0",
-    "react-big-calendar": "^1.6.8",
+    "react-big-calendar": "^1.8.4",
     "react-calendar": "^4.0.0",
     "react-csv": "^2.2.2",
     "react-dom": "^18.2.0",
