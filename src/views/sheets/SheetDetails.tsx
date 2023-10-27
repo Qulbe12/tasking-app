@@ -425,13 +425,19 @@ const SheetDetails = () => {
                         <Button
                           variant="outline"
                           onClick={async () => {
+                            if (newTags.length < 0) return;
                             if (!selectedSheet || !selectedPage || !selectedVersion) return;
-                            const res = await axiosPrivate.patch(
-                              `/sheets/${selectedSheet.id}/records/${selectedPage.name}/tags/version/${selectedVersion}`,
-                              newTags,
-                            );
 
-                            setSelectedSheet(res.data);
+                            try {
+                              const res = await axiosPrivate.patch(
+                                `/records/${selectedPage.id}/tags`,
+                                newTags,
+                              );
+
+                              setSelectedSheet(res.data);
+                            } catch (err) {
+                              showError("Cannot update tags");
+                            }
                           }}
                         >
                           Update Tags
