@@ -15,7 +15,6 @@ import { FieldType, IField } from "../interfaces/documents/IField";
 type DynamicFieldProps = {
   field: IField;
   form?: UseFormReturnType<any>;
-
   width?: number;
 };
 

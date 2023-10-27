@@ -76,8 +76,12 @@ const DocumentsDetailsCol: React.FC<DocumentsDetailsColProps> = ({
 
   useEffect(() => {
     if (!activeBoard) return;
-    setAUsers(activeBoard?.members);
-  }, [activeBoard]);
+    if (userType === "assignedUsers") {
+      setAUsers(activeBoard?.members);
+    } else {
+      setAUsers([]);
+    }
+  }, [activeBoard, userType, document]);
 
   const handleEditClick = () => openEditModal();
 
