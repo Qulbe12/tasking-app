@@ -269,7 +269,7 @@ const SheetDetails = () => {
           )}
         </Grid.Col>
         <MediaQuery smallerThan="lg" styles={opened ? { display: "none" } : { display: "" }}>
-          <Affix position={{ bottom: 130, right: 0 }}>
+          <Affix position={{ bottom: "50%", right: 0 }}>
             <Button onClick={open} variant="default" leftIcon={<IconChevronLeft />}></Button>
           </Affix>
         </MediaQuery>
@@ -285,7 +285,7 @@ const SheetDetails = () => {
           title={t("createNewVersion")}
         />
       </MediaQuery>
-      <Drawer opened={opened} onClose={close} position="right" overlayOpacity={0}>
+      <Drawer opened={opened} onClose={close} position="right">
         <Stack h="100%">
           <ScrollArea h="90vh" mx="md">
             <Card h="50%" pos="relative" my="md">
