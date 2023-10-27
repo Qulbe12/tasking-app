@@ -210,7 +210,7 @@ const SheetDetails = () => {
   }, [currentSheetId, selectedVersion]);
 
   return (
-    <Paper>
+    <Paper p="md">
       <LoadingOverlay visible={loading} />
 
       <Filter
@@ -221,7 +221,7 @@ const SheetDetails = () => {
       />
 
       <Grid mt="sm" h="80vh">
-        <Grid.Col span="auto" h="100%">
+        <Grid.Col span={2} h="100%">
           <MediaQuery smallerThan="md" styles={{ width: 100 }}>
             <ScrollArea h="100%" offsetScrollbars>
               <Card withBorder>
@@ -263,7 +263,7 @@ const SheetDetails = () => {
             </ScrollArea>
           </MediaQuery>
         </Grid.Col>
-        <Grid.Col p="md" sm={10} lg={9}>
+        <Grid.Col p="md" sm={10} lg={10}>
           {selectedSheet && selectedPage && (
             <SheetPdfViewer handleKeyEvent={handlePageChange} file={selectedPage} />
           )}
@@ -285,7 +285,7 @@ const SheetDetails = () => {
           title={t("createNewVersion")}
         />
       </MediaQuery>
-      <Drawer opened={opened} onClose={close} position="right">
+      <Drawer opened={opened} onClose={close} position="right" overlayOpacity={0}>
         <Stack h="100%">
           <ScrollArea h="90vh" mx="md">
             <Card h="50%" pos="relative" my="md">
@@ -421,11 +421,7 @@ const SheetDetails = () => {
                             return item;
                           }}
                         />
-                        {!selectedSheet?.isArchived && (
-                          <Button variant="outline" onClick={archiveSheetUpdate}>
-                            Archive sheet
-                          </Button>
-                        )}
+
                         <Button
                           variant="outline"
                           onClick={async () => {
@@ -440,6 +436,11 @@ const SheetDetails = () => {
                         >
                           Update Tags
                         </Button>
+                        {!selectedSheet?.isArchived && (
+                          <Button variant="outline" onClick={archiveSheetUpdate}>
+                            Archive sheet
+                          </Button>
+                        )}
                       </Stack>
                     )}
                   </div>
@@ -450,7 +451,13 @@ const SheetDetails = () => {
               <Group position="apart" mb="xs">
                 <Text>{t("versions")}:</Text>
                 {!selectedSheet?.isArchived && (
-                  <ActionIcon size="sm" onClick={toggleSheetVersionModal}>
+                  <ActionIcon
+                    size="sm"
+                    onClick={() => {
+                      toggleSheetVersionModal();
+                      close();
+                    }}
+                  >
                     <IconPlus />
                   </ActionIcon>
                 )}

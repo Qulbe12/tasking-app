@@ -59,13 +59,14 @@ const EmailCalendar = ({ onActionButtonClick }: EmailCalendarProps) => {
   };
 
   useEffect(() => {
-    dispatch(getAllCalendars());
-
-    calendars.map((c) => {
-      if (c.name === "Calendar") {
-        setCalendarId(c.id);
-      }
+    dispatch(getAllCalendars()).then((c) => {
+      c.payload.map((c: ICalendarResponse) => {
+        if (c.name === "Calendar") {
+          setCalendarId(c.id);
+        }
+      });
     });
+
     return () => {
       window.clearTimeout(clickRef?.current);
     };

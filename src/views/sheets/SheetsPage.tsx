@@ -40,7 +40,7 @@ const SheetsPage = () => {
   }, []);
 
   return (
-    <Paper>
+    <Paper p="md">
       <Group mb="md" position="right">
         <Button onClick={handleArchiveSheets} size="xs">
           <IconArchive size={16} />
