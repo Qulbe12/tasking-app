@@ -1,5 +1,5 @@
 import { useAppDispatch, useAppSelector } from "../../redux/store";
-import { Button, Flex, Group, Paper, useMantineTheme } from "@mantine/core";
+import { Button, Flex, Group, Paper, Title, useMantineTheme } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { pdfjs } from "react-pdf";
 import SheetCard from "../../components/SheetCard";
@@ -8,6 +8,7 @@ import { useTranslation } from "react-i18next";
 import SheetProcessModal from "../../modals/SheetProcessModal";
 import { useEffect } from "react";
 import { getSheets } from "../../redux/api/sheetsApi";
+import { IconFolder } from "@tabler/icons";
 
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
   "pdfjs-dist/build/pdf.worker.min.js",
@@ -36,13 +37,14 @@ const ArchivedSheets = () => {
   }, []);
 
   return (
-    <Paper>
+    <Paper p="md">
       <Group mb="md" position="right">
-        <Button onClick={handleArchiveSheets} size="xs">
+        <Button leftIcon={<IconFolder />} onClick={handleArchiveSheets} size="xs">
           {t("sheets")}
         </Button>
       </Group>
       <Flex wrap="wrap" gap={6}>
+        {sheets.length <= 0 && <Title>There are no archived sheets</Title>}
         {sheets.map((s) => {
           if (s.isArchived) {
             return (
