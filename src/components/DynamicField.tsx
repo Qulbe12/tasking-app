@@ -15,6 +15,7 @@ import { FieldType, IField } from "../interfaces/documents/IField";
 type DynamicFieldProps = {
   field: IField;
   form?: UseFormReturnType<any>;
+
   width?: number;
 };
 
@@ -62,7 +63,11 @@ const DynamicField: React.FC<DynamicFieldProps> = ({ field, form, width }) => {
           placeholder="Pick date"
           w={width ? `${width}%` : "100%"}
           label={field.label}
-          {...form?.getInputProps(field.key)}
+          value={new Date(form?.values[field.key])}
+          onChange={(d) => {
+            form?.setValues((values) => ({ ...values, [field.key]: d?.toISOString() }));
+          }}
+          // {...form?.getInputProps(field.key)}
         />
       );
     case FieldType.Multiselect:

@@ -63,7 +63,7 @@ const UpdateDynamicField: React.FC<UpdateDynamicFieldProps> = ({ field, value, o
           value={new Date(value || "")}
           onChange={(e) => {
             if (!e) return;
-            onChange && onChange(e);
+            onChange && onChange(e.toISOString());
           }}
         />
       );

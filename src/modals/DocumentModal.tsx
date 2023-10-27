@@ -60,7 +60,7 @@ const DocumentModal = ({
           schema[f.key] = yup.string().required(`${f.label} is required`);
         }
       } else {
-        schema[f.key] = yup.string();
+        // schema[f.key] = yup.string();
       }
     });
     return yup.object().shape(schema);
@@ -105,7 +105,9 @@ const DocumentModal = ({
       const actionRes = await dispatch(
         createDocument({ boardId: activeBoard.id, document: formData }),
       );
-      onAfterCreate && onAfterCreate(actionRes.payload);
+      if (actionRes.type !== "documents/createDocument/rejected") {
+        onAfterCreate && onAfterCreate(actionRes.payload);
+      }
     } finally {
       form.reset();
       setAttachments([]);

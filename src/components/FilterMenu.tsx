@@ -1,6 +1,17 @@
-import { Badge, Button, Card, Group, Menu, Stack } from "@mantine/core";
-import { IconFilter } from "@tabler/icons";
-import React, { useMemo } from "react";
+import {
+  ActionIcon,
+  Badge,
+  Button,
+  Card,
+  Flex,
+  Group,
+  Menu,
+  Modal,
+  Stack,
+  Text,
+} from "@mantine/core";
+import { IconFilter, IconX } from "@tabler/icons";
+import React, { useEffect, useMemo, useState } from "react";
 
 import { useLocation } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../redux/store";
@@ -8,12 +19,10 @@ import { FieldType, IField } from "../interfaces/documents/IField";
 
 import DynamicField from "./DynamicField";
 import { useForm } from "@mantine/form";
-import { useTranslation } from "react-i18next";
 import { toggleFilterOpen } from "../redux/slices/filterSlice";
 import { getDocuments } from "../redux/api/documentApi";
 
 const FilterMenu = () => {
-  const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const location = useLocation();
 
@@ -23,6 +32,8 @@ const FilterMenu = () => {
     filtersOpen: state.filters.filtersOpen,
     activeBoardId: state.boards.activeBoard?.id,
   }));
+
+  const [selectedFilters, setSelectedFilters] = useState<IField[]>([]);
 
   const uniqueFields = useMemo<IField[]>(() => {
     const uniqueFields = [];
@@ -62,53 +73,102 @@ const FilterMenu = () => {
     dispatch(getDocuments({ boardId: activeBoardId, query: values }));
   };
 
+  useEffect(() => {
+    if (!activeBoardId) return;
+    if (selectedFilters.length <= 0) {
+      dispatch(getDocuments({ boardId: activeBoardId, query: {} }));
+    }
+
+    console.log(form.values);
+    // 2023-10-15T19:00:00.000Z
+    // 2023-10-15T19:00:00.000Z
+    // 2023-10-15T19:00:00.000Z
+
+    handleSubmit(form.values);
+  }, [form.values, selectedFilters]);
+
   return (
     <div>
-      <Menu
-        withinPortal
-        opened={filtersOpen}
-        onClose={() => dispatch(toggleFilterOpen())}
-        onOpen={() => dispatch(toggleFilterOpen())}
-      >
-        <Menu.Target>
-          <Button size="xs" leftIcon={<IconFilter />}>
-            {Object.keys(form.values).length > 0 && (
-              <Badge>{Object.keys(form.values).length}</Badge>
-            )}
-          </Button>
-        </Menu.Target>
+      <Button size="xs" leftIcon={<IconFilter />} onClick={() => dispatch(toggleFilterOpen())}>
+        {selectedFilters.length > 0 && <Badge color="orange">{selectedFilters.length}</Badge>}
+      </Button>
 
-        {(location.pathname === "/board" || location.pathname === "/board/analytics") && (
-          <Menu.Dropdown>
-            <Card>
-              <form onSubmit={form.onSubmit(handleSubmit)}>
-                <Stack>
-                  {uniqueFields.map((f) => {
-                    return <DynamicField field={f} key={f.id} form={form} />;
-                  })}
-                  <Group position="right">
-                    <Button
+      <Modal opened={filtersOpen} onClose={() => dispatch(toggleFilterOpen())}>
+        <Stack>
+          {selectedFilters.length <= 0 && <Text>Please add a filter</Text>}
+          {selectedFilters.map((f) => {
+            return (
+              <Flex justify="space-between" align="end" key={f.id} gap="md">
+                <DynamicField field={f} form={form} />
+                <ActionIcon
+                  size="sm"
+                  color="red"
+                  onClick={() => {
+                    setSelectedFilters((filters) => filters.filter((filter) => f.id !== filter.id));
+                    const newValues: any = { ...form.values };
+                    delete newValues[f.key];
+                    form.setValues(newValues);
+                  }}
+                >
+                  <IconX />
+                </ActionIcon>
+              </Flex>
+            );
+          })}
+        </Stack>
+        <Group mt="md">
+          <Button
+            onClick={() => {
+              setSelectedFilters([]);
+              form.reset();
+            }}
+          >
+            Clear Filters
+          </Button>
+          <Menu withinPortal>
+            <Menu.Target>
+              <Button size="xs" leftIcon={<IconFilter />}>
+                Add Filter
+              </Button>
+            </Menu.Target>
+
+            {(location.pathname === "/board" || location.pathname === "/board/analytics") && (
+              <Menu.Dropdown>
+                {uniqueFields.map((f) => {
+                  if (selectedFilters.includes(f)) return;
+                  return (
+                    <Menu.Item
+                      key={f.id + "OptionToSelect"}
                       onClick={() => {
-                        form.reset();
-                        if (activeBoardId) {
-                          dispatch(getDocuments({ boardId: activeBoardId, query: {} }));
-                        }
-                        dispatch(toggleFilterOpen());
+                        setSelectedFilters((filters) => [...filters, f]);
+                        form.setValues({
+                          [f.key]:
+                            f.type === FieldType.Number
+                              ? 0
+                              : f.type === FieldType.Date
+                              ? new Date().toDateString()
+                              : f.type === FieldType.Checkbox
+                              ? true
+                              : f.type === FieldType.Multiselect
+                              ? f.options[0]
+                              : f.type === FieldType.Radio
+                              ? false
+                              : f.type === FieldType.Select
+                              ? f.options[0]
+                              : "",
+                        });
                       }}
                     >
-                      {t("clearFilters")}
-                    </Button>
-                    <Button variant="filled" type="submit">
-                      {t("filter")}
-                    </Button>
-                  </Group>
-                </Stack>
-              </form>
-            </Card>
-          </Menu.Dropdown>
-        )}
-        {location.pathname === "/board/sheets" && <SheetFilterDropdown />}
-      </Menu>
+                      {f.label}
+                    </Menu.Item>
+                  );
+                })}
+              </Menu.Dropdown>
+            )}
+            {location.pathname === "/board/sheets" && <SheetFilterDropdown />}
+          </Menu>
+        </Group>
+      </Modal>
     </div>
   );
 };

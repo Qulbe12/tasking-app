@@ -4,7 +4,7 @@ import { centralizedErrorHandler } from "../commonSliceFunctions";
 import { axiosPrivate } from "../../config/axios";
 import { IUpdateDocument } from "../../interfaces/IUpdateDocument";
 import { IDocumentResponse } from "../../interfaces/documents/IDocumentResponse";
-import objectToString from "../../utils/objectToString";
+import generateQueryString from "../../utils/generateQueryString";
 
 const { documentApi } = api;
 
@@ -30,7 +30,9 @@ export const getDocuments = createAsyncThunk(
   "documents/getDocuments",
   async ({ boardId, query }: { boardId: string; query: any }, { rejectWithValue, dispatch }) => {
     try {
-      const res = await axiosPrivate.get(`/boards/${boardId}/documents?${objectToString(query)}`);
+      const res = await axiosPrivate.get(
+        `/boards/${boardId}/documents${generateQueryString(query)}`,
+      );
       return res.data;
     } catch (err) {
       return centralizedErrorHandler(err, rejectWithValue, dispatch);

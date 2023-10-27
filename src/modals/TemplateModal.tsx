@@ -81,7 +81,23 @@ const TemplateModal = ({ onClose, opened, template }: ModalProps & TemplateModal
       centered
       title={template ? `Edit ${template?.name}` : "Add New Form"}
       opened={opened}
-      onClose={onClose}
+      onClose={() => {
+        setField({
+          id: "",
+          key: "",
+          options: [],
+          required: false,
+          type: FieldType.Text,
+          label: "",
+        });
+        setFieldVals({
+          label: "",
+          options: [],
+          required: false,
+          type: FieldType.Text,
+        });
+        onClose();
+      }}
     >
       <form
         onSubmit={form.onSubmit(async (values) => {

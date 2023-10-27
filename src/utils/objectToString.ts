@@ -5,7 +5,7 @@ function objectToString(obj: any) {
     keyValuePairs.push(`${key}:${obj[key]}`);
   }
 
-  return "keys=" + keyValuePairs.join(", ");
+  return "keys=" + keyValuePairs.join(",");
 }
 
 export default objectToString;
