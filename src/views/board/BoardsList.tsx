@@ -52,7 +52,7 @@ const BoardsList = () => {
           return (
             <Grid.Col span="content" key={i}>
               <BoardCard
-                onClick={() => handleBoardChange(board)}
+                onClick={() => handleBoardChange(board.id)}
                 board={board}
                 onEditClick={() => {
                   setSelectedBoard(board);

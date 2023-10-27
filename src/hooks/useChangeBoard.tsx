@@ -13,28 +13,24 @@ import { setActiveBoard } from "../redux/slices/boardsSlice";
 import { setDocuments } from "../redux/slices/documentSlice";
 import { setGroups } from "../redux/slices/groupsSlice";
 import { setTemplates } from "../redux/slices/templateSlice";
-import IBoardResponse from "../interfaces/boards/IBoardResponse";
 
 const useChangeBoard = () => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
-  const { activeWorkspace, data: workspaces } = useAppSelector((state) => state.workspaces);
+  const { data: workspaces, activeWorkspace } = useAppSelector((state) => state.workspaces);
 
   const [isLoading, setIsLoading] = useState(false);
   const [loadingText, setLoadingText] = useState<string | null>(null);
   const loadingValue = 100;
 
-  const handleBoardChange = async (
-    board: IBoardResponse | IBoardResponse,
-    workspaceId?: string,
-  ) => {
+  const handleBoardChange = async (boardId: string, workspaceId?: string, doNavigate?: boolean) => {
     setIsLoading(true);
     setLoadingText(t("gatheringResources"));
 
     try {
-      const res = await axiosPrivate.get<IBoardResourceResponse>(`/boards/${board.id}/resources`);
+      const res = await axiosPrivate.get<IBoardResourceResponse>(`/boards/${boardId}/resources`);
       const { data } = res;
       const { documents, templates, groups, sheets } = data;
 
@@ -44,12 +40,12 @@ const useChangeBoard = () => {
       dispatch(setDocuments(documents));
       dispatch(setSheets(sheets));
 
-      if (!activeWorkspace) {
-        const foundWorkspace = workspaces.find((ws) => ws.id === workspaceId);
-        if (foundWorkspace) dispatch(setActiveWorkspace(foundWorkspace));
-      }
+      const foundWorkspace = workspaces.find((ws) => ws.id === workspaceId);
 
-      navigate("/board");
+      if (foundWorkspace && foundWorkspace.id !== activeWorkspace?.id)
+        dispatch(setActiveWorkspace(foundWorkspace));
+
+      if (doNavigate) navigate("/board");
     } catch (err) {
       const error = err as AxiosError<IErrorResponse>;
       showError(

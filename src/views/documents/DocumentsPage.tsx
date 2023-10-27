@@ -4,9 +4,11 @@ import DocumentsGridView from "./components/DocumentsGridView";
 import { useAppDispatch, useAppSelector } from "../../redux/store";
 import { getDocuments } from "../../redux/api/documentApi";
 import DocumentsBoardView from "./components/DocumentsBoardView";
+import { useLocation } from "react-router-dom";
 
 const DocumentsPage = () => {
   const dispatch = useAppDispatch();
+  const { state } = useLocation();
 
   const { data: documents, activeBoard } = useAppSelector((state) => ({
     data: state.documents.data,
@@ -14,6 +16,13 @@ const DocumentsPage = () => {
   }));
 
   const [selectedDocument, setSelectedDocument] = useState<IDocumentResponse | null>(null);
+
+  useEffect(() => {
+    if (state !== null) {
+      const foundDocument = documents.find((d) => d.id === state.documentId);
+      setSelectedDocument(foundDocument ?? null);
+    }
+  }, [state]);
 
   useEffect(() => {
     if (!selectedDocument) return;
@@ -24,6 +33,7 @@ const DocumentsPage = () => {
 
   useEffect(() => {
     if (!activeBoard) return;
+    setSelectedDocument(null);
     dispatch(getDocuments({ boardId: activeBoard.id, query: {} }));
   }, [activeBoard]);
 

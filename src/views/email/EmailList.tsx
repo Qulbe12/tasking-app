@@ -104,7 +104,7 @@ const EmailList = ({ onActionButtonClick }: EmailListProps) => {
                 setSelectedMessage(m);
                 setShowEmailForm(true);
               }}
-              onDocumentCardClick={(d) => navigate("/board", { state: { document: d } })}
+              onDocumentCardClick={(d) => navigate("/board", { state: { documentId: d.id } })}
             />
           ) : (
             ""

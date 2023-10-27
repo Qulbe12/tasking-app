@@ -146,7 +146,7 @@ const WorkspacesList = () => {
                   <BoardCard
                     key={board.id}
                     board={board}
-                    onClick={() => handleBoardChange(board, workspace.id)}
+                    onClick={() => handleBoardChange(board.id, workspace.id, true)}
                     onEditClick={() => {
                       setSelectedBoard(board);
                       setBoardEditModalOpen(true);
@@ -175,7 +175,7 @@ const WorkspacesList = () => {
               <BoardCard
                 key={board.id + workspace.id}
                 board={board}
-                onClick={() => handleBoardChange(board, workspace.id)}
+                onClick={() => handleBoardChange(board.id, workspace.id, true)}
               />
             );
           });

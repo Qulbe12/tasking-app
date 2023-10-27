@@ -1,13 +1,26 @@
-import IBoardResponse from "./boards/IBoardResponse";
-import { IDocumentResponse } from "./documents/IDocumentResponse";
-import { ISheetResponse } from "./sheets/ISheetResponse";
-import { ITemplateResponse } from "./template/ITemplateResponse";
-import { IWorkspaceResponse } from "./workspaces/IWorkspaceResponse";
+interface SearchRes {
+  id: string;
+  title: string;
+  description?: string;
+  board: {
+    id: string;
+    title: string;
+    workspace: {
+      id: string;
+      title: string;
+    };
+  };
+
+  workspace?: {
+    id: string;
+    title: string;
+  };
+}
 
 export interface ISearchResponse {
-  boards: IBoardResponse[];
-  documents: IDocumentResponse[];
-  sheets: ISheetResponse[];
-  templates: ITemplateResponse[];
-  workspaces: IWorkspaceResponse[];
+  boards: SearchRes[];
+  documents: SearchRes[];
+  sheets: SearchRes[];
+  templates: SearchRes[];
+  workspaces: SearchRes[];
 }

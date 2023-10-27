@@ -11,7 +11,7 @@ const NavBreadcrumbs = () => {
   const navigate = useNavigate();
 
   const { activeWorkspace } = useAppSelector((state) => state.workspaces);
-  const { data: boards, activeBoard } = useAppSelector((state) => state.boards);
+  const { activeBoard } = useAppSelector((state) => state.boards);
 
   return (
     <Breadcrumbs ml="xl" separator="→">
@@ -39,14 +39,12 @@ const NavBreadcrumbs = () => {
 
           <Menu.Dropdown>
             <Menu.Label>{t("boards")}</Menu.Label>
-            {boards.map((b) => {
+            {activeWorkspace?.boards.map((b) => {
               return (
                 <Menu.Item
                   key={b.id}
                   onClick={() => {
-                    const foundBoard = boards.find((board) => board.id === b.id);
-                    if (!foundBoard) return;
-                    handleBoardChange(foundBoard);
+                    handleBoardChange(b.id);
                   }}
                 >
                   {b.title}
