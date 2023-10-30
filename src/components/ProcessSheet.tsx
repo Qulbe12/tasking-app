@@ -25,7 +25,7 @@ const ProcessSheet = () => {
           </Notification>
         )}
 
-        {!loaders.processingSheet && sheetRecords.length > 0 && !showModal && (
+        {!loaders.processingSheet && sheetRecords && sheetRecords.length > 0 && !showModal && (
           <Notification
             disallowClose
             className="cursor-pointer"
