@@ -60,8 +60,6 @@ const DocumentPublicView = () => {
     getChangeLog(document.id);
   }, []);
 
-  if (!document) return;
-
   return (
     <Paper>
       <LoadingOverlay visible={loading} />
@@ -82,34 +80,35 @@ const DocumentPublicView = () => {
                 <Text size="lg">{document?.title}</Text>
               </Flex>
               <Stack>
-                {Object.entries(document).map(([k, v], i) => {
-                  const inputIndex = document.template.fields.findIndex((f) => f.key === k);
+                {document &&
+                  Object.entries(document).map(([k, v], i) => {
+                    const inputIndex = document.template.fields.findIndex((f) => f.key === k);
 
-                  if (k === "template") return;
-                  if (inputIndex < 0) return;
+                    if (k === "template") return;
+                    if (inputIndex < 0) return;
 
-                  let value = v;
+                    let value = v;
 
-                  if (document.template.fields[inputIndex].type === FieldType.Date) {
-                    value = dayjs(v).format("MMMM D, YYYY");
-                  }
+                    if (document.template.fields[inputIndex].type === FieldType.Date) {
+                      value = dayjs(v).format("MMMM D, YYYY");
+                    }
 
-                  return (
-                    <div key={i + "document" + k + v}>
-                      {inputIndex >= 0 ? (
-                        <Flex direction="column">
-                          <Text weight="bolder" size="sm">
-                            {_.startCase(k)}:
-                          </Text>
+                    return (
+                      <div key={i + "document" + k + v}>
+                        {inputIndex >= 0 ? (
+                          <Flex direction="column">
+                            <Text weight="bolder" size="sm">
+                              {_.startCase(k)}:
+                            </Text>
 
-                          <Text size="sm">{value || "no value"}</Text>
-                        </Flex>
-                      ) : (
-                        <Text>{k}:</Text>
-                      )}
-                    </div>
-                  );
-                })}
+                            <Text size="sm">{value || "no value"}</Text>
+                          </Flex>
+                        ) : (
+                          <Text>{k}:</Text>
+                        )}
+                      </div>
+                    );
+                  })}
 
                 <Flex direction="column">
                   <Flex direction="row" align="center" justify="space-between">
