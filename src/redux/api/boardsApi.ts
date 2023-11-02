@@ -116,3 +116,16 @@ export const removeBoardMember = createAsyncThunk(
     }
   },
 );
+
+export const getAllSharedBoards = createAsyncThunk(
+  "boards/getSharedBoards",
+  async (params, { rejectWithValue, dispatch }) => {
+    try {
+      const res = await axiosPrivate.get("/shared-boards");
+      console.log("response from shared board", res.data);
+      return res.data;
+    } catch (err) {
+      return centralizedErrorHandler(err, rejectWithValue, dispatch);
+    }
+  },
+);

@@ -1,14 +1,14 @@
-import { useState, useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import io from "socket.io-client";
 import {
-  GeneralEvents,
   BoardEvents,
-  NylasEvents,
   DocumentEvents,
-  TemplateEvents,
+  GeneralEvents,
   IJoinRoomPayload,
   JoinRoom,
   NylasConnectedPayload,
+  NylasEvents,
+  TemplateEvents,
 } from "hexa-sdk/dist/app.api";
 import { SOCKET_URL } from "../constants/URLS";
 import { useAppDispatch, useAppSelector } from "../redux/store";
@@ -46,7 +46,8 @@ const useSockets = () => {
     });
 
     // Board Events
-    socket.on(BoardEvents.Created, () => {
+    socket.on(BoardEvents.Created, (payload) => {
+      console.log("board", payload);
       //
     });
     socket.on(BoardEvents.Updated, (payload: IBoardResponse) => {
@@ -58,7 +59,8 @@ const useSockets = () => {
     });
 
     // Document Events
-    socket.on(DocumentEvents.Created, () => {
+    socket.on(DocumentEvents.Created, (payload: any) => {
+      console.log(payload);
       //
     });
     socket.on(DocumentEvents.Updated, () => {

@@ -3,6 +3,7 @@ import {
   addBoard,
   addBoardMembers,
   deleteBoard,
+  getAllSharedBoards,
   getBoardById,
   getBoards,
   removeBoardMember,
@@ -16,6 +17,7 @@ export interface BoardsState {
   loading: boolean;
   error?: string;
   activeBoard?: IBoardResponse | null;
+  sharedBoards: IBoardResponse[];
   loaders: {
     gettingById: boolean | null;
     adding: string | null;
@@ -23,12 +25,14 @@ export interface BoardsState {
     deleting: string | null;
     addingMembers: boolean;
     removingMember: boolean;
+    gettingSharedBoards: boolean;
   };
 }
 
 const initialState: BoardsState = {
   loading: false,
   data: [],
+  sharedBoards: [],
   loaders: {
     gettingById: null,
     adding: null,
@@ -36,6 +40,7 @@ const initialState: BoardsState = {
     deleting: null,
     addingMembers: false,
     removingMember: false,
+    gettingSharedBoards: false,
   },
 };
 
@@ -152,6 +157,22 @@ export const boardsSlice = createSlice({
       })
       .addCase(removeBoardMember.rejected, (state, action) => {
         state.loaders.removingMember = false;
+        state.error = action.error.message;
+        showError(action.error.message);
+      })
+      // get all shared boards
+      .addCase(getAllSharedBoards.pending, (state) => {
+        state.loaders.gettingSharedBoards = true;
+      })
+      .addCase(
+        getAllSharedBoards.fulfilled,
+        (state, { payload }: PayloadAction<IBoardResponse[]>) => {
+          state.loaders.gettingSharedBoards = false;
+          state.sharedBoards = payload;
+        },
+      )
+      .addCase(getAllSharedBoards.rejected, (state, action) => {
+        state.loaders.gettingSharedBoards = false;
         state.error = action.error.message;
         showError(action.error.message);
       });

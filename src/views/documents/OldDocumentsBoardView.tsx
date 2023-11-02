@@ -294,7 +294,6 @@ const OldDocumentsBoardView = () => {
                 <ScrollArea h="75vh">
                   <Flex justify="space-between" mb="xl">
                     <Text size="lg">{selectedDocument?.title}</Text>
-
                     <Menu>
                       <Menu.Target>
                         <ActionIcon size="sm">

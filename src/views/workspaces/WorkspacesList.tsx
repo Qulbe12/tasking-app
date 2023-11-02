@@ -9,7 +9,6 @@ import {
   Modal,
   Paper,
   Progress,
-  SimpleGrid,
   Text,
   Title,
   useMantineTheme,
@@ -27,7 +26,7 @@ import useChangeBoard from "../../hooks/useChangeBoard";
 import BoardModal from "../../modals/BoardModal";
 import { useDisclosure } from "@mantine/hooks";
 import { setActiveWorkspace } from "../../redux/slices/workspacesSlice";
-import { deleteBoard } from "../../redux/api/boardsApi";
+import { deleteBoard, getAllSharedBoards } from "../../redux/api/boardsApi";
 import useDebouncedValue from "../../hooks/useDebounedValue";
 import IBoardResponse from "../../interfaces/boards/IBoardResponse";
 
@@ -43,6 +42,7 @@ const WorkspacesList = () => {
   } = useChangeBoard();
 
   const { data: workspaces, loading } = useAppSelector((state) => state.workspaces);
+  const { sharedBoards } = useAppSelector((state) => state.boards);
   const { search } = useAppSelector((state) => state.filters);
 
   const searchTerm = useDebouncedValue(search, 500);
@@ -69,6 +69,8 @@ const WorkspacesList = () => {
 
   useEffect(() => {
     dispatch(getAllWorkSpaces());
+    console.log("workspaces", workspaces);
+    dispatch(getAllSharedBoards());
   }, []);
 
   return (
@@ -167,20 +169,32 @@ const WorkspacesList = () => {
         Shared Boards
       </Title>
 
-      <SimpleGrid cols={6} mt="md" mb="xl" spacing="xl">
-        {workspaces?.map((workspace) => {
-          if (workspace.iAmOwner) return;
-          return workspace.boards.map((board) => {
-            return (
-              <BoardCard
-                key={board.id + workspace.id}
-                board={board}
-                onClick={() => handleBoardChange(board.id, workspace.id, true)}
-              />
-            );
-          });
+      <Flex
+        gap="md"
+        wrap="wrap"
+        w={"100%"}
+        mt="md"
+        mb="xl"
+        sx={{
+          [theme.fn.smallerThan("md")]: {
+            wrap: "wrap",
+            gap: 8,
+          },
+          [theme.fn.smallerThan("sm")]: {
+            gap: 8,
+          },
+        }}
+      >
+        {sharedBoards.map((board) => {
+          return (
+            <BoardCard
+              key={board.id}
+              board={board}
+              onClick={() => handleBoardChange(board.id, "", true)}
+            />
+          );
         })}
-      </SimpleGrid>
+      </Flex>
 
       {modalOpen && (
         <WorkspaceModal
