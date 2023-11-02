@@ -116,7 +116,7 @@ const DocumentPublicView = () => {
                       {t("assignedUsers")}:
                     </Text>
                   </Flex>
-                  <AvatarGroup users={document.assignedUsers} />
+                  <AvatarGroup users={document?.assignedUsers} />
                 </Flex>
 
                 <Flex direction="column">
@@ -125,13 +125,13 @@ const DocumentPublicView = () => {
                       {t("ccUsers")}:
                     </Text>
                   </Flex>
-                  <AvatarGroup ccUsers={document.ccUsers} />
+                  <AvatarGroup ccUsers={document?.ccUsers} />
                 </Flex>
 
                 <Group position="apart" align="center">
                   <Text>{t("attachments")}:</Text>
                 </Group>
-                {document.attachments.map((a) => {
+                {document?.attachments.map((a) => {
                   return (
                     <Flex
                       onClick={() => {
